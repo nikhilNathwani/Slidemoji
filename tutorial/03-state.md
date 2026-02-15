@@ -27,9 +27,11 @@ Think of it this way:
 
 ## The useState Hook
 
-React provides the `useState` hook to add state to components.
+React provides the [`useState`](https://react.dev/reference/react/useState) hook to add state to components.
 
 ### Basic Syntax
+
+📚 **Learn more:** [useState Reference](https://react.dev/reference/react/useState)
 
 ```javascript
 import { useState } from "react";
@@ -306,7 +308,7 @@ Now let's make Slidemoji interactive!
 
 ### Task 1: Move Tile Data to State
 
-In `src/components/Board.js`:
+In `src/components/Board.jsx`:
 
 1. Import `useState` from React
 2. Convert your `tiles` array to state
@@ -316,17 +318,14 @@ In `src/components/Board.js`:
 import { useState } from "react";
 
 function Board() {
-	const [tiles, setTiles] = useState([
-		"🎨",
-		"🌟",
-		"🎭",
-		"🎪",
-		"🎯",
-		"🎲",
-		"🎸",
-		"🎹",
-		null,
-	]);
+	const [tiles, setTiles] = useState([1, 2, 3, 4, 5, 6, 7, 8, null]);
+
+	// Or with emojis:
+	// const [tiles, setTiles] = useState([
+	//   '🎨', '🌟', '🎭',
+	//   '🎪', '🎯', '🎲',
+	//   '🎸', '🎹', null,
+	// ]);
 
 	// Rest of your component...
 }
@@ -340,7 +339,7 @@ For now, just verify clicks are working:
 2. For now, just console.log the index
 3. Pass this function to each Tile as a prop
 
-In Board.js:
+In Board.jsx:
 
 ```javascript
 function Board() {
@@ -367,7 +366,7 @@ function Board() {
 
 ### Task 3: Make Tiles Clickable
 
-In `src/components/Tile.js`:
+In `src/components/Tile.jsx`:
 
 1. Accept an `onClick` prop (destructure it)
 2. Add `onClick={onClick}` to your div
@@ -454,12 +453,12 @@ You should have:
 
 Before moving to Phase 4, make sure you understand:
 
-- What is state and how is it different from props?
-- How do you create state with `useState`?
-- How do you update state?
-- Why should you never mutate state directly?
-- Why should state live in the parent component for Slidemoji?
-- What happens when you call a state setter function?
+- **What is state and how is it different from props?** State is internal, changeable data managed by a component. Props are external, read-only data passed from a parent.
+- **How do you create state with `useState`?** Call `useState(initialValue)` and destructure the result: `const [value, setValue] = useState(0);`
+- **How do you update state?** Call the setter function: `setValue(newValue)` or `setValue(prev => prev + 1)` for updates based on previous state.
+- **Why should you never mutate state directly?** React won't detect the change and won't re-render. Always create new objects/arrays.
+- **Why should state live in the parent component for Slidemoji?** The Board needs to manage all tiles together to implement game logic (swapping, win detection).
+- **What happens when you call a state setter function?** React schedules a re-render with the new state value. The component function runs again with the updated state.
 
 ## Understanding Re-renders
 

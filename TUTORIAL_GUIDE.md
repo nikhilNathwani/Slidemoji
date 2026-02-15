@@ -90,7 +90,7 @@ This tutorial is divided into 6 phases. Each phase introduces new React concepts
 1. **Read each phase document in order** - The concepts build on each other
 2. **Type the code yourself** - Don't copy-paste; muscle memory helps learning
 3. **Experiment** - Try modifying the code to see what happens
-4. **Check the React docs** - When curious, explore the official documentation
+4. **Check the React docs** - When curious, explore the [official React documentation](https://react.dev/learn) (links are provided throughout the tutorials!)
 5. **Have fun!** - Building games is a great way to learn
 
 ## Prerequisites
@@ -99,7 +99,7 @@ This tutorial is divided into 6 phases. Each phase introduces new React concepts
 - Familiarity with ES6+ features (arrow functions, destructuring, spread operator)
 - HTML/CSS basics
 - A code editor (VS Code recommended)
-- Node.js installed (version 14 or higher)
+- **Node.js installed (version 20.19+ or 22.12+)** - [Download from nodejs.org](https://nodejs.org/)
 
 ## Getting Help
 

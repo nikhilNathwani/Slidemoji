@@ -108,6 +108,17 @@ function Tile({ isGap }) {
 
 ## Adding Animations
 
+### Understanding Tile Movement
+
+When a tile "slides into the gap", here's what actually happens:
+
+1. **Data update**: Your array swaps the tile's value with `null`
+2. **React re-render**: Components update with new props
+3. **CSS Grid**: Each tile automatically repositions to match its array index
+4. **CSS transitions**: Smooth animation between old and new positions!
+
+The gap tile (with `null` value) acts as a visual placeholder. The numbered/emoji tiles are what actually animate when their position changes.
+
 ### CSS Transitions
 
 ```css
@@ -184,7 +195,9 @@ Apply when won:
 
 ## Custom Hooks
 
-Extract reusable logic into custom hooks.
+Extract reusable logic into [custom hooks](https://react.dev/learn/reusing-logic-with-custom-hooks).
+
+📚 **Learn more:** [Reusing Logic with Custom Hooks](https://react.dev/learn/reusing-logic-with-custom-hooks)
 
 ### Example: useTimer Hook
 
@@ -262,7 +275,9 @@ Now you don't need separate useEffect hooks for localStorage!
 
 ### React.memo
 
-Prevent unnecessary re-renders of child components:
+[`React.memo`](https://react.dev/reference/react/memo) prevents unnecessary re-renders of child components:
+
+📚 **Learn more:** [memo Reference](https://react.dev/reference/react/memo)
 
 ```javascript
 import { memo } from "react";
@@ -290,7 +305,9 @@ export default Tile;
 
 ### useCallback
 
-Prevent functions from being recreated on every render:
+[`useCallback`](https://react.dev/reference/react/useCallback) prevents functions from being recreated on every render:
+
+📚 **Learn more:** [useCallback Reference](https://react.dev/reference/react/useCallback)
 
 ```javascript
 import { useCallback } from 'react';
@@ -322,7 +339,9 @@ function Board() {
 
 ### useMemo
 
-Cache expensive calculations:
+[`useMemo`](https://react.dev/reference/react/useMemo) caches expensive calculations:
+
+📚 **Learn more:** [useMemo Reference](https://react.dev/reference/react/useMemo)
 
 ```javascript
 import { useMemo } from 'react';

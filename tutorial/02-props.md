@@ -2,11 +2,13 @@
 
 ## What are Props?
 
-**Props** (short for "properties") are how you pass data from a parent component to a child component. Think of them like function arguments.
+**[Props](https://react.dev/learn/passing-props-to-a-component)** (short for "properties") are how you pass data from a parent component to a child component. Think of them like function arguments.
 
 ### Why Props?
 
 Without props, every tile would be identical. Props let you customize each instance of a component.
+
+📚 **Learn more:** [Passing Props to a Component](https://react.dev/learn/passing-props-to-a-component)
 
 ## Basic Props Example
 
@@ -54,6 +56,8 @@ function Greeting({ name }) {
 	return <h1>Hello, {name}!</h1>;
 }
 ```
+
+**What if you destructure a prop that doesn't exist?** It becomes `undefined`, which is safe! React will just render nothing for `{undefinedValue}`. Your IDE (like VS Code with proper extensions) can warn you about typos. You can also provide default values: `function Greeting({ name = "Guest" })` - now if no name is passed, it uses "Guest".
 
 You can destructure multiple props:
 
@@ -129,23 +133,17 @@ function Tile({ emoji }) {
 }
 ```
 
-Why? This makes React predictable. Data flows down, making it easy to track where data comes from.
+### Why Can't You Modify Props?
 
-## Conditional Rendering with Props
+1. **Single Source of Truth**: The data lives in the parent. If children could change props, you'd have multiple places managing the same data, making bugs hard to track.
 
-You can use props to decide what to render:
+2. **Predictable Data Flow**: With one-way data flow (parent → child), you always know where data comes from. If something's wrong, you check the parent.
 
-```javascript
-function Tile({ isGap, emoji }) {
-	if (isGap) {
-		return <div className="tile tile-gap"></div>;
-	}
+3. **Reusability**: Components that don't modify their props are "pure" - they always render the same output for the same input, making them easier to test and reuse.
 
-	return <div className="tile">{emoji}</div>;
-}
-```
+If you need to change something based on props, use state in the parent and pass new props down!
 
-Or use a ternary operator:
+📚 **Learn more:** [Props are read-only snapshots](https://react.dev/learn/passing-props-to-a-component#how-props-change-over-time)
 
 ```javascript
 function Tile({ isGap, emoji }) {
@@ -187,7 +185,9 @@ JSX props work like HTML attributes, but with superpowers:
 
 ## Rendering Lists with Props
 
-When rendering multiple components, use `.map()`:
+When rendering multiple components, use [`.map()`](https://react.dev/learn/rendering-lists):
+
+📚 **Learn more:** [Rendering Lists](https://react.dev/learn/rendering-lists)
 
 ```javascript
 function Board() {
@@ -250,29 +250,55 @@ Time to use props in Slidemoji!
 
 ### Task 1: Update Tile Component
 
-Modify `src/components/Tile.js` to accept props:
+Modify `src/components/Tile.jsx` to accept props:
 
-1. Accept an `emoji` prop (the emoji/image to display)
+1. Accept a `value` prop (the number/emoji to display)
 2. Accept an `isGap` prop (boolean - is this the empty space?)
 3. If `isGap` is true, render an empty tile with a different class
-4. Otherwise, display the emoji
+4. Otherwise, display the value
+
+**Why render the gap as a tile?** You might think an empty space makes more sense, but representing the gap as a tile has benefits:
+
+- **Consistent grid structure** - Always 9 tiles, simpler array logic
+- **Visual feedback** - You can style the gap (dashed border, subtle background) to show where tiles can slide
+- **Easier animations** - When you animate tiles sliding, the gap acts as a visual placeholder. The actual numbered tiles move into the gap's position in the CSS Grid.
 
 **Hint:** Use destructuring and conditional rendering
 
+Example:
+
+```javascript
+function Tile({ value, isGap, onClick }) {
+	if (isGap) {
+		return <div className="tile tile-gap" onClick={onClick}></div>;
+	}
+
+	return (
+		<div className="tile" onClick={onClick}>
+			{value}
+		</div>
+	);
+}
+```
+
 ### Task 2: Create Tile Data
 
-In `src/components/Board.js`:
+In `src/components/Board.jsx`:
 
 1. Create an array of 9 items representing your puzzle
-2. Use 8 different emojis and one `null` (for the gap)
-3. Example: `['🎨', '🌟', '🎭', '🎪', '🎯', '🎲', '🎸', '🎹', null]`
+2. For learning, use numbers 1-8 and one `null` (for the gap)
+3. Example: `[1, 2, 3, 4, 5, 6, 7, 8, null]`
+
+**Want emojis instead?** Just use: `['🎨', '🌟', '🎭', '🎪', '🎯', '🎲', '🎸', '🎹', null]`
+
+Numbers are easier to see the puzzle state while learning!
 
 ### Task 3: Render Tiles with Props
 
-In `Board.js`:
+In `Board.jsx`:
 
 1. Use `.map()` to render a `Tile` for each item in your array
-2. Pass each emoji as a prop
+2. Pass each value as a prop
 3. Pass `isGap={true}` when the item is `null`
 4. Don't forget the `key` prop! (Use the index for now)
 
@@ -280,14 +306,12 @@ Example structure:
 
 ```javascript
 function Board() {
-	const tiles = [
-		/* your emoji array */
-	];
+	const tiles = [1, 2, 3, 4, 5, 6, 7, 8, null];
 
 	return (
 		<div className="board">
-			{tiles.map((emoji, index) => (
-				<Tile key={index} emoji={emoji} isGap={emoji === null} />
+			{tiles.map((value, index) => (
+				<Tile key={index} value={value} isGap={value === null} />
 			))}
 		</div>
 	);
@@ -310,7 +334,7 @@ In `src/App.css`, add a style for `.tile-gap`:
 For debugging and learning, add a `position` prop to each tile:
 
 1. Pass the index as `position={index}`
-2. In `Tile.js`, display the position in the corner of each tile (small text)
+2. In `Tile.jsx`, display the position in the corner of each tile (small text)
 3. Remove this later when your game works!
 
 ### Expected Result
@@ -318,7 +342,7 @@ For debugging and learning, add a `position` prop to each tile:
 You should now see:
 
 - 9 tiles in a 3x3 grid
-- 8 tiles with different emojis
+- 8 tiles with different numbers (or emojis if you chose those)
 - 1 tile that's the gap (empty or styled differently)
 - Each tile is unique based on the props it receives
 
@@ -326,12 +350,12 @@ You should now see:
 
 Before moving to Phase 3, make sure you understand:
 
-- What are props and why do we need them?
-- How do you pass props to a component?
-- How do you receive and use props in a component?
-- Why can't you modify props?
-- What is the `key` prop used for when rendering lists?
-- What is destructuring and why is it useful?
+- **What are props and why do we need them?** Props are how you pass data from parent to child components. Without them, every component instance would be identical.
+- **How do you pass props to a component?** Like HTML attributes: `<Tile emoji="🎨" position={5} />`
+- **How do you receive and use props in a component?** As the first parameter: `function Tile(props)` or with destructuring: `function Tile({ emoji, position })`
+- **Why can't you modify props?** They're read-only to maintain predictable one-way data flow. The parent owns the data, child components just display it.
+- **What is the `key` prop used for when rendering lists?** React uses it to track which items changed, were added, or removed, preventing bugs and improving performance.
+- **What is destructuring and why is it useful?** Unpacking values from an object: `{ emoji, position }` is cleaner than writing `props.emoji` and `props.position` everywhere.
 
 ## Understanding Data Flow
 
@@ -344,7 +368,7 @@ App
          └─ Renders different UI based on props
 ```
 
-Data flows **down**: Board tells each Tile what to display. Tiles can't change their own emoji - that data lives in Board.
+Data flows **down**: Board tells each Tile what to display. Tiles can't change their own value - that data lives in Board.
 
 But what if we want clicks on tiles to change the board? That requires **state**, which makes data dynamic!
 

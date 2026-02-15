@@ -14,9 +14,11 @@ Think of effects as **side effects** - they're not about returning JSX, but doin
 
 ## The useEffect Hook
 
-`useEffect` lets you run code **after** your component renders.
+[`useEffect`](https://react.dev/reference/react/useEffect) lets you run code **after** your component renders.
 
 ### Basic Syntax
+
+📚 **Learn more:** [useEffect Reference](https://react.dev/reference/react/useEffect)
 
 ```javascript
 import { useEffect } from "react";
@@ -441,12 +443,12 @@ A polished, fully functional game:
 
 Before moving to Phase 6, make sure you understand:
 
-- What are effects and when do you need them?
-- What does the dependency array control?
-- Why do some effects need cleanup?
-- When does the cleanup function run?
-- How do you run an effect only once?
-- What happens if you forget a dependency?
+- **What are effects and when do you need them?** Effects are for side effects (data fetching, timers, DOM updates) that happen outside of rendering.
+- **What does the dependency array control?** It tells React when to re-run the effect - only when those dependencies change.
+- **Why do some effects need cleanup?** To prevent memory leaks and bugs. Timers, subscriptions, and event listeners should be cleaned up when the component unmounts.
+- **When does the cleanup function run?** Before the effect runs again, and when the component unmounts (is removed from the screen).
+- **How do you run an effect only once?** Use an empty dependency array: `useEffect(() => { }, [])`
+- **What happens if you forget a dependency?** Your effect uses stale data. If your effect uses a variable from the component, include it in the dependency array or you'll have bugs!
 
 ## Common useEffect Mistakes
 
@@ -463,6 +465,12 @@ useEffect(() => {
 	console.log(count);
 }, [count]);
 ```
+
+**What happens?** The effect always uses the `count` value from when it first ran. If `count` changes to 5, your effect still logs the old value (like 0). This is called "stale closure" and causes confusing bugs.
+
+**The fix:** Include ALL values from your component scope that the effect uses in the dependency array. React DevTools will warn you about this!
+
+📚 **Learn more:** [Specifying reactive dependencies](https://react.dev/reference/react/useEffect#specifying-reactive-dependencies)
 
 ### Mistake 2: Infinite Loops
 
