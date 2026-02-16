@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Tile from "./components/Tile";
 import "./App.css";
 import Board from "./components/Board";
 

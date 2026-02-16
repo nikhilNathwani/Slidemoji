@@ -1,24 +1,7 @@
-:root {
-	--board-size: 480px; /* Desktop default */
-}
-
 * {
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
-}
-
-/* Responsive board sizes */
-@media (max-width: 768px) {
-	:root {
-		--board-size: 360px; /* Tablet */
-	}
-}
-
-@media (max-width: 480px) {
-	:root {
-		--board-size: 300px; /* Mobile */
-	}
 }
 
 /* body {
@@ -33,14 +16,13 @@
 .tile {
 	/* Width and height now set via inline styles based on board size */
 	background-color: #fff;
-	border: 1px solid #ddd;
+	border: none; /* Remove border to prevent size issues */
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	font-size: 2rem;
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 	position: relative;
-	overflow: hidden;
+	/* overflow: hidden; */
 }
 
 .tile:not(.gap) {
@@ -54,12 +36,6 @@
 	transform: scale(0.95);
 }
 
-/* Only apply hover to tiles that are NOT the gap */
-.tile:not(.gap):hover {
-	transform: scale(1.02);
-	cursor: pointer;
-}
-
 .gap {
 	opacity: 0;
 	transition: none;
@@ -68,10 +44,10 @@
 .board {
 	/* Size and grid controlled by inline styles in Board.jsx */
 	background-color: #2d3748;
-	padding: 10px;
-	border-radius: 12px;
+	padding: 0;
 	margin: 0 auto;
 	box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+	overflow: hidden; /* Ensures tiles don't spill out */
 }
 
 .size-selector {
