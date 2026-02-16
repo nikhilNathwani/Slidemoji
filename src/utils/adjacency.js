@@ -49,22 +49,22 @@ export const ADJACENCY_MAPS = {
 // Helper functions for readable call sites
 
 /**
- * Check if two positions are adjacent on a board of given grid size
+ * Check if two positions are adjacent on a board of given size
  * @param {number} index1 - First position index
  * @param {number} index2 - Second position index
- * @param {number} gridSize - Grid dimension (e.g., 3 for a 3×3 board)
+ * @param {number} size - Board size (2, 3, or 4)
  * @returns {boolean} True if positions are adjacent
  */
-export function isAdjacent(index1, index2, gridSize) {
-	return ADJACENCY_MAPS[gridSize][index1].has(index2);
+export function isAdjacent(index1, index2, size) {
+	return ADJACENCY_MAPS[size][index1].has(index2);
 }
 
 /**
  * Get all adjacent positions for a given position
  * @param {number} index - Position index
- * @param {number} gridSize - Grid dimension (e.g., 3 for a 3×3 board)
+ * @param {number} size - Board size (2, 3, or 4)
  * @returns {number[]} Array of adjacent position indices
  */
-export function getAdjacentIndices(index, gridSize) {
-	return Array.from(ADJACENCY_MAPS[gridSize][index]);
+export function getAdjacentIndices(index, size) {
+	return Array.from(ADJACENCY_MAPS[size][index]);
 }
