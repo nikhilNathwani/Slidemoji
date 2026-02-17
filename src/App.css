@@ -25,14 +25,14 @@
 	/* overflow: hidden; */
 }
 
-.tile:not(.gap) {
+.tile.clickable {
 	transition:
 		transform 0.15s ease-in-out,
 		grid-columns 2s ease,
 		grid-rows 2s ease;
 }
 
-.tile:not(.gap):active {
+.tile.clickable:active {
 	transform: scale(0.95);
 }
 
@@ -106,4 +106,127 @@
 	filter: blur(0px);
 	opacity: 1;
 	transition: all 0.3s ease;
+}
+
+/* Dialog Styles */
+.dialog-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.6);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 1000;
+	animation: fadeIn 0.2s ease;
+}
+
+.dialog-content {
+	background: white;
+	border-radius: 12px;
+	padding: 0;
+	min-width: 300px;
+	max-width: 500px;
+	max-height: 80vh;
+	overflow: auto;
+	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+	animation: slideUp 0.3s ease;
+}
+
+.dialog-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 20px 24px;
+	border-bottom: 1px solid #e5e7eb;
+}
+
+.dialog-header h2 {
+	margin: 0;
+	font-size: 1.5rem;
+	color: #1f2937;
+}
+
+.dialog-close {
+	background: none;
+	border: none;
+	font-size: 2rem;
+	color: #9ca3af;
+	cursor: pointer;
+	padding: 0;
+	width: 32px;
+	height: 32px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 6px;
+	transition: all 0.2s;
+}
+
+.dialog-close:hover {
+	background-color: #f3f4f6;
+	color: #1f2937;
+}
+
+.dialog-body {
+	padding: 24px;
+}
+
+.settings-button {
+	padding: 8px 16px;
+	font-size: 1rem;
+	background-color: #667eea;
+	color: white;
+	border: none;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	margin-bottom: 20px;
+}
+
+.settings-button:hover {
+	background-color: #5568d3;
+	transform: translateY(-2px);
+}
+
+.win-dialog-content {
+	text-align: center;
+}
+
+.win-dialog-content .emoji {
+	font-size: 4rem;
+	margin: 20px 0;
+}
+
+.win-dialog-content h3 {
+	font-size: 1.8rem;
+	color: #1f2937;
+	margin-bottom: 10px;
+}
+
+.win-dialog-content p {
+	color: #6b7280;
+	font-size: 1.1rem;
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes slideUp {
+	from {
+		transform: translateY(20px);
+		opacity: 0;
+	}
+	to {
+		transform: translateY(0);
+		opacity: 1;
+	}
 }

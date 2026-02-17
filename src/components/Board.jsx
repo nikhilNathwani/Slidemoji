@@ -1,7 +1,6 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import Tile from "./Tile";
 import { isAdjacent, getAdjacentIndices } from "../utils/adjacency";
-import { getDailyEmoji, createEmojiSvgUrl } from "../utils/emoji";
 
 // ===== Helper Functions (outside component) =====
 
@@ -44,7 +43,7 @@ function scramblePuzzle(size, numMoves = 100) {
 
 // ===== Main Component =====
 
-function Board({ size }) {
+function Board({ size, onWin }) {
 	// ===== State & Effects =====
 	const [tiles, setTiles] = useState(() => scramblePuzzle(size));
 	const [isWon, setIsWon] = useState(false);
@@ -55,12 +54,14 @@ function Board({ size }) {
 		setIsWon(false);
 	}, [size]);
 
+	// Show win dialog after render completes
+	useEffect(() => {
+		if (isWon && onWin) {
+			onWin();
+		}
+	}, [isWon, onWin]);
+
 	// ===== Derived Values =====
-	const dailyEmoji = getDailyEmoji();
-	const emojiSvgUrl = useMemo(
-		() => createEmojiSvgUrl(dailyEmoji),
-		[dailyEmoji],
-	);
 	const gapIndex = getGapIndex(tiles);
 	const boardSizePx = 480;
 
@@ -76,7 +77,6 @@ function Board({ size }) {
 			setTiles(newTiles);
 			if (checkWin(newTiles, getSolvedState(size))) {
 				setIsWon(true);
-				alert("Congratulations! You've solved the puzzle!");
 			}
 		}
 	};
@@ -109,8 +109,6 @@ function Board({ size }) {
 							gapIndex >= 0 && isAdjacent(index, gapIndex, size)
 						}
 						onClick={() => handleTileClick(index)}
-						boardSize={size}
-						emojiSvgUrl={emojiSvgUrl}
 					/>
 				))}
 			</div>
