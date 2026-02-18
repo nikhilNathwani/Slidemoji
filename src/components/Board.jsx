@@ -79,11 +79,13 @@ function getTileIndexFromDirection(gapIndex, direction, size) {
 
 // ===== Main Component =====
 
-function Board({ size, onWin, showNumbers }) {
+function Board({ size, onWin, showNumbers, onSolveRef, onShuffleRef }) {
 	const [tiles, setTiles] = useState(() => scramblePuzzle(size));
 	const [isWon, setIsWon] = useState(false);
 	const boardRef = useRef(null);
 	const touchStartRef = useRef(null);
+	const isAnimating = useRef(false);
+	const hasShownWin = useRef(false);
 
 	// Responsive sizing
 	const getResponsiveBoardSize = useCallback(() => {
@@ -94,10 +96,35 @@ function Board({ size, onWin, showNumbers }) {
 	const [boardSizePx, setBoardSizePx] = useState(getResponsiveBoardSize());
 	const tileSizePx = boardSizePx / size;
 
+	// Solve function
+	const handleSolve = useCallback(() => {
+		setTiles(getSolvedState(size));
+		setIsWon(true);
+		hasShownWin.current = false;
+	}, [size]);
+
+	// Shuffle function
+	const handleShuffle = useCallback(() => {
+		setTiles(scramblePuzzle(size));
+		setIsWon(false);
+		hasShownWin.current = false;
+	}, [size]);
+
+	// Expose functions to parent
+	useEffect(() => {
+		if (onSolveRef) {
+			onSolveRef.current = handleSolve;
+		}
+		if (onShuffleRef) {
+			onShuffleRef.current = handleShuffle;
+		}
+	}, [handleSolve, handleShuffle, onSolveRef, onShuffleRef]);
+
 	// Reset board when size changes
 	useEffect(() => {
 		setTiles(scramblePuzzle(size));
 		setIsWon(false);
+		hasShownWin.current = false;
 	}, [size]);
 
 	// Handle window resize
@@ -109,9 +136,10 @@ function Board({ size, onWin, showNumbers }) {
 		return () => window.removeEventListener("resize", handleResize);
 	}, [getResponsiveBoardSize]);
 
-	// Show win dialog
+	// Show win dialog (only once per win)
 	useEffect(() => {
-		if (isWon && onWin) {
+		if (isWon && onWin && !hasShownWin.current) {
+			hasShownWin.current = true;
 			onWin();
 		}
 	}, [isWon, onWin]);
@@ -122,11 +150,13 @@ function Board({ size, onWin, showNumbers }) {
 	const moveTile = useCallback(
 		(tileIndex) => {
 			if (isWon) return;
+			if (isAnimating.current) return;
 			if (tiles[tileIndex] === null) return;
 
 			const gapIndex = getGapIndex(tiles);
 			if (!isAdjacent(gapIndex, tileIndex, size)) return;
 
+			isAnimating.current = true;
 			const newTiles = swapTiles(tiles, tileIndex, gapIndex);
 
 			if (checkWin(newTiles, getSolvedState(size))) {
@@ -134,6 +164,11 @@ function Board({ size, onWin, showNumbers }) {
 			}
 
 			setTiles(newTiles);
+
+			// Allow next move after animation completes (1s)
+			setTimeout(() => {
+				isAnimating.current = false;
+			}, 1000);
 		},
 		[tiles, isWon, size],
 	);
@@ -247,68 +282,37 @@ function Board({ size, onWin, showNumbers }) {
 		touchStartRef.current = null;
 	};
 
-	const handleSolve = () => {
-		setTiles(getSolvedState(size));
-		setIsWon(true);
-	};
-
 	// ===== Render =====
 	return (
-		<>
-			<div
-				ref={boardRef}
-				className="board"
-				style={{
-					width: `${boardSizePx}px`,
-					height: `${boardSizePx}px`,
-					position: "relative",
-				}}
-			>
-				{tiles.map((value, index) => {
-					const position = getTilePosition(index, size, tileSizePx);
-					return (
-						<Tile
-							key={`${index}-${value}`}
-							value={value}
-							isGap={value === null}
-							isAdjacentToGap={
-								gapIndex >= 0 &&
-								isAdjacent(index, gapIndex, size)
-							}
-							onClick={() => handleTileClick(index)}
-							onTouchStart={handleTouchStart}
-							onTouchEnd={(e) => handleTouchEnd(e, index)}
-							showNumbers={showNumbers}
-							position={position}
-							size={tileSizePx}
-						/>
-					);
-				})}
-			</div>
-			<SolveButton onClick={handleSolve} />
-		</>
-	);
-}
-
-// ===== Sub-components =====
-
-function SolveButton({ onClick }) {
-	return (
-		<button
-			onClick={onClick}
+		<div
+			ref={boardRef}
+			className="board"
 			style={{
-				marginTop: "20px",
-				padding: "10px 20px",
-				fontSize: "1rem",
-				cursor: "pointer",
-				backgroundColor: "#10b981",
-				color: "white",
-				border: "none",
-				borderRadius: "6px",
+				width: `${boardSizePx}px`,
+				height: `${boardSizePx}px`,
+				position: "relative",
 			}}
 		>
-			🔧 Solve (Testing)
-		</button>
+			{tiles.map((value, index) => {
+				const position = getTilePosition(index, size, tileSizePx);
+				return (
+					<Tile
+						key={value === null ? "gap" : value}
+						value={value}
+						isGap={value === null}
+						isAdjacentToGap={
+							gapIndex >= 0 && isAdjacent(index, gapIndex, size)
+						}
+						onClick={() => handleTileClick(index)}
+						onTouchStart={handleTouchStart}
+						onTouchEnd={(e) => handleTouchEnd(e, index)}
+						showNumbers={showNumbers}
+						position={position}
+						size={tileSizePx}
+					/>
+				);
+			})}
+		</div>
 	);
 }
 

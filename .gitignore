@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Tutorial and progress files
+PROGRESS.md
+tutorial/

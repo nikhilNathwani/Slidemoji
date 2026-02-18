@@ -30,24 +30,46 @@ html {
 	-webkit-overflow-scrolling: touch;
 }
 
-.app header {
-	text-align: center;
+/* Game Header */
+.game-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+	max-width: 480px;
+	gap: 15px;
 }
 
-.app header h1 {
-	font-family:
-		"Comic Sans MS", "Chalkboard SE", "Comic Neue", cursive, sans-serif;
-	font-size: 3rem;
-	margin: 0;
-	color: #ffd700;
-	text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-	letter-spacing: 2px;
+.header-left {
+	display: flex;
+	gap: 10px;
+	align-items: center;
 }
 
-.subtitle {
-	font-size: 1rem;
-	color: #b0b0b0;
-	margin-top: 5px;
+.icon-button {
+	width: 48px;
+	height: 48px;
+	border-radius: 50%;
+	background-color: rgba(255, 255, 255, 0.1);
+	border: 2px solid rgba(255, 255, 255, 0.3);
+	color: #ffffff;
+	font-size: 1.5rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	flex-shrink: 0;
+}
+
+.icon-button:hover {
+	background-color: rgba(255, 255, 255, 0.2);
+	border-color: rgba(255, 255, 255, 0.5);
+	transform: scale(1.05);
+}
+
+.icon-button:active {
+	transform: scale(0.95);
 }
 
 .app main {
@@ -60,7 +82,7 @@ html {
 .tile {
 	background-color: #2d3748;
 	border: 1px solid #4a5568;
-	color: #ffd700;
+	color: #ffffff;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -71,7 +93,6 @@ html {
 	transition:
 		left 1s ease-out,
 		top 1s ease-out;
-	will-change: left, top;
 	cursor: default;
 }
 
@@ -96,7 +117,7 @@ html {
 	background-color: #1a1a2e;
 	padding: 0;
 	margin: 0 auto;
-	box-shadow: 0 8px 24px rgba(255, 215, 0, 0.15);
+	box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
 	position: relative;
 	overflow: hidden;
 	touch-action: none;
@@ -107,22 +128,22 @@ html {
 /* Puzzle of the Day */
 .puzzle-of-day {
 	text-align: center;
-	padding: 10px;
-	background-color: rgba(255, 215, 0, 0.1);
-	border-radius: 8px;
-	border: 1px solid rgba(255, 215, 0, 0.3);
+	padding: 8px 16px;
+	background-color: rgba(255, 255, 255, 0.05);
+	border-radius: 12px;
+	border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 .puzzle-title {
-	font-size: 0.9rem;
+	font-size: 0.85rem;
 	font-weight: 600;
-	color: #ffd700;
+	color: #ffffff;
 	margin-bottom: 8px;
 	letter-spacing: 1px;
 }
 
 .puzzle-emoji {
-	font-size: 2.5rem;
+	font-size: 1.8rem;
 	line-height: 1;
 }
 
@@ -190,7 +211,7 @@ html {
 .dialog-header h2 {
 	margin: 0;
 	font-size: 1.5rem;
-	color: #ffd700;
+	color: #ffffff;
 }
 
 .dialog-close {
@@ -222,15 +243,15 @@ html {
 	padding: 8px 16px;
 	font-size: 1rem;
 	background-color: #4a5568;
-	color: #ffd700;
-	border: 1px solid #ffd700;
+	color: #ffffff;
+	border: 1px solid rgba(255, 255, 255, 0.3);
 	border-radius: 6px;
 	cursor: pointer;
 	transition: all 0.2s ease;
 }
 
 .settings-button:hover {
-	background-color: rgba(255, 215, 0, 0.2);
+	background-color: rgba(255, 255, 255, 0.1);
 	transform: translateY(-2px);
 }
 
@@ -276,14 +297,14 @@ html {
 }
 
 .difficulty-btn:hover {
-	border-color: #ffd700;
-	background-color: rgba(255, 215, 0, 0.1);
+	border-color: rgba(255, 255, 255, 0.5);
+	background-color: rgba(255, 255, 255, 0.05);
 }
 
 .difficulty-btn.active {
-	background-color: rgba(255, 215, 0, 0.2);
-	border-color: #ffd700;
-	color: #ffd700;
+	background-color: rgba(255, 255, 255, 0.15);
+	border-color: #ffffff;
+	color: #ffffff;
 }
 
 .difficulty-label {
@@ -310,7 +331,7 @@ html {
 }
 
 .toggle-switch.on {
-	background-color: rgba(255, 215, 0, 0.6);
+	background-color: rgba(255, 255, 255, 0.4);
 }
 
 .toggle-slider {
@@ -360,13 +381,63 @@ html {
 
 .win-dialog-content h3 {
 	font-size: 1.8rem;
-	color: #ffd700;
+	color: #ffffff;
 	margin-bottom: 10px;
 }
 
 .win-dialog-content p {
 	color: #b0b0b0;
 	font-size: 1.1rem;
+}
+
+/* Confirm Dialog */
+.confirm-dialog-content {
+	text-align: center;
+	padding: 10px 0;
+}
+
+.confirm-dialog-content p {
+	color: #e0e0e0;
+	font-size: 1rem;
+	line-height: 1.5;
+	margin-bottom: 24px;
+}
+
+.confirm-buttons {
+	display: flex;
+	gap: 12px;
+	justify-content: center;
+}
+
+.confirm-btn {
+	padding: 10px 24px;
+	font-size: 1rem;
+	font-weight: 600;
+	border: none;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	min-width: 100px;
+}
+
+.confirm-btn.cancel {
+	background-color: #4a5568;
+	color: #e0e0e0;
+}
+
+.confirm-btn.cancel:hover {
+	background-color: #5a6578;
+}
+
+.confirm-btn.confirm {
+	background-color: rgba(255, 255, 255, 0.2);
+	color: #ffffff;
+	border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.confirm-btn.confirm:hover {
+	background-color: rgba(255, 255, 255, 0.3);
+	border-color: rgba(255, 255, 255, 0.7);
 }
 
 @keyframes fadeIn {

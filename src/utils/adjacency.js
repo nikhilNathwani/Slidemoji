@@ -48,7 +48,11 @@ export const ADJACENCY_MAPS = {
  * @returns {boolean} True if positions are adjacent
  */
 export function isAdjacent(index1, index2, size) {
-	return ADJACENCY_MAPS[size][index1].has(index2);
+	const adjacencyMap = ADJACENCY_MAPS[size];
+	if (!adjacencyMap || !adjacencyMap[index1]) {
+		return false;
+	}
+	return adjacencyMap[index1].has(index2);
 }
 
 /**
