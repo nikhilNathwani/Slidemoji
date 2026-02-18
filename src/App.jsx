@@ -8,6 +8,7 @@ function App() {
 	const [showSettings, setShowSettings] = useState(false);
 	const [showWinDialog, setShowWinDialog] = useState(false);
 	const [boardKey, setBoardKey] = useState(0);
+	const [showNumbers, setShowNumbers] = useState(true); // Default to showing numbers
 
 	const handleWin = () => {
 		setShowWinDialog(true);
@@ -32,7 +33,12 @@ function App() {
 				>
 					⚙️ Settings
 				</button>
-				<Board key={boardKey} size={gridSize} onWin={handleWin} />
+				<Board
+					key={boardKey}
+					size={gridSize}
+					onWin={handleWin}
+					showNumbers={showNumbers}
+				/>
 			</main>
 
 			<Dialog
@@ -43,6 +49,8 @@ function App() {
 				<SettingsContent
 					selectedSize={gridSize}
 					onSizeChange={setGridSize}
+					showNumbers={showNumbers}
+					onShowNumbersChange={setShowNumbers}
 				/>
 			</Dialog>
 
@@ -57,22 +65,53 @@ function App() {
 	);
 }
 
-function SettingsContent({ selectedSize, onSizeChange }) {
-	const sizes = [2, 3, 4];
+function SettingsContent({
+	selectedSize,
+	onSizeChange,
+	showNumbers,
+	onShowNumbersChange,
+}) {
+	const difficulties = [
+		{ size: 3, label: "Normal", display: "3×3" },
+		{ size: 4, label: "Hard", display: "4×4" },
+	];
 
 	return (
 		<div className="settings-content">
-			<div className="size-selector">
-				<label>Grid Size: </label>
-				{sizes.map((size) => (
-					<button
-						key={size}
-						className={selectedSize === size ? "active" : ""}
-						onClick={() => onSizeChange(size)}
-					>
-						{size}×{size}
-					</button>
-				))}
+			<div className="settings-item">
+				<label className="settings-label">Difficulty</label>
+				<div className="difficulty-selector">
+					{difficulties.map((diff) => (
+						<button
+							key={diff.size}
+							className={
+								selectedSize === diff.size
+									? "difficulty-btn active"
+									: "difficulty-btn"
+							}
+							onClick={() => onSizeChange(diff.size)}
+						>
+							<span className="difficulty-label">
+								{diff.label}
+							</span>
+							<span className="difficulty-size">
+								{diff.display}
+							</span>
+						</button>
+					))}
+				</div>
+			</div>
+			<div className="settings-item">
+				<label className="settings-label">Show Numbers</label>
+				<button
+					className={`toggle-switch ${showNumbers ? "on" : "off"}`}
+					onClick={() => onShowNumbersChange(!showNumbers)}
+				>
+					<span className="toggle-slider"></span>
+					<span className="toggle-label">
+						{showNumbers ? "ON" : "OFF"}
+					</span>
+				</button>
 			</div>
 		</div>
 	);

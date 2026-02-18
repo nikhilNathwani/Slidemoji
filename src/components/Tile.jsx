@@ -1,20 +1,26 @@
-function Tile({ value, isGap, isAdjacentToGap, onClick }) {
+import { forwardRef } from "react";
+
+const Tile = forwardRef(function Tile(
+	{ value, isGap, isAdjacentToGap, onClick, showNumbers },
+	ref,
+) {
 	if (isGap) {
-		return <div className="tile gap" onClick={onClick}></div>;
+		return <div ref={ref} className="tile gap" onClick={onClick}></div>;
 	}
 
 	return (
 		<div
+			ref={ref}
 			className={`tile${isAdjacentToGap ? " clickable" : ""}`}
 			onClick={onClick}
 			style={{
 				cursor: isAdjacentToGap ? "pointer" : "default",
 			}}
 		>
-			{value}
+			{showNumbers ? value : ""}
 		</div>
 	);
-}
+});
 
 export default Tile;
 

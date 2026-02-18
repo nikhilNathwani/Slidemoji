@@ -1,0 +1,15 @@
+{
+	"name": "Slidemoji",
+	"short_name": "Slidemoji",
+	"icons": [
+		{
+			"src": "/app-icon.svg",
+			"sizes": "512x512",
+			"type": "image/svg+xml",
+			"purpose": "any maskable"
+		}
+	],
+	"theme_color": "#ffffff",
+	"background_color": "#ffffff",
+	"display": "standalone"
+}

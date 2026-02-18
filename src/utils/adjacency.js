@@ -1,13 +1,6 @@
 // Static adjacency maps for each board size
 // Maps each position to a Set of adjacent positions
 
-export const ADJACENCY_MAP_2X2 = {
-	0: new Set([1, 2]),
-	1: new Set([0, 3]),
-	2: new Set([0, 3]),
-	3: new Set([1, 2]),
-};
-
 export const ADJACENCY_MAP_3X3 = {
 	0: new Set([1, 3]),
 	1: new Set([0, 2, 4]),
@@ -41,7 +34,6 @@ export const ADJACENCY_MAP_4X4 = {
 
 // Map from size to adjacency map
 export const ADJACENCY_MAPS = {
-	2: ADJACENCY_MAP_2X2,
 	3: ADJACENCY_MAP_3X3,
 	4: ADJACENCY_MAP_4X4,
 };
@@ -52,7 +44,7 @@ export const ADJACENCY_MAPS = {
  * Check if two positions are adjacent on a board of given size
  * @param {number} index1 - First position index
  * @param {number} index2 - Second position index
- * @param {number} size - Board size (2, 3, or 4)
+ * @param {number} size - Board size (3 or 4)
  * @returns {boolean} True if positions are adjacent
  */
 export function isAdjacent(index1, index2, size) {
@@ -62,7 +54,7 @@ export function isAdjacent(index1, index2, size) {
 /**
  * Get all adjacent positions for a given position
  * @param {number} index - Position index
- * @param {number} size - Board size (2, 3, or 4)
+ * @param {number} size - Board size (3 or 4)
  * @returns {number[]} Array of adjacent position indices
  */
 export function getAdjacentIndices(index, size) {
