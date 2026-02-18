@@ -279,14 +279,8 @@ function Board({ size, onWin, showNumbers }) {
 							onTouchStart={handleTouchStart}
 							onTouchEnd={(e) => handleTouchEnd(e, index)}
 							showNumbers={showNumbers}
-							style={{
-								position: "absolute",
-								left: `${position.x}px`,
-								top: `${position.y}px`,
-								width: `${tileSizePx}px`,
-								height: `${tileSizePx}px`,
-								transition: "all 1s ease-out",
-							}}
+							position={position}
+							size={tileSizePx}
 						/>
 					);
 				})}

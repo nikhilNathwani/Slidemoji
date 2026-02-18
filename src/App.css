@@ -10,6 +10,11 @@ html {
 	position: fixed;
 	width: 100%;
 	height: 100%;
+	background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+	color: #e0e0e0;
+	font-family:
+		-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+		Arial, sans-serif;
 }
 
 .app {
@@ -19,50 +24,67 @@ html {
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	padding: 20px;
+	padding: 15px;
+	gap: 15px;
 	overflow-y: auto;
 	-webkit-overflow-scrolling: touch;
 }
 
 .app header {
 	text-align: center;
-	margin-bottom: 30px;
+}
+
+.app header h1 {
+	font-family:
+		"Comic Sans MS", "Chalkboard SE", "Comic Neue", cursive, sans-serif;
+	font-size: 3rem;
+	margin: 0;
+	color: #ffd700;
+	text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+	letter-spacing: 2px;
+}
+
+.subtitle {
+	font-size: 1rem;
+	color: #b0b0b0;
+	margin-top: 5px;
 }
 
 .app main {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	gap: 15px;
 }
 
-/* body {
-	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-	min-height: 100vh;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-} */
-
 .tile {
-	background-color: #fff;
-	border: 1px solid #cbd5e0;
+	background-color: #2d3748;
+	border: 1px solid #4a5568;
+	color: #ffd700;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	font-size: 2rem;
+	font-weight: bold;
 	user-select: none;
 	box-sizing: border-box;
-	transition: all 1s ease-out; /* Smooth animation for position changes */
-	will-change: left, top; /* Optimize for position animations */
+	transition:
+		left 1s ease-out,
+		top 1s ease-out;
+	will-change: left, top;
+	cursor: default;
 }
 
 .tile.clickable {
-	/* No hover transform on mobile to prevent issues */
+	cursor: pointer;
 }
 
 .tile.clickable:active {
 	transform: scale(0.95);
+	transition:
+		left 1s ease-out,
+		top 1s ease-out,
+		transform 0.1s ease-out;
 }
 
 .gap {
@@ -71,14 +93,37 @@ html {
 }
 
 .board {
-	/* Size controlled by inline styles in Board.jsx */
-	background-color: #2d3748;
+	background-color: #1a1a2e;
 	padding: 0;
 	margin: 0 auto;
-	box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-	position: relative; /* For absolute positioned tiles */
+	box-shadow: 0 8px 24px rgba(255, 215, 0, 0.15);
+	position: relative;
 	overflow: hidden;
-	touch-action: none; /* Prevent default touch behaviors like scroll */
+	touch-action: none;
+	border: 2px solid #4a5568;
+	border-radius: 8px;
+}
+
+/* Puzzle of the Day */
+.puzzle-of-day {
+	text-align: center;
+	padding: 10px;
+	background-color: rgba(255, 215, 0, 0.1);
+	border-radius: 8px;
+	border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.puzzle-title {
+	font-size: 0.9rem;
+	font-weight: 600;
+	color: #ffd700;
+	margin-bottom: 8px;
+	letter-spacing: 1px;
+}
+
+.puzzle-emoji {
+	font-size: 2.5rem;
+	line-height: 1;
 }
 
 .emoji-preview {
@@ -89,7 +134,7 @@ html {
 .emoji-preview p {
 	margin-bottom: 5px;
 	font-size: 0.9rem;
-	color: #666;
+	color: #b0b0b0;
 }
 
 .preview-emoji {
@@ -112,7 +157,7 @@ html {
 	left: 0;
 	right: 0;
 	bottom: 0;
-	background-color: rgba(0, 0, 0, 0.6);
+	background-color: rgba(0, 0, 0, 0.8);
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -121,14 +166,16 @@ html {
 }
 
 .dialog-content {
-	background: white;
+	background: #2d3748;
+	color: #e0e0e0;
 	border-radius: 12px;
 	padding: 0;
 	min-width: 300px;
 	max-width: 500px;
 	max-height: 80vh;
 	overflow: auto;
-	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+	border: 1px solid #4a5568;
 	animation: slideUp 0.3s ease;
 }
 
@@ -137,13 +184,13 @@ html {
 	justify-content: space-between;
 	align-items: center;
 	padding: 20px 24px;
-	border-bottom: 1px solid #e5e7eb;
+	border-bottom: 1px solid #4a5568;
 }
 
 .dialog-header h2 {
 	margin: 0;
 	font-size: 1.5rem;
-	color: #1f2937;
+	color: #ffd700;
 }
 
 .dialog-close {
@@ -163,8 +210,8 @@ html {
 }
 
 .dialog-close:hover {
-	background-color: #f3f4f6;
-	color: #1f2937;
+	background-color: #4a5568;
+	color: #e0e0e0;
 }
 
 .dialog-body {
@@ -174,17 +221,16 @@ html {
 .settings-button {
 	padding: 8px 16px;
 	font-size: 1rem;
-	background-color: #667eea;
-	color: white;
-	border: none;
+	background-color: #4a5568;
+	color: #ffd700;
+	border: 1px solid #ffd700;
 	border-radius: 6px;
 	cursor: pointer;
 	transition: all 0.2s ease;
-	margin-bottom: 20px;
 }
 
 .settings-button:hover {
-	background-color: #5568d3;
+	background-color: rgba(255, 215, 0, 0.2);
 	transform: translateY(-2px);
 }
 
@@ -205,7 +251,7 @@ html {
 .settings-label {
 	font-weight: 600;
 	font-size: 1rem;
-	color: #1f2937;
+	color: #e0e0e0;
 }
 
 /* Difficulty Selector */
@@ -216,8 +262,9 @@ html {
 
 .difficulty-btn {
 	padding: 10px 16px;
-	border: 2px solid #e5e7eb;
-	background-color: #fff;
+	border: 2px solid #4a5568;
+	background-color: #1a1a2e;
+	color: #e0e0e0;
 	border-radius: 8px;
 	cursor: pointer;
 	transition: all 0.2s ease;
@@ -229,14 +276,14 @@ html {
 }
 
 .difficulty-btn:hover {
-	border-color: #667eea;
-	background-color: #f9fafb;
+	border-color: #ffd700;
+	background-color: rgba(255, 215, 0, 0.1);
 }
 
 .difficulty-btn.active {
-	background-color: #667eea;
-	border-color: #667eea;
-	color: white;
+	background-color: rgba(255, 215, 0, 0.2);
+	border-color: #ffd700;
+	color: #ffd700;
 }
 
 .difficulty-label {
@@ -254,7 +301,7 @@ html {
 	position: relative;
 	width: 60px;
 	height: 30px;
-	background-color: #e5e7eb;
+	background-color: #4a5568;
 	border: none;
 	border-radius: 15px;
 	cursor: pointer;
@@ -263,7 +310,7 @@ html {
 }
 
 .toggle-switch.on {
-	background-color: #667eea;
+	background-color: rgba(255, 215, 0, 0.6);
 }
 
 .toggle-slider {
@@ -288,17 +335,18 @@ html {
 	transform: translateY(-50%);
 	font-size: 0.7rem;
 	font-weight: 600;
-	color: white;
+	color: #e0e0e0;
 	pointer-events: none;
 }
 
 .toggle-switch.on .toggle-label {
 	left: 8px;
+	color: #1a1a2e;
 }
 
 .toggle-switch.off .toggle-label {
 	right: 6px;
-	color: #6b7280;
+	color: #9ca3af;
 }
 
 .win-dialog-content {
@@ -312,12 +360,12 @@ html {
 
 .win-dialog-content h3 {
 	font-size: 1.8rem;
-	color: #1f2937;
+	color: #ffd700;
 	margin-bottom: 10px;
 }
 
 .win-dialog-content p {
-	color: #6b7280;
+	color: #b0b0b0;
 	font-size: 1.1rem;
 }
 
@@ -338,5 +386,33 @@ html {
 	to {
 		transform: translateY(0);
 		opacity: 1;
+	}
+}
+
+/* Mobile Responsive */
+@media (max-width: 600px) {
+	.app {
+		padding: 10px;
+		gap: 10px;
+	}
+
+	.app header h1 {
+		font-size: 2rem;
+	}
+
+	.subtitle {
+		font-size: 0.85rem;
+	}
+
+	.puzzle-title {
+		font-size: 0.8rem;
+	}
+
+	.puzzle-emoji {
+		font-size: 2rem;
+	}
+
+	.tile {
+		font-size: 1.5rem;
 	}
 }

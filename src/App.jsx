@@ -24,9 +24,13 @@ function App() {
 		<div className="app">
 			<header>
 				<h1>Slidemoji</h1>
-				<p>Slides tiles to unscramble the emoji!</p>
+				<p className="subtitle">Slide tiles to unscramble the emoji!</p>
 			</header>
 			<main>
+				<div className="puzzle-of-day">
+					<div className="puzzle-title">Slidemoji #001</div>
+					<div className="puzzle-emoji">🛝</div>
+				</div>
 				<button
 					className="settings-button"
 					onClick={() => setShowSettings(true)}

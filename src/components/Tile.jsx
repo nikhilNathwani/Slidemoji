@@ -6,8 +6,17 @@ function Tile({
 	onTouchStart,
 	onTouchEnd,
 	showNumbers,
-	style,
+	position,
+	size,
 }) {
+	const style = {
+		position: "absolute",
+		left: `${position.x}px`,
+		top: `${position.y}px`,
+		width: `${size}px`,
+		height: `${size}px`,
+	};
+
 	if (isGap) {
 		return <div className="tile gap" style={style} onClick={onClick}></div>;
 	}
@@ -18,10 +27,7 @@ function Tile({
 			onClick={onClick}
 			onTouchStart={onTouchStart}
 			onTouchEnd={onTouchEnd}
-			style={{
-				...style,
-				cursor: isAdjacentToGap ? "pointer" : "default",
-			}}
+			style={style}
 		>
 			{showNumbers ? value : ""}
 		</div>
