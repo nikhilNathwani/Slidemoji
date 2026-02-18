@@ -1,14 +1,8 @@
-import {
-	useEffect,
-	useState,
-	useRef,
-	useCallback,
-	useLayoutEffect,
-} from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import Tile from "./Tile";
 import { isAdjacent, getAdjacentIndices } from "../utils/adjacency";
 
-// ===== Helper Functions (outside component) =====
+// ===== Helper Functions =====
 
 function getSolvedState(size) {
 	return [...Array(size * size - 1)].map((_, i) => i + 1).concat(null);
@@ -36,7 +30,6 @@ function scramblePuzzle(size, numMoves = 100) {
 		const validMoves = getAdjacentIndices(gapIndex, size);
 		const randomMove =
 			validMoves[Math.floor(Math.random() * validMoves.length)];
-
 		[tiles[gapIndex], tiles[randomMove]] = [
 			tiles[randomMove],
 			tiles[gapIndex],
@@ -47,49 +40,31 @@ function scramblePuzzle(size, numMoves = 100) {
 	return tiles;
 }
 
-// ===== FLIP Animation Helpers =====
-
-function captureTilePositions(tileElement, gapElement) {
-	const tileRect = tileElement.getBoundingClientRect();
-	const gapRect = gapElement.getBoundingClientRect();
-	let deltaX = gapRect.left - tileRect.left;
-	let deltaY = gapRect.top - tileRect.top;
-
-	// Snap very small deltas to 0 to prevent wobble from subpixel rendering differences
-	const SNAP_THRESHOLD = 5; // pixels
-	if (Math.abs(deltaX) < SNAP_THRESHOLD) deltaX = 0;
-	if (Math.abs(deltaY) < SNAP_THRESHOLD) deltaY = 0;
-
-	console.log("📏 CAPTURE POSITIONS:");
-	console.log(
-		`  Tile: left=${tileRect.left.toFixed(2)}, top=${tileRect.top.toFixed(2)}`,
-	);
-	console.log(
-		`  Gap:  left=${gapRect.left.toFixed(2)}, top=${gapRect.top.toFixed(2)}`,
-	);
-	console.log(`  Delta (raw): x=${(gapRect.left - tileRect.left).toFixed(2)}, y=${(gapRect.top - tileRect.top).toFixed(2)}`);
-	console.log(`  Delta (snapped): x=${deltaX.toFixed(2)}, y=${deltaY.toFixed(2)}`);
-
-	return { deltaX, deltaY };
+// Calculate tile position based on index
+function getTilePosition(index, size, tileSizePx) {
+	const row = Math.floor(index / size);
+	const col = index % size;
+	return {
+		x: col * tileSizePx,
+		y: row * tileSizePx,
+	};
 }
 
-// ===== Keyboard Control Helpers =====
-
+// Get tile index from direction for keyboard controls
 function getTileIndexFromDirection(gapIndex, direction, size) {
 	const gapRow = Math.floor(gapIndex / size);
 	const gapCol = gapIndex % size;
 
 	const directionMap = {
-		ArrowUp: { row: gapRow + 1, col: gapCol }, // Tile below gap moves up
-		ArrowDown: { row: gapRow - 1, col: gapCol }, // Tile above gap moves down
-		ArrowLeft: { row: gapRow, col: gapCol + 1 }, // Tile right of gap moves left
-		ArrowRight: { row: gapRow, col: gapCol - 1 }, // Tile left of gap moves right
+		ArrowUp: { row: gapRow + 1, col: gapCol },
+		ArrowDown: { row: gapRow - 1, col: gapCol },
+		ArrowLeft: { row: gapRow, col: gapCol + 1 },
+		ArrowRight: { row: gapRow, col: gapCol - 1 },
 	};
 
 	const target = directionMap[direction];
 	if (!target) return null;
 
-	// Check bounds
 	if (
 		target.row < 0 ||
 		target.row >= size ||
@@ -105,11 +80,19 @@ function getTileIndexFromDirection(gapIndex, direction, size) {
 // ===== Main Component =====
 
 function Board({ size, onWin, showNumbers }) {
-	// ===== State & Effects =====
 	const [tiles, setTiles] = useState(() => scramblePuzzle(size));
 	const [isWon, setIsWon] = useState(false);
-	const tileRefs = useRef({});
-	const animationQueue = useRef(null);
+	const boardRef = useRef(null);
+	const touchStartRef = useRef(null);
+
+	// Responsive sizing
+	const getResponsiveBoardSize = useCallback(() => {
+		const maxSize = Math.min(window.innerWidth - 40, 480);
+		return maxSize;
+	}, []);
+
+	const [boardSizePx, setBoardSizePx] = useState(getResponsiveBoardSize());
+	const tileSizePx = boardSizePx / size;
 
 	// Reset board when size changes
 	useEffect(() => {
@@ -117,72 +100,25 @@ function Board({ size, onWin, showNumbers }) {
 		setIsWon(false);
 	}, [size]);
 
-	// FLIP animation using useLayoutEffect (fires BEFORE browser paints)
-	useLayoutEffect(() => {
-		if (!animationQueue.current) return;
+	// Handle window resize
+	useEffect(() => {
+		const handleResize = () => {
+			setBoardSizePx(getResponsiveBoardSize());
+		};
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, [getResponsiveBoardSize]);
 
-		const { gapIndex, deltaX, deltaY } = animationQueue.current;
-
-		console.log("🎬 ANIMATION START:");
-		console.log(`  Will invert by: translate(${-deltaX}px, ${-deltaY}px)`);
-
-		// The tile is now at the gap position in the DOM
-		const movedTile = tileRefs.current[gapIndex];
-
-		if (movedTile) {
-			const beforeRect = movedTile.getBoundingClientRect();
-			console.log(
-				`  ⏮️  BEFORE invert: left=${beforeRect.left.toFixed(2)}, top=${beforeRect.top.toFixed(2)}`,
-			);
-
-			// Invert: Move tile back to starting position (no transition)
-			movedTile.style.transition = "none";
-			movedTile.style.transform = `translate(${-deltaX}px, ${-deltaY}px)`;
-
-			// Force reflow to apply transform before animation
-			movedTile.offsetHeight;
-
-			const afterInvertRect = movedTile.getBoundingClientRect();
-			console.log(
-				`  ↩️  AFTER invert: left=${afterInvertRect.left.toFixed(2)}, top=${afterInvertRect.top.toFixed(2)}`,
-			);
-
-			// Play: Use RAF to start animation on next frame
-			requestAnimationFrame(() => {
-				movedTile.style.transition = "transform 0.3s linear";
-				movedTile.style.transform = "translate(0, 0)";
-
-				console.log(`  ▶️  ANIMATING to translate(0, 0)`);
-
-				// Clean up after animation
-				setTimeout(() => {
-					movedTile.style.transition = "";
-					movedTile.style.transform = "";
-					const finalRect = movedTile.getBoundingClientRect();
-					console.log(
-						`  ✅ FINAL: left=${finalRect.left.toFixed(2)}, top=${finalRect.top.toFixed(2)}`,
-					);
-					console.log("─".repeat(60));
-				}, 300);
-			});
-		}
-
-		// Clear the queue
-		animationQueue.current = null;
-	}, [tiles]); // Re-run when tiles change
-
-	// Show win dialog after render completes
+	// Show win dialog
 	useEffect(() => {
 		if (isWon && onWin) {
 			onWin();
 		}
 	}, [isWon, onWin]);
 
-	// ===== Derived Values =====
-	const gapIndex = getGapIndex(tiles);
-	const boardSizePx = 480;
-
 	// ===== Movement Logic =====
+	const gapIndex = getGapIndex(tiles);
+
 	const moveTile = useCallback(
 		(tileIndex) => {
 			if (isWon) return;
@@ -191,41 +127,23 @@ function Board({ size, onWin, showNumbers }) {
 			const gapIndex = getGapIndex(tiles);
 			if (!isAdjacent(gapIndex, tileIndex, size)) return;
 
-			const tileElement = tileRefs.current[tileIndex];
-			const gapElement = tileRefs.current[gapIndex];
 			const newTiles = swapTiles(tiles, tileIndex, gapIndex);
 
-			// Check for win
 			if (checkWin(newTiles, getSolvedState(size))) {
-				setTiles(newTiles);
 				setIsWon(true);
-				return; // No animation on win
 			}
 
-			// Animate if we have refs, otherwise just update state
-			if (tileElement && gapElement) {
-				const { deltaX, deltaY } = captureTilePositions(
-					tileElement,
-					gapElement,
-				);
-
-				// Queue animation data for useLayoutEffect
-				animationQueue.current = {
-					tileIndex,
-					gapIndex,
-					deltaX,
-					deltaY,
-				};
-
-				// Update state (will trigger useLayoutEffect)
-				setTiles(newTiles);
-			} else {
-				setTiles(newTiles);
-			}
+			setTiles(newTiles);
 		},
 		[tiles, isWon, size],
 	);
 
+	// ===== Event Handlers =====
+	const handleTileClick = (index) => {
+		moveTile(index);
+	};
+
+	// Keyboard controls
 	const handleKeyPress = useCallback(
 		(event) => {
 			const arrowKeys = [
@@ -236,7 +154,7 @@ function Board({ size, onWin, showNumbers }) {
 			];
 			if (!arrowKeys.includes(event.key)) return;
 
-			event.preventDefault(); // Prevent page scrolling
+			event.preventDefault();
 
 			const gapIndex = getGapIndex(tiles);
 			const tileIndex = getTileIndexFromDirection(
@@ -252,18 +170,82 @@ function Board({ size, onWin, showNumbers }) {
 		[tiles, size, moveTile],
 	);
 
-	// ===== Event Handlers =====
-	const handleTileClick = (index) => {
-		moveTile(index);
-	};
-
-	// Keyboard controls
 	useEffect(() => {
 		window.addEventListener("keydown", handleKeyPress);
-		return () => {
-			window.removeEventListener("keydown", handleKeyPress);
-		};
+		return () => window.removeEventListener("keydown", handleKeyPress);
 	}, [handleKeyPress]);
+
+	// Touch/swipe controls
+	const handleTouchStart = (e) => {
+		const touch = e.touches[0];
+		touchStartRef.current = {
+			x: touch.clientX,
+			y: touch.clientY,
+			time: Date.now(),
+		};
+	};
+
+	const handleTouchEnd = (e, tileIndex) => {
+		if (!touchStartRef.current) return;
+
+		const touch = e.changedTouches[0];
+		const deltaX = touch.clientX - touchStartRef.current.x;
+		const deltaY = touch.clientY - touchStartRef.current.y;
+		const deltaTime = Date.now() - touchStartRef.current.time;
+
+		// Require minimum swipe distance and speed
+		const minSwipeDistance = 30;
+		const maxSwipeTime = 500;
+
+		if (deltaTime > maxSwipeTime) {
+			touchStartRef.current = null;
+			return;
+		}
+
+		const absX = Math.abs(deltaX);
+		const absY = Math.abs(deltaY);
+
+		if (absX < minSwipeDistance && absY < minSwipeDistance) {
+			// Not a swipe, treat as click
+			handleTileClick(tileIndex);
+			touchStartRef.current = null;
+			return;
+		}
+
+		// Determine swipe direction
+		let direction;
+		if (absX > absY) {
+			direction = deltaX > 0 ? "ArrowRight" : "ArrowLeft";
+		} else {
+			direction = deltaY > 0 ? "ArrowDown" : "ArrowUp";
+		}
+
+		// Check if tile can move in that direction (opposite of gap direction)
+		const tileRow = Math.floor(tileIndex / size);
+		const tileCol = tileIndex % size;
+		const gapRow = Math.floor(gapIndex / size);
+		const gapCol = gapIndex % size;
+
+		const canMove =
+			(direction === "ArrowUp" &&
+				tileRow === gapRow + 1 &&
+				tileCol === gapCol) ||
+			(direction === "ArrowDown" &&
+				tileRow === gapRow - 1 &&
+				tileCol === gapCol) ||
+			(direction === "ArrowLeft" &&
+				tileCol === gapCol + 1 &&
+				tileRow === gapRow) ||
+			(direction === "ArrowRight" &&
+				tileCol === gapCol - 1 &&
+				tileRow === gapRow);
+
+		if (canMove) {
+			moveTile(tileIndex);
+		}
+
+		touchStartRef.current = null;
+	};
 
 	const handleSolve = () => {
 		setTiles(getSolvedState(size));
@@ -274,29 +256,40 @@ function Board({ size, onWin, showNumbers }) {
 	return (
 		<>
 			<div
+				ref={boardRef}
 				className="board"
 				style={{
 					width: `${boardSizePx}px`,
 					height: `${boardSizePx}px`,
-					display: "grid",
-					gridTemplateColumns: `repeat(${size}, 1fr)`,
-					gridTemplateRows: `repeat(${size}, 1fr)`,
-				gap: "0px",
+					position: "relative",
 				}}
 			>
-				{tiles.slice(0, size * size).map((value, index) => (
-					<Tile
-						key={index}
-						ref={(el) => (tileRefs.current[index] = el)}
-						value={value}
-						isGap={value === null}
-						isAdjacentToGap={
-							gapIndex >= 0 && isAdjacent(index, gapIndex, size)
-						}
-						onClick={() => handleTileClick(index)}
-						showNumbers={showNumbers}
-					/>
-				))}
+				{tiles.map((value, index) => {
+					const position = getTilePosition(index, size, tileSizePx);
+					return (
+						<Tile
+							key={`${index}-${value}`}
+							value={value}
+							isGap={value === null}
+							isAdjacentToGap={
+								gapIndex >= 0 &&
+								isAdjacent(index, gapIndex, size)
+							}
+							onClick={() => handleTileClick(index)}
+							onTouchStart={handleTouchStart}
+							onTouchEnd={(e) => handleTouchEnd(e, index)}
+							showNumbers={showNumbers}
+							style={{
+								position: "absolute",
+								left: `${position.x}px`,
+								top: `${position.y}px`,
+								width: `${tileSizePx}px`,
+								height: `${tileSizePx}px`,
+								transition: "all 1s ease-out",
+							}}
+						/>
+					);
+				})}
 			</div>
 			<SolveButton onClick={handleSolve} />
 		</>
