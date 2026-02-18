@@ -1,87 +1,25 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import Tile from "./Tile";
-import { isAdjacent, getAdjacentIndices } from "../utils/adjacency";
+import { isAdjacent } from "../utils/adjacency";
+import {
+	getSolvedState,
+	getGapIndex,
+	swapTiles,
+	checkWin,
+	scramblePuzzle,
+	getTilePosition,
+	getTileIndexFromDirection,
+} from "../utils/boardHelpers";
 
-// ===== Helper Functions =====
-
-function getSolvedState(size) {
-	return [...Array(size * size - 1)].map((_, i) => i + 1).concat(null);
-}
-
-function getGapIndex(tiles) {
-	return tiles.indexOf(null);
-}
-
-function swapTiles(tiles, index1, index2) {
-	const newTiles = [...tiles];
-	[newTiles[index1], newTiles[index2]] = [newTiles[index2], newTiles[index1]];
-	return newTiles;
-}
-
-function checkWin(tiles, solvedState) {
-	return tiles.every((tile, index) => tile === solvedState[index]);
-}
-
-function scramblePuzzle(size, numMoves = 100) {
-	let tiles = [...getSolvedState(size)];
-	let gapIndex = getGapIndex(tiles);
-
-	for (let i = 0; i < numMoves; i++) {
-		const validMoves = getAdjacentIndices(gapIndex, size);
-		const randomMove =
-			validMoves[Math.floor(Math.random() * validMoves.length)];
-		[tiles[gapIndex], tiles[randomMove]] = [
-			tiles[randomMove],
-			tiles[gapIndex],
-		];
-		gapIndex = randomMove;
-	}
-
-	return tiles;
-}
-
-// Calculate tile position based on index
-function getTilePosition(index, size, tileSizePx) {
-	const row = Math.floor(index / size);
-	const col = index % size;
-	return {
-		x: col * tileSizePx,
-		y: row * tileSizePx,
-	};
-}
-
-// Get tile index from direction for keyboard controls
-function getTileIndexFromDirection(gapIndex, direction, size) {
-	const gapRow = Math.floor(gapIndex / size);
-	const gapCol = gapIndex % size;
-
-	const directionMap = {
-		ArrowUp: { row: gapRow + 1, col: gapCol },
-		ArrowDown: { row: gapRow - 1, col: gapCol },
-		ArrowLeft: { row: gapRow, col: gapCol + 1 },
-		ArrowRight: { row: gapRow, col: gapCol - 1 },
-	};
-
-	const target = directionMap[direction];
-	if (!target) return null;
-
-	if (
-		target.row < 0 ||
-		target.row >= size ||
-		target.col < 0 ||
-		target.col >= size
-	) {
-		return null;
-	}
-
-	return target.row * size + target.col;
-}
+// ===== Constants =====
+const ANIMATION_DURATION_MS = 1000; // Must match CSS transition duration
 
 // ===== Main Component =====
 
 function Board({ size, onWin, showNumbers, onSolveRef, onShuffleRef }) {
 	const [tiles, setTiles] = useState(() => scramblePuzzle(size));
 	const [isWon, setIsWon] = useState(false);
+	const [movingTileValue, setMovingTileValue] = useState(null);
 	const boardRef = useRef(null);
 	const touchStartRef = useRef(null);
 	const isAnimating = useRef(false);
@@ -149,28 +87,78 @@ function Board({ size, onWin, showNumbers, onSolveRef, onShuffleRef }) {
 
 	const moveTile = useCallback(
 		(tileIndex) => {
-			if (isWon) return;
-			if (isAnimating.current) return;
-			if (tiles[tileIndex] === null) return;
+			console.log("\n=== moveTile called ===");
+			console.log("tileIndex:", tileIndex);
+			console.log("tile value:", tiles[tileIndex]);
+			console.log("isWon:", isWon);
+			console.log("isAnimating.current:", isAnimating.current);
 
-			const gapIndex = getGapIndex(tiles);
-			if (!isAdjacent(gapIndex, tileIndex, size)) return;
-
-			isAnimating.current = true;
-			const newTiles = swapTiles(tiles, tileIndex, gapIndex);
-
-			if (checkWin(newTiles, getSolvedState(size))) {
-				setIsWon(true);
+			if (isWon) {
+				console.log("❌ BLOCKED: Game is won");
+				return;
+			}
+			if (isAnimating.current) {
+				console.log("❌ BLOCKED: Animation already in progress");
+				return;
+			}
+			if (tiles[tileIndex] === null) {
+				console.log("❌ BLOCKED: Clicked on gap");
+				return;
 			}
 
-			setTiles(newTiles);
+			const gapIndex = getGapIndex(tiles);
+			const adjacent = isAdjacent(gapIndex, tileIndex, size);
+			console.log("gapIndex:", gapIndex);
+			console.log("isAdjacent:", adjacent);
 
-			// Allow next move after animation completes (1s)
-			setTimeout(() => {
-				isAnimating.current = false;
-			}, 1000);
+			if (!adjacent) {
+				console.log("❌ BLOCKED: Tile not adjacent to gap");
+				return;
+			}
+
+			const tileValue = tiles[tileIndex];
+			const oldPosition = getTilePosition(tileIndex, size, tileSizePx);
+			const newPosition = getTilePosition(gapIndex, size, tileSizePx);
+
+			console.log("✅ MOVING TILE");
+			console.log("oldPosition:", oldPosition);
+			console.log("newPosition:", newPosition);
+			console.log("deltaX:", newPosition.x - oldPosition.x);
+			console.log("deltaY:", newPosition.y - oldPosition.y);
+
+			isAnimating.current = true;
+			setMovingTileValue(tileValue);
+
+			console.log("Setting movingTileValue to:", tileValue);
+			console.log("Calling requestAnimationFrame...");
+
+			// Use requestAnimationFrame to ensure the moving class is applied before state change
+			requestAnimationFrame(() => {
+				console.log("Inside requestAnimationFrame - swapping tiles");
+				const newTiles = swapTiles(tiles, tileIndex, gapIndex);
+
+				if (checkWin(newTiles, getSolvedState(size))) {
+					console.log("🎉 PUZZLE SOLVED!");
+					setIsWon(true);
+				}
+
+				setTiles(newTiles);
+
+				console.log(
+					"Tiles swapped, setting timeout for",
+					ANIMATION_DURATION_MS,
+					"ms",
+				);
+
+				// Allow next move after animation completes
+				setTimeout(() => {
+					console.log("Animation complete - resetting flags");
+					isAnimating.current = false;
+					setMovingTileValue(null);
+				}, ANIMATION_DURATION_MS);
+			});
 		},
-		[tiles, isWon, size],
+		[tiles, isWon, size, tileSizePx],
 	);
 
 	// ===== Event Handlers =====
@@ -295,6 +283,7 @@ function Board({ size, onWin, showNumbers, onSolveRef, onShuffleRef }) {
 		>
 			{tiles.map((value, index) => {
 				const position = getTilePosition(index, size, tileSizePx);
+				const isTileMoving = value === movingTileValue;
 				return (
 					<Tile
 						key={value === null ? "gap" : value}
@@ -303,6 +292,7 @@ function Board({ size, onWin, showNumbers, onSolveRef, onShuffleRef }) {
 						isAdjacentToGap={
 							gapIndex >= 0 && isAdjacent(index, gapIndex, size)
 						}
+						isMoving={isTileMoving}
 						onClick={() => handleTileClick(index)}
 						onTouchStart={handleTouchStart}
 						onTouchEnd={(e) => handleTouchEnd(e, index)}

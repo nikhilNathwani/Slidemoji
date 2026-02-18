@@ -90,6 +90,10 @@ html {
 	font-weight: bold;
 	user-select: none;
 	box-sizing: border-box;
+	cursor: default;
+}
+
+.tile.moving {
 	transition:
 		left 1s ease-out,
 		top 1s ease-out;
@@ -100,17 +104,12 @@ html {
 	cursor: pointer;
 }
 
-.tile.clickable:active {
+.tile.clickable:not(.moving):active {
 	transform: scale(0.95);
-	transition:
-		left 1s ease-out,
-		top 1s ease-out,
-		transform 0.1s ease-out;
 }
 
 .gap {
 	opacity: 0;
-	transition: none;
 }
 
 .board {
@@ -197,7 +196,7 @@ html {
 	overflow: auto;
 	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 	border: 1px solid #4a5568;
-	animation: slideUp 0.3s ease;
+	animation: dialogSlideUp 0.3s ease;
 }
 
 .dialog-header {
@@ -449,7 +448,7 @@ html {
 	}
 }
 
-@keyframes slideUp {
+@keyframes dialogSlideUp {
 	from {
 		transform: translateY(20px);
 		opacity: 0;

@@ -2,6 +2,7 @@ function Tile({
 	value,
 	isGap,
 	isAdjacentToGap,
+	isMoving,
 	onClick,
 	onTouchStart,
 	onTouchEnd,
@@ -21,9 +22,13 @@ function Tile({
 		return <div className="tile gap" style={style} onClick={onClick}></div>;
 	}
 
+	// Build className - moving tiles and tiles that are animating should not be clickable
+	const isClickable = isAdjacentToGap && !isMoving;
+	const className = `tile${isClickable ? " clickable" : ""}${isMoving ? " moving" : ""}`;
+
 	return (
 		<div
-			className={`tile${isAdjacentToGap ? " clickable" : ""}`}
+			className={className}
 			onClick={onClick}
 			onTouchStart={onTouchStart}
 			onTouchEnd={onTouchEnd}
