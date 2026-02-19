@@ -131,7 +131,9 @@ function Board({ size, onWin, showNumbers, onSolveRef, onShuffleRef }) {
 	// Validates tile selection and triggers movement if valid
 	// Supports two modes:
 	// 1. Direct tile selection: handleTileSelect(tileIndex, null)
+	//    - Handlers only attached to gap-adjacent tiles, so no need to re-check
 	// 2. Directional movement: handleTileSelect(null, direction)
+	//    - Must validate the tile in that direction exists and is valid
 	const handleTileSelect = useCallback(
 		(tileIndex, direction = null) => {
 			// Validation checks
@@ -164,18 +166,13 @@ function Board({ size, onWin, showNumbers, onSolveRef, onShuffleRef }) {
 					return; // Invalid direction
 				}
 			} else {
-				// Direct tile selection (click/tap)
+				// Direct tile selection (click/tap/drag)
+				// No additional validation needed - handlers only attached to gap-adjacent tiles
 				console.log("[handleTileSelect] Direct selection mode:", {
 					tileIndex,
 					gapIndex,
 				});
 				targetTileIndex = tileIndex;
-				if (tiles[targetTileIndex] === null) {
-					return; // Can't select gap
-				}
-				if (!isAdjacent(gapIndex, targetTileIndex, size)) {
-					return; // Not adjacent
-				}
 			}
 
 			// All checks passed - move the tile
@@ -216,9 +213,10 @@ function Board({ size, onWin, showNumbers, onSolveRef, onShuffleRef }) {
 	}, [handleKeyPress]);
 
 	// Touch/swipe controls
-	const handleTouchStart = (e) => {
+	const handleTouchStart = (e, tileIndex) => {
 		const touch = e.touches[0];
 		touchStartRef.current = {
+			tileIndex,
 			x: touch.clientX,
 			y: touch.clientY,
 			time: Date.now(),
@@ -237,6 +235,12 @@ function Board({ size, onWin, showNumbers, onSolveRef, onShuffleRef }) {
 
 	const handleTouchEnd = (e, tileIndex) => {
 		if (!touchStartRef.current) return;
+
+		// Verify touch ended on same tile it started on
+		if (touchStartRef.current.tileIndex !== tileIndex) {
+			touchStartRef.current = null;
+			return;
+		}
 
 		const touch = e.changedTouches[0];
 		const deltaX = touch.clientX - touchStartRef.current.x;
@@ -319,7 +323,7 @@ function Board({ size, onWin, showNumbers, onSolveRef, onShuffleRef }) {
 						<Gap
 							key="gap"
 							position={position}
-							size={tileSizePx}
+							tileSizePx={tileSizePx}
 							onMouseUp={handleMouseUpOnGap}
 						/>
 					);
@@ -336,10 +340,12 @@ function Board({ size, onWin, showNumbers, onSolveRef, onShuffleRef }) {
 						tileNumber={value}
 						isMoving={isMoving}
 						isClickable={isClickable}
-						onClick={() => handleTileClick(index)}
-						onTouchStart={handleTouchStart}
-						onTouchEnd={(e) => handleTouchEnd(e, index)}
-						onMouseDown={(e) => handleMouseDown(e, index)}
+						{...(isClickable && {
+							onClick: () => handleTileClick(index),
+							onTouchStart: (e) => handleTouchStart(e, index),
+							onTouchEnd: (e) => handleTouchEnd(e, index),
+							onMouseDown: (e) => handleMouseDown(e, index),
+						})}
 						showNumbers={showNumbers}
 						position={position}
 						tileSizePx={tileSizePx}
