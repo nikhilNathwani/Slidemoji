@@ -94,9 +94,7 @@ html {
 }
 
 .tile.moving {
-	transition:
-		left 1s ease-out,
-		top 1s ease-out;
+	transform-origin: center;
 	cursor: default;
 }
 
@@ -121,7 +119,6 @@ html {
 	overflow: hidden;
 	touch-action: none;
 	border: 2px solid #4a5568;
-	border-radius: 8px;
 }
 
 /* Puzzle of the Day */

@@ -21,13 +21,13 @@ export function getGapIndex(tiles) {
 /**
  * Swap two tiles in the array (immutably)
  * @param {Array} tiles - Array of tile values
- * @param {number} index1 - First tile index
- * @param {number} index2 - Second tile index
+ * @param {number} index1 - Index of first tile
+ * @param {number} index2 - Index of second tile
  * @returns {Array} New array with swapped tiles
  */
 export function swapTiles(tiles, index1, index2) {
 	const newTiles = [...tiles];
-	[newTiles[index1], newTiles[index2]] = [newTiles[index2], newTiles[index1]];
+	[newTiles[index1], newTiles[index2]] = [tiles[index2], tiles[index1]];
 	return newTiles;
 }
 
@@ -53,13 +53,14 @@ export function scramblePuzzle(size, numMoves = 100) {
 
 	for (let i = 0; i < numMoves; i++) {
 		const validMoves = getAdjacentIndices(gapIndex, size);
-		const randomMove =
+		const randomMoveIndex =
 			validMoves[Math.floor(Math.random() * validMoves.length)];
-		[tiles[gapIndex], tiles[randomMove]] = [
-			tiles[randomMove],
-			tiles[gapIndex],
-		];
-		gapIndex = randomMove;
+
+		// Explicitly swap gap with random adjacent tile
+		const tileValue = tiles[randomMoveIndex];
+		tiles[randomMoveIndex] = null;
+		tiles[gapIndex] = tileValue;
+		gapIndex = randomMoveIndex;
 	}
 
 	return tiles;

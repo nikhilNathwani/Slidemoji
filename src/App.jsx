@@ -1,7 +1,11 @@
 import { useState, useRef } from "react";
 import "./App.css";
 import Board from "./components/Board";
-import Dialog from "./components/Dialog";
+import Dialog, {
+	SettingsContent,
+	WinContent,
+	ConfirmContent,
+} from "./components/Dialog";
 
 function App() {
 	const [gridSize, setGridSize] = useState(3); // Default to 3×3
@@ -145,84 +149,6 @@ function App() {
 					onCancel={handleDifficultyCancel}
 				/>
 			</Dialog>
-		</div>
-	);
-}
-
-function SettingsContent({
-	selectedSize,
-	onSizeChange,
-	showNumbers,
-	onShowNumbersChange,
-}) {
-	const difficulties = [
-		{ size: 3, label: "Normal", display: "3×3" },
-		{ size: 4, label: "Hard", display: "4×4" },
-	];
-
-	return (
-		<div className="settings-content">
-			<div className="settings-item">
-				<label className="settings-label">Difficulty</label>
-				<div className="difficulty-selector">
-					{difficulties.map((diff) => (
-						<button
-							key={diff.size}
-							className={
-								selectedSize === diff.size
-									? "difficulty-btn active"
-									: "difficulty-btn"
-							}
-							onClick={() => onSizeChange(diff.size)}
-						>
-							<span className="difficulty-label">
-								{diff.label}
-							</span>
-							<span className="difficulty-size">
-								{diff.display}
-							</span>
-						</button>
-					))}
-				</div>
-			</div>
-			<div className="settings-item">
-				<label className="settings-label">Show Numbers</label>
-				<button
-					className={`toggle-switch ${showNumbers ? "on" : "off"}`}
-					onClick={() => onShowNumbersChange(!showNumbers)}
-				>
-					<span className="toggle-slider"></span>
-					<span className="toggle-label">
-						{showNumbers ? "ON" : "OFF"}
-					</span>
-				</button>
-			</div>
-		</div>
-	);
-}
-
-function WinContent() {
-	return (
-		<div className="win-dialog-content">
-			<div className="emoji">🎊</div>
-			<h3>You solved it!</h3>
-			<p>Great job completing the puzzle!</p>
-		</div>
-	);
-}
-
-function ConfirmContent({ message, onConfirm, onCancel }) {
-	return (
-		<div className="confirm-dialog-content">
-			<p>{message}</p>
-			<div className="confirm-buttons">
-				<button className="confirm-btn cancel" onClick={onCancel}>
-					Cancel
-				</button>
-				<button className="confirm-btn confirm" onClick={onConfirm}>
-					Confirm
-				</button>
-			</div>
 		</div>
 	);
 }

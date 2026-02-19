@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import Tile from "./Tile";
+import Gap from "./Gap";
 import { isAdjacent } from "../utils/adjacency";
 import {
 	getSolvedState,
@@ -12,7 +13,7 @@ import {
 } from "../utils/boardHelpers";
 
 // ===== Constants =====
-const ANIMATION_DURATION_MS = 1000; // Must match CSS transition duration
+const ANIMATION_DURATION_MS = 400; // Must match CSS transition duration
 
 // ===== Main Component =====
 
@@ -85,85 +86,78 @@ function Board({ size, onWin, showNumbers, onSolveRef, onShuffleRef }) {
 	// ===== Movement Logic =====
 	const gapIndex = getGapIndex(tiles);
 
+	// Core tile movement function - assumes all validation has passed
 	const moveTile = useCallback(
-		(tileIndex) => {
-			console.log("\n=== moveTile called ===");
-			console.log("tileIndex:", tileIndex);
-			console.log("tile value:", tiles[tileIndex]);
-			console.log("isWon:", isWon);
-			console.log("isAnimating.current:", isAnimating.current);
+		(tileIndex, tileValue, gapIndex) => {
+			const newPosition = getTilePosition(gapIndex, size, tileSizePx);
 
+			isAnimating.current = true;
+
+			// Apply .moving class, then update position after browser paints
+			requestAnimationFrame(() => {
+				setMovingTileValue(tileValue);
+
+				requestAnimationFrame(() => {
+					// Update tile position via DOM (triggers CSS transition)
+					if (boardRef.current) {
+						const movingTileElement =
+							boardRef.current.querySelector(
+								`[data-tile-number="${tileValue}"]`,
+							);
+						if (movingTileElement) {
+							movingTileElement.style.transform = `translate(${newPosition.x}px, ${newPosition.y}px)`;
+						}
+					}
+
+					// Update React state after animation completes
+					const newTiles = swapTiles(tiles, tileIndex, gapIndex);
+
+					setTimeout(() => {
+						if (checkWin(newTiles, getSolvedState(size))) {
+							setIsWon(true);
+						}
+
+						setTiles(newTiles);
+						isAnimating.current = false;
+						setMovingTileValue(null);
+					}, ANIMATION_DURATION_MS);
+				});
+			});
+		},
+		[tiles, size, tileSizePx],
+	);
+
+	// Validates tile selection and triggers movement if valid
+	const handleTileSelect = useCallback(
+		(tileIndex) => {
+			// Validation checks
 			if (isWon) {
-				console.log("❌ BLOCKED: Game is won");
 				return;
 			}
 			if (isAnimating.current) {
-				console.log("❌ BLOCKED: Animation already in progress");
 				return;
 			}
 			if (tiles[tileIndex] === null) {
-				console.log("❌ BLOCKED: Clicked on gap");
 				return;
 			}
 
 			const gapIndex = getGapIndex(tiles);
 			const adjacent = isAdjacent(gapIndex, tileIndex, size);
-			console.log("gapIndex:", gapIndex);
-			console.log("isAdjacent:", adjacent);
 
 			if (!adjacent) {
-				console.log("❌ BLOCKED: Tile not adjacent to gap");
 				return;
 			}
 
+			// All checks passed - move the tile
 			const tileValue = tiles[tileIndex];
-			const oldPosition = getTilePosition(tileIndex, size, tileSizePx);
-			const newPosition = getTilePosition(gapIndex, size, tileSizePx);
-
-			console.log("✅ MOVING TILE");
-			console.log("oldPosition:", oldPosition);
-			console.log("newPosition:", newPosition);
-			console.log("deltaX:", newPosition.x - oldPosition.x);
-			console.log("deltaY:", newPosition.y - oldPosition.y);
-
-			isAnimating.current = true;
-			setMovingTileValue(tileValue);
-
-			console.log("Setting movingTileValue to:", tileValue);
-			console.log("Calling requestAnimationFrame...");
-
-			// Use requestAnimationFrame to ensure the moving class is applied before state change
-			requestAnimationFrame(() => {
-				console.log("Inside requestAnimationFrame - swapping tiles");
-				const newTiles = swapTiles(tiles, tileIndex, gapIndex);
-
-				if (checkWin(newTiles, getSolvedState(size))) {
-					console.log("🎉 PUZZLE SOLVED!");
-					setIsWon(true);
-				}
-
-				setTiles(newTiles);
-
-				console.log(
-					"Tiles swapped, setting timeout for",
-					ANIMATION_DURATION_MS,
-					"ms",
-				);
-
-				// Allow next move after animation completes
-				setTimeout(() => {
-					console.log("Animation complete - resetting flags");
-					isAnimating.current = false;
-					setMovingTileValue(null);
-				}, ANIMATION_DURATION_MS);
-			});
+			moveTile(tileIndex, tileValue, gapIndex);
 		},
-		[tiles, isWon, size, tileSizePx],
+		[tiles, isWon, size, moveTile],
 	);
 
 	// ===== Event Handlers =====
 	const handleTileClick = (index) => {
-		moveTile(index);
+		handleTileSelect(index);
 	};
 
 	// Keyboard controls
@@ -187,10 +181,10 @@ function Board({ size, onWin, showNumbers, onSolveRef, onShuffleRef }) {
 			);
 
 			if (tileIndex !== null) {
-				moveTile(tileIndex);
+				handleTileSelect(tileIndex);
 			}
 		},
-		[tiles, size, moveTile],
+		[tiles, size, handleTileSelect],
 	);
 
 	useEffect(() => {
@@ -283,22 +277,33 @@ function Board({ size, onWin, showNumbers, onSolveRef, onShuffleRef }) {
 		>
 			{tiles.map((value, index) => {
 				const position = getTilePosition(index, size, tileSizePx);
-				const isTileMoving = value === movingTileValue;
+				const isGap = value === null;
+
+				if (isGap) {
+					return (
+						<Gap key="gap" position={position} size={tileSizePx} />
+					);
+				}
+
+				const isMoving = value === movingTileValue;
+				const isClickable =
+					!isWon &&
+					!isAnimating.current &&
+					isAdjacent(gapIndex, index, size);
+
 				return (
 					<Tile
-						key={value === null ? "gap" : value}
-						value={value}
-						isGap={value === null}
-						isAdjacentToGap={
-							gapIndex >= 0 && isAdjacent(index, gapIndex, size)
-						}
-						isMoving={isTileMoving}
+						key={value}
+						tileNumber={value}
+						isMoving={isMoving}
+						isClickable={isClickable}
 						onClick={() => handleTileClick(index)}
 						onTouchStart={handleTouchStart}
 						onTouchEnd={(e) => handleTouchEnd(e, index)}
 						showNumbers={showNumbers}
 						position={position}
 						size={tileSizePx}
+						animationDuration={ANIMATION_DURATION_MS}
 					/>
 				);
 			})}

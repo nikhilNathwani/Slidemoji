@@ -1,29 +1,28 @@
 function Tile({
-	value,
-	isGap,
-	isAdjacentToGap,
+	tileNumber,
 	isMoving,
+	isClickable,
 	onClick,
 	onTouchStart,
 	onTouchEnd,
 	showNumbers,
 	position,
 	size,
+	animationDuration,
 }) {
 	const style = {
 		position: "absolute",
-		left: `${position.x}px`,
-		top: `${position.y}px`,
+		transform: `translate(${position.x}px, ${position.y}px)`,
+		willChange: isMoving ? "transform" : "auto",
 		width: `${size}px`,
 		height: `${size}px`,
 	};
 
-	if (isGap) {
-		return <div className="tile gap" style={style} onClick={onClick}></div>;
+	// Set transition duration dynamically when moving
+	if (isMoving) {
+		style.transition = `transform ${animationDuration}ms ease-out`;
 	}
 
-	// Build className - moving tiles and tiles that are animating should not be clickable
-	const isClickable = isAdjacentToGap && !isMoving;
 	const className = `tile${isClickable ? " clickable" : ""}${isMoving ? " moving" : ""}`;
 
 	return (
@@ -33,8 +32,9 @@ function Tile({
 			onTouchStart={onTouchStart}
 			onTouchEnd={onTouchEnd}
 			style={style}
+			data-tile-number={tileNumber}
 		>
-			{showNumbers ? value : ""}
+			{showNumbers ? tileNumber : ""}
 		</div>
 	);
 }
