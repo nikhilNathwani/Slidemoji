@@ -5,17 +5,18 @@ function Tile({
 	onClick,
 	onTouchStart,
 	onTouchEnd,
+	onMouseDown,
 	showNumbers,
 	position,
-	size,
+	tileSizePx,
 	animationDuration,
 }) {
 	const style = {
 		position: "absolute",
 		transform: `translate(${position.x}px, ${position.y}px)`,
 		willChange: isMoving ? "transform" : "auto",
-		width: `${size}px`,
-		height: `${size}px`,
+		width: `${tileSizePx}px`,
+		height: `${tileSizePx}px`,
 	};
 
 	// Set transition duration dynamically when moving
@@ -31,6 +32,7 @@ function Tile({
 			onClick={onClick}
 			onTouchStart={onTouchStart}
 			onTouchEnd={onTouchEnd}
+			onMouseDown={onMouseDown}
 			style={style}
 			data-tile-number={tileNumber}
 		>

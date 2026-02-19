@@ -23,14 +23,16 @@ function Board({ size, onWin, showNumbers, onSolveRef, onShuffleRef }) {
 	const [movingTileValue, setMovingTileValue] = useState(null);
 	const boardRef = useRef(null);
 	const touchStartRef = useRef(null);
+	const mouseDragRef = useRef(null);
 	const isAnimating = useRef(false);
 	const hasShownWin = useRef(false);
 
 	// Responsive sizing
 	const getResponsiveBoardSize = useCallback(() => {
 		const maxSize = Math.min(window.innerWidth - 40, 480);
-		return maxSize;
-	}, []);
+		// Ensure board size is divisible by grid size to avoid subpixel rendering
+		return Math.floor(maxSize / size) * size;
+	}, [size]);
 
 	const [boardSizePx, setBoardSizePx] = useState(getResponsiveBoardSize());
 	const tileSizePx = boardSizePx / size;
@@ -88,48 +90,50 @@ function Board({ size, onWin, showNumbers, onSolveRef, onShuffleRef }) {
 
 	// Core tile movement function - assumes all validation has passed
 	const moveTile = useCallback(
-		(tileIndex, tileValue, gapIndex) => {
+		(tileIndex, gapIndex) => {
+			const tileValue = tiles[tileIndex];
+			console.log("[moveTile] Moving tile:", {
+				tileIndex,
+				tileValue,
+				gapIndex,
+			});
 			const newPosition = getTilePosition(gapIndex, size, tileSizePx);
 
 			isAnimating.current = true;
+			setMovingTileValue(tileValue);
 
-			// Apply .moving class, then update position after browser paints
-			requestAnimationFrame(() => {
-				setMovingTileValue(tileValue);
+			// Update tile position via DOM (triggers CSS transition)
+			if (boardRef.current) {
+				const movingTileElement = boardRef.current.querySelector(
+					`[data-tile-number="${tileValue}"]`,
+				);
+				if (movingTileElement) {
+					movingTileElement.style.transform = `translate(${newPosition.x}px, ${newPosition.y}px)`;
+				}
+			}
 
-				requestAnimationFrame(() => {
-					// Update tile position via DOM (triggers CSS transition)
-					if (boardRef.current) {
-						const movingTileElement =
-							boardRef.current.querySelector(
-								`[data-tile-number="${tileValue}"]`,
-							);
-						if (movingTileElement) {
-							movingTileElement.style.transform = `translate(${newPosition.x}px, ${newPosition.y}px)`;
-						}
-					}
+			// Update React state after animation completes
+			const newTiles = swapTiles(tiles, tileIndex, gapIndex);
 
-					// Update React state after animation completes
-					const newTiles = swapTiles(tiles, tileIndex, gapIndex);
+			setTimeout(() => {
+				if (checkWin(newTiles, getSolvedState(size))) {
+					setIsWon(true);
+				}
 
-					setTimeout(() => {
-						if (checkWin(newTiles, getSolvedState(size))) {
-							setIsWon(true);
-						}
-
-						setTiles(newTiles);
-						isAnimating.current = false;
-						setMovingTileValue(null);
-					}, ANIMATION_DURATION_MS);
-				});
-			});
+				setTiles(newTiles);
+				isAnimating.current = false;
+				setMovingTileValue(null);
+			}, ANIMATION_DURATION_MS);
 		},
 		[tiles, size, tileSizePx],
 	);
 
 	// Validates tile selection and triggers movement if valid
+	// Supports two modes:
+	// 1. Direct tile selection: handleTileSelect(tileIndex, null)
+	// 2. Directional movement: handleTileSelect(null, direction)
 	const handleTileSelect = useCallback(
-		(tileIndex) => {
+		(tileIndex, direction = null) => {
 			// Validation checks
 			if (isWon) {
 				return;
@@ -137,27 +141,56 @@ function Board({ size, onWin, showNumbers, onSolveRef, onShuffleRef }) {
 			if (isAnimating.current) {
 				return;
 			}
-			if (tiles[tileIndex] === null) {
-				return;
-			}
 
 			const gapIndex = getGapIndex(tiles);
-			const adjacent = isAdjacent(gapIndex, tileIndex, size);
+			let targetTileIndex;
 
-			if (!adjacent) {
-				return;
+			if (direction !== null) {
+				// Direction-based movement (keyboard/swipe)
+				console.log("[handleTileSelect] Direction mode:", {
+					direction,
+					gapIndex,
+				});
+				targetTileIndex = getTileIndexFromDirection(
+					gapIndex,
+					direction,
+					size,
+				);
+				console.log(
+					"[handleTileSelect] Target tile from direction:",
+					targetTileIndex,
+				);
+				if (targetTileIndex === null) {
+					return; // Invalid direction
+				}
+			} else {
+				// Direct tile selection (click/tap)
+				console.log("[handleTileSelect] Direct selection mode:", {
+					tileIndex,
+					gapIndex,
+				});
+				targetTileIndex = tileIndex;
+				if (tiles[targetTileIndex] === null) {
+					return; // Can't select gap
+				}
+				if (!isAdjacent(gapIndex, targetTileIndex, size)) {
+					return; // Not adjacent
+				}
 			}
 
 			// All checks passed - move the tile
-			const tileValue = tiles[tileIndex];
-			moveTile(tileIndex, tileValue, gapIndex);
+			console.log("[handleTileSelect] Final validation passed:", {
+				targetTileIndex,
+				tileValue: tiles[targetTileIndex],
+			});
+			moveTile(targetTileIndex, gapIndex);
 		},
 		[tiles, isWon, size, moveTile],
 	);
 
 	// ===== Event Handlers =====
 	const handleTileClick = (index) => {
-		handleTileSelect(index);
+		handleTileSelect(index, null);
 	};
 
 	// Keyboard controls
@@ -172,19 +205,9 @@ function Board({ size, onWin, showNumbers, onSolveRef, onShuffleRef }) {
 			if (!arrowKeys.includes(event.key)) return;
 
 			event.preventDefault();
-
-			const gapIndex = getGapIndex(tiles);
-			const tileIndex = getTileIndexFromDirection(
-				gapIndex,
-				event.key,
-				size,
-			);
-
-			if (tileIndex !== null) {
-				handleTileSelect(tileIndex);
-			}
+			handleTileSelect(null, event.key);
 		},
-		[tiles, size, handleTileSelect],
+		[handleTileSelect],
 	);
 
 	useEffect(() => {
@@ -199,6 +222,16 @@ function Board({ size, onWin, showNumbers, onSolveRef, onShuffleRef }) {
 			x: touch.clientX,
 			y: touch.clientY,
 			time: Date.now(),
+		};
+	};
+
+	// Mouse drag controls - drag tile INTO the gap
+	const handleMouseDown = (e, tileIndex) => {
+		e.preventDefault(); // Prevent text selection while dragging
+		mouseDragRef.current = {
+			startTileIndex: tileIndex,
+			startX: e.clientX,
+			startY: e.clientY,
 		};
 	};
 
@@ -224,7 +257,7 @@ function Board({ size, onWin, showNumbers, onSolveRef, onShuffleRef }) {
 
 		if (absX < minSwipeDistance && absY < minSwipeDistance) {
 			// Not a swipe, treat as click
-			handleTileClick(tileIndex);
+			handleTileSelect(tileIndex, null);
 			touchStartRef.current = null;
 			return;
 		}
@@ -237,32 +270,34 @@ function Board({ size, onWin, showNumbers, onSolveRef, onShuffleRef }) {
 			direction = deltaY > 0 ? "ArrowDown" : "ArrowUp";
 		}
 
-		// Check if tile can move in that direction (opposite of gap direction)
-		const tileRow = Math.floor(tileIndex / size);
-		const tileCol = tileIndex % size;
-		const gapRow = Math.floor(gapIndex / size);
-		const gapCol = gapIndex % size;
-
-		const canMove =
-			(direction === "ArrowUp" &&
-				tileRow === gapRow + 1 &&
-				tileCol === gapCol) ||
-			(direction === "ArrowDown" &&
-				tileRow === gapRow - 1 &&
-				tileCol === gapCol) ||
-			(direction === "ArrowLeft" &&
-				tileCol === gapCol + 1 &&
-				tileRow === gapRow) ||
-			(direction === "ArrowRight" &&
-				tileCol === gapCol - 1 &&
-				tileRow === gapRow);
-
-		if (canMove) {
-			moveTile(tileIndex);
-		}
+		// Let handleTileSelect validate and execute the move
+		handleTileSelect(tileIndex, direction);
 
 		touchStartRef.current = null;
 	};
+
+	const handleMouseUpOnGap = () => {
+		if (!mouseDragRef.current) return;
+
+		const { startTileIndex } = mouseDragRef.current;
+
+		// User dragged from a tile into the gap - move that tile
+		handleTileSelect(startTileIndex, null);
+
+		mouseDragRef.current = null;
+	};
+
+	const handleMouseUpAnywhere = () => {
+		// Clear drag state if mouse is released anywhere else
+		mouseDragRef.current = null;
+	};
+
+	// Global mouse up listener to handle mouse release anywhere
+	useEffect(() => {
+		window.addEventListener("mouseup", handleMouseUpAnywhere);
+		return () =>
+			window.removeEventListener("mouseup", handleMouseUpAnywhere);
+	}, []);
 
 	// ===== Render =====
 	return (
@@ -281,10 +316,14 @@ function Board({ size, onWin, showNumbers, onSolveRef, onShuffleRef }) {
 
 				if (isGap) {
 					return (
-						<Gap key="gap" position={position} size={tileSizePx} />
+						<Gap
+							key="gap"
+							position={position}
+							size={tileSizePx}
+							onMouseUp={handleMouseUpOnGap}
+						/>
 					);
 				}
-
 				const isMoving = value === movingTileValue;
 				const isClickable =
 					!isWon &&
@@ -300,9 +339,10 @@ function Board({ size, onWin, showNumbers, onSolveRef, onShuffleRef }) {
 						onClick={() => handleTileClick(index)}
 						onTouchStart={handleTouchStart}
 						onTouchEnd={(e) => handleTouchEnd(e, index)}
+						onMouseDown={(e) => handleMouseDown(e, index)}
 						showNumbers={showNumbers}
 						position={position}
-						size={tileSizePx}
+						tileSizePx={tileSizePx}
 						animationDuration={ANIMATION_DURATION_MS}
 					/>
 				);
