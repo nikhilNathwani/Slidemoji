@@ -54,9 +54,7 @@ function AnimatedTileGrid() {
 				<div
 					key={index}
 					className={`animated-tile ${tile === 8 ? "gap" : ""}`}
-				>
-					{tile !== 8 && <span>{tile + 1}</span>}
-				</div>
+				></div>
 			))}
 		</div>
 	);

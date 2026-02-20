@@ -1,3 +1,5 @@
+import Toggle from "./Toggle";
+
 function Dialog({ isOpen, onClose, title, children }) {
 	if (!isOpen) return null;
 
