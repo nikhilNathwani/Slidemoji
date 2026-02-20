@@ -26,6 +26,10 @@ export function SettingsContent({
 	onSizeChange,
 	showNumbers,
 	onShowNumbersChange,
+	darkMode,
+	onDarkModeChange,
+	onShuffle,
+	onSolve,
 }) {
 	const difficulties = [
 		{ size: 3, label: "Normal", display: "3×3" },
@@ -67,6 +71,29 @@ export function SettingsContent({
 					<span className="toggle-label">
 						{showNumbers ? "ON" : "OFF"}
 					</span>
+				</button>
+			</div>
+			<div className="settings-item">
+				<label className="settings-label">Dark Mode</label>
+				<button
+					className={`toggle-switch ${darkMode ? "on" : "off"}`}
+					onClick={() => onDarkModeChange(!darkMode)}
+				>
+					<span className="toggle-slider"></span>
+					<span className="toggle-label">
+						{darkMode ? "ON" : "OFF"}
+					</span>
+				</button>
+			</div>
+			<div className="settings-divider"></div>
+			<div className="settings-actions">
+				<button className="action-button shuffle" onClick={onShuffle}>
+					<i className="fas fa-random"></i>
+					Shuffle Board
+				</button>
+				<button className="action-button solve" onClick={onSolve}>
+					<i className="fas fa-magic"></i>
+					Solve (Dev)
 				</button>
 			</div>
 		</div>

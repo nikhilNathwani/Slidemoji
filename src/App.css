@@ -62,10 +62,9 @@ html {
 .puzzle-info {
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
+	justify-content: center;
 	width: 100%;
 	max-width: 480px;
-	gap: 15px;
 	padding: 15px 0;
 }
 
@@ -76,13 +75,17 @@ html {
 	background-color: rgba(255, 255, 255, 0.1);
 	border: 2px solid rgba(255, 255, 255, 0.3);
 	color: #ffffff;
-	font-size: 1.5rem;
+	font-size: 1.2rem;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	cursor: pointer;
 	transition: all 0.2s ease;
 	flex-shrink: 0;
+}
+
+.icon-button i {
+	font-size: 1.2rem;
 }
 
 .icon-button:hover {
@@ -483,6 +486,148 @@ html {
 	}
 }
 
+/* Settings Actions */
+.settings-divider {
+	height: 1px;
+	background: linear-gradient(
+		to right,
+		transparent,
+		rgba(255, 255, 255, 0.2),
+		transparent
+	);
+	margin: 20px 0;
+}
+
+.settings-actions {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.action-button {
+	padding: 14px 20px;
+	border-radius: 12px;
+	border: 2px solid rgba(255, 255, 255, 0.2);
+	background-color: rgba(255, 255, 255, 0.05);
+	color: #ffffff;
+	font-size: 1rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+}
+
+.action-button:hover {
+	background-color: rgba(255, 255, 255, 0.1);
+	border-color: rgba(255, 255, 255, 0.4);
+	transform: translateY(-2px);
+}
+
+.action-button:active {
+	transform: translateY(0);
+}
+
+.action-button.shuffle {
+	border-color: rgba(96, 165, 250, 0.4);
+}
+
+.action-button.shuffle:hover {
+	background-color: rgba(96, 165, 250, 0.15);
+	border-color: rgba(96, 165, 250, 0.6);
+}
+
+.action-button.solve {
+	border-color: rgba(251, 146, 60, 0.4);
+	opacity: 0.7;
+}
+
+.action-button.solve:hover {
+	background-color: rgba(251, 146, 60, 0.15);
+	border-color: rgba(251, 146, 60, 0.6);
+	opacity: 1;
+}
+
+/* Stats Dialog */
+.stats-content {
+	padding: 30px 20px;
+}
+
+.stats-empty {
+	text-align: center;
+	max-width: 400px;
+	margin: 0 auto;
+}
+
+.stats-icon {
+	font-size: 3rem;
+	color: rgba(255, 255, 255, 0.3);
+	margin-bottom: 20px;
+}
+
+.stats-empty h3 {
+	font-size: 1.5rem;
+	color: #ffffff;
+	margin-bottom: 10px;
+}
+
+.stats-description {
+	color: rgba(255, 255, 255, 0.7);
+	margin-bottom: 25px;
+	line-height: 1.5;
+}
+
+.google-signin-btn {
+	padding: 14px 28px;
+	border-radius: 12px;
+	border: 2px solid rgba(255, 255, 255, 0.3);
+	background-color: #ffffff;
+	color: #333333;
+	font-size: 1rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	display: inline-flex;
+	align-items: center;
+	gap: 12px;
+	margin-bottom: 20px;
+}
+
+.google-signin-btn:hover {
+	background-color: #f8f9fa;
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.google-signin-btn:active {
+	transform: translateY(0);
+}
+
+.google-signin-btn i {
+	font-size: 1.2rem;
+	color: #4285f4;
+}
+
+.privacy-note {
+	font-size: 0.85rem;
+	color: rgba(255, 255, 255, 0.5);
+	line-height: 1.6;
+	max-width: 350px;
+	margin: 0 auto;
+	display: flex;
+	align-items: flex-start;
+	gap: 8px;
+	text-align: left;
+}
+
+.privacy-note i {
+	color: rgba(96, 165, 250, 0.6);
+	margin-top: 3px;
+	flex-shrink: 0;
+}
+
 /* Mobile Responsive */
 @media (max-width: 600px) {
 	.app main {
@@ -504,7 +649,10 @@ html {
 	.icon-button {
 		width: 42px;
 		height: 42px;
-		font-size: 1.3rem;
+	}
+
+	.icon-button i {
+		font-size: 1rem;
 	}
 
 	.puzzle-title {

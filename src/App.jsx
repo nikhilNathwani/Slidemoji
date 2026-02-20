@@ -13,6 +13,7 @@ function App() {
 	const [showWinDialog, setShowWinDialog] = useState(false);
 	const [showStats, setShowStats] = useState(false);
 	const [showNumbers, setShowNumbers] = useState(true); // Default to showing numbers
+	const [darkMode, setDarkMode] = useState(true); // Default to dark mode
 	const [showShuffleConfirm, setShowShuffleConfirm] = useState(false);
 	const [showDifficultyConfirm, setShowDifficultyConfirm] = useState(false);
 	const [pendingSize, setPendingSize] = useState(null);
@@ -75,38 +76,24 @@ function App() {
 						onClick={() => setShowSettings(true)}
 						aria-label="Settings"
 					>
-						⚙️
+						<i className="fas fa-cog"></i>
 					</button>
 					<button
 						className="icon-button"
 						onClick={() => setShowStats(true)}
 						aria-label="Stats"
 					>
-						🏆
+						<i className="fas fa-trophy"></i>
 					</button>
 				</div>
 			</header>
 
 			<main>
 				<div className="puzzle-info">
-					<button
-						className="icon-button"
-						onClick={handleShuffleClick}
-						aria-label="Shuffle"
-					>
-						🔀
-					</button>
 					<div className="puzzle-of-day">
 						<div className="puzzle-title">Slidemoji #001</div>
 						<div className="puzzle-emoji">🛝</div>
 					</div>
-					<button
-						className="icon-button"
-						onClick={handleSolve}
-						aria-label="Solve"
-					>
-						🔧
-					</button>
 				</div>
 
 				<Board
@@ -128,16 +115,36 @@ function App() {
 					onSizeChange={handleSizeChange}
 					showNumbers={showNumbers}
 					onShowNumbersChange={setShowNumbers}
+					darkMode={darkMode}
+					onDarkModeChange={setDarkMode}
+					onShuffle={handleShuffleClick}
+					onSolve={handleSolve}
 				/>
 			</Dialog>
 
 			<Dialog
 				isOpen={showStats}
 				onClose={() => setShowStats(false)}
-				title="📊 Stats"
+				title="Stats"
 			>
-				<div style={{ padding: "20px", textAlign: "center" }}>
-					<p>Stats coming soon!</p>
+				<div className="stats-content">
+					<div className="stats-empty">
+						<i className="fas fa-chart-line stats-icon"></i>
+						<h3>Track Your Progress</h3>
+						<p className="stats-description">
+							Sign in to save your stats and compete on the
+							leaderboard!
+						</p>
+						<button className="google-signin-btn">
+							<i className="fab fa-google"></i>
+							Sign in with Google
+						</button>
+						<p className="privacy-note">
+							<i className="fas fa-shield-alt"></i> We respect
+							your privacy. Your data is never sold or shared. We
+							only use your email to save your progress.
+						</p>
+					</div>
 				</div>
 			</Dialog>
 
