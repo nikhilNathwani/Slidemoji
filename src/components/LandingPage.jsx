@@ -21,18 +21,6 @@ function LandingPage({ onPlay }) {
 					<i className="fas fa-play"></i>
 					Play
 				</button>
-
-				<button
-					className="google-signin-btn landing-signin"
-					onClick={() => alert("Sign in coming soon!")}
-				>
-					<img
-						src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-						alt="Google"
-						className="google-icon"
-					/>
-					Sign in with Google
-				</button>
 			</div>
 
 			<footer className="landing-footer">

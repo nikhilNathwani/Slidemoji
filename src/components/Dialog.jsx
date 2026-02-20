@@ -104,18 +104,35 @@ Play at slidemoji.com`;
 
 	return (
 		<div className="win-dialog-content">
-			<div className="earned-trophy">
-				<div className="trophy-sparkle">✨</div>
-				<div className="earned-emoji-large">{earnedEmoji}</div>
-				<div className="trophy-sparkle">✨</div>
+			<div className="trophy-item win-trophy-display">
+				<div className="trophy-number">#001</div>
+				<div className="trophy-emoji">{earnedEmoji}</div>
+				<div className="trophy-name">Today's Emoji</div>
 			</div>
 			<h3>You earned today's emoji!</h3>
-			<p>Added to your trophy case</p>
+
 			<button className="share-button" onClick={handleShare}>
 				<i className="fas fa-share-nodes"></i>
 				Share
 			</button>
-			<div className="win-emoji">🎊</div>
+
+			<div className="win-signin-prompt">
+				<p className="signin-message">
+					Sign in to save your trophy and compete for tomorrow's
+					emoji!
+				</p>
+				<button
+					className="google-signin-btn"
+					onClick={() => alert("Sign in coming soon!")}
+				>
+					<img
+						src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+						alt="Google"
+						className="google-icon"
+					/>
+					Sign in with Google
+				</button>
+			</div>
 		</div>
 	);
 }

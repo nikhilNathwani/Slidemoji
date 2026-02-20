@@ -132,53 +132,53 @@ function App() {
 					</div>
 				</div>
 
-			<div className="board-container">
-				<Board
-					size={gridSize}
-					onWin={handleWin}
-					showNumbers={showNumbers && !isWon}
-					onSolveRef={solveRef}
-					onShuffleRef={shuffleRef}
-					dailyEmoji={dailyEmoji.emoji}
-				/>
+				<div className="board-container">
+					<Board
+						size={gridSize}
+						onWin={handleWin}
+						showNumbers={showNumbers && !isWon}
+						onSolveRef={solveRef}
+						onShuffleRef={shuffleRef}
+						dailyEmoji={dailyEmoji.emoji}
+					/>
 
-				<div className="game-controls">
-					<button
-						className="control-button"
-						onClick={handleShuffleClick}
-						title="Shuffle Board"
-					>
-						<i className="fas fa-random"></i>
-						Shuffle
-					</button>
-					<div className="control-toggle">
-						<span className="control-label">Show Numbers</span>
-						<Toggle
-							isOn={showNumbers}
-							onToggle={() => setShowNumbers(!showNumbers)}
-							disabled={isWon}
-						/>
+					<div className="game-controls">
+						<button
+							className="control-button"
+							onClick={handleShuffleClick}
+							title="Shuffle Board"
+						>
+							<i className="fas fa-random"></i>
+							Shuffle
+						</button>
+						<div className="control-toggle">
+							<span className="control-label">Show Numbers</span>
+							<Toggle
+								isOn={showNumbers}
+								onToggle={() => setShowNumbers(!showNumbers)}
+								disabled={isWon}
+							/>
+						</div>
 					</div>
 				</div>
-			</div>
-		</main>
+			</main>
 
-		<Dialog
-			isOpen={showSettings}
-			onClose={() => setShowSettings(false)}
-			title="Settings"
-		>
-			<SettingsContent
-				gridSize={gridSize}
-				darkMode={darkMode}
-				onDarkModeChange={setDarkMode}
-				onGridSizeChange={handleSizeChange}
-				onSolve={handleSolve}
-			/>
-		</Dialog>
+			<Dialog
+				isOpen={showSettings}
+				onClose={() => setShowSettings(false)}
+				title="Settings"
+			>
+				<SettingsContent
+					gridSize={gridSize}
+					darkMode={darkMode}
+					onDarkModeChange={setDarkMode}
+					onGridSizeChange={handleSizeChange}
+					onSolve={handleSolve}
+				/>
+			</Dialog>
 
-		<Dialog
-			isOpen={showStats}
+			<Dialog
+				isOpen={showStats}
 				onClose={() => setShowStats(false)}
 				title="Stats"
 			>

@@ -52,9 +52,14 @@ function Tile({
 		const { bgSizePercent, bgPosXPercent, bgPosYPercent } =
 			getBackgroundStyles(row, col, boardSize);
 
+		// Account for 1px border on each tile
+		const borderWidth = 1;
+		const offsetX = (col * borderWidth * 2) / tileSizePx;
+		const offsetY = (row * borderWidth * 2) / tileSizePx;
+
 		style.backgroundImage = `url('${emojiSvgUrl}')`;
 		style.backgroundSize = `${bgSizePercent}% ${bgSizePercent}%`;
-		style.backgroundPosition = `${bgPosXPercent}% ${bgPosYPercent}%`;
+		style.backgroundPosition = `calc(${bgPosXPercent}% + ${offsetX}px) calc(${bgPosYPercent}% + ${offsetY}px)`;
 		style.backgroundRepeat = "no-repeat";
 	}
 
