@@ -11,6 +11,7 @@ function App() {
 	const [gridSize, setGridSize] = useState(3); // Default to 3×3
 	const [showSettings, setShowSettings] = useState(false);
 	const [showWinDialog, setShowWinDialog] = useState(false);
+	const [showStats, setShowStats] = useState(false);
 	const [showNumbers, setShowNumbers] = useState(true); // Default to showing numbers
 	const [showShuffleConfirm, setShowShuffleConfirm] = useState(false);
 	const [showDifficultyConfirm, setShowDifficultyConfirm] = useState(false);
@@ -66,8 +67,9 @@ function App() {
 
 	return (
 		<div className="app">
-			<header className="game-header">
-				<div className="header-left">
+			<header className="app-header">
+				<h1 className="app-title">Slidemoji</h1>
+				<div className="header-actions">
 					<button
 						className="icon-button"
 						onClick={() => setShowSettings(true)}
@@ -77,25 +79,36 @@ function App() {
 					</button>
 					<button
 						className="icon-button"
+						onClick={() => setShowStats(true)}
+						aria-label="Stats"
+					>
+						🏆
+					</button>
+				</div>
+			</header>
+
+			<main>
+				<div className="puzzle-info">
+					<button
+						className="icon-button"
 						onClick={handleShuffleClick}
 						aria-label="Shuffle"
 					>
 						🔀
 					</button>
+					<div className="puzzle-of-day">
+						<div className="puzzle-title">Slidemoji #001</div>
+						<div className="puzzle-emoji">🛝</div>
+					</div>
+					<button
+						className="icon-button"
+						onClick={handleSolve}
+						aria-label="Solve"
+					>
+						🔧
+					</button>
 				</div>
-				<div className="puzzle-of-day">
-					<div className="puzzle-title">Slidemoji #001</div>
-					<div className="puzzle-emoji">🛝</div>
-				</div>
-				<button
-					className="icon-button"
-					onClick={handleSolve}
-					aria-label="Solve"
-				>
-					🔧
-				</button>
-			</header>
-			<main>
+
 				<Board
 					size={gridSize}
 					onWin={handleWin}
@@ -116,6 +129,16 @@ function App() {
 					showNumbers={showNumbers}
 					onShowNumbersChange={setShowNumbers}
 				/>
+			</Dialog>
+
+			<Dialog
+				isOpen={showStats}
+				onClose={() => setShowStats(false)}
+				title="📊 Stats"
+			>
+				<div style={{ padding: "20px", textAlign: "center" }}>
+					<p>Stats coming soon!</p>
+				</div>
 			</Dialog>
 
 			<Dialog

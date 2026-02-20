@@ -23,27 +23,50 @@ html {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	justify-content: center;
-	padding: 15px;
-	gap: 15px;
+	padding: 0;
+	gap: 0;
 	overflow-y: auto;
 	-webkit-overflow-scrolling: touch;
 }
 
-/* Game Header */
-.game-header {
+/* App Header */
+.app-header {
+	width: 100%;
+	background-color: rgba(0, 0, 0, 0.3);
+	border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+	padding: 15px 20px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	position: sticky;
+	top: 0;
+	z-index: 100;
+	backdrop-filter: blur(10px);
+}
+
+.app-title {
+	font-size: 1.5rem;
+	font-weight: 700;
+	color: #ffffff;
+	letter-spacing: 1px;
+	margin: 0;
+}
+
+.header-actions {
+	display: flex;
+	gap: 10px;
+	align-items: center;
+}
+
+/* Game Header - now for puzzle info section */
+.puzzle-info {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	width: 100%;
 	max-width: 480px;
 	gap: 15px;
-}
-
-.header-left {
-	display: flex;
-	gap: 10px;
-	align-items: center;
+	padding: 15px 0;
 }
 
 .icon-button {
@@ -77,6 +100,10 @@ html {
 	flex-direction: column;
 	align-items: center;
 	gap: 15px;
+	flex: 1;
+	justify-content: center;
+	width: 100%;
+	padding: 15px;
 }
 
 .tile {
@@ -458,17 +485,26 @@ html {
 
 /* Mobile Responsive */
 @media (max-width: 600px) {
-	.app {
+	.app main {
 		padding: 10px;
-		gap: 10px;
 	}
 
-	.app header h1 {
-		font-size: 2rem;
+	.app-title {
+		font-size: 1.2rem;
 	}
 
-	.subtitle {
-		font-size: 0.85rem;
+	.app-header {
+		padding: 12px 15px;
+	}
+
+	.puzzle-info {
+		padding: 10px 0;
+	}
+
+	.icon-button {
+		width: 42px;
+		height: 42px;
+		font-size: 1.3rem;
 	}
 
 	.puzzle-title {
@@ -476,7 +512,7 @@ html {
 	}
 
 	.puzzle-emoji {
-		font-size: 2rem;
+		font-size: 1.5rem;
 	}
 
 	.tile {

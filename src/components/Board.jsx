@@ -97,12 +97,12 @@ function Board({ size, onWin, showNumbers, onSolveRef, onShuffleRef }) {
 				tileValue,
 				gapIndex,
 			});
-			const newPosition = getTilePosition(gapIndex, size, tileSizePx);
 
-			isAnimating.current = true;
 			setMovingTileValue(tileValue);
+			isAnimating.current = true;
 
 			// Update tile position via DOM (triggers CSS transition)
+			const newPosition = getTilePosition(gapIndex, size, tileSizePx);
 			if (boardRef.current) {
 				const movingTileElement = boardRef.current.querySelector(
 					`[data-tile-number="${tileValue}"]`,
@@ -228,8 +228,6 @@ function Board({ size, onWin, showNumbers, onSolveRef, onShuffleRef }) {
 		e.preventDefault(); // Prevent text selection while dragging
 		mouseDragRef.current = {
 			startTileIndex: tileIndex,
-			startX: e.clientX,
-			startY: e.clientY,
 		};
 	};
 
@@ -340,16 +338,16 @@ function Board({ size, onWin, showNumbers, onSolveRef, onShuffleRef }) {
 						tileNumber={value}
 						isMoving={isMoving}
 						isClickable={isClickable}
+						showNumbers={showNumbers}
+						position={position}
+						tileSizePx={tileSizePx}
+						animationDuration={ANIMATION_DURATION_MS}
 						{...(isClickable && {
 							onClick: () => handleTileClick(index),
 							onTouchStart: (e) => handleTouchStart(e, index),
 							onTouchEnd: (e) => handleTouchEnd(e, index),
 							onMouseDown: (e) => handleMouseDown(e, index),
 						})}
-						showNumbers={showNumbers}
-						position={position}
-						tileSizePx={tileSizePx}
-						animationDuration={ANIMATION_DURATION_MS}
 					/>
 				);
 			})}
