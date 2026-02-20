@@ -82,6 +82,24 @@ export function SettingsContent({
 }
 
 export function WinContent({ earnedEmoji }) {
+	const handleShare = () => {
+		const shareText = `Slidemoji #001 ${earnedEmoji}
+
+I earned today's emoji! 🎉
+
+Play at slidemoji.com`;
+
+		// Copy to clipboard
+		navigator.clipboard
+			.writeText(shareText)
+			.then(() => {
+				alert("Results copied to clipboard!");
+			})
+			.catch((err) => {
+				console.error("Failed to copy:", err);
+			});
+	};
+
 	return (
 		<div className="win-dialog-content">
 			<div className="earned-trophy">
@@ -91,6 +109,10 @@ export function WinContent({ earnedEmoji }) {
 			</div>
 			<h3>You earned today's emoji!</h3>
 			<p>Added to your trophy case</p>
+			<button className="share-button" onClick={handleShare}>
+				<i className="fas fa-share-nodes"></i>
+				Share
+			</button>
 			<div className="win-emoji">🎊</div>
 		</div>
 	);

@@ -43,14 +43,18 @@ export function checkWin(tiles, solvedState) {
 
 /**
  * Generate a scrambled puzzle by making random valid moves
+ * Always ensures the gap ends up in the bottom-right corner
  * @param {number} size - Board size (3 or 4)
  * @param {number} numMoves - Number of random moves to make (default 100)
- * @returns {Array} Scrambled tiles array
+ * @returns {Array} Scrambled tiles array with gap in bottom-right
  */
 export function scramblePuzzle(size, numMoves = 100) {
 	let tiles = [...getSolvedState(size)];
 	let gapIndex = getGapIndex(tiles);
+	const bottomRightIndex = size * size - 1;
 
+	// Start with gap in bottom-right where we want it to end
+	// We'll do this by moving from solved state
 	for (let i = 0; i < numMoves; i++) {
 		const validMoves = getAdjacentIndices(gapIndex, size);
 		const randomMoveIndex =
@@ -61,6 +65,35 @@ export function scramblePuzzle(size, numMoves = 100) {
 		tiles[randomMoveIndex] = null;
 		tiles[gapIndex] = tileValue;
 		gapIndex = randomMoveIndex;
+	}
+
+	// If gap is not in bottom-right, move it there
+	// by doing a series of moves to get it to the corner
+	while (gapIndex !== bottomRightIndex) {
+		const gapRow = Math.floor(gapIndex / size);
+		const gapCol = gapIndex % size;
+		const targetRow = size - 1;
+		const targetCol = size - 1;
+
+		let nextIndex;
+
+		// Prioritize moving down, then right
+		if (gapRow < targetRow) {
+			// Move gap down (swap with tile below)
+			nextIndex = gapIndex + size;
+		} else if (gapCol < targetCol) {
+			// Move gap right (swap with tile to the right)
+			nextIndex = gapIndex + 1;
+		} else {
+			// Should not reach here, but break to prevent infinite loop
+			break;
+		}
+
+		// Swap
+		const tileValue = tiles[nextIndex];
+		tiles[nextIndex] = null;
+		tiles[gapIndex] = tileValue;
+		gapIndex = nextIndex;
 	}
 
 	return tiles;
