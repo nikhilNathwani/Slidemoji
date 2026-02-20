@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import Tile from "./Tile";
 import Gap from "./Gap";
 import { isAdjacent } from "../utils/adjacency";
@@ -11,13 +11,21 @@ import {
 	getTilePosition,
 	getTileIndexFromDirection,
 } from "../utils/boardHelpers";
+import { createEmojiSvgUrl } from "../utils/emoji";
 
 // ===== Constants =====
 const ANIMATION_DURATION_MS = 400; // Must match CSS transition duration
 
 // ===== Main Component =====
 
-function Board({ size, onWin, showNumbers, onSolveRef, onShuffleRef }) {
+function Board({
+	size,
+	onWin,
+	showNumbers,
+	onSolveRef,
+	onShuffleRef,
+	dailyEmoji,
+}) {
 	const [tiles, setTiles] = useState(() => scramblePuzzle(size));
 	const [isWon, setIsWon] = useState(false);
 	const [movingTileValue, setMovingTileValue] = useState(null);
@@ -26,6 +34,12 @@ function Board({ size, onWin, showNumbers, onSolveRef, onShuffleRef }) {
 	const mouseDragRef = useRef(null);
 	const isAnimating = useRef(false);
 	const hasShownWin = useRef(false);
+
+	// Create emoji SVG URL once and memoize it
+	const emojiSvgUrl = useMemo(
+		() => (dailyEmoji ? createEmojiSvgUrl(dailyEmoji) : null),
+		[dailyEmoji],
+	);
 
 	// Responsive sizing
 	const getResponsiveBoardSize = useCallback(() => {
@@ -77,11 +91,14 @@ function Board({ size, onWin, showNumbers, onSolveRef, onShuffleRef }) {
 		return () => window.removeEventListener("resize", handleResize);
 	}, [getResponsiveBoardSize]);
 
-	// Show win dialog (only once per win)
+	// Show win dialog (only once per win) - delayed to allow animation to show
 	useEffect(() => {
 		if (isWon && onWin && !hasShownWin.current) {
 			hasShownWin.current = true;
-			onWin();
+			// Delay to show win animation before dialog
+			setTimeout(() => {
+				onWin();
+			}, 800); // Delay win dialog by 800ms
 		}
 	}, [isWon, onWin]);
 
@@ -90,19 +107,25 @@ function Board({ size, onWin, showNumbers, onSolveRef, onShuffleRef }) {
 
 	// Core tile movement function - assumes all validation has passed
 	const moveTile = useCallback(
-		(tileIndex, gapIndex) => {
+		(tileIndex) => {
+			// Get current gap index from tiles state to avoid race conditions
+			const currentGapIndex = getGapIndex(tiles);
 			const tileValue = tiles[tileIndex];
 			console.log("[moveTile] Moving tile:", {
 				tileIndex,
 				tileValue,
-				gapIndex,
+				gapIndex: currentGapIndex,
 			});
 
 			setMovingTileValue(tileValue);
 			isAnimating.current = true;
 
 			// Update tile position via DOM (triggers CSS transition)
-			const newPosition = getTilePosition(gapIndex, size, tileSizePx);
+			const newPosition = getTilePosition(
+				currentGapIndex,
+				size,
+				tileSizePx,
+			);
 			if (boardRef.current) {
 				const movingTileElement = boardRef.current.querySelector(
 					`[data-tile-number="${tileValue}"]`,
@@ -113,7 +136,7 @@ function Board({ size, onWin, showNumbers, onSolveRef, onShuffleRef }) {
 			}
 
 			// Update React state after animation completes
-			const newTiles = swapTiles(tiles, tileIndex, gapIndex);
+			const newTiles = swapTiles(tiles, tileIndex, currentGapIndex);
 
 			setTimeout(() => {
 				if (checkWin(newTiles, getSolvedState(size))) {
@@ -180,7 +203,7 @@ function Board({ size, onWin, showNumbers, onSolveRef, onShuffleRef }) {
 				targetTileIndex,
 				tileValue: tiles[targetTileIndex],
 			});
-			moveTile(targetTileIndex, gapIndex);
+			moveTile(targetTileIndex);
 		},
 		[tiles, isWon, size, moveTile],
 	);
@@ -342,6 +365,8 @@ function Board({ size, onWin, showNumbers, onSolveRef, onShuffleRef }) {
 						position={position}
 						tileSizePx={tileSizePx}
 						animationDuration={ANIMATION_DURATION_MS}
+						emojiSvgUrl={emojiSvgUrl}
+						boardSize={size}
 						{...(isClickable && {
 							onClick: () => handleTileClick(index),
 							onTouchStart: (e) => handleTouchStart(e, index),

@@ -86,7 +86,7 @@ export function WinContent({ earnedEmoji }) {
 		<div className="win-dialog-content">
 			<div className="earned-trophy">
 				<div className="trophy-sparkle">✨</div>
-				<div className="earned-emoji">{earnedEmoji}</div>
+				<div className="earned-emoji-large">{earnedEmoji}</div>
 				<div className="trophy-sparkle">✨</div>
 			</div>
 			<h3>You earned today's emoji!</h3>

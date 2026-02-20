@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import "./App.css";
 import Board from "./components/Board";
 import Dialog, {
@@ -6,45 +6,22 @@ import Dialog, {
 	WinContent,
 	ConfirmContent,
 } from "./components/Dialog";
+import { getDailyEmoji } from "./utils/emoji";
 
 function App() {
+	const dailyEmoji = getDailyEmoji();
 	const [gridSize, setGridSize] = useState(3); // Default to 3×3
 	const [showSettings, setShowSettings] = useState(false);
 	const [showWinDialog, setShowWinDialog] = useState(false);
 	const [showStats, setShowStats] = useState(false);
 	const [showNumbers, setShowNumbers] = useState(true); // Default to showing numbers
-	// Initialize dark mode based on system preference
-	const [darkMode, setDarkMode] = useState(() => {
-		if (typeof window !== 'undefined' && window.matchMedia) {
-			return window.matchMedia('(prefers-color-scheme: dark)').matches;
-		}
-		return true; // Fallback to dark mode
-	});
+	const [darkMode, setDarkMode] = useState(true); // Default to dark mode
 	const [showShuffleConfirm, setShowShuffleConfirm] = useState(false);
 	const [showDifficultyConfirm, setShowDifficultyConfirm] = useState(false);
 	const [pendingSize, setPendingSize] = useState(null);
-	const [earnedEmojis, _setEarnedEmojis] = useState(["🛝"]); // Mock data - will be from backend
+	const [earnedEmojis, _setEarnedEmojis] = useState([dailyEmoji.emoji]); // Mock data - will be from backend
 	const solveRef = useRef(null);
 	const shuffleRef = useRef(null);
-
-	// Listen for system theme changes
-	useEffect(() => {
-		if (typeof window !== 'undefined' && window.matchMedia) {
-			const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-			const handler = (e) => setDarkMode(e.matches);
-			
-			// Modern browsers
-			if (mediaQuery.addEventListener) {
-				mediaQuery.addEventListener('change', handler);
-				return () => mediaQuery.removeEventListener('change', handler);
-			}
-			// Legacy browsers
-			else if (mediaQuery.addListener) {
-				mediaQuery.addListener(handler);
-				return () => mediaQuery.removeListener(handler);
-			}
-		}
-	}, []);
 
 	const handleWin = () => {
 		setShowWinDialog(true);
@@ -120,8 +97,10 @@ function App() {
 				<div className="puzzle-info">
 					<div className="puzzle-of-day">
 						<div className="puzzle-title">Slidemoji #001</div>
-						<div className="puzzle-emoji">🛝</div>
-						<div className="puzzle-emoji-name">Playground Slide</div>
+						<div className="puzzle-emoji">{dailyEmoji.emoji}</div>
+						<div className="puzzle-emoji-name">
+							"{dailyEmoji.name}"
+						</div>
 					</div>
 				</div>
 
@@ -131,6 +110,7 @@ function App() {
 					showNumbers={showNumbers}
 					onSolveRef={solveRef}
 					onShuffleRef={shuffleRef}
+					dailyEmoji={dailyEmoji.emoji}
 				/>
 
 				<div className="game-controls">
@@ -142,14 +122,20 @@ function App() {
 						<i className="fas fa-random"></i>
 						Shuffle
 					</button>
-					<button
-						className={`control-button ${showNumbers ? "active" : ""}`}
-						onClick={() => setShowNumbers(!showNumbers)}
-						title="Toggle Numbers"
-					>
-						<i className="fas fa-hashtag"></i>
-						Numbers
-					</button>
+					<div className="control-toggle">
+						<span className="control-label">
+							{showNumbers ? "Hide" : "Show"} Numbers
+						</span>
+						<button
+							className={`toggle-switch compact ${showNumbers ? "on" : "off"}`}
+							onClick={() => setShowNumbers(!showNumbers)}
+							aria-label={
+								showNumbers ? "Hide Numbers" : "Show Numbers"
+							}
+						>
+							<span className="toggle-slider"></span>
+						</button>
+					</div>
 				</div>
 			</main>
 
@@ -179,8 +165,12 @@ function App() {
 						</h3>
 						<div className="emoji-grid">
 							{earnedEmojis.map((emoji, index) => (
-								<div key={index} className="trophy-emoji">
-									{emoji}
+								<div key={index} className="trophy-item">
+									<div className="trophy-number">#001</div>
+									<div className="trophy-emoji">{emoji}</div>
+									<div className="trophy-name">
+										"{dailyEmoji.name}"
+									</div>
 								</div>
 							))}
 						</div>
@@ -210,7 +200,7 @@ function App() {
 				onClose={handleCloseWinDialog}
 				title="🎉 Congratulations!"
 			>
-				<WinContent earnedEmoji="🛝" />
+				<WinContent earnedEmoji={dailyEmoji.emoji} />
 			</Dialog>
 
 			<Dialog
