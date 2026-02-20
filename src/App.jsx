@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import "./App.css";
 import Board from "./components/Board";
 import Dialog, {
@@ -13,13 +13,38 @@ function App() {
 	const [showWinDialog, setShowWinDialog] = useState(false);
 	const [showStats, setShowStats] = useState(false);
 	const [showNumbers, setShowNumbers] = useState(true); // Default to showing numbers
-	const [darkMode, setDarkMode] = useState(true); // Default to dark mode
+	// Initialize dark mode based on system preference
+	const [darkMode, setDarkMode] = useState(() => {
+		if (typeof window !== 'undefined' && window.matchMedia) {
+			return window.matchMedia('(prefers-color-scheme: dark)').matches;
+		}
+		return true; // Fallback to dark mode
+	});
 	const [showShuffleConfirm, setShowShuffleConfirm] = useState(false);
 	const [showDifficultyConfirm, setShowDifficultyConfirm] = useState(false);
 	const [pendingSize, setPendingSize] = useState(null);
 	const [earnedEmojis, _setEarnedEmojis] = useState(["🛝"]); // Mock data - will be from backend
 	const solveRef = useRef(null);
 	const shuffleRef = useRef(null);
+
+	// Listen for system theme changes
+	useEffect(() => {
+		if (typeof window !== 'undefined' && window.matchMedia) {
+			const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+			const handler = (e) => setDarkMode(e.matches);
+			
+			// Modern browsers
+			if (mediaQuery.addEventListener) {
+				mediaQuery.addEventListener('change', handler);
+				return () => mediaQuery.removeEventListener('change', handler);
+			}
+			// Legacy browsers
+			else if (mediaQuery.addListener) {
+				mediaQuery.addListener(handler);
+				return () => mediaQuery.removeListener(handler);
+			}
+		}
+	}, []);
 
 	const handleWin = () => {
 		setShowWinDialog(true);
@@ -73,17 +98,10 @@ function App() {
 				<h1 className="app-title">Slidemoji</h1>
 				<div className="header-actions">
 					<button
-						className="icon-button shuffle-btn"
-						onClick={handleShuffleClick}
-						aria-label="Shuffle"
-						title="Shuffle Board"
-					>
-						<i className="fas fa-random"></i>
-					</button>
-					<button
 						className="icon-button"
 						onClick={() => setShowSettings(true)}
 						aria-label="Settings"
+						title="Settings"
 					>
 						<i className="fas fa-cog"></i>
 					</button>
@@ -91,6 +109,7 @@ function App() {
 						className="icon-button"
 						onClick={() => setShowStats(true)}
 						aria-label="Stats"
+						title="Stats"
 					>
 						<i className="fas fa-trophy"></i>
 					</button>
@@ -102,6 +121,7 @@ function App() {
 					<div className="puzzle-of-day">
 						<div className="puzzle-title">Slidemoji #001</div>
 						<div className="puzzle-emoji">🛝</div>
+						<div className="puzzle-emoji-name">Playground Slide</div>
 					</div>
 				</div>
 
@@ -112,6 +132,25 @@ function App() {
 					onSolveRef={solveRef}
 					onShuffleRef={shuffleRef}
 				/>
+
+				<div className="game-controls">
+					<button
+						className="control-button"
+						onClick={handleShuffleClick}
+						title="Shuffle Board"
+					>
+						<i className="fas fa-random"></i>
+						Shuffle
+					</button>
+					<button
+						className={`control-button ${showNumbers ? "active" : ""}`}
+						onClick={() => setShowNumbers(!showNumbers)}
+						title="Toggle Numbers"
+					>
+						<i className="fas fa-hashtag"></i>
+						Numbers
+					</button>
+				</div>
 			</main>
 
 			<Dialog
@@ -122,8 +161,6 @@ function App() {
 				<SettingsContent
 					selectedSize={gridSize}
 					onSizeChange={handleSizeChange}
-					showNumbers={showNumbers}
-					onShowNumbersChange={setShowNumbers}
 					darkMode={darkMode}
 					onDarkModeChange={setDarkMode}
 					onSolve={handleSolve}

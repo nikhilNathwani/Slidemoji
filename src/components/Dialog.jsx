@@ -24,8 +24,6 @@ function Dialog({ isOpen, onClose, title, children }) {
 export function SettingsContent({
 	selectedSize,
 	onSizeChange,
-	showNumbers,
-	onShowNumbersChange,
 	darkMode,
 	onDarkModeChange,
 	onSolve,
@@ -59,18 +57,6 @@ export function SettingsContent({
 						</button>
 					))}
 				</div>
-			</div>
-			<div className="settings-item">
-				<label className="settings-label">Show Numbers</label>
-				<button
-					className={`toggle-switch ${showNumbers ? "on" : "off"}`}
-					onClick={() => onShowNumbersChange(!showNumbers)}
-				>
-					<span className="toggle-slider"></span>
-					<span className="toggle-label">
-						{showNumbers ? "ON" : "OFF"}
-					</span>
-				</button>
 			</div>
 			<div className="settings-item">
 				<label className="settings-label">Dark Mode</label>
