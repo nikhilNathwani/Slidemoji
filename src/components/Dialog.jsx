@@ -28,7 +28,6 @@ export function SettingsContent({
 	onShowNumbersChange,
 	darkMode,
 	onDarkModeChange,
-	onShuffle,
 	onSolve,
 }) {
 	const difficulties = [
@@ -87,10 +86,6 @@ export function SettingsContent({
 			</div>
 			<div className="settings-divider"></div>
 			<div className="settings-actions">
-				<button className="action-button shuffle" onClick={onShuffle}>
-					<i className="fas fa-random"></i>
-					Shuffle Board
-				</button>
 				<button className="action-button solve" onClick={onSolve}>
 					<i className="fas fa-magic"></i>
 					Solve (Dev)
@@ -100,12 +95,17 @@ export function SettingsContent({
 	);
 }
 
-export function WinContent() {
+export function WinContent({ earnedEmoji }) {
 	return (
 		<div className="win-dialog-content">
-			<div className="emoji">🎊</div>
-			<h3>You solved it!</h3>
-			<p>Great job completing the puzzle!</p>
+			<div className="earned-trophy">
+				<div className="trophy-sparkle">✨</div>
+				<div className="earned-emoji">{earnedEmoji}</div>
+				<div className="trophy-sparkle">✨</div>
+			</div>
+			<h3>You earned today's emoji!</h3>
+			<p>Added to your trophy case</p>
+			<div className="win-emoji">🎊</div>
 		</div>
 	);
 }

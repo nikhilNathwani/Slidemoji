@@ -305,7 +305,7 @@ function Board({ size, onWin, showNumbers, onSolveRef, onShuffleRef }) {
 	return (
 		<div
 			ref={boardRef}
-			className="board"
+			className={`board${isWon ? " won" : ""}`}
 			style={{
 				width: `${boardSizePx}px`,
 				height: `${boardSizePx}px`,

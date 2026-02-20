@@ -17,6 +17,7 @@ function App() {
 	const [showShuffleConfirm, setShowShuffleConfirm] = useState(false);
 	const [showDifficultyConfirm, setShowDifficultyConfirm] = useState(false);
 	const [pendingSize, setPendingSize] = useState(null);
+	const [earnedEmojis, _setEarnedEmojis] = useState(["🛝"]); // Mock data - will be from backend
 	const solveRef = useRef(null);
 	const shuffleRef = useRef(null);
 
@@ -67,10 +68,18 @@ function App() {
 	};
 
 	return (
-		<div className="app">
+		<div className={`app ${darkMode ? "dark-theme" : "light-theme"}`}>
 			<header className="app-header">
 				<h1 className="app-title">Slidemoji</h1>
 				<div className="header-actions">
+					<button
+						className="icon-button shuffle-btn"
+						onClick={handleShuffleClick}
+						aria-label="Shuffle"
+						title="Shuffle Board"
+					>
+						<i className="fas fa-random"></i>
+					</button>
 					<button
 						className="icon-button"
 						onClick={() => setShowSettings(true)}
@@ -117,7 +126,6 @@ function App() {
 					onShowNumbersChange={setShowNumbers}
 					darkMode={darkMode}
 					onDarkModeChange={setDarkMode}
-					onShuffle={handleShuffleClick}
 					onSolve={handleSolve}
 				/>
 			</Dialog>
@@ -128,11 +136,23 @@ function App() {
 				title="Stats"
 			>
 				<div className="stats-content">
-					<div className="stats-empty">
-						<i className="fas fa-chart-line stats-icon"></i>
-						<h3>Track Your Progress</h3>
+					<div className="trophy-case">
+						<h3 className="trophy-case-title">
+							<i className="fas fa-award"></i> Trophy Case
+						</h3>
+						<div className="emoji-grid">
+							{earnedEmojis.map((emoji, index) => (
+								<div key={index} className="trophy-emoji">
+									{emoji}
+								</div>
+							))}
+						</div>
+					</div>
+					<div className="stats-divider"></div>
+					<div className="stats-signin">
+						<h3>Sync Your Progress</h3>
 						<p className="stats-description">
-							Sign in to save your stats and compete on the
+							Sign in to save your trophies and compete on the
 							leaderboard!
 						</p>
 						<button className="google-signin-btn">
@@ -153,7 +173,7 @@ function App() {
 				onClose={handleCloseWinDialog}
 				title="🎉 Congratulations!"
 			>
-				<WinContent />
+				<WinContent earnedEmoji="🛝" />
 			</Dialog>
 
 			<Dialog
