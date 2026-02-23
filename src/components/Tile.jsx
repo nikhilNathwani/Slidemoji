@@ -32,6 +32,8 @@ function Tile({
 	animationDuration,
 	emojiSvgUrl,
 	boardSize,
+	isEntering,
+	entranceDelay,
 }) {
 	const style = {
 		position: "absolute",
@@ -40,6 +42,11 @@ function Tile({
 		width: `${tileSizePx}px`,
 		height: `${tileSizePx}px`,
 	};
+
+	// Add entrance animation delay
+	if (isEntering && entranceDelay !== undefined) {
+		style.animationDelay = `${entranceDelay}ms`;
+	}
 
 	// Set transition duration dynamically when moving
 	if (isMoving) {
@@ -60,7 +67,7 @@ function Tile({
 		style.backgroundClip = "border-box";
 	}
 
-	const className = `tile${isClickable ? " clickable" : ""}${isMoving ? " moving" : ""}`;
+	const className = `tile${isClickable ? " clickable" : ""}${isMoving ? " moving" : ""}${isEntering ? " entering" : ""}`;
 
 	return (
 		<div

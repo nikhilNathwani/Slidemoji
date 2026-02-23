@@ -12,9 +12,7 @@ import {
 	getTileIndexFromDirection,
 } from "../utils/boardHelpers";
 import { createEmojiSvgUrl } from "../utils/emoji";
-
-// ===== Constants =====
-const ANIMATION_DURATION_MS = 400; // Must match CSS transition duration
+import { ANIMATION_DURATION_MS } from "../constants";
 
 // ===== Main Component =====
 
@@ -25,6 +23,7 @@ function Board({
 	onSolveRef,
 	onShuffleRef,
 	dailyEmoji,
+	isEntering,
 }) {
 	const [tiles, setTiles] = useState(() => scramblePuzzle(size));
 	const [isWon, setIsWon] = useState(false);
@@ -399,6 +398,8 @@ function Board({
 						animationDuration={ANIMATION_DURATION_MS}
 						emojiSvgUrl={emojiSvgUrl}
 						boardSize={size}
+						isEntering={isEntering}
+						entranceDelay={index * 50}
 						{...(isClickable && {
 							onClick: () => handleTileClick(index),
 							onTouchStart: (e) => handleTouchStart(e, index),

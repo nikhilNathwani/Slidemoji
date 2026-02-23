@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import "../App.css";
+import "../../App.css";
 
 // Simple 3x3 grid showing tile sliding animation
 function AnimatedTileGrid() {

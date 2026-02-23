@@ -1,4 +1,5 @@
 import Toggle from "../common/Toggle";
+import { DIFFICULTIES } from "../../constants";
 
 function SettingsContent({
 	gridSize,
@@ -9,10 +10,7 @@ function SettingsContent({
 	onShowNumbersChange,
 	onSolve,
 }) {
-	const difficulties = [
-		{ size: 3, label: "Normal", display: "3×3" },
-		{ size: 4, label: "Hard", display: "4×4" },
-	];
+	const difficulties = DIFFICULTIES;
 
 	return (
 		<div className="settings-content">

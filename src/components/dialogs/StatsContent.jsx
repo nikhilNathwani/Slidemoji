@@ -1,4 +1,5 @@
 import Trophy from "../common/Trophy";
+import GoogleSignInButton from "../common/GoogleSignInButton";
 
 function StatsContent({ earnedEmojis, dailyEmoji }) {
 	return (
@@ -26,17 +27,9 @@ function StatsContent({ earnedEmojis, dailyEmoji }) {
 					Sign in to save your trophies and compete on the
 					leaderboard!
 				</p>
-				<button
-					className="google-signin-btn"
-					onClick={() => alert("Sign in coming soon!")}
-				>
-					<img
-						src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-						alt="Google"
-						className="google-icon"
-					/>
-					Sign in with Google
-				</button>
+				<GoogleSignInButton
+					onSignIn={() => alert("Sign in coming soon!")}
+				/>
 				<p className="privacy-note">
 					<i className="fas fa-shield-alt"></i>
 					<span>

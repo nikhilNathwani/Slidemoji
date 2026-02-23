@@ -1,4 +1,5 @@
 import emojiCalendar from "../../data/emoji_calendar.json";
+import { EMOJI_SVG_SIZE, EMOJI_SVG_FONT_SIZE } from "../constants";
 
 // Get daily emoji based on current date
 export function getDailyEmoji() {
@@ -16,8 +17,8 @@ export function getDailyEmoji() {
 // Generate SVG data URL for emoji (to be created once and reused by all tiles)
 export function createEmojiSvgUrl(emoji) {
 	// High resolution SVG with proper scaling for crisp rendering
-	const svgString = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048" width="2048" height="2048">
-		<text x="50%" y="50%" font-size="1600" text-anchor="middle" dominant-baseline="central">${emoji}</text>
+	const svgString = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${EMOJI_SVG_SIZE} ${EMOJI_SVG_SIZE}" width="${EMOJI_SVG_SIZE}" height="${EMOJI_SVG_SIZE}">
+		<text x="50%" y="50%" font-size="${EMOJI_SVG_FONT_SIZE}" text-anchor="middle" dominant-baseline="central">${emoji}</text>
 	</svg>`;
 	const encodedSvg = encodeURIComponent(svgString);
 	return `data:image/svg+xml,${encodedSvg}`;

@@ -1,7 +1,7 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import "./App.css";
 import Board from "./components/Board";
-import LandingPage from "./components/LandingPage";
+import LandingPage from "./components/landing/LandingPage";
 import Header from "./components/Header";
 import Toggle from "./components/common/Toggle";
 import Dialog from "./components/dialogs/Dialog";
@@ -10,17 +10,24 @@ import WinContent from "./components/dialogs/WinContent";
 import ConfirmContent from "./components/dialogs/ConfirmContent";
 import StatsContent from "./components/dialogs/StatsContent";
 import { getDailyEmoji } from "./utils/emoji";
+import {
+	DEFAULT_GRID_SIZE,
+	DEFAULT_DARK_MODE,
+	DEFAULT_SHOW_NUMBERS,
+} from "./constants";
 
 function App() {
 	const dailyEmoji = getDailyEmoji();
 	const [showLanding, setShowLanding] = useState(true);
-	const [gridSize, setGridSize] = useState(3); // Default to 3×3
+	const [isEntering, setIsEntering] = useState(false);
+	const [showControls, setShowControls] = useState(false);
+	const [gridSize, setGridSize] = useState(DEFAULT_GRID_SIZE);
 	const [showSettings, setShowSettings] = useState(false);
 	const [showWinDialog, setShowWinDialog] = useState(false);
 	const [showStats, setShowStats] = useState(false);
-	const [showNumbers, setShowNumbers] = useState(true); // Default to showing numbers
+	const [showNumbers, setShowNumbers] = useState(DEFAULT_SHOW_NUMBERS);
 	const [isWon, setIsWon] = useState(false);
-	const [darkMode, setDarkMode] = useState(true); // Default to dark mode
+	const [darkMode, setDarkMode] = useState(DEFAULT_DARK_MODE);
 	const [showShuffleConfirm, setShowShuffleConfirm] = useState(false);
 	const [showDifficultyConfirm, setShowDifficultyConfirm] = useState(false);
 	const [pendingSize, setPendingSize] = useState(null);
@@ -77,10 +84,29 @@ function App() {
 		setShowDifficultyConfirm(false);
 	};
 
+	// Handle entrance animation timing
+	useEffect(() => {
+		if (isEntering) {
+			// Tiles animate in over ~800ms (staggered)
+			// Wait for tiles to finish, then show controls
+			const timer = setTimeout(() => {
+				setShowControls(true);
+				setIsEntering(false);
+			}, 1000); // Adjust timing as needed
+			return () => clearTimeout(timer);
+		}
+	}, [isEntering]);
+
+	const handlePlay = () => {
+		setShowLanding(false);
+		setIsEntering(true);
+		setShowControls(false);
+	};
+
 	if (showLanding) {
 		return (
 			<div className={`app ${darkMode ? "dark-theme" : "light-theme"}`}>
-				<LandingPage onPlay={() => setShowLanding(false)} />
+				<LandingPage onPlay={handlePlay} />
 			</div>
 		);
 	}
@@ -94,8 +120,10 @@ function App() {
 				showSignIn={true}
 			/>
 			<main>
-				<div className="puzzle-info">
-					<div className="puzzle-title">Slidemoji #001</div>
+				<div
+					className={`puzzle-info ${showControls ? "visible" : "hidden"}`}
+				>
+					<div className="puzzle-title">#001</div>
 					<div className="puzzle-emoji">{dailyEmoji.emoji}</div>
 					<div className="puzzle-emoji-name">"{dailyEmoji.name}"</div>
 				</div>
@@ -108,9 +136,12 @@ function App() {
 						onSolveRef={solveRef}
 						onShuffleRef={shuffleRef}
 						dailyEmoji={dailyEmoji.emoji}
+						isEntering={isEntering}
 					/>
 
-					<div className="game-controls">
+					<div
+						className={`game-controls ${showControls ? "visible" : "hidden"}`}
+					>
 						<button
 							className="control-button"
 							onClick={handleShuffleClick}

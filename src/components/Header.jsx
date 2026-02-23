@@ -1,10 +1,13 @@
+import styles from "./Header.module.css";
+import GoogleSignInButton from "./common/GoogleSignInButton";
+
 function Header({ onSettingsClick, onStatsClick, onSignIn }) {
 	return (
-		<header className="app-header">
-			<h1 className="app-title">Slidemoji</h1>
-			<div className="header-actions">
+		<header className={styles.appHeader}>
+			<h1 className={styles.appTitle}>Slidemoji</h1>
+			<div className={styles.headerActions}>
 				<button
-					className="icon-button"
+					className={styles.iconButton}
 					onClick={onSettingsClick}
 					aria-label="Settings"
 					title="Settings"
@@ -12,26 +15,14 @@ function Header({ onSettingsClick, onStatsClick, onSignIn }) {
 					<i className="fas fa-cog"></i>
 				</button>
 				<button
-					className="icon-button"
+					className={styles.iconButton}
 					onClick={onStatsClick}
 					aria-label="Stats"
 					title="Stats"
 				>
 					<i className="fas fa-trophy"></i>
 				</button>
-				<button
-					className="google-signin-btn"
-					onClick={onSignIn}
-					aria-label="Sign In"
-					title="Sign In with Google"
-				>
-					<img
-						src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-						alt="Google"
-						className="google-icon"
-					/>
-					Sign in
-				</button>
+				<GoogleSignInButton onSignIn={onSignIn} variant="header" />
 			</div>
 		</header>
 	);
