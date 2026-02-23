@@ -525,6 +525,10 @@ html {
 /* Win Dialog */
 .win-dialog-content {
 	text-align: center;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 20px;
 }
 
 .win-dialog-content .emoji {

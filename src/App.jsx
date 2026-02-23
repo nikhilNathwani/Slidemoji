@@ -2,14 +2,13 @@ import { useState, useRef } from "react";
 import "./App.css";
 import Board from "./components/Board";
 import LandingPage from "./components/LandingPage";
-import Toggle from "./components/Toggle";
-import Trophy from "./components/Trophy";
-import Dialog, {
-	SettingsContent,
-	WinContent,
-	ConfirmContent,
-	StatsContent,
-} from "./components/Dialog";
+import Header from "./components/Header";
+import Toggle from "./components/common/Toggle";
+import Dialog from "./components/dialogs/Dialog";
+import SettingsContent from "./components/dialogs/SettingsContent";
+import WinContent from "./components/dialogs/WinContent";
+import ConfirmContent from "./components/dialogs/ConfirmContent";
+import StatsContent from "./components/dialogs/StatsContent";
 import { getDailyEmoji } from "./utils/emoji";
 
 function App() {
@@ -88,50 +87,17 @@ function App() {
 
 	return (
 		<div className={`app ${darkMode ? "dark-theme" : "light-theme"}`}>
-			<header className="app-header">
-				<h1 className="app-title">Slidemoji</h1>
-				<div className="header-actions">
-					<button
-						className="icon-button"
-						onClick={() => setShowSettings(true)}
-						aria-label="Settings"
-						title="Settings"
-					>
-						<i className="fas fa-cog"></i>
-					</button>
-					<button
-						className="icon-button"
-						onClick={() => setShowStats(true)}
-						aria-label="Stats"
-						title="Stats"
-					>
-						<i className="fas fa-trophy"></i>
-					</button>
-					<button
-						className="google-signin-btn"
-						onClick={() => alert("Sign in coming soon!")}
-						aria-label="Sign In"
-						title="Sign In with Google"
-					>
-						<img
-							src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-							alt="Google"
-							className="google-icon"
-						/>
-						Sign in
-					</button>
-				</div>
-			</header>
-
+			<Header
+				onSettingsClick={() => setShowSettings(true)}
+				onStatsClick={() => setShowStats(true)}
+				onSignIn={() => alert("Sign in coming soon!")}
+				showSignIn={true}
+			/>
 			<main>
 				<div className="puzzle-info">
-					<div className="puzzle-of-day">
-						<div className="puzzle-title">Slidemoji #001</div>
-						<div className="puzzle-emoji">{dailyEmoji.emoji}</div>
-						<div className="puzzle-emoji-name">
-							"{dailyEmoji.name}"
-						</div>
-					</div>
+					<div className="puzzle-title">Slidemoji #001</div>
+					<div className="puzzle-emoji">{dailyEmoji.emoji}</div>
+					<div className="puzzle-emoji-name">"{dailyEmoji.name}"</div>
 				</div>
 
 				<div className="board-container">

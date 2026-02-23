@@ -2,7 +2,7 @@ import styles from "./Trophy.module.css";
 
 function Trophy({ trophyNum, trophyEmoji, trophyName = null, isMini = false }) {
 	return (
-		<div className={`${styles.trophy} ${isMini ? styles.trophyMini : ""}`}>
+		<div className={`${styles.trophy} ${isMini && styles.trophyMini}`}>
 			<div className={styles.number}>
 				#{String(trophyNum).padStart(3, "0")}
 			</div>
