@@ -131,7 +131,39 @@ function Board({
 					`[data-tile-number="${tileValue}"]`,
 				);
 				if (movingTileElement) {
+					// Log current DOM position before move
+					const currentTransform = movingTileElement.style.transform;
+					const computedStyle =
+						window.getComputedStyle(movingTileElement);
+					const rect = movingTileElement.getBoundingClientRect();
+					console.log("[moveTile] DOM position before move:", {
+						tileValue,
+						currentTransform,
+						computedTransform: computedStyle.transform,
+						rect: {
+							x: rect.x,
+							y: rect.y,
+							width: rect.width,
+							height: rect.height,
+						},
+						newPosition,
+					});
+
 					movingTileElement.style.transform = `translate(${newPosition.x}px, ${newPosition.y}px)`;
+
+					// Log after applying new transform
+					setTimeout(() => {
+						const afterRect =
+							movingTileElement.getBoundingClientRect();
+						console.log(
+							"[moveTile] DOM position after transform:",
+							{
+								tileValue,
+								newTransform: movingTileElement.style.transform,
+								afterRect: { x: afterRect.x, y: afterRect.y },
+							},
+						);
+					}, 0);
 				}
 			}
 

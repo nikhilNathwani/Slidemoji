@@ -1,4 +1,5 @@
 import Toggle from "./Toggle";
+import Trophy from "./Trophy";
 
 function Dialog({ isOpen, onClose, title, children }) {
 	if (!isOpen) return null;
@@ -24,10 +25,12 @@ function Dialog({ isOpen, onClose, title, children }) {
 // ===== Dialog Content Components =====
 
 export function SettingsContent({
-	selectedSize,
-	onSizeChange,
+	gridSize,
+	onGridSizeChange,
 	darkMode,
 	onDarkModeChange,
+	showNumbers,
+	onShowNumbersChange,
 	onSolve,
 }) {
 	const difficulties = [
@@ -44,11 +47,11 @@ export function SettingsContent({
 						<button
 							key={diff.size}
 							className={
-								selectedSize === diff.size
+								gridSize === diff.size
 									? "difficulty-btn active"
 									: "difficulty-btn"
 							}
-							onClick={() => onSizeChange(diff.size)}
+							onClick={() => onGridSizeChange(diff.size)}
 						>
 							<span className="difficulty-label">
 								{diff.label}
@@ -61,16 +64,18 @@ export function SettingsContent({
 				</div>
 			</div>
 			<div className="settings-item">
+				<label className="settings-label">Show Numbers</label>
+				<Toggle
+					isOn={showNumbers}
+					onToggle={() => onShowNumbersChange(!showNumbers)}
+				/>
+			</div>
+			<div className="settings-item">
 				<label className="settings-label">Dark Mode</label>
-				<button
-					className={`toggle-switch ${darkMode ? "on" : "off"}`}
-					onClick={() => onDarkModeChange(!darkMode)}
-				>
-					<span className="toggle-slider"></span>
-					<span className="toggle-label">
-						{darkMode ? "ON" : "OFF"}
-					</span>
-				</button>
+				<Toggle
+					isOn={darkMode}
+					onToggle={() => onDarkModeChange(!darkMode)}
+				/>
 			</div>
 			<div className="settings-divider"></div>
 			<div className="settings-actions">
@@ -83,7 +88,56 @@ export function SettingsContent({
 	);
 }
 
-export function WinContent({ earnedEmoji }) {
+export function StatsContent({ earnedEmojis, dailyEmoji }) {
+	return (
+		<div className="stats-content">
+			<div className="trophy-case">
+				<h3 className="trophy-case-title">
+					<i className="fas fa-trophy"></i> Trophy Case
+				</h3>
+				<div className="emoji-grid">
+					{earnedEmojis.map((emoji, index) => (
+						<Trophy
+							key={index}
+							trophyNum={1}
+							trophyEmoji={emoji}
+							trophyName={dailyEmoji.name}
+							isMini={true}
+						/>
+					))}
+				</div>
+			</div>
+			<div className="stats-divider"></div>
+			<div className="stats-signin">
+				<h3 className="stats-signin-title">Sync Your Progress</h3>
+				<p className="stats-description">
+					Sign in to save your trophies and compete on the
+					leaderboard!
+				</p>
+				<button
+					className="google-signin-btn"
+					onClick={() => alert("Sign in coming soon!")}
+				>
+					<img
+						src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+						alt="Google"
+						className="google-icon"
+					/>
+					Sign in with Google
+				</button>
+				<p className="privacy-note">
+					<i className="fas fa-shield-alt"></i>
+					<span>
+						We respect your privacy. Your data is never sold or
+						shared. We only use your email to save your progress.
+					</span>
+				</p>
+			</div>
+		</div>
+	);
+}
+
+export function WinContent({ earnedEmoji, earnedEmojiName }) {
 	const handleShare = () => {
 		const shareText = `Slidemoji #001 ${earnedEmoji}
 
@@ -104,11 +158,12 @@ Play at slidemoji.com`;
 
 	return (
 		<div className="win-dialog-content">
-			<div className="trophy-item win-trophy-display">
-				<div className="trophy-number">#001</div>
-				<div className="trophy-emoji">{earnedEmoji}</div>
-				<div className="trophy-name">Today's Emoji</div>
-			</div>
+			<Trophy
+				key={1} //is key necessary here? since its just one trophy, not a list?
+				trophyNum={1}
+				trophyEmoji={earnedEmoji}
+				trophyName={earnedEmojiName}
+			/>
 			<h3>You earned today's emoji!</h3>
 
 			<button className="share-button" onClick={handleShare}>

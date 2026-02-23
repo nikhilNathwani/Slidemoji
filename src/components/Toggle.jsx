@@ -1,12 +1,14 @@
+import styles from "./Toggle.module.css";
+
 function Toggle({ isOn, onToggle, disabled = false }) {
 	return (
 		<button
-			className={`toggle-switch ${isOn ? "on" : "off"}`}
+			className={`${styles.toggle} ${isOn ? styles.on : styles.off}`}
 			onClick={onToggle}
 			disabled={disabled}
 		>
-			<span className="toggle-slider"></span>
-			<span className="toggle-label">{isOn ? "ON" : "OFF"}</span>
+			<span className={styles.slider}></span>
+			<span className={styles.label}>{isOn ? "ON" : "OFF"}</span>
 		</button>
 	);
 }
