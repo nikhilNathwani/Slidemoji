@@ -197,7 +197,10 @@ function App() {
 				onClose={handleCloseWinDialog}
 				title="🎉 Congratulations!"
 			>
-				<WinContent earnedEmoji={dailyEmoji.emoji} />
+				<WinContent
+					earnedEmoji={dailyEmoji.emoji}
+					earnedEmojiName={dailyEmoji.name}
+				/>
 			</Dialog>
 
 			<Dialog
