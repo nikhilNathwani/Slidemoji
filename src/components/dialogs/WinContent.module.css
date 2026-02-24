@@ -1,4 +1,7 @@
 .winDialogContent {
+	display: flex;
+	flex-flow: column nowrap;
+	align-items: center;
 	text-align: center;
 }
 

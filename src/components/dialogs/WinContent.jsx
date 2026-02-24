@@ -1,4 +1,5 @@
 import Trophy from "../common/Trophy";
+import GoogleSignInButton from "../common/GoogleSignInButton";
 import styles from "./WinContent.module.css";
 
 function WinContent({ earnedEmoji, earnedEmojiName }) {
@@ -39,17 +40,9 @@ Play at slidemoji.com`;
 					Sign in to save your trophy and compete for tomorrow's
 					emoji!
 				</p>
-				<button
-					className="google-signin-btn"
+				<GoogleSignInButton
 					onClick={() => alert("Sign in coming soon!")}
-				>
-					<img
-						src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-						alt="Google"
-						className="google-icon"
-					/>
-					Sign in with Google
-				</button>
+				/>
 			</div>
 		</div>
 	);
