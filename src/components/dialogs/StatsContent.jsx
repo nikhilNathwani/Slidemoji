@@ -1,14 +1,15 @@
 import Trophy from "../common/Trophy";
 import GoogleSignInButton from "../common/GoogleSignInButton";
+import styles from "./StatsContent.module.css";
 
 function StatsContent({ earnedEmojis, dailyEmoji }) {
 	return (
-		<div className="stats-content">
-			<div className="trophy-case">
-				<h3 className="trophy-case-title">
+		<div className={styles.statsContent}>
+			<div className={styles.trophyCase}>
+				<h3>
 					<i className="fas fa-trophy"></i> Trophy Case
 				</h3>
-				<div className="emoji-grid">
+				<div className={styles.emojiGrid}>
 					{earnedEmojis.map((emoji, index) => (
 						<Trophy
 							key={index}
@@ -20,17 +21,17 @@ function StatsContent({ earnedEmojis, dailyEmoji }) {
 					))}
 				</div>
 			</div>
-			<div className="stats-divider"></div>
-			<div className="stats-signin">
-				<h3 className="stats-signin-title">Sync Your Progress</h3>
-				<p className="stats-description">
+			<div className={styles.statsDivider}></div>
+			<div className={styles.statsSignin}>
+				<h3 className={styles.statsSigninTitle}>Sync Your Progress</h3>
+				<p className={styles.statsDescription}>
 					Sign in to save your trophies and compete on the
 					leaderboard!
 				</p>
 				<GoogleSignInButton
-					onSignIn={() => alert("Sign in coming soon!")}
+					onClick={() => alert("Sign in coming soon!")}
 				/>
-				<p className="privacy-note">
+				<p className={styles.privacyNote}>
 					<i className="fas fa-shield-alt"></i>
 					<span>
 						We respect your privacy. Your data is never sold or

@@ -1,15 +1,14 @@
 import styles from "./GoogleSignInButton.module.css";
 
-function GoogleSignInButton({ onSignIn, variant }) {
-	const className =
-		variant === "header"
-			? `${styles.googleSignInButton} ${styles.headerVariant}`
-			: styles.googleSignInButton;
+function GoogleSignInButton({ onClick, isHeader }) {
+	const className = isHeader
+		? `${styles.googleSignInButton} ${styles.headerVariant}`
+		: styles.googleSignInButton;
 
 	return (
 		<button
 			className={className}
-			onClick={onSignIn}
+			onClick={onClick}
 			aria-label="Sign In"
 			title="Sign In with Google"
 		>

@@ -22,7 +22,7 @@ function Header({ onSettingsClick, onStatsClick, onSignIn }) {
 				>
 					<i className="fas fa-trophy"></i>
 				</button>
-				<GoogleSignInButton onSignIn={onSignIn} variant="header" />
+				<GoogleSignInButton onClick={onSignIn} isHeader={true} />
 			</div>
 		</header>
 	);

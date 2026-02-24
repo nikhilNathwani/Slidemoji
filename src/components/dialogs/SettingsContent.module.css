@@ -1,0 +1,115 @@
+.settingsContent {
+	display: flex;
+	flex-direction: column;
+	gap: 28px;
+	min-width: 300px;
+}
+
+.settingsItem {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 20px;
+}
+
+.settingsLabel {
+	font-weight: 600;
+	font-size: 1rem;
+	color: var(--text-primary);
+}
+
+.difficultySelector {
+	display: flex;
+	gap: 12px;
+}
+
+.difficultyBtn {
+	padding: 10px 16px;
+	border: 2px solid var(--tile-border);
+	background-color: var(--surface-secondary);
+	color: var(--text-primary);
+	border-radius: 8px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 4px;
+	min-width: 80px;
+}
+
+.difficultyBtn:hover {
+	border-color: var(--text-primary);
+	background-color: var(--surface-primary);
+}
+
+.difficultyBtn.active {
+	background-color: var(--surface-primary);
+	border-color: var(--text-primary);
+	color: var(--text-primary);
+	opacity: 1;
+}
+
+.difficultyLabel {
+	font-weight: 600;
+	font-size: 0.95rem;
+}
+
+.difficultySize {
+	font-size: 0.85rem;
+	opacity: 0.8;
+}
+
+.settingsDivider {
+	height: 1px;
+	background: linear-gradient(
+		to right,
+		transparent,
+		var(--border-secondary),
+		transparent
+	);
+	margin: 20px 0;
+}
+
+.settingsActions {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.actionButton {
+	padding: 14px 20px;
+	border-radius: 12px;
+	border: 2px solid var(--border-secondary);
+	background-color: var(--surface-secondary);
+	color: var(--text-primary);
+	font-size: 1rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+}
+
+.actionButton:hover {
+	background-color: var(--surface-primary);
+	border-color: var(--border-primary);
+	transform: translateY(-2px);
+}
+
+.actionButton:active {
+	transform: translateY(0);
+}
+
+.actionButton.solve {
+	border-color: rgba(251, 146, 60, 0.4);
+	opacity: 0.7;
+}
+
+.actionButton.solve:hover {
+	background-color: rgba(251, 146, 60, 0.15);
+	border-color: rgba(251, 146, 60, 0.6);
+	opacity: 1;
+}

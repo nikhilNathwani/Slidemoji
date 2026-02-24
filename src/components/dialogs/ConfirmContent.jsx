@@ -1,12 +1,20 @@
+import styles from "./ConfirmContent.module.css";
+
 function ConfirmContent({ message, onConfirm, onCancel }) {
 	return (
-		<div className="confirm-dialog-content">
+		<div className={styles.confirmDialogContent}>
 			<p>{message}</p>
-			<div className="confirm-buttons">
-				<button className="confirm-btn cancel" onClick={onCancel}>
+			<div className={styles.confirmButtons}>
+				<button
+					className={`${styles.confirmBtn} ${styles.cancel}`}
+					onClick={onCancel}
+				>
 					Cancel
 				</button>
-				<button className="confirm-btn confirm" onClick={onConfirm}>
+				<button
+					className={`${styles.confirmBtn} ${styles.confirm}`}
+					onClick={onConfirm}
+				>
 					Confirm
 				</button>
 			</div>

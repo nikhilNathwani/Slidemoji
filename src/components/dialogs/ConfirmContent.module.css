@@ -1,0 +1,48 @@
+.confirmDialogContent {
+	text-align: center;
+	padding: 10px 0;
+}
+
+.confirmDialogContent p {
+	color: var(--text-primary);
+	font-size: 1rem;
+	line-height: 1.5;
+	margin-bottom: 24px;
+}
+
+.confirmButtons {
+	display: flex;
+	gap: 12px;
+	justify-content: center;
+}
+
+.confirmBtn {
+	padding: 10px 24px;
+	font-size: 1rem;
+	font-weight: 600;
+	border: none;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	min-width: 100px;
+}
+
+.confirmBtn.cancel {
+	background-color: var(--tile-border);
+	color: var(--text-primary);
+}
+
+.confirmBtn.cancel:hover {
+	background-color: var(--surface-primary);
+}
+
+.confirmBtn.confirm {
+	background-color: var(--surface-primary);
+	color: var(--text-primary);
+	border: 2px solid var(--border-primary);
+}
+
+.confirmBtn.confirm:hover {
+	background-color: var(--surface-secondary);
+	border-color: var(--text-primary);
+}

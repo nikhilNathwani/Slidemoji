@@ -1,4 +1,5 @@
 import Trophy from "../common/Trophy";
+import styles from "./WinContent.module.css";
 
 function WinContent({ earnedEmoji, earnedEmojiName }) {
 	const handleShare = () => {
@@ -20,7 +21,7 @@ Play at slidemoji.com`;
 	};
 
 	return (
-		<div className="win-dialog-content">
+		<div className={styles.winDialogContent}>
 			<Trophy
 				trophyNum={1}
 				trophyEmoji={earnedEmoji}
@@ -28,13 +29,13 @@ Play at slidemoji.com`;
 			/>
 			<h3>You earned today's emoji!</h3>
 
-			<button className="share-button" onClick={handleShare}>
+			<button className={styles.shareButton} onClick={handleShare}>
 				<i className="fas fa-share-nodes"></i>
 				Share
 			</button>
 
-			<div className="win-signin-prompt">
-				<p className="signin-message">
+			<div className={styles.winSigninPrompt}>
+				<p className={styles.signinMessage}>
 					Sign in to save your trophy and compete for tomorrow's
 					emoji!
 				</p>

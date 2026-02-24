@@ -1,5 +1,6 @@
 import Toggle from "../common/Toggle";
 import { DIFFICULTIES } from "../../constants";
+import styles from "./SettingsContent.module.css";
 
 function SettingsContent({
 	gridSize,
@@ -13,47 +14,50 @@ function SettingsContent({
 	const difficulties = DIFFICULTIES;
 
 	return (
-		<div className="settings-content">
-			<div className="settings-item">
-				<label className="settings-label">Difficulty</label>
-				<div className="difficulty-selector">
+		<div className={styles.settingsContent}>
+			<div className={styles.settingsItem}>
+				<label className={styles.settingsLabel}>Difficulty</label>
+				<div className={styles.difficultySelector}>
 					{difficulties.map((diff) => (
 						<button
 							key={diff.size}
 							className={
 								gridSize === diff.size
-									? "difficulty-btn active"
-									: "difficulty-btn"
+									? `${styles.difficultyBtn} ${styles.active}`
+									: styles.difficultyBtn
 							}
 							onClick={() => onGridSizeChange(diff.size)}
 						>
-							<span className="difficulty-label">
+							<span className={styles.difficultyLabel}>
 								{diff.label}
 							</span>
-							<span className="difficulty-size">
+							<span className={styles.difficultySize}>
 								{diff.display}
 							</span>
 						</button>
 					))}
 				</div>
 			</div>
-			<div className="settings-item">
-				<label className="settings-label">Show Numbers</label>
+			<div className={styles.settingsItem}>
+				<label className={styles.settingsLabel}>Show Numbers</label>
 				<Toggle
 					isOn={showNumbers}
 					onToggle={() => onShowNumbersChange(!showNumbers)}
 				/>
 			</div>
-			<div className="settings-item">
-				<label className="settings-label">Dark Mode</label>
+			<div className={styles.settingsItem}>
+				<label className={styles.settingsLabel}>Dark Mode</label>
 				<Toggle
 					isOn={darkMode}
 					onToggle={() => onDarkModeChange(!darkMode)}
 				/>
 			</div>
-			<div className="settings-divider"></div>
-			<div className="settings-actions">
-				<button className="action-button solve" onClick={onSolve}>
+			<div className={styles.settingsDivider}></div>
+			<div className={styles.settingsActions}>
+				<button
+					className={`${styles.actionButton} ${styles.solve}`}
+					onClick={onSolve}
+				>
 					<i className="fas fa-magic"></i>
 					Solve (Dev)
 				</button>

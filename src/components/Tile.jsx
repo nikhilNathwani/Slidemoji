@@ -41,7 +41,14 @@ function Tile({
 		willChange: isMoving ? "transform" : "auto",
 		width: `${tileSizePx}px`,
 		height: `${tileSizePx}px`,
+		"--tile-x": `${position.x}px`,
+		"--tile-y": `${position.y}px`,
 	};
+
+	// Start invisible if entering (before animation starts)
+	if (isEntering) {
+		style.opacity = 0;
+	}
 
 	// Add entrance animation delay
 	if (isEntering && entranceDelay !== undefined) {
