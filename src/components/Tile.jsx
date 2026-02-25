@@ -36,6 +36,8 @@ function Tile({
 	boardSize,
 	playingEntranceAnimation,
 	entranceDelay,
+	celebrating,
+	celebrationDelay,
 }) {
 	const style = {
 		position: "absolute",
@@ -55,6 +57,11 @@ function Tile({
 	// Add entrance animation delay
 	if (playingEntranceAnimation && entranceDelay !== undefined) {
 		style.animationDelay = `${entranceDelay}ms`;
+	}
+
+	// Add celebration animation delay
+	if (celebrating && celebrationDelay !== undefined) {
+		style["--celebration-delay"] = `${celebrationDelay}ms`;
 	}
 
 	// Set transition duration dynamically when moving
@@ -80,6 +87,7 @@ function Tile({
 	if (isClickable) classNames.push(styles.clickable);
 	if (isMoving) classNames.push(styles.moving);
 	if (playingEntranceAnimation) classNames.push(styles.entering);
+	if (celebrating) classNames.push(styles.celebrating);
 
 	return (
 		<div

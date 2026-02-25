@@ -1,7 +1,7 @@
 import styles from "./Header.module.css";
 import GoogleSignInButton from "./common/GoogleSignInButton";
 
-function Header({ onSettingsClick, onStatsClick, onSignIn }) {
+function Header({ onSettingsClick, onStatsClick, onSignIn, signedIn }) {
 	return (
 		<header className={styles.appHeader}>
 			<h1 className={styles.appTitle}>Slidemoji</h1>
@@ -22,7 +22,17 @@ function Header({ onSettingsClick, onStatsClick, onSignIn }) {
 				>
 					<i className="fas fa-trophy"></i>
 				</button>
-				<GoogleSignInButton onClick={onSignIn} isHeader={true} />
+				{signedIn ? (
+					<button
+						className={styles.avatarButton}
+						aria-label="Account"
+						title="Account"
+					>
+						<i className="fas fa-user-circle"></i>
+					</button>
+				) : (
+					<GoogleSignInButton onClick={onSignIn} isHeader={true} />
+				)}
 			</div>
 		</header>
 	);

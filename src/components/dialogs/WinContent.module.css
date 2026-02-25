@@ -57,6 +57,37 @@
 	font-size: 0.95rem;
 }
 
+.viewStatsButton {
+	margin: 16px auto 8px auto;
+	padding: 12px 32px;
+	background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+	color: white;
+	border: none;
+	border-radius: 8px;
+	font-size: 1rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	justify-content: center;
+	box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+}
+
+.viewStatsButton:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 6px 16px rgba(251, 191, 36, 0.4);
+}
+
+.viewStatsButton:active {
+	transform: translateY(0);
+}
+
+.viewStatsButton i {
+	font-size: 0.95rem;
+}
+
 .winTrophyDisplay {
 	margin: 20px auto 15px auto;
 	display: inline-block;

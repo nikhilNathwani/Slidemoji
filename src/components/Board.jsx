@@ -27,6 +27,7 @@ function Board({
 }) {
 	const [tiles, setTiles] = useState(() => scramblePuzzle(size));
 	const [isWon, setIsWon] = useState(false);
+	const [celebrating, setCelebrating] = useState(false);
 	const [movingTileValue, setMovingTileValue] = useState(null);
 	const boardRef = useRef(null);
 	const touchStartRef = useRef(null);
@@ -55,6 +56,7 @@ function Board({
 		setTiles(getSolvedState(size));
 		setIsWon(true);
 		hasShownWin.current = false;
+		setCelebrating(true);
 	}, [size]);
 
 	// Shuffle function
@@ -62,6 +64,7 @@ function Board({
 		setTiles(scramblePuzzle(size));
 		setIsWon(false);
 		hasShownWin.current = false;
+		setCelebrating(false);
 	}, [size]);
 
 	// Expose functions to parent
@@ -79,6 +82,7 @@ function Board({
 		setTiles(scramblePuzzle(size));
 		setIsWon(false);
 		hasShownWin.current = false;
+		setCelebrating(false);
 	}, [size]);
 
 	// Handle window resize
@@ -94,10 +98,12 @@ function Board({
 	useEffect(() => {
 		if (isWon && onWin && !hasShownWin.current) {
 			hasShownWin.current = true;
+			// Start celebration
+			setCelebrating(true);
 			// Delay to show win animation before dialog
 			setTimeout(() => {
 				onWin();
-			}, 800); // Delay win dialog by 800ms
+			}, 1200); // Delay win dialog by 1200ms to allow celebration to play
 		}
 	}, [isWon, onWin]);
 
@@ -169,15 +175,15 @@ function Board({
 			// Update React state after animation completes
 			const newTiles = swapTiles(tiles, tileIndex, currentGapIndex);
 
-			setTimeout(() => {
-				if (checkWin(newTiles, getSolvedState(size))) {
-					setIsWon(true);
-				}
+				setTimeout(() => {
+					if (checkWin(newTiles, getSolvedState(size))) {
+						setIsWon(true);
+					}
 
-				setTiles(newTiles);
-				isAnimating.current = false;
-				setMovingTileValue(null);
-			}, ANIMATION_DURATION_MS);
+					setTiles(newTiles);
+					isAnimating.current = false;
+					setMovingTileValue(null);
+				}, ANIMATION_DURATION_MS);
 		},
 		[tiles, size, tileSizePx],
 	);
@@ -404,6 +410,8 @@ function Board({
 						boardSize={size}
 						playingEntranceAnimation={playingEntranceAnimation}
 						entranceDelay={index * 50}
+						celebrating={celebrating}
+						celebrationDelay={index * 60}
 						{...(isClickable && {
 							onClick: () => handleTileClick(index),
 							onTouchStart: (e) => handleTouchStart(e, index),

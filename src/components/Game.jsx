@@ -16,9 +16,9 @@ function Game({
 	showControls,
 	onShuffle,
 }) {
-	const [showShuffleConfirm, setShowShuffleConfirm] = useState(false);
+	const [showRestartConfirm, setShowRestartConfirm] = useState(false);
 	const solveRef = useRef(null);
-	const shuffleRef = useRef(null);
+	const restartRef = useRef(null);
 
 	// Expose solve ref to parent component (for Settings dialog)
 	useEffect(() => {
@@ -31,17 +31,17 @@ function Game({
 		}
 	}, [onSolveRef]);
 
-	const handleShuffleClick = () => {
-		setShowShuffleConfirm(true);
+	const handleRestartClick = () => {
+		setShowRestartConfirm(true);
 	};
 
-	const handleShuffleConfirm = () => {
-		setShowShuffleConfirm(false);
+	const handleRestartConfirm = () => {
+		setShowRestartConfirm(false);
 		if (onShuffle) {
 			onShuffle(); // Reset isWon in parent
 		}
-		if (shuffleRef.current) {
-			shuffleRef.current();
+		if (restartRef.current) {
+			restartRef.current();
 		}
 	};
 
@@ -61,31 +61,31 @@ function Game({
 						onWin={onWin}
 						showNumbers={showNumbers && !isWon}
 						onSolveRef={solveRef}
-						onShuffleRef={shuffleRef}
+						onShuffleRef={restartRef}
 						dailyEmoji={dailyEmoji.emoji}
 						playingEntranceAnimation={playingEntranceAnimation}
 					/>
 
 					<button
-						className={`${styles.shuffleButton} ${showControls ? styles.visible : styles.hidden}`}
-						onClick={handleShuffleClick}
-						title="Shuffle Board"
+						className={`${styles.restartButton} ${showControls ? styles.visible : styles.hidden}`}
+						onClick={handleRestartClick}
+						title="Restart Puzzle"
 					>
-						<i className="fas fa-random"></i>
-						Shuffle
+						<i className="fas fa-redo"></i>
+						Restart
 					</button>
 				</div>
 			</main>
 
 			<Dialog
-				isOpen={showShuffleConfirm}
-				onClose={() => setShowShuffleConfirm(false)}
-				title="Shuffle Board?"
+				isOpen={showRestartConfirm}
+				onClose={() => setShowRestartConfirm(false)}
+				title="Restart Puzzle?"
 			>
 				<ConfirmContent
-					message="This will shuffle the board and reset your current progress. Are you sure?"
-					onConfirm={handleShuffleConfirm}
-					onCancel={() => setShowShuffleConfirm(false)}
+					message="This will restart the puzzle and reset your current progress. Are you sure?"
+					onConfirm={handleRestartConfirm}
+					onCancel={() => setShowRestartConfirm(false)}
 				/>
 			</Dialog>
 		</>

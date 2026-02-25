@@ -2,7 +2,13 @@ import Trophy from "../common/Trophy";
 import GoogleSignInButton from "../common/GoogleSignInButton";
 import styles from "./WinContent.module.css";
 
-function WinContent({ earnedEmoji, earnedEmojiName }) {
+function WinContent({
+	earnedEmoji,
+	earnedEmojiName,
+	signedIn,
+	onSignIn,
+	onViewStats,
+}) {
 	const handleShare = () => {
 		const shareText = `Slidemoji #001 ${earnedEmoji}
 
@@ -35,15 +41,23 @@ Play at slidemoji.com`;
 				Share
 			</button>
 
-			<div className={styles.winSigninPrompt}>
-				<p className={styles.signinMessage}>
-					Sign in to save your trophy and compete for tomorrow's
-					emoji!
-				</p>
-				<GoogleSignInButton
-					onClick={() => alert("Sign in coming soon!")}
-				/>
-			</div>
+			{signedIn ? (
+				<button
+					className={styles.viewStatsButton}
+					onClick={onViewStats}
+				>
+					<i className="fas fa-trophy"></i>
+					View Trophy Case
+				</button>
+			) : (
+				<div className={styles.winSigninPrompt}>
+					<p className={styles.signinMessage}>
+						Sign in to save your trophy and compete for tomorrow's
+						emoji!
+					</p>
+					<GoogleSignInButton onClick={onSignIn} />
+				</div>
+			)}
 		</div>
 	);
 }

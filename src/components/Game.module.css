@@ -19,8 +19,8 @@
 	gap: 15px;
 }
 
-/* Shuffle Button */
-.shuffleButton {
+/* Restart Button */
+.restartButton {
 	padding: 12px 20px;
 	border-radius: 10px;
 	border: 2px solid var(--border-secondary);
@@ -37,28 +37,28 @@
 	-webkit-tap-highlight-color: transparent;
 }
 
-.shuffleButton.hidden {
+.restartButton.hidden {
 	opacity: 0;
 	pointer-events: none;
 }
 
-.shuffleButton.visible {
+.restartButton.visible {
 	opacity: 1;
 	animation: fadeInUp 0.6s ease-out;
 }
 
-.shuffleButton:hover {
+.restartButton:hover {
 	background-color: var(--surface-primary);
 	border-color: var(--text-primary);
 	transform: scale(1.05);
 	opacity: 0.9;
 }
 
-.shuffleButton:active {
+.restartButton:active {
 	transform: scale(0.95);
 }
 
-.shuffleButton i {
+.restartButton i {
 	font-size: 1rem;
 }
 

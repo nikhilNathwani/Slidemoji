@@ -58,6 +58,31 @@
 	transform: scale(0.95);
 }
 
+.avatarButton {
+	width: 48px;
+	height: 48px;
+	border-radius: 50%;
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	border: 2px solid var(--border-primary);
+	color: white;
+	font-size: 1.5rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	flex-shrink: 0;
+}
+
+.avatarButton:hover {
+	transform: scale(1.05);
+	box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.avatarButton:active {
+	transform: scale(0.95);
+}
+
 /* Mobile Responsive */
 @media (max-width: 600px) {
 	.appTitle {

@@ -17,6 +17,13 @@ import {
 
 function App() {
 	const dailyEmoji = getDailyEmoji();
+
+	// Parse signedIn state from URL params (for testing different UX)
+	const [signedIn, setSignedIn] = useState(() => {
+		const params = new URLSearchParams(window.location.search);
+		return params.get("signedIn") === "true";
+	});
+
 	const [showLanding, setShowLanding] = useState(true);
 	const [playingEntranceAnimation, setPlayingEntranceAnimation] =
 		useState(false);
@@ -47,6 +54,7 @@ function App() {
 		if (solveRef.current) {
 			solveRef.current();
 		}
+		setShowSettings(false);
 	};
 
 	const handleSizeChange = (newSize) => {
@@ -69,6 +77,20 @@ function App() {
 		setPendingSize(null);
 		setShowDifficultyConfirm(false);
 	};
+
+	// Update URL when signedIn state changes
+	useEffect(() => {
+		const params = new URLSearchParams(window.location.search);
+		if (signedIn) {
+			params.set("signedIn", "true");
+		} else {
+			params.delete("signedIn");
+		}
+		const newUrl = params.toString()
+			? `${window.location.pathname}?${params}`
+			: window.location.pathname;
+		window.history.replaceState({}, "", newUrl);
+	}, [signedIn]);
 
 	// Handle entrance animation timing
 	useEffect(() => {
@@ -102,8 +124,8 @@ function App() {
 			<Header
 				onSettingsClick={() => setShowSettings(true)}
 				onStatsClick={() => setShowStats(true)}
-				onSignIn={() => alert("Sign in coming soon!")}
-				showSignIn={true}
+				onSignIn={() => setSignedIn(true)}
+				signedIn={signedIn}
 			/>
 			<Game
 				dailyEmoji={dailyEmoji}
@@ -139,8 +161,9 @@ function App() {
 				title="Stats"
 			>
 				<StatsContent
-					earnedEmojis={earnedEmojis}
 					dailyEmoji={dailyEmoji}
+					signedIn={signedIn}
+					onSignIn={() => setSignedIn(true)}
 				/>
 			</Dialog>
 
@@ -152,6 +175,12 @@ function App() {
 				<WinContent
 					earnedEmoji={dailyEmoji.emoji}
 					earnedEmojiName={dailyEmoji.name}
+					signedIn={signedIn}
+					onSignIn={() => setSignedIn(true)}
+					onViewStats={() => {
+						setShowWinDialog(false);
+						setShowStats(true);
+					}}
 				/>
 			</Dialog>
 
