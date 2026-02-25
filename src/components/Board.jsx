@@ -175,15 +175,15 @@ function Board({
 			// Update React state after animation completes
 			const newTiles = swapTiles(tiles, tileIndex, currentGapIndex);
 
-				setTimeout(() => {
-					if (checkWin(newTiles, getSolvedState(size))) {
-						setIsWon(true);
-					}
+			setTimeout(() => {
+				if (checkWin(newTiles, getSolvedState(size))) {
+					setIsWon(true);
+				}
 
-					setTiles(newTiles);
-					isAnimating.current = false;
-					setMovingTileValue(null);
-				}, ANIMATION_DURATION_MS);
+				setTiles(newTiles);
+				isAnimating.current = false;
+				setMovingTileValue(null);
+			}, ANIMATION_DURATION_MS);
 		},
 		[tiles, size, tileSizePx],
 	);

@@ -16,7 +16,11 @@ function StatsContent({ dailyEmoji, signedIn, onSignIn }) {
 			puzzleNum: i,
 			isEarned,
 			emoji: isEarned ? (i === 1 ? dailyEmoji.emoji : "🎨") : null, // Mock emoji
-			name: isEarned ? (i === 1 ? dailyEmoji.name : "Daily Puzzle") : null,
+			name: isEarned
+				? i === 1
+					? dailyEmoji.name
+					: "Daily Puzzle"
+				: null,
 		});
 	}
 
@@ -75,7 +79,8 @@ function StatsContent({ dailyEmoji, signedIn, onSignIn }) {
 								className={styles.emptyTrophy}
 							>
 								<div className={styles.emptyTrophyNumber}>
-									#{slot.puzzleNum.toString().padStart(3, "0")}
+									#
+									{slot.puzzleNum.toString().padStart(3, "0")}
 								</div>
 								<div className={styles.emptyTrophyIcon}>
 									<i className="fas fa-lock"></i>
