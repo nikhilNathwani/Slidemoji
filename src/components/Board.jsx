@@ -23,7 +23,7 @@ function Board({
 	onSolveRef,
 	onShuffleRef,
 	dailyEmoji,
-	isEntering,
+	playingEntranceAnimation,
 }) {
 	const [tiles, setTiles] = useState(() => scramblePuzzle(size));
 	const [isWon, setIsWon] = useState(false);
@@ -402,7 +402,7 @@ function Board({
 						animationDuration={ANIMATION_DURATION_MS}
 						emojiSvgUrl={emojiSvgUrl}
 						boardSize={size}
-						isEntering={isEntering}
+						playingEntranceAnimation={playingEntranceAnimation}
 						entranceDelay={index * 50}
 						{...(isClickable && {
 							onClick: () => handleTileClick(index),

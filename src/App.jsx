@@ -1,9 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import "./App.css";
-import Board from "./components/Board";
+import Game from "./components/Game";
 import LandingPage from "./components/landing/LandingPage";
 import Header from "./components/Header";
-import Toggle from "./components/common/Toggle";
 import Dialog from "./components/dialogs/Dialog";
 import SettingsContent from "./components/dialogs/SettingsContent";
 import WinContent from "./components/dialogs/WinContent";
@@ -19,7 +18,8 @@ import {
 function App() {
 	const dailyEmoji = getDailyEmoji();
 	const [showLanding, setShowLanding] = useState(true);
-	const [isEntering, setIsEntering] = useState(false);
+	const [playingEntranceAnimation, setPlayingEntranceAnimation] =
+		useState(false);
 	const [showControls, setShowControls] = useState(false);
 	const [gridSize, setGridSize] = useState(DEFAULT_GRID_SIZE);
 	const [showSettings, setShowSettings] = useState(false);
@@ -28,12 +28,10 @@ function App() {
 	const [showNumbers, setShowNumbers] = useState(DEFAULT_SHOW_NUMBERS);
 	const [isWon, setIsWon] = useState(false);
 	const [darkMode, setDarkMode] = useState(DEFAULT_DARK_MODE);
-	const [showShuffleConfirm, setShowShuffleConfirm] = useState(false);
 	const [showDifficultyConfirm, setShowDifficultyConfirm] = useState(false);
 	const [pendingSize, setPendingSize] = useState(null);
 	const [earnedEmojis, _setEarnedEmojis] = useState([dailyEmoji.emoji]); // Mock data - will be from backend
 	const solveRef = useRef(null);
-	const shuffleRef = useRef(null);
 
 	const handleWin = () => {
 		setIsWon(true);
@@ -48,18 +46,6 @@ function App() {
 	const handleSolve = () => {
 		if (solveRef.current) {
 			solveRef.current();
-		}
-	};
-
-	const handleShuffleClick = () => {
-		setShowShuffleConfirm(true);
-	};
-
-	const handleShuffleConfirm = () => {
-		setShowShuffleConfirm(false);
-		setIsWon(false);
-		if (shuffleRef.current) {
-			shuffleRef.current();
 		}
 	};
 
@@ -86,20 +72,20 @@ function App() {
 
 	// Handle entrance animation timing
 	useEffect(() => {
-		if (isEntering) {
+		if (playingEntranceAnimation) {
 			// Tiles animate in over ~800ms (staggered)
 			// Wait for tiles to finish, then show controls
 			const timer = setTimeout(() => {
 				setShowControls(true);
-				setIsEntering(false);
+				setPlayingEntranceAnimation(false);
 			}, 1000); // Adjust timing as needed
 			return () => clearTimeout(timer);
 		}
-	}, [isEntering]);
+	}, [playingEntranceAnimation]);
 
 	const handlePlay = () => {
 		setShowLanding(false);
-		setIsEntering(true);
+		setPlayingEntranceAnimation(true);
 		setShowControls(false);
 	};
 
@@ -119,48 +105,17 @@ function App() {
 				onSignIn={() => alert("Sign in coming soon!")}
 				showSignIn={true}
 			/>
-			<main>
-				<div
-					className={`puzzle-info ${showControls ? "visible" : "hidden"}`}
-				>
-					<div className="puzzle-title">#001</div>
-					<div className="puzzle-emoji">{dailyEmoji.emoji}</div>
-					<div className="puzzle-emoji-name">"{dailyEmoji.name}"</div>
-				</div>
-
-				<div className="board-container">
-					<Board
-						size={gridSize}
-						onWin={handleWin}
-						showNumbers={showNumbers && !isWon}
-						onSolveRef={solveRef}
-						onShuffleRef={shuffleRef}
-						dailyEmoji={dailyEmoji.emoji}
-						isEntering={isEntering}
-					/>
-
-					<div
-						className={`game-controls ${showControls ? "visible" : "hidden"}`}
-					>
-						<button
-							className="control-button"
-							onClick={handleShuffleClick}
-							title="Shuffle Board"
-						>
-							<i className="fas fa-random"></i>
-							Shuffle
-						</button>
-						<div className="control-toggle">
-							<span className="control-label">Show Numbers</span>
-							<Toggle
-								isOn={showNumbers}
-								onToggle={() => setShowNumbers(!showNumbers)}
-								disabled={isWon}
-							/>
-						</div>
-					</div>
-				</div>
-			</main>
+			<Game
+				dailyEmoji={dailyEmoji}
+				gridSize={gridSize}
+				onWin={handleWin}
+				showNumbers={showNumbers}
+				isWon={isWon}
+				onSolveRef={solveRef}
+				playingEntranceAnimation={playingEntranceAnimation}
+				showControls={showControls}
+				onShuffle={() => setIsWon(false)}
+			/>
 
 			<Dialog
 				isOpen={showSettings}
@@ -197,18 +152,6 @@ function App() {
 				<WinContent
 					earnedEmoji={dailyEmoji.emoji}
 					earnedEmojiName={dailyEmoji.name}
-				/>
-			</Dialog>
-
-			<Dialog
-				isOpen={showShuffleConfirm}
-				onClose={() => setShowShuffleConfirm(false)}
-				title="Shuffle Board?"
-			>
-				<ConfirmContent
-					message="This will shuffle the board and reset your current progress. Are you sure?"
-					onConfirm={handleShuffleConfirm}
-					onCancel={() => setShowShuffleConfirm(false)}
 				/>
 			</Dialog>
 

@@ -1,0 +1,67 @@
+/* Base tile styles */
+.tile {
+	background-color: var(--tile-bg);
+	border: 1px solid var(--tile-border);
+	color: var(--text-primary);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 2rem;
+	font-weight: bold;
+	user-select: none;
+	box-sizing: border-box;
+	cursor: default;
+	transition: border 0.3s ease;
+}
+
+/* Theme-specific text shadows */
+:global(.dark-theme) .tile {
+	text-shadow:
+		0 0 8px rgba(0, 0, 0, 0.8),
+		0 0 4px rgba(0, 0, 0, 0.6);
+}
+
+:global(.light-theme) .tile {
+	text-shadow:
+		0 0 8px rgba(255, 255, 255, 0.9),
+		0 0 4px rgba(255, 255, 255, 0.7),
+		0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* State: Moving */
+.moving {
+	transform-origin: center;
+	cursor: default;
+}
+
+/* State: Clickable */
+.clickable {
+	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.clickable:not(.moving):active {
+	transform: scale(0.95);
+}
+
+.tile:not(.clickable) {
+	-webkit-tap-highlight-color: transparent;
+	pointer-events: none;
+}
+
+/* Entrance animation */
+.entering {
+	animation: tileEnter 0.6s ease-out forwards;
+}
+
+@keyframes tileEnter {
+	from {
+		opacity: 0;
+		transform: translate(var(--tile-x), var(--tile-y)) scale(0.3)
+			rotate(180deg);
+	}
+	to {
+		opacity: 1;
+		transform: translate(var(--tile-x), var(--tile-y)) scale(1) rotate(0deg);
+	}
+}

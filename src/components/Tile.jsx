@@ -1,3 +1,5 @@
+import styles from "./Tile.module.css";
+
 // ===== Helper Functions =====
 
 // Calculate which grid position the tile should be in based on its value
@@ -32,7 +34,7 @@ function Tile({
 	animationDuration,
 	emojiSvgUrl,
 	boardSize,
-	isEntering,
+	playingEntranceAnimation,
 	entranceDelay,
 }) {
 	const style = {
@@ -46,12 +48,12 @@ function Tile({
 	};
 
 	// Start invisible if entering (before animation starts)
-	if (isEntering) {
+	if (playingEntranceAnimation) {
 		style.opacity = 0;
 	}
 
 	// Add entrance animation delay
-	if (isEntering && entranceDelay !== undefined) {
+	if (playingEntranceAnimation && entranceDelay !== undefined) {
 		style.animationDelay = `${entranceDelay}ms`;
 	}
 
@@ -74,11 +76,14 @@ function Tile({
 		style.backgroundClip = "border-box";
 	}
 
-	const className = `tile${isClickable ? " clickable" : ""}${isMoving ? " moving" : ""}${isEntering ? " entering" : ""}`;
+	const classNames = [styles.tile];
+	if (isClickable) classNames.push(styles.clickable);
+	if (isMoving) classNames.push(styles.moving);
+	if (playingEntranceAnimation) classNames.push(styles.entering);
 
 	return (
 		<div
-			className={className}
+			className={classNames.join(" ")}
 			onClick={onClick}
 			onTouchStart={onTouchStart}
 			onTouchEnd={onTouchEnd}
