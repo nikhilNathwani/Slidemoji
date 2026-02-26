@@ -1,3 +1,5 @@
+import styles from "./LandingFooter.module.css";
+
 function LandingFooter({ puzzleNumber = "001" }) {
 	// Get current date formatted as "February 23, 2026"
 	const currentDate = new Date().toLocaleDateString("en-US", {
@@ -7,9 +9,9 @@ function LandingFooter({ puzzleNumber = "001" }) {
 	});
 
 	return (
-		<footer className="landing-footer">
-			<div className="footer-date">{currentDate}</div>
-			<div className="footer-puzzle-number">No. {puzzleNumber}</div>
+		<footer className={styles.landingFooter}>
+			<div className={styles.footerDate}>{currentDate}</div>
+			<div className={styles.footerPuzzleNumber}>No. {puzzleNumber}</div>
 			<p>
 				Made by{" "}
 				<a
