@@ -1,0 +1,40 @@
+.trophyCase {
+	text-align: center;
+}
+
+.trophyCase h3 {
+	font-size: 1.3rem;
+	color: var(--text-primary);
+	margin-bottom: 20px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+}
+
+.trophyCase h3 i {
+	color: var(--text-secondary);
+}
+
+.trophyCount {
+	font-size: 1rem;
+	color: var(--text-secondary);
+	background-color: var(--surface-primary);
+	padding: 4px 12px;
+	border-radius: 12px;
+	font-weight: 600;
+}
+
+.emojiGrid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(70px, 70px));
+	justify-content: center;
+	gap: 12px;
+	max-height: 400px;
+	overflow-y: auto;
+	padding: 12px;
+	background-color: var(--surface-secondary);
+	border-radius: 12px;
+	border: 1px solid var(--border-secondary);
+	position: relative;
+}

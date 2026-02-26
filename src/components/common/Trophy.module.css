@@ -53,11 +53,6 @@
 	box-shadow: none;
 }
 
-.trophy.locked:hover {
-	opacity: 0.7;
-	border-color: var(--border-primary);
-}
-
 /* Variant: Gold Trophy (3x3 Normal) */
 .trophy.gold {
 	background: linear-gradient(135deg, #fbbf24 0%, #fcd34d 50%, #fbbf24 100%);
