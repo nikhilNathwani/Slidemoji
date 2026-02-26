@@ -42,7 +42,7 @@ function Trophy({
 				<div className={styles.emoji}>{trophyEmoji}</div>
 			)}
 			{!isMini && trophyName && !isLocked && (
-				<div className={styles.name}>"{trophyName}"</div>
+				<div className={styles.name}>{trophyName}</div>
 			)}
 		</div>
 	);
