@@ -26,8 +26,8 @@ function StatsContent({ dailyEmoji, signedIn, onSignIn }) {
 
 	return (
 		<div className={styles.statsContent}>
-			{/* Not signed in: Show sign-in section first */}
-			{!signedIn && (
+			{/* Not signed in: Show sign-in upsell only */}
+			{!signedIn ? (
 				<div className={styles.statsSignin}>
 					<h3 className={styles.statsSigninTitle}>
 						Sync Your Progress
@@ -46,61 +46,33 @@ function StatsContent({ dailyEmoji, signedIn, onSignIn }) {
 						</span>
 					</p>
 				</div>
-			)}
-
-			{/* Divider between sections (not-signed-in only) */}
-			{!signedIn && <div className={styles.statsDivider}></div>}
-
-			{/* Trophy Case */}
-			<div className={styles.trophyCase}>
-				<h3>
-					<i className="fas fa-trophy"></i> Trophy Case
-					{signedIn && (
-						<span className={styles.trophyCount}>
-							{earnedPuzzleIds.size}/{totalPuzzles}
-						</span>
-					)}
-				</h3>
-				<div
-					className={`${styles.emojiGrid} ${!signedIn ? styles.emojiGridPreview : ""}`}
-				>
-					{trophySlots.map((slot) =>
-						slot.isEarned ? (
-							<Trophy
-								key={slot.puzzleNum}
-								trophyNum={slot.puzzleNum}
-								trophyEmoji={slot.emoji}
-								trophyName={slot.name}
-								isMini={true}
-							/>
-						) : (
-							<div
-								key={slot.puzzleNum}
-								className={styles.emptyTrophy}
-							>
-								<div className={styles.emptyTrophyNumber}>
-									#
-									{slot.puzzleNum.toString().padStart(3, "0")}
-								</div>
-								<div className={styles.emptyTrophyIcon}>
-									<i className="fas fa-lock"></i>
-								</div>
-							</div>
-						),
-					)}
-				</div>
-				{!signedIn && (
-					<div className={styles.previewOverlay}>
-						<p className={styles.previewText}>
-							🔒 Unlock all trophies
-						</p>
-					</div>
-				)}
-			</div>
-
-			{/* Archive upsell (signed-in only) */}
-			{signedIn && (
+			) : (
 				<>
+					{/* Trophy Case (signed-in only) */}
+					<div className={styles.trophyCase}>
+						<h3>
+							<i className="fas fa-trophy"></i> Trophy Case
+							<span className={styles.trophyCount}>
+								{earnedPuzzleIds.size}/{totalPuzzles}
+							</span>
+						</h3>
+						<div className={styles.emojiGrid}>
+							{trophySlots.map((slot) => (
+								<Trophy
+									key={slot.puzzleNum}
+									trophyNum={slot.puzzleNum}
+									trophyEmoji={slot.emoji}
+									trophyName={slot.name}
+									isLocked={!slot.isEarned}
+									isEarned={slot.isEarned}
+									difficulty={3}
+									isMini={true}
+								/>
+							))}
+						</div>
+					</div>
+
+					{/* Archive upsell (signed-in only) */}
 					<div className={styles.statsDivider}></div>
 					<div className={styles.archiveSection}>
 						<div className={styles.archiveIcon}>

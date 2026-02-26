@@ -16,7 +16,7 @@
 }
 
 .toggle.on {
-	background-color: var(--surface-primary);
+	background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
 }
 
 .slider {
@@ -47,7 +47,7 @@
 
 .toggle.on .label {
 	left: 8px;
-	color: var(--bg-gradient-start);
+	color: #1a1a1a;
 }
 
 .toggle.off .label {

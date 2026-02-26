@@ -37,11 +37,16 @@ function App() {
 	const [darkMode, setDarkMode] = useState(DEFAULT_DARK_MODE);
 	const [showDifficultyConfirm, setShowDifficultyConfirm] = useState(false);
 	const [pendingSize, setPendingSize] = useState(null);
-	const [earnedEmojis, _setEarnedEmojis] = useState([dailyEmoji.emoji]); // Mock data - will be from backend
+	const [_earnedEmojis, _setEarnedEmojis] = useState([dailyEmoji.emoji]); // Mock data - will be from backend
+	const [highestEarnedDifficulty, setHighestEarnedDifficulty] = useState(0); // 0 = not earned, 3 = 3x3 earned, 4 = 4x4 earned
 	const solveRef = useRef(null);
 
 	const handleWin = () => {
 		setIsWon(true);
+		// Update highest earned difficulty
+		if (gridSize > highestEarnedDifficulty) {
+			setHighestEarnedDifficulty(gridSize);
+		}
 		setShowWinDialog(true);
 	};
 
@@ -137,6 +142,7 @@ function App() {
 				playingEntranceAnimation={playingEntranceAnimation}
 				showControls={showControls}
 				onShuffle={() => setIsWon(false)}
+				highestEarnedDifficulty={highestEarnedDifficulty}
 			/>
 
 			<Dialog
@@ -181,6 +187,7 @@ function App() {
 						setShowWinDialog(false);
 						setShowStats(true);
 					}}
+					gridSize={gridSize}
 				/>
 			</Dialog>
 

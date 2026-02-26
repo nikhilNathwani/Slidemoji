@@ -1,7 +1,7 @@
 .appHeader {
 	width: 100%;
-	background-color: var(--surface-secondary);
-	border-bottom: 2px solid var(--border-secondary);
+	background-color: var(--header-bg);
+	border-bottom: 1px solid var(--header-border);
 	padding: 15px 20px;
 	display: flex;
 	align-items: center;
@@ -14,10 +14,10 @@
 
 .appTitle {
 	font-size: 1.5rem;
-	font-weight: 700;
-	font-family: "Righteous", cursive;
+	font-weight: 600;
+	font-family: "Fredoka", sans-serif;
 	color: var(--text-primary);
-	letter-spacing: 1px;
+	letter-spacing: 0.5px;
 	margin: 0;
 }
 
@@ -32,7 +32,7 @@
 	height: 48px;
 	border-radius: 50%;
 	background-color: var(--surface-primary);
-	border: 2px solid var(--border-primary);
+	border: 1px solid var(--border-secondary);
 	color: var(--text-primary);
 	font-size: 1.2rem;
 	display: flex;
@@ -48,10 +48,9 @@
 }
 
 .iconButton:hover {
-	background-color: var(--surface-primary);
-	border-color: var(--text-primary);
+	background-color: var(--surface-secondary);
+	border-color: var(--border-primary);
 	transform: scale(1.05);
-	opacity: 0.9;
 }
 
 .iconButton:active {
@@ -62,9 +61,9 @@
 	width: 48px;
 	height: 48px;
 	border-radius: 50%;
-	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-	border: 2px solid var(--border-primary);
-	color: white;
+	background-color: var(--text-primary);
+	border: 1px solid var(--border-secondary);
+	color: var(--bg-gradient-start);
 	font-size: 1.5rem;
 	display: flex;
 	align-items: center;
@@ -76,7 +75,7 @@
 
 .avatarButton:hover {
 	transform: scale(1.05);
-	box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+	opacity: 0.9;
 }
 
 .avatarButton:active {

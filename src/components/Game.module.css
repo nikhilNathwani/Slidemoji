@@ -3,11 +3,11 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 15px;
+	gap: 25px;
 	flex: 1;
 	justify-content: center;
 	width: 100%;
-	padding: 15px;
+	padding: 25px 15px;
 }
 
 /* Board Container */
@@ -23,13 +23,13 @@
 .restartButton {
 	padding: 12px 20px;
 	border-radius: 10px;
-	border: 2px solid var(--border-secondary);
-	background-color: var(--surface-secondary);
+	border: 1px solid var(--border-primary);
+	background-color: var(--surface-primary);
 	color: var(--text-primary);
 	font-size: 0.95rem;
 	font-weight: 600;
 	cursor: pointer;
-	transition: opacity 0.5s ease;
+	transition: all 0.2s ease;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -48,10 +48,9 @@
 }
 
 .restartButton:hover {
-	background-color: var(--surface-primary);
-	border-color: var(--text-primary);
-	transform: scale(1.05);
-	opacity: 0.9;
+	background-color: var(--surface-secondary);
+	border-color: var(--text-secondary);
+	transform: scale(1.02);
 }
 
 .restartButton:active {

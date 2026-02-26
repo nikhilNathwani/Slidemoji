@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import styles from "./Game.module.css";
 import Board from "./Board";
-import PuzzleInfo from "./PuzzleInfo";
+import Trophy from "./common/Trophy";
 import Dialog from "./dialogs/Dialog";
 import ConfirmContent from "./dialogs/ConfirmContent";
 
@@ -15,6 +15,7 @@ function Game({
 	playingEntranceAnimation,
 	showControls,
 	onShuffle,
+	highestEarnedDifficulty = 0,
 }) {
 	const [showRestartConfirm, setShowRestartConfirm] = useState(false);
 	const solveRef = useRef(null);
@@ -48,10 +49,12 @@ function Game({
 	return (
 		<>
 			<main className={styles.main}>
-				<PuzzleInfo
-					puzzleNumber="001"
-					emoji={dailyEmoji.emoji}
-					emojiName={dailyEmoji.name}
+				<Trophy
+					trophyNum="001"
+					trophyEmoji={dailyEmoji.emoji}
+					trophyName={dailyEmoji.name}
+					isEarned={highestEarnedDifficulty > 0}
+					difficulty={highestEarnedDifficulty || gridSize}
 					visible={showControls}
 				/>
 

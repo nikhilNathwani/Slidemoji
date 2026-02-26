@@ -8,6 +8,7 @@ function WinContent({
 	signedIn,
 	onSignIn,
 	onViewStats,
+	gridSize = 3,
 }) {
 	const handleShare = () => {
 		const shareText = `Slidemoji #001 ${earnedEmoji}
@@ -33,6 +34,8 @@ Play at slidemoji.com`;
 				trophyNum={1}
 				trophyEmoji={earnedEmoji}
 				trophyName={earnedEmojiName}
+				isEarned={true}
+				difficulty={gridSize}
 			/>
 			<h3>You earned today's emoji!</h3>
 

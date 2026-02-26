@@ -16,5 +16,5 @@ export const EMOJI_SVG_SIZE = 2048;
 export const EMOJI_SVG_FONT_SIZE = 1600;
 
 // Defaults
-export const DEFAULT_DARK_MODE = true;
+export const DEFAULT_DARK_MODE = false;
 export const DEFAULT_SHOW_NUMBERS = true;
