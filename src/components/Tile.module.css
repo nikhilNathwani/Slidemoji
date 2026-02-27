@@ -14,11 +14,6 @@
 	transition: border 0.3s ease;
 }
 
-/* Won state - transparent borders */
-.tile.won {
-	border-color: transparent;
-}
-
 /* Theme-specific text shadows */
 :global(.dark-theme) .tile {
 	text-shadow:

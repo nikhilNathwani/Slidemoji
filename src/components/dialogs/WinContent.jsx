@@ -15,7 +15,7 @@ function WinContent({
 	const handleShare = () => {
 		const shareText = `Slidemoji #001 ${earnedEmoji}
 
-I rescued today's emoji! 🎉
+I completed today's emoji! 🎉
 
 Play at slidemoji.com`;
 
@@ -39,7 +39,7 @@ Play at slidemoji.com`;
 				isEarned={true}
 				difficulty={gridSize}
 			/>
-			<h3>You rescued today's emoji!</h3>
+			<h3>You completed today's emoji!</h3>
 
 			<button className={styles.shareButton} onClick={handleShare}>
 				<i className="fas fa-share-nodes"></i>

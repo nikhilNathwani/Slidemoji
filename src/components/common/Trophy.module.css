@@ -17,6 +17,11 @@
 		box-shadow 0.8s ease;
 }
 
+/* Non-mini trophies have min-width */
+.trophy:not(.trophyMini) {
+	min-width: 108px;
+}
+
 /* Variant: Puzzle Info (when playing) */
 .trophy.puzzleInfo {
 	background-color: var(--surface-secondary);
@@ -100,13 +105,13 @@
 	}
 }
 
-/* Variant: Special Trophy (4x4 Hard) - Purple */
+/* Variant: Special Trophy (4x4 Hard) - Lavender */
 .trophy.special {
-	background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 50%, #8b5cf6 100%);
+	background: linear-gradient(135deg, #c084fc 0%, #e9d5ff 50%, #c084fc 100%);
 	box-shadow:
-		0 4px 8px rgba(139, 92, 246, 0.4),
+		0 4px 8px rgba(192, 132, 252, 0.4),
 		inset 0 1px 0 rgba(255, 255, 255, 0.5),
-		inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+		inset 0 -1px 0 rgba(0, 0, 0, 0.15);
 }
 
 .trophy.special::before {
@@ -160,7 +165,7 @@
 	transition:
 		color 0.8s ease,
 		text-shadow 0.8s ease;
-	color: #4c1d95;
+	color: #6b21a8;
 	text-shadow: 0 1px 1px rgba(255, 255, 255, 0.4);
 }
 
@@ -217,7 +222,7 @@
 	transition:
 		color 0.8s ease,
 		text-shadow 0.8s ease;
-	color: #065f46;
+	color: #6b21a8;
 	text-shadow: 0 1px 1px rgba(255, 255, 255, 0.3);
 }
 

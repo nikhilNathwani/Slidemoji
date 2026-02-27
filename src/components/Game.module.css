@@ -22,6 +22,7 @@
 /* Restart Button */
 .restartButton {
 	padding: 12px 20px;
+	/* margin-bottom: 80px; */
 	border-radius: 10px;
 	border: 1px solid var(--border-primary);
 	background-color: var(--surface-primary);

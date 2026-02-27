@@ -8,7 +8,7 @@ function LandingPage({ onPlay }) {
 				<AnimatedTileGrid />
 				<h1 className="landing-title">Slidemoji</h1>
 				<p className="landing-subtitle">
-					Slide the tiles to rescue the daily emoji
+					Slide the tiles to complete the daily emoji
 				</p>
 
 				<button className="play-button" onClick={onPlay}>

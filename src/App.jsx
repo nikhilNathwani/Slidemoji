@@ -79,6 +79,7 @@ function App() {
 			setPendingSize(null);
 		}
 		setIsWon(false);
+		setShowWinDialog(false); // Close win dialog if open
 		setShowDifficultyConfirm(false);
 	};
 
