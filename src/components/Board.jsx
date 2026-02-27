@@ -13,6 +13,7 @@ import {
 } from "../utils/boardHelpers";
 import { createEmojiSvgUrl } from "../utils/emoji";
 import { ANIMATION_DURATION_MS } from "../constants";
+import styles from "./Board.module.css";
 
 // ===== Main Component =====
 
@@ -44,15 +45,17 @@ function Board({
 
 	// Responsive sizing
 	const getResponsiveBoardSize = useCallback(() => {
-		// Account for 8px ridge border on each side (16px total) and padding
-		const borderSize = 16;
-		const padding = 40;
-		const maxSize = Math.min(
-			window.innerWidth - padding - borderSize,
+		// padding is 20px on each side of viewport (40 total)
+		// With content-box, width/height we set is the content area (tiles)
+		// Ridge border (8px each side) is added outside
+		const viewportPadding = 40;
+		const ridgeBorder = 16; // 8px each side, added outside content
+		const maxContentSize = Math.min(
+			window.innerWidth - viewportPadding - ridgeBorder,
 			456, // 5% smaller than previous 480
 		);
-		// Ensure board size is divisible by grid size to avoid subpixel rendering
-		return Math.floor(maxSize / size) * size;
+		// Ensure content area is divisible by grid size for perfect tile sizing
+		return Math.floor(maxContentSize / size) * size;
 	}, [size]);
 
 	const [boardSizePx, setBoardSizePx] = useState(getResponsiveBoardSize());
@@ -378,11 +381,10 @@ function Board({
 	return (
 		<div
 			ref={boardRef}
-			className={`board${isWon ? " won" : ""}`}
+			className={`${styles.board}${isWon ? " " + styles.won : ""}`}
 			style={{
 				width: `${boardSizePx}px`,
 				height: `${boardSizePx}px`,
-				position: "relative",
 			}}
 		>
 			{tiles.map((value, index) => {

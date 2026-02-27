@@ -50,7 +50,10 @@
 	border-width: 2px;
 	color: var(--text-primary);
 	opacity: 1;
-	transform: scale(1);
+}
+
+.difficultyBtn.active:hover {
+	transform: scale(1.02);
 }
 
 .difficultyLabel {
