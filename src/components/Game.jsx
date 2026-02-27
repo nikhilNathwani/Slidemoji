@@ -9,6 +9,7 @@ function Game({
 	dailyEmoji,
 	gridSize,
 	onWin,
+	onShowWinDialog,
 	showNumbers,
 	isWon,
 	onSolveRef,
@@ -62,6 +63,7 @@ function Game({
 					<Board
 						size={gridSize}
 						onWin={onWin}
+						onShowWinDialog={onShowWinDialog}
 						showNumbers={showNumbers && !isWon}
 						onSolveRef={solveRef}
 						onShuffleRef={restartRef}

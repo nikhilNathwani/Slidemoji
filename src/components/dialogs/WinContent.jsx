@@ -8,7 +8,7 @@ function WinContent({
 	signedIn,
 	onSignIn,
 	onViewStats,
-	gridSize = 3,
+	gridSize,
 }) {
 	const handleShare = () => {
 		const shareText = `Slidemoji #001 ${earnedEmoji}

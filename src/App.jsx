@@ -42,11 +42,15 @@ function App() {
 	const solveRef = useRef(null);
 
 	const handleWin = () => {
-		setIsWon(true);
-		// Update highest earned difficulty
+		// Update highest earned difficulty immediately (before dialog)
 		if (gridSize > highestEarnedDifficulty) {
 			setHighestEarnedDifficulty(gridSize);
 		}
+		// setIsWon and dialog opening happens in Board after delay
+	};
+
+	const handleShowWinDialog = () => {
+		setIsWon(true);
 		setShowWinDialog(true);
 	};
 
@@ -136,6 +140,7 @@ function App() {
 				dailyEmoji={dailyEmoji}
 				gridSize={gridSize}
 				onWin={handleWin}
+				onShowWinDialog={handleShowWinDialog}
 				showNumbers={showNumbers}
 				isWon={isWon}
 				onSolveRef={solveRef}

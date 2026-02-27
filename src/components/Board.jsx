@@ -19,6 +19,7 @@ import { ANIMATION_DURATION_MS } from "../constants";
 function Board({
 	size,
 	onWin,
+	onShowWinDialog,
 	showNumbers,
 	onSolveRef,
 	onShuffleRef,
@@ -94,18 +95,20 @@ function Board({
 		return () => window.removeEventListener("resize", handleResize);
 	}, [getResponsiveBoardSize]);
 
-	// Show win dialog (only once per win) - delayed to allow animation to show
+	// Show win dialog (only once per win) - delayed to allow trophy transformation and celebration
 	useEffect(() => {
-		if (isWon && onWin && !hasShownWin.current) {
+		if (isWon && onWin && onShowWinDialog && !hasShownWin.current) {
 			hasShownWin.current = true;
+			// Call onWin immediately to trigger trophy transformation
+			onWin();
 			// Start celebration
 			setCelebrating(true);
-			// Delay to show win animation before dialog
+			// Delay to show trophy transformation and celebration before dialog
 			setTimeout(() => {
-				onWin();
-			}, 1200); // Delay win dialog by 1200ms to allow celebration to play
+				onShowWinDialog();
+			}, 2500); // Delay win dialog by 2500ms to allow celebration and trophy transformation
 		}
-	}, [isWon, onWin]);
+	}, [isWon, onWin, onShowWinDialog]);
 
 	// ===== Movement Logic =====
 	const gapIndex = getGapIndex(tiles);
