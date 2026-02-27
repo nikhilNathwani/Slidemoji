@@ -2,12 +2,13 @@ import TrophyCase from "../common/TrophyCase";
 import GoogleSignInButton from "../common/GoogleSignInButton";
 import styles from "./StatsContent.module.css";
 
-function StatsContent({ dailyEmoji, signedIn, onSignIn }) {
-	// Mock data: which puzzle numbers the user has completed
-	// In production, this would come from backend
-	const earnedPuzzleIds = new Set([1, 3, 5]); // User earned puzzles #1, #3, #5
-	const totalPuzzles = 12;
-
+function StatsContent({
+	dailyEmoji,
+	signedIn,
+	onSignIn,
+	earnedPuzzleIds = new Set([1, 3, 5]),
+	totalPuzzles = 12,
+}) {
 	return (
 		<div className={styles.statsContent}>
 			{/* Not signed in: Show sign-in upsell only */}

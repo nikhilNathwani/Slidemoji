@@ -188,21 +188,10 @@ function App() {
 					earnedEmojiName={dailyEmoji.name}
 					signedIn={signedIn}
 					onSignIn={() => setSignedIn(true)}
-					onViewStats={() => {
-						setShowWinDialog(false);
-						setShowStats(true);
-					}}
 					gridSize={gridSize}
-				/>
-			</Dialog>
-
-			<Dialog
-				isOpen={showDifficultyConfirm}
-				onClose={handleDifficultyCancel}
-				title="Change Difficulty?"
-			>
-				<ConfirmContent
-					message="Changing difficulty will reset the board and you will lose your current progress. Continue?"
+					dailyEmoji={dailyEmoji}
+					earnedPuzzleIds={new Set([1])}
+					totalPuzzles={12}
 					onConfirm={handleDifficultyConfirm}
 					onCancel={handleDifficultyCancel}
 				/>

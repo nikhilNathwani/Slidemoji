@@ -44,9 +44,16 @@ function Board({
 
 	// Responsive sizing
 	const getResponsiveBoardSize = useCallback(() => {
-		// Account for 8px ridge border on each side (16px total) plus padding
-		const borderSize = 16; // 8px border on each side
-		const maxSize = Math.min(window.innerWidth - 40 - borderSize, 480);
+		// Account for:
+		// - 8px ridge border on each side (16px total)
+		// - 1px tile border that extends beyond (1px for right and bottom edges)
+		// - padding
+		const borderSize = 16; // 8px board border on each side
+		const tileBorderExtra = 1; // 1px on right and bottom for tile borders
+		const maxSize = Math.min(
+			window.innerWidth - 40 - borderSize - tileBorderExtra,
+			480,
+		);
 		// Ensure board size is divisible by grid size to avoid subpixel rendering
 		return Math.floor(maxSize / size) * size;
 	}, [size]);
@@ -376,8 +383,8 @@ function Board({
 			ref={boardRef}
 			className={`board${isWon ? " won" : ""}`}
 			style={{
-				width: `${boardSizePx}px`,
-				height: `${boardSizePx}px`,
+				width: `${boardSizePx + 1}px`, // +1px for tile borders on right and bottom
+				height: `${boardSizePx + 1}px`,
 				position: "relative",
 			}}
 		>

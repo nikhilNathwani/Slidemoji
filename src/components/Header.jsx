@@ -31,7 +31,7 @@ function Header({ onSettingsClick, onStatsClick, onSignIn, signedIn }) {
 						<i className="fas fa-user-circle"></i>
 					</button>
 				) : (
-					<GoogleSignInButton onClick={onSignIn} isHeader={true} />
+					<GoogleSignInButton onClick={onSignIn} isCondensed={true} />
 				)}
 			</div>
 		</header>

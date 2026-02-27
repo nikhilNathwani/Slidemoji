@@ -100,11 +100,11 @@
 	}
 }
 
-/* Variant: Special Trophy (4x4 Hard) - Green */
+/* Variant: Special Trophy (4x4 Hard) - Purple */
 .trophy.special {
-	background: linear-gradient(135deg, #10b981 0%, #34d399 50%, #10b981 100%);
+	background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 50%, #8b5cf6 100%);
 	box-shadow:
-		0 4px 8px rgba(16, 185, 129, 0.4),
+		0 4px 8px rgba(139, 92, 246, 0.4),
 		inset 0 1px 0 rgba(255, 255, 255, 0.5),
 		inset 0 -1px 0 rgba(0, 0, 0, 0.2);
 }

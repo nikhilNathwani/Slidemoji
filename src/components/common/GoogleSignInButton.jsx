@@ -1,9 +1,11 @@
 import styles from "./GoogleSignInButton.module.css";
 
-function GoogleSignInButton({ onClick, isHeader }) {
-	const className = isHeader
+function GoogleSignInButton({ onClick, isCondensed = false }) {
+	const className = isCondensed
 		? `${styles.googleSignInButton} ${styles.headerVariant}`
 		: styles.googleSignInButton;
+
+	const buttonText = isCondensed ? "Sign in" : "Sign in with Google";
 
 	return (
 		<button
@@ -17,7 +19,7 @@ function GoogleSignInButton({ onClick, isHeader }) {
 				alt="Google"
 				className={styles.googleIcon}
 			/>
-			Sign in
+			{buttonText}
 		</button>
 	);
 }

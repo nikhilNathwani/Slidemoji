@@ -96,15 +96,50 @@
 	display: inline-block;
 }
 
+.winDivider {
+	width: 100%;
+	height: 1px;
+	background: var(--border-secondary);
+	margin: 24px 0 20px 0;
+}
+
 .winSigninPrompt {
-	margin-top: 24px;
-	padding-top: 20px;
-	border-top: 1px solid var(--border-secondary);
+	width: 100%;
+	text-align: center;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 16px;
+}
+
+.signinTitle {
+	font-size: 1.3rem;
+	color: var(--text-primary);
+	margin: 0;
 }
 
 .signinMessage {
 	color: var(--text-secondary);
 	font-size: 0.95rem;
-	margin-bottom: 16px;
+	margin: 0;
 	line-height: 1.5;
+	max-width: 380px;
+}
+
+.privacyNote {
+	font-size: 0.85rem;
+	color: var(--text-tertiary);
+	line-height: 1.6;
+	max-width: 380px;
+	margin: 0;
+	display: flex;
+	align-items: flex-start;
+	gap: 8px;
+	text-align: left;
+}
+
+.privacyNote i {
+	color: rgba(96, 165, 250, 0.6);
+	margin-top: 2px;
+	flex-shrink: 0;
 }
