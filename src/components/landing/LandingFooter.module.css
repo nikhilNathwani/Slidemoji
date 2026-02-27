@@ -17,13 +17,11 @@
 
 .footerPuzzleNumber {
 	color: var(--text-secondary);
-	font-weight: 600;
 }
 
 .landingFooter a {
 	color: var(--text-secondary);
 	/* text-decoration: none; */
-	font-weight: 600;
 	transition: color 0.2s ease;
 }
 

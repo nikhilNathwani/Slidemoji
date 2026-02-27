@@ -15,7 +15,7 @@ function StatsContent({
 			{!signedIn ? (
 				<div className={styles.statsSignin}>
 					<h3 className={styles.statsSigninTitle}>
-						Track Your Stats
+						Save Your Trophies
 					</h3>
 					<p className={styles.statsDescription}>
 						Sign in to save your trophies across devices and track

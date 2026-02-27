@@ -30,9 +30,7 @@
 	color: var(--text-primary);
 	border-radius: 8px;
 	cursor: pointer;
-	transition:
-		transform 0.2s ease,
-		opacity 0.2s ease;
+	transition: all 0.2s ease;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -43,6 +41,7 @@
 .difficultyBtn:hover {
 	border-color: var(--text-primary);
 	background-color: var(--surface-primary);
+	transform: scale(1.02);
 }
 
 .difficultyBtn.active {
@@ -51,6 +50,7 @@
 	border-width: 2px;
 	color: var(--text-primary);
 	opacity: 1;
+	transform: scale(1);
 }
 
 .difficultyLabel {
@@ -100,11 +100,11 @@
 .actionButton:hover {
 	background-color: var(--surface-primary);
 	border-color: var(--border-primary);
-	transform: translateY(-2px);
+	transform: scale(1.02);
 }
 
 .actionButton:active {
-	transform: translateY(0);
+	transform: scale(0.95);
 }
 
 .actionButton.solve {
