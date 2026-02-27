@@ -36,6 +36,8 @@ function Board({
 	const mouseDragRef = useRef(null);
 	const isAnimating = useRef(false);
 	const hasShownWin = useRef(false);
+	const moveTimeoutRef = useRef(null);
+	const winDialogTimeoutRef = useRef(null);
 
 	// Create emoji SVG URL once and memoize it
 	const emojiSvgUrl = useMemo(
@@ -89,6 +91,17 @@ function Board({
 
 	// Reset board when size changes
 	useEffect(() => {
+		// Clear any pending timeouts to prevent race conditions
+		if (moveTimeoutRef.current) {
+			clearTimeout(moveTimeoutRef.current);
+			moveTimeoutRef.current = null;
+		}
+		if (winDialogTimeoutRef.current) {
+			clearTimeout(winDialogTimeoutRef.current);
+			winDialogTimeoutRef.current = null;
+		}
+		isAnimating.current = false;
+		setMovingTileValue(null);
 		setTiles(scramblePuzzle(size));
 		setIsWon(false);
 		hasShownWin.current = false;
@@ -113,8 +126,13 @@ function Board({
 			// Start celebration
 			setCelebrating(true);
 			// Delay to show trophy transformation and celebration before dialog
-			setTimeout(() => {
+			// Clear any existing timeout
+			if (winDialogTimeoutRef.current) {
+				clearTimeout(winDialogTimeoutRef.current);
+			}
+			winDialogTimeoutRef.current = setTimeout(() => {
 				onShowWinDialog();
+				winDialogTimeoutRef.current = null;
 			}, 2500); // Delay win dialog by 2500ms to allow celebration and trophy transformation
 		}
 	}, [isWon, onWin, onShowWinDialog]);
@@ -187,7 +205,12 @@ function Board({
 			// Update React state after animation completes
 			const newTiles = swapTiles(tiles, tileIndex, currentGapIndex);
 
-			setTimeout(() => {
+			// Clear any existing timeout
+			if (moveTimeoutRef.current) {
+				clearTimeout(moveTimeoutRef.current);
+			}
+
+			moveTimeoutRef.current = setTimeout(() => {
 				if (checkWin(newTiles, getSolvedState(size))) {
 					setIsWon(true);
 				}
@@ -195,6 +218,7 @@ function Board({
 				setTiles(newTiles);
 				isAnimating.current = false;
 				setMovingTileValue(null);
+				moveTimeoutRef.current = null;
 			}, ANIMATION_DURATION_MS);
 		},
 		[tiles, size, tileSizePx],

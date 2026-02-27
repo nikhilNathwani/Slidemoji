@@ -10,6 +10,14 @@
 	padding: 25px 15px;
 }
 
+/* Trophy container - matches restart button height for vertical centering */
+.trophyContainer {
+	min-height: 48px; /* Match restart button height + padding */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
 /* Board Container */
 .boardContainer {
 	display: flex;
@@ -19,10 +27,17 @@
 	gap: 25px;
 }
 
+/* Restart Button Container - matches trophy height for vertical centering */
+.restartContainer {
+	min-height: 48px; /* Match button height */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
 /* Restart Button */
 .restartButton {
 	padding: 12px 20px;
-	/* margin-bottom: 80px; */
 	border-radius: 10px;
 	border: 1px solid var(--border-primary);
 	background-color: var(--surface-primary);

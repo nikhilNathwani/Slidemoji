@@ -50,14 +50,16 @@ function Game({
 	return (
 		<>
 			<main className={styles.main}>
-				<Trophy
-					trophyNum="001"
-					trophyEmoji={dailyEmoji.emoji}
-					trophyName={dailyEmoji.name}
-					isEarned={highestEarnedDifficulty > 0}
-					difficulty={highestEarnedDifficulty || gridSize}
-					visible={showControls}
-				/>
+				<div className={styles.trophyContainer}>
+					<Trophy
+						trophyNum="001"
+						trophyEmoji={dailyEmoji.emoji}
+						trophyName={dailyEmoji.name}
+						isEarned={highestEarnedDifficulty > 0}
+						difficulty={highestEarnedDifficulty || gridSize}
+						visible={showControls}
+					/>
+				</div>
 				<Board
 					size={gridSize}
 					onWin={onWin}
@@ -69,14 +71,16 @@ function Game({
 					playingEntranceAnimation={playingEntranceAnimation}
 				/>
 
-				<button
-					className={`${styles.restartButton} ${showControls ? styles.visible : styles.hidden}`}
-					onClick={handleRestartClick}
-					title="Restart Puzzle"
-				>
-					<i className="fas fa-redo"></i>
-					Restart
-				</button>
+				<div className={styles.restartContainer}>
+					<button
+						className={`${styles.restartButton} ${showControls ? styles.visible : styles.hidden}`}
+						onClick={handleRestartClick}
+						title="Restart Puzzle"
+					>
+						<i className="fas fa-redo"></i>
+						Restart
+					</button>
+				</div>
 			</main>
 
 			<Dialog
