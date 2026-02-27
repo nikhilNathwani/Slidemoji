@@ -423,6 +423,7 @@ function Board({
 						entranceDelay={index * 50}
 						celebrating={celebrating}
 						celebrationDelay={index * 60}
+						isWon={isWon}
 						{...(isClickable && {
 							onClick: () => handleTileClick(index),
 							onTouchStart: (e) => handleTouchStart(e, index),

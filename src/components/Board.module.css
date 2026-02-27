@@ -8,8 +8,3 @@
 	border-radius: 8px;
 	box-sizing: content-box;
 }
-
-/* Board won state - removes tile borders when puzzle is solved */
-.board.won :global(.tile) {
-	border-color: transparent;
-}

@@ -1,5 +1,4 @@
 .statsContent {
-	padding: 30px 24px;
 	display: flex;
 	flex-direction: column;
 	gap: 30px;
@@ -45,6 +44,7 @@
 
 .statsDescription {
 	color: var(--text-secondary);
+	font-size: 0.95rem;
 	margin: 0;
 	line-height: 1.5;
 	max-width: 380px;

@@ -3,6 +3,7 @@
 	flex-flow: column nowrap;
 	align-items: center;
 	text-align: center;
+	padding-bottom: 6px;
 }
 
 .winDialogContent .emoji {
@@ -10,14 +11,16 @@
 	margin: 20px 0;
 }
 
-.winDialogContent h3 {
+/* Target only direct h3 children to avoid affecting nested components */
+.winDialogContent > h3 {
 	font-size: 1.8rem;
 	color: var(--text-primary);
 	margin-top: 20px;
 	margin-bottom: 32px;
 }
 
-.winDialogContent p {
+/* Target only direct p children to avoid affecting nested components */
+.winDialogContent > p {
 	color: var(--text-secondary);
 	font-size: 1.1rem;
 }

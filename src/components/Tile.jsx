@@ -38,6 +38,7 @@ function Tile({
 	entranceDelay,
 	celebrating,
 	celebrationDelay,
+	isWon = false,
 }) {
 	const style = {
 		position: "absolute",
@@ -88,6 +89,7 @@ function Tile({
 	if (isMoving) classNames.push(styles.moving);
 	if (playingEntranceAnimation) classNames.push(styles.entering);
 	if (celebrating) classNames.push(styles.celebrating);
+	if (isWon) classNames.push(styles.won);
 
 	return (
 		<div

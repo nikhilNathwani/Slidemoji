@@ -192,6 +192,16 @@ function App() {
 					dailyEmoji={dailyEmoji}
 					earnedPuzzleIds={new Set([1])}
 					totalPuzzles={12}
+				/>
+			</Dialog>
+
+			<Dialog
+				isOpen={showDifficultyConfirm}
+				onClose={handleDifficultyCancel}
+				title="Change Difficulty?"
+			>
+				<ConfirmContent
+					message="Changing difficulty will restart the puzzle. Continue?"
 					onConfirm={handleDifficultyConfirm}
 					onCancel={handleDifficultyCancel}
 				/>

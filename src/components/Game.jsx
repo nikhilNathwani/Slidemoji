@@ -58,28 +58,25 @@ function Game({
 					difficulty={highestEarnedDifficulty || gridSize}
 					visible={showControls}
 				/>
+				<Board
+					size={gridSize}
+					onWin={onWin}
+					onShowWinDialog={onShowWinDialog}
+					showNumbers={showNumbers && !isWon}
+					onSolveRef={solveRef}
+					onShuffleRef={restartRef}
+					dailyEmoji={dailyEmoji.emoji}
+					playingEntranceAnimation={playingEntranceAnimation}
+				/>
 
-				<div className={styles.boardContainer}>
-					<Board
-						size={gridSize}
-						onWin={onWin}
-						onShowWinDialog={onShowWinDialog}
-						showNumbers={showNumbers && !isWon}
-						onSolveRef={solveRef}
-						onShuffleRef={restartRef}
-						dailyEmoji={dailyEmoji.emoji}
-						playingEntranceAnimation={playingEntranceAnimation}
-					/>
-
-					<button
-						className={`${styles.restartButton} ${showControls ? styles.visible : styles.hidden}`}
-						onClick={handleRestartClick}
-						title="Restart Puzzle"
-					>
-						<i className="fas fa-redo"></i>
-						Restart
-					</button>
-				</div>
+				<button
+					className={`${styles.restartButton} ${showControls ? styles.visible : styles.hidden}`}
+					onClick={handleRestartClick}
+					title="Restart Puzzle"
+				>
+					<i className="fas fa-redo"></i>
+					Restart
+				</button>
 			</main>
 
 			<Dialog
