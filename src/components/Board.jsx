@@ -44,7 +44,9 @@ function Board({
 
 	// Responsive sizing
 	const getResponsiveBoardSize = useCallback(() => {
-		const maxSize = Math.min(window.innerWidth - 40, 480);
+		// Account for 8px ridge border on each side (16px total) plus padding
+		const borderSize = 16; // 8px border on each side
+		const maxSize = Math.min(window.innerWidth - 40 - borderSize, 480);
 		// Ensure board size is divisible by grid size to avoid subpixel rendering
 		return Math.floor(maxSize / size) * size;
 	}, [size]);

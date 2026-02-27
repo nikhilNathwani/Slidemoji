@@ -94,6 +94,7 @@
 	align-items: center;
 	justify-content: center;
 	gap: 10px;
+	text-decoration: none;
 }
 
 .actionButton:hover {
@@ -104,6 +105,24 @@
 
 .actionButton:active {
 	transform: translateY(0);
+}
+
+.actionButton.feedback {
+	border-color: rgba(59, 130, 246, 0.4);
+}
+
+.actionButton.feedback:hover {
+	background-color: rgba(59, 130, 246, 0.15);
+	border-color: rgba(59, 130, 246, 0.6);
+}
+
+.actionButton.report {
+	border-color: rgba(239, 68, 68, 0.4);
+}
+
+.actionButton.report:hover {
+	background-color: rgba(239, 68, 68, 0.15);
+	border-color: rgba(239, 68, 68, 0.6);
 }
 
 .actionButton.solve {

@@ -13,7 +13,7 @@
 	--text-primary: #ffffff;
 	--text-secondary: rgba(255, 255, 255, 0.7);
 	--text-tertiary: rgba(255, 255, 255, 0.5);
-	--surface-primary: rgba(255, 255, 255, 0.1);
+	--surface-primary: rgba(255, 255, 255, 0.15);
 	--surface-secondary: rgba(255, 255, 255, 0.05);
 	--border-primary: rgba(255, 255, 255, 0.2);
 	--border-secondary: rgba(255, 255, 255, 0.1);
@@ -130,7 +130,7 @@ html {
 }
 
 .landing-subtitle {
-	font-size: 1.25rem;
+	font-size: 1.35rem;
 	color: var(--text-secondary);
 	margin: 0;
 	max-width: 500px;

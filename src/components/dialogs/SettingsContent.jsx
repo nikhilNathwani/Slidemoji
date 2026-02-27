@@ -54,6 +54,28 @@ function SettingsContent({
 			</div>
 			<div className={styles.settingsDivider}></div>
 			<div className={styles.settingsActions}>
+				<a
+					href="mailto:nnathwani36@gmail.com?subject=Slidemoji%20Feedback"
+					className={`${styles.actionButton} ${styles.feedback}`}
+				>
+					<i className="fas fa-comment"></i>
+					Give Feedback
+				</a>
+				<a
+					href={`mailto:nnathwani36@gmail.com?subject=Slidemoji%20Bug%20Report&body=${encodeURIComponent(
+						"Please describe the issue you encountered:\n\n\n\n---\nDebug Information:\n" +
+							`User Agent: ${navigator.userAgent}\n` +
+							`Screen Size: ${window.innerWidth}x${window.innerHeight}\n` +
+							`Grid Size: ${gridSize}\n` +
+							`Dark Mode: ${darkMode}\n` +
+							`Show Numbers: ${showNumbers}\n` +
+							`Timestamp: ${new Date().toISOString()}`,
+					)}`}
+					className={`${styles.actionButton} ${styles.report}`}
+				>
+					<i className="fas fa-bug"></i>
+					Report an Issue
+				</a>
 				<button
 					className={`${styles.actionButton} ${styles.solve}`}
 					onClick={onSolve}
