@@ -18,12 +18,6 @@ import {
 function App() {
 	const dailyEmoji = getDailyEmoji();
 
-	// Parse signedIn state from URL params (for testing different UX)
-	const [signedIn, setSignedIn] = useState(() => {
-		const params = new URLSearchParams(window.location.search);
-		return params.get("signedIn") === "true";
-	});
-
 	const [showLanding, setShowLanding] = useState(true);
 	const [playingEntranceAnimation, setPlayingEntranceAnimation] =
 		useState(false);
@@ -88,20 +82,6 @@ function App() {
 		setShowDifficultyConfirm(false);
 	};
 
-	// Update URL when signedIn state changes
-	useEffect(() => {
-		const params = new URLSearchParams(window.location.search);
-		if (signedIn) {
-			params.set("signedIn", "true");
-		} else {
-			params.delete("signedIn");
-		}
-		const newUrl = params.toString()
-			? `${window.location.pathname}?${params}`
-			: window.location.pathname;
-		window.history.replaceState({}, "", newUrl);
-	}, [signedIn]);
-
 	// Handle entrance animation timing
 	useEffect(() => {
 		if (playingEntranceAnimation) {
@@ -134,8 +114,6 @@ function App() {
 			<Header
 				onSettingsClick={() => setShowSettings(true)}
 				onStatsClick={() => setShowStats(true)}
-				onSignIn={() => setSignedIn(true)}
-				signedIn={signedIn}
 			/>
 			<Game
 				dailyEmoji={dailyEmoji}
@@ -172,11 +150,7 @@ function App() {
 				onClose={() => setShowStats(false)}
 				title="Stats"
 			>
-				<StatsContent
-					dailyEmoji={dailyEmoji}
-					signedIn={signedIn}
-					onSignIn={() => setSignedIn(true)}
-				/>
+				<StatsContent dailyEmoji={dailyEmoji} />
 			</Dialog>
 
 			<Dialog
@@ -187,8 +161,6 @@ function App() {
 				<WinContent
 					earnedEmoji={dailyEmoji.emoji}
 					earnedEmojiName={dailyEmoji.name}
-					signedIn={signedIn}
-					onSignIn={() => setSignedIn(true)}
 					gridSize={gridSize}
 					dailyEmoji={dailyEmoji}
 					earnedPuzzleIds={new Set([1])}

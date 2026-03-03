@@ -82,6 +82,93 @@
 	transform: scale(0.95);
 }
 
+.avatarImage {
+	width: 100%;
+	height: 100%;
+	border-radius: 50%;
+	object-fit: cover;
+}
+
+.accountContainer {
+	position: relative;
+}
+
+.accountMenu {
+	position: absolute;
+	top: calc(100% + 8px);
+	right: 0;
+	background: var(--surface-primary);
+	border: 1px solid var(--border-secondary);
+	border-radius: 12px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	min-width: 220px;
+	overflow: hidden;
+	z-index: 1000;
+	animation: slideDown 0.15s ease-out;
+}
+
+@keyframes slideDown {
+	from {
+		opacity: 0;
+		transform: translateY(-8px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.accountMenuHeader {
+	padding: 16px;
+}
+
+.accountInfo {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.accountName {
+	font-weight: 600;
+	color: var(--text-primary);
+	font-size: 0.95rem;
+}
+
+.accountEmail {
+	font-size: 0.85rem;
+	color: var(--text-secondary);
+}
+
+.accountMenuDivider {
+	height: 1px;
+	background: var(--border-secondary);
+	margin: 0;
+}
+
+.accountMenuItem {
+	width: 100%;
+	padding: 12px 16px;
+	background: transparent;
+	border: none;
+	color: var(--text-primary);
+	font-size: 0.9rem;
+	text-align: left;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	transition: background-color 0.15s ease;
+}
+
+.accountMenuItem:hover {
+	background: var(--surface-secondary);
+}
+
+.accountMenuItem i {
+	font-size: 1rem;
+	width: 18px;
+}
+
 /* Mobile Responsive */
 @media (max-width: 600px) {
 	.appTitle {

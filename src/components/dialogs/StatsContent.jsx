@@ -1,18 +1,19 @@
 import TrophyCase from "../common/TrophyCase";
 import GoogleSignInButton from "../common/GoogleSignInButton";
+import { useAuth } from "../../hooks/useAuth";
 import styles from "./StatsContent.module.css";
 
 function StatsContent({
 	dailyEmoji,
-	signedIn,
-	onSignIn,
 	earnedPuzzleIds = new Set([1, 3, 5]),
 	totalPuzzles = 12,
 }) {
+	const { user } = useAuth();
+
 	return (
 		<div className={styles.statsContent}>
 			{/* Not signed in: Show sign-in upsell only */}
-			{!signedIn ? (
+			{!user ? (
 				<div className={styles.statsSignin}>
 					<h3 className={styles.statsSigninTitle}>
 						Save Your Trophies
@@ -21,7 +22,7 @@ function StatsContent({
 						Sign in to save your trophies across devices and track
 						your progress over time.
 					</p>
-					<GoogleSignInButton onClick={onSignIn} />
+					<GoogleSignInButton />
 					<p className={styles.privacyNote}>
 						<i className="fas fa-shield-alt"></i>
 						<span>

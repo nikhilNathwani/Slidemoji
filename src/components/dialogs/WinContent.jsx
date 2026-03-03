@@ -5,8 +5,6 @@ import styles from "./WinContent.module.css";
 function WinContent({
 	earnedEmoji,
 	earnedEmojiName,
-	signedIn,
-	onSignIn,
 	gridSize,
 	dailyEmoji,
 	earnedPuzzleIds = new Set([1]),
@@ -50,8 +48,6 @@ Play at slidemoji.com`;
 
 			<StatsContent
 				dailyEmoji={dailyEmoji}
-				signedIn={signedIn}
-				onSignIn={onSignIn}
 				earnedPuzzleIds={earnedPuzzleIds}
 				totalPuzzles={totalPuzzles}
 			/>
