@@ -10,6 +10,38 @@
 	margin: 0;
 }
 
+.streaksSection {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.statRow {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 8px 0;
+}
+
+.statLabel {
+	color: var(--text-secondary);
+	font-size: 0.95rem;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.statLabel i {
+	width: 20px;
+	text-align: center;
+}
+
+.statValue {
+	color: var(--text-primary);
+	font-size: 1.1rem;
+	font-weight: 600;
+}
+
 .statsSignin {
 	text-align: center;
 	display: flex;

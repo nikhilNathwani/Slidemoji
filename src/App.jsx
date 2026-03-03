@@ -9,6 +9,10 @@ import WinContent from "./components/dialogs/WinContent";
 import ConfirmContent from "./components/dialogs/ConfirmContent";
 import StatsContent from "./components/dialogs/StatsContent";
 import { getDailyEmoji } from "./utils/emoji";
+import { getTodaysPuzzleNumber } from "./utils/dateUtils";
+import { getPuzzleById } from "./utils/puzzleUtils";
+import { getUserData, updateUserPreferences } from "./firebase/firestore";
+import { useAuth } from "./hooks/useAuth";
 import {
 	DEFAULT_GRID_SIZE,
 	DEFAULT_DARK_MODE,
@@ -16,7 +20,9 @@ import {
 } from "./constants";
 
 function App() {
+	const { user } = useAuth();
 	const dailyEmoji = getDailyEmoji();
+	const todaysPuzzleNumber = getTodaysPuzzleNumber();
 
 	const [showLanding, setShowLanding] = useState(true);
 	const [playingEntranceAnimation, setPlayingEntranceAnimation] =
@@ -31,9 +37,52 @@ function App() {
 	const [darkMode, setDarkMode] = useState(DEFAULT_DARK_MODE);
 	const [showDifficultyConfirm, setShowDifficultyConfirm] = useState(false);
 	const [pendingSize, setPendingSize] = useState(null);
-	const [_earnedEmojis, _setEarnedEmojis] = useState([dailyEmoji.emoji]); // Mock data - will be from backend
+	const [userData, setUserData] = useState(null);
+	const [puzzleData, setPuzzleData] = useState(null);
 	const [highestEarnedDifficulty, setHighestEarnedDifficulty] = useState(0); // 0 = not earned, 3 = 3x3 earned, 4 = 4x4 earned
 	const solveRef = useRef(null);
+
+	// Load user data when user signs in
+	useEffect(() => {
+		if (user) {
+			getUserData(user.uid)
+				.then((data) => {
+					setUserData(data);
+					// Apply user preferences
+					if (data?.preferences?.darkMode !== undefined) {
+						setDarkMode(data.preferences.darkMode);
+					}
+				})
+				.catch((error) => {
+					console.error("Error loading user data:", error);
+				});
+		} else {
+			setUserData(null);
+		}
+	}, [user]);
+
+	// Load today's puzzle data
+	useEffect(() => {
+		getPuzzleById(todaysPuzzleNumber)
+			.then((data) => {
+				setPuzzleData(data);
+			})
+			.catch((error) => {
+				console.error("Error loading puzzle:", error);
+			});
+	}, [todaysPuzzleNumber]);
+
+	// Calculate highest earned difficulty from user data
+	useEffect(() => {
+		if (userData?.stats?.completedPuzzles?.[todaysPuzzleNumber]) {
+			const completions = userData.stats.completedPuzzles[todaysPuzzleNumber];
+			const difficulties = Object.keys(completions).map(Number);
+			const highest = Math.max(...difficulties, 0);
+			setHighestEarnedDifficulty(highest);
+		} else {
+			setHighestEarnedDifficulty(0);
+		}
+	}, [userData, todaysPuzzleNumber]);
 
 	const handleWin = () => {
 		// Update highest earned difficulty immediately (before dialog)
@@ -82,6 +131,16 @@ function App() {
 		setShowDifficultyConfirm(false);
 	};
 
+	const handleDarkModeChange = (newDarkMode) => {
+		setDarkMode(newDarkMode);
+		// Persist to Firestore if user is signed in
+		if (user) {
+			updateUserPreferences(user.uid, { darkMode: newDarkMode }).catch((error) => {
+				console.error("Error saving dark mode preference:", error);
+			});
+		}
+	};
+
 	// Handle entrance animation timing
 	useEffect(() => {
 		if (playingEntranceAnimation) {
@@ -127,6 +186,10 @@ function App() {
 				showControls={showControls}
 				onShuffle={() => setIsWon(false)}
 				highestEarnedDifficulty={highestEarnedDifficulty}
+				userData={userData}
+				puzzleData={puzzleData}
+				puzzleId={todaysPuzzleNumber}
+				difficulty={gridSize}
 			/>
 
 			<Dialog
@@ -138,7 +201,7 @@ function App() {
 					gridSize={gridSize}
 					darkMode={darkMode}
 					showNumbers={showNumbers}
-					onDarkModeChange={setDarkMode}
+					onDarkModeChange={handleDarkModeChange}
 					onShowNumbersChange={setShowNumbers}
 					onGridSizeChange={handleSizeChange}
 					onSolve={handleSolve}
@@ -150,7 +213,7 @@ function App() {
 				onClose={() => setShowStats(false)}
 				title="Stats"
 			>
-				<StatsContent dailyEmoji={dailyEmoji} />
+				<StatsContent dailyEmoji={dailyEmoji} userData={userData} />
 			</Dialog>
 
 			<Dialog
@@ -163,8 +226,9 @@ function App() {
 					earnedEmojiName={dailyEmoji.name}
 					gridSize={gridSize}
 					dailyEmoji={dailyEmoji}
-					earnedPuzzleIds={new Set([1])}
-					totalPuzzles={12}
+					earnedPuzzleIds={new Set([todaysPuzzleNumber])}
+					totalPuzzles={365}
+					userData={userData}
 				/>
 			</Dialog>
 

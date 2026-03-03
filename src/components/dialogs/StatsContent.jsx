@@ -3,12 +3,18 @@ import GoogleSignInButton from "../common/GoogleSignInButton";
 import { useAuth } from "../../hooks/useAuth";
 import styles from "./StatsContent.module.css";
 
-function StatsContent({
-	dailyEmoji,
-	earnedPuzzleIds = new Set([1, 3, 5]),
-	totalPuzzles = 12,
-}) {
+function StatsContent({ dailyEmoji, userData, totalPuzzles = 365 }) {
 	const { user } = useAuth();
+
+	// Extract earned puzzle IDs from userData
+	const earnedPuzzleIds = new Set();
+	if (userData?.stats?.completedPuzzles) {
+		Object.keys(userData.stats.completedPuzzles).forEach((puzzleId) => {
+			earnedPuzzleIds.add(parseInt(puzzleId));
+		});
+	}
+
+	const stats = userData?.stats || {};
 
 	return (
 		<div className={styles.statsContent}>
@@ -27,13 +33,43 @@ function StatsContent({
 						<i className="fas fa-shield-alt"></i>
 						<span>
 							We respect your privacy. Your data is never sold or
-							shared. We only use your email to save your
-							progress.
+							shared. We only use your email to save your progress.
 						</span>
 					</p>
 				</div>
 			) : (
 				<>
+					{/* Streaks (signed-in only) */}
+					{userData && (
+						<div className={styles.streaksSection}>
+							<div className={styles.statRow}>
+								<span className={styles.statLabel}>
+									<i className="fas fa-fire"></i> Play Streak
+								</span>
+								<span className={styles.statValue}>
+									{stats.currentPlayStreak || 0} days
+								</span>
+							</div>
+							<div className={styles.statRow}>
+								<span className={styles.statLabel}>
+									<i className="fas fa-trophy"></i> Win Streak
+								</span>
+								<span className={styles.statValue}>
+									{stats.currentWinStreak || 0} days
+								</span>
+							</div>
+							<div className={styles.statRow}>
+								<span className={styles.statLabel}>
+									Puzzles Completed
+								</span>
+								<span className={styles.statValue}>
+									{stats.totalCompleted || 0}
+								</span>
+							</div>
+							<div className={styles.statsDivider}></div>
+						</div>
+					)}
+
 					{/* Trophy Case (signed-in only) */}
 					<TrophyCase
 						dailyEmoji={dailyEmoji}

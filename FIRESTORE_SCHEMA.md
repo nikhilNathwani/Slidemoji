@@ -61,7 +61,7 @@ Each authenticated user gets ONE document:
     // High-level stats (kept for potential future use, even if not displayed)
     totalAttempted: 50,               // Any puzzle started (even incomplete)
     totalCompleted: 38,               // Total completions across all difficulties
-    
+
     // Streaks - track both play and win streaks (Wordle-style)
     currentPlayStreak: 7,             // Consecutive days played (any attempt, win or lose)
     maxPlayStreak: 15,                // Best play streak ever
@@ -78,14 +78,14 @@ Each authenticated user gets ONE document:
           completedAt: Timestamp,
           startedAt: Timestamp,
           timeSpent: 125,             // Seconds (completedAt - startedAt)
-          isDaily: true,              // true = daily puzzle, false = archive play
+          fromArchive: false,         // false = daily puzzle, true = archive play
         },
         4: {                          // Also completed puzzle 1 on 4x4!
           moves: 58,
           completedAt: Timestamp,
           startedAt: Timestamp,
           timeSpent: 180,
-          isDaily: true,
+          fromArchive: false,
         },
       },
       2: {
@@ -94,7 +94,7 @@ Each authenticated user gets ONE document:
           completedAt: Timestamp,
           startedAt: Timestamp,
           timeSpent: 92,
-          isDaily: true,
+          fromArchive: false,
         },
         // No 4x4 completion for puzzle 2
       },
@@ -104,7 +104,7 @@ Each authenticated user gets ONE document:
           completedAt: Timestamp,
           startedAt: Timestamp,
           timeSpent: 210,
-          isDaily: true,
+          fromArchive: false,
         },
       },
       50: {
@@ -113,7 +113,7 @@ Each authenticated user gets ONE document:
           completedAt: Timestamp,
           startedAt: Timestamp,
           timeSpent: 95,
-          isDaily: false,             // Played from archive
+          fromArchive: true,          // Played from archive
         },
       },
     }
@@ -126,11 +126,13 @@ Each authenticated user gets ONE document:
         moves: 15,
         board: [0,1,2,3,4,5,6,7,8],
         startedAt: Timestamp,
+        fromArchive: false,           // Track if this is an archive play
       },
       4: {                            // Difficulty (4x4)
         moves: 8,
         board: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
         startedAt: Timestamp,
+        fromArchive: false,
       },
     },
     2: {                              // Another puzzle
@@ -138,6 +140,7 @@ Each authenticated user gets ONE document:
         moves: 5,
         board: [0,1,2,3,4,5,6,7,8],
         startedAt: Timestamp,
+        fromArchive: false,
       },
     },
   } || null
@@ -229,16 +232,17 @@ Shared puzzle definitions (not user-specific):
 - **Play streak:** Consecutive days played (any attempt, even if not completed)
 - **Win streak:** Consecutive days with at least one completion
 - **Why both?**
-  - Play streak = Wordle-style, encourages daily habit without pressure
-  - Win streak = Extra motivation for completionists
+    - Play streak = Wordle-style, encourages daily habit without pressure
+    - Win streak = Extra motivation for completionists
 - **No pressure:** Don't emphasize streaks heavily in UI
 - **Daily only:** Archive plays don't count toward streaks (see below)
 
 ### ✅ **Archive plays: Track but don't affect streaks**
 
 - **Support:** Users can play any past puzzle anytime
-- **Completions:** Still saved in `completedPuzzles` (with `isDaily: false`)
-- **Streaks:** Only daily puzzles update `lastPlayedDate` and streaks
+- **Completions:** Still saved in `completedPuzzles` (with `fromArchive: true`)
+- **Stats:** Archive plays increment `totalAttempted` and `totalCompleted`
+- **Streaks:** Only daily puzzles (`fromArchive: false`) update `lastPlayedDate` and streaks
 - **Why:** Streaks represent daily engagement, not total games played
 - **Example:** Playing puzzle #50 from archive on 2026-03-03 won't break your streak if you haven't played today's puzzle yet
 
@@ -395,10 +399,14 @@ const currentGame = userData.gameState?.[puzzleId]?.[difficulty];
 const hasGameInProgress = todayPuzzleNum in (userData.gameState || {});
 
 // Count 3x3 completions
-const completed3x3 = Object.values(userData.stats.completedPuzzles).filter(p => p[3]).length;
+const completed3x3 = Object.values(userData.stats.completedPuzzles).filter(
+	(p) => p[3],
+).length;
 
-// Count 4x4 completions  
-const completed4x4 = Object.values(userData.stats.completedPuzzles).filter(p => p[4]).length;
+// Count 4x4 completions
+const completed4x4 = Object.values(userData.stats.completedPuzzles).filter(
+	(p) => p[4],
+).length;
 ```
 
 ---
@@ -410,7 +418,7 @@ const completed4x4 = Object.values(userData.stats.completedPuzzles).filter(p => 
 ```javascript
 const puzzleId = newPuzzleId;
 const difficulty = selectedDifficulty; // 3 or 4
-const isDaily = (puzzleId === getTodaysPuzzleNumber()); // Is this today's puzzle?
+const fromArchive = (puzzleId !== getTodaysPuzzleNumber()); // Is this an archive play?
 
 // Ensure nested structure exists
 if (!gameState) gameState = {};
@@ -421,29 +429,28 @@ gameState[puzzleId][difficulty] = {
   moves: 0,
   board: initialBoard,
   startedAt: Timestamp.now(),
+  fromArchive: fromArchive,
 };
 
-// Increment attempts counter (only if first time trying this puzzle+difficulty)
-if (!stats.completedPuzzles[puzzleId]?.[difficulty]) {
-  stats.totalAttempted++;
-}
+// Update play streak (only for daily puzzles, not archive)
+if (!fromArchive) {
+	const today = getTodaysDate(); // e.g., "2026-03-03"
+	const yesterday = getYesterdaysDate(); // e.g., "2026-03-02"
 
-// Update play streak (only for daily puzzles)
-if (isDaily) {
-  const today = getTodaysDate(); // e.g., "2026-03-03"
-  const yesterday = getYesterdaysDate(); // e.g., "2026-03-02"
-  
-  if (stats.lastPlayedDate === yesterday) {
-    // Continuing streak
-    stats.currentPlayStreak++;
-    stats.maxPlayStreak = Math.max(stats.maxPlayStreak, stats.currentPlayStreak);
-  } else if (stats.lastPlayedDate !== today) {
-    // First play today, but broke streak
-    stats.currentPlayStreak = 1;
-  }
-  // If lastPlayedDate === today, already played today, don't update
-  
-  stats.lastPlayedDate = today;
+	if (stats.lastPlayedDate === yesterday) {
+		// Continuing streak
+		stats.currentPlayStreak++;
+		stats.maxPlayStreak = Math.max(
+			stats.maxPlayStreak,
+			stats.currentPlayStreak,
+		);
+	} else if (stats.lastPlayedDate !== today) {
+		// First play today, but broke streak
+		stats.currentPlayStreak = 1;
+	}
+	// If lastPlayedDate === today, already played today, don't update
+
+	stats.lastPlayedDate = today;
 }
 
 // Save to Firestore
@@ -455,59 +462,67 @@ await updateDoc(userDoc, { gameState, stats });
 ```javascript
 const puzzleId = currentPuzzleId;
 const difficulty = currentDifficulty;
-const isDaily = (puzzleId === getTodaysPuzzleNumber());
+const fromArchive = gameState[puzzleId][difficulty].fromArchive; // Get from saved game state
 
 // Get the game state for this puzzle+difficulty
 const game = gameState[puzzleId][difficulty];
 
 // Ensure nested structure exists
 if (!stats.completedPuzzles[puzzleId]) {
-  stats.completedPuzzles[puzzleId] = {};
+	stats.completedPuzzles[puzzleId] = {};
 }
 
 // Save completion for this difficulty
 stats.completedPuzzles[puzzleId][difficulty] = {
-  moves: game.moves,
-  completedAt: Timestamp.now(),
-  startedAt: game.startedAt,
-  timeSpent: Math.floor((Timestamp.now().toMillis() - game.startedAt.toMillis()) / 1000),
-  isDaily: isDaily,  // Track whether this was a daily or archive play
+	moves: game.moves,
+	completedAt: Timestamp.now(),
+	startedAt: game.startedAt,
+	timeSpent: Math.floor(
+		(Timestamp.now().toMillis() - game.startedAt.toMillis()) / 1000,
+	),
+	isDaily: isDaily, // Track whether this was a daily or archive play
 };
 
 // Update totals
 stats.totalCompleted++;
 
-// Update win streak (only for daily puzzles)
-if (isDaily) {
-  const today = getTodaysDate();
-  const yesterday = getYesterdaysDate();
-  
-  // lastPlayedDate was already updated when they started (for play streak)
-  // Now check if this is their first WIN today
-  const hasWonToday = Object.entries(stats.completedPuzzles).some(
-    ([pId, difficulties]) => 
-      Object.values(difficulties).some(comp => 
-        comp.isDaily && comp.completedAt.toDate().toDateString() === new Date().toDateString()
-      )
-  );
-  
-  if (!hasWonToday) {
-    // First win today
-    if (stats.lastPlayedDate === yesterday) {
-      // Continuing win streak
-      stats.currentWinStreak++;
-      stats.maxWinStreak = Math.max(stats.maxWinStreak, stats.currentWinStreak);
-    } else {
-      // Won today but broke win streak
-      stats.currentWinStreak = 1;
-    }
-  }
+// Update win streak (only for daily puzzles, not archive)
+if (!fromArchive) {
+	const today = getTodaysDate();
+	const yesterday = getYesterdaysDate();
+
+	// lastPlayedDate was already updated when they started (for play streak)
+	// Now check if this is their first WIN today
+	const hasWonToday = Object.entries(stats.completedPuzzles).some(
+		([pId, difficulties]) =>
+			Object.values(difficulties).some(
+				(comp) =>
+					comp.isDaily &&
+					comp.completedAt.toDate().toDateString() ===
+						new Date().toDateString(),
+			),
+	);
+
+	if (!hasWonToday) {
+		// First win today
+		if (stats.lastPlayedDate === yesterday) {
+			// Continuing win streak
+			stats.currentWinStreak++;
+			stats.maxWinStreak = Math.max(
+				stats.maxWinStreak,
+				stats.currentWinStreak,
+			);
+		} else {
+			// Won today but broke win streak
+			stats.currentWinStreak = 1;
+		}
+	}
 }
 
 // Clear THIS game state (but keep other in-progress games)
 delete gameState[puzzleId][difficulty];
 if (Object.keys(gameState[puzzleId]).length === 0) {
-  delete gameState[puzzleId]; // Clean up empty puzzle object
+	delete gameState[puzzleId]; // Clean up empty puzzle object
 }
 
 // Save to Firestore
@@ -524,12 +539,12 @@ await updateDoc(userDoc, { gameState: gameState || null, stats });
 // Optional: Clean up old abandoned games (e.g., from puzzles >7 days ago)
 const cutoffPuzzleId = getTodaysPuzzleNumber() - 7;
 if (gameState) {
-  Object.keys(gameState).forEach(puzzleId => {
-    if (parseInt(puzzleId) < cutoffPuzzleId) {
-      delete gameState[puzzleId];
-    }
-  });
-  await updateDoc(userDoc, { gameState: gameState || null });
+	Object.keys(gameState).forEach((puzzleId) => {
+		if (parseInt(puzzleId) < cutoffPuzzleId) {
+			delete gameState[puzzleId];
+		}
+	});
+	await updateDoc(userDoc, { gameState: gameState || null });
 }
 ```
 
@@ -543,15 +558,15 @@ const currentDifficulty = 3; // or from user selection
 const savedGame = userData.gameState?.[todayPuzzleId]?.[currentDifficulty];
 
 if (savedGame) {
-  // Resume from saved state
-  board = savedGame.board;
-  moves = savedGame.moves;
-  startedAt = savedGame.startedAt;
+	// Resume from saved state
+	board = savedGame.board;
+	moves = savedGame.moves;
+	startedAt = savedGame.startedAt;
 } else {
-  // Start fresh
-  board = initialBoard;
-  moves = 0;
-  startedAt = Timestamp.now();
+	// Start fresh
+	board = initialBoard;
+	moves = 0;
+	startedAt = Timestamp.now();
 }
 ```
 
@@ -564,23 +579,25 @@ if (savedGame) {
 ```javascript
 // Get today's date as YYYY-MM-DD string
 function getTodaysDate() {
-  const now = new Date();
-  return now.toISOString().split('T')[0];
+	const now = new Date();
+	return now.toISOString().split("T")[0];
 }
 
 // Get yesterday's date as YYYY-MM-DD string
 function getYesterdaysDate() {
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  return yesterday.toISOString().split('T')[0];
+	const yesterday = new Date();
+	yesterday.setDate(yesterday.getDate() - 1);
+	return yesterday.toISOString().split("T")[0];
 }
 
 // Calculate today's puzzle number based on start date
 function getTodaysPuzzleNumber() {
-  const startDate = new Date('2026-01-01'); // First puzzle date
-  const today = new Date();
-  const daysSinceStart = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
-  return (daysSinceStart % 365) + 1;  // Cycle after 365 puzzles
+	const startDate = new Date("2026-01-01"); // First puzzle date
+	const today = new Date();
+	const daysSinceStart = Math.floor(
+		(today - startDate) / (1000 * 60 * 60 * 24),
+	);
+	return (daysSinceStart % 365) + 1; // Cycle after 365 puzzles
 }
 ```
 
@@ -665,8 +682,8 @@ Perfect balance! 🎯
 
 ```javascript
 // Just start writing them for new users
-await updateDoc(userDoc, { 
-  "stats.newField": value 
+await updateDoc(userDoc, {
+	"stats.newField": value,
 });
 
 // Old users won't have it - handle with defaults
@@ -681,15 +698,15 @@ const newField = userData.stats.newField || defaultValue;
 
 ```javascript
 // Need a one-time migration script
-const usersRef = collection(db, 'users');
+const usersRef = collection(db, "users");
 const snapshot = await getDocs(usersRef);
 
 snapshot.forEach(async (doc) => {
-  const data = doc.data();
-  await updateDoc(doc.ref, {
-    'stats.newName': data.stats.oldName,
-    'stats.oldName': deleteField(),
-  });
+	const data = doc.data();
+	await updateDoc(doc.ref, {
+		"stats.newName": data.stats.oldName,
+		"stats.oldName": deleteField(),
+	});
 });
 ```
 
@@ -702,20 +719,20 @@ snapshot.forEach(async (doc) => {
 ```javascript
 // Migration for nested gameState
 snapshot.forEach(async (doc) => {
-  const old = doc.data().gameState;
-  if (old && old.puzzleId) {
-    // Convert old flat structure to new nested
-    const newGameState = {
-      [old.puzzleId]: {
-        [old.difficulty]: {
-          moves: old.moves,
-          board: old.board,
-          startedAt: old.startedAt,
-        }
-      }
-    };
-    await updateDoc(doc.ref, { gameState: newGameState });
-  }
+	const old = doc.data().gameState;
+	if (old && old.puzzleId) {
+		// Convert old flat structure to new nested
+		const newGameState = {
+			[old.puzzleId]: {
+				[old.difficulty]: {
+					moves: old.moves,
+					board: old.board,
+					startedAt: old.startedAt,
+				},
+			},
+		};
+		await updateDoc(doc.ref, { gameState: newGameState });
+	}
 });
 ```
 
@@ -745,33 +762,38 @@ snapshot.forEach(async (doc) => {
 
 // Update saveGameState to use nested structure
 export async function saveGameState(userId, puzzleId, difficulty, gameData) {
-  const userRef = doc(db, 'users', userId);
-  await updateDoc(userRef, {
-    [`gameState.${puzzleId}.${difficulty}`]: {
-      moves: gameData.moves,
-      board: gameData.board,
-      startedAt: gameData.startedAt,
-    }
-  });
+	const userRef = doc(db, "users", userId);
+	await updateDoc(userRef, {
+		[`gameState.${puzzleId}.${difficulty}`]: {
+			moves: gameData.moves,
+			board: gameData.board,
+			startedAt: gameData.startedAt,
+		},
+	});
 }
 
 // Update saveTrophy/saveCompletion to include streak logic
-export async function saveCompletion(userId, puzzleId, difficulty, completionData) {
-  // Implementation from "When user wins" section above
-  // Includes: isDaily flag, streak calculation, nested structure
+export async function saveCompletion(
+	userId,
+	puzzleId,
+	difficulty,
+	completionData,
+) {
+	// Implementation from "When user wins" section above
+	// Includes: isDaily flag, streak calculation, nested structure
 }
 
 // New function: Update play streak when starting puzzle
 export async function startPuzzle(userId, puzzleId, difficulty) {
-  // Implementation from "When user starts" section above
-  // Includes: play streak update, totalAttempted increment
+	// Implementation from "When user starts" section above
+	// Includes: play streak update, totalAttempted increment
 }
 
 // Load user data on app startup
 export async function getUserData(userId) {
-  const userRef = doc(db, 'users', userId);
-  const userSnap = await getDoc(userRef);
-  return userSnap.exists() ? userSnap.data() : null;
+	const userRef = doc(db, "users", userId);
+	const userSnap = await getDoc(userRef);
+	return userSnap.exists() ? userSnap.data() : null;
 }
 ```
 
@@ -809,7 +831,7 @@ function Game() {
       setBoard(initialBoard);
       setMoves(0);
       setStartedAt(Timestamp.now());
-      
+
       // Save to Firestore (updates play streak if daily)
       if (user) {
         startPuzzle(user.uid, puzzleId, difficulty);
@@ -821,7 +843,7 @@ function Game() {
   const handleMove = (newBoard) => {
     setBoard(newBoard);
     setMoves(moves + 1);
-    
+
     if (user) {
       saveGameState(user.uid, puzzleId, difficulty, {
         board: newBoard,
@@ -859,17 +881,17 @@ function Game() {
 // src/components/ArchivePicker.jsx
 
 function ArchivePicker({ onSelectPuzzle }) {
-  const puzzles = [1, 2, 3, 4, 5]; // List of available puzzles
-  
-  return (
-    <div className="archive">
-      {puzzles.map(id => (
-        <button key={id} onClick={() => onSelectPuzzle(id)}>
-          Puzzle #{id}
-        </button>
-      ))}
-    </div>
-  );
+	const puzzles = [1, 2, 3, 4, 5]; // List of available puzzles
+
+	return (
+		<div className="archive">
+			{puzzles.map((id) => (
+				<button key={id} onClick={() => onSelectPuzzle(id)}>
+					Puzzle #{id}
+				</button>
+			))}
+		</div>
+	);
 }
 ```
 
@@ -878,26 +900,26 @@ function ArchivePicker({ onSelectPuzzle }) {
 ```javascript
 // src/App.jsx
 
-import { getUserData } from './firebase/firestore';
-import { useAuth } from './hooks/useAuth';
+import { getUserData } from "./firebase/firestore";
+import { useAuth } from "./hooks/useAuth";
 
 function App() {
-  const { user } = useAuth();
-  const [userData, setUserData] = useState(null);
+	const { user } = useAuth();
+	const [userData, setUserData] = useState(null);
 
-  useEffect(() => {
-    if (user) {
-      getUserData(user.uid).then(data => {
-        setUserData(data);
-      });
-    }
-  }, [user]);
+	useEffect(() => {
+		if (user) {
+			getUserData(user.uid).then((data) => {
+				setUserData(data);
+			});
+		}
+	}, [user]);
 
-  return (
-    <div className={userData?.preferences?.darkMode ? 'dark' : 'light'}>
-      <Game userData={userData} />
-    </div>
-  );
+	return (
+		<div className={userData?.preferences?.darkMode ? "dark" : "light"}>
+			<Game userData={userData} />
+		</div>
+	);
 }
 ```
 
@@ -907,14 +929,16 @@ function App() {
 // src/components/dialogs/StatsContent.jsx
 
 function StatsContent({ userData }) {
-  return (
-    <div className="stats">
-      <div>Play Streak: {userData?.stats?.currentPlayStreak || 0} days</div>
-      <div>Win Streak: {userData?.stats?.currentWinStreak || 0} days</div>
-      <div>Total Completed: {userData?.stats?.totalCompleted || 0}</div>
-      {/* Trophy case showing completedPuzzles */}
-    </div>
-  );
+	return (
+		<div className="stats">
+			<div>
+				Play Streak: {userData?.stats?.currentPlayStreak || 0} days
+			</div>
+			<div>Win Streak: {userData?.stats?.currentWinStreak || 0} days</div>
+			<div>Total Completed: {userData?.stats?.totalCompleted || 0}</div>
+			{/* Trophy case showing completedPuzzles */}
+		</div>
+	);
 }
 ```
 
@@ -929,5 +953,3 @@ function StatsContent({ userData }) {
 ---
 
 Does this schema work for you? Any other changes?
-
-

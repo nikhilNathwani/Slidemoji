@@ -1,0 +1,72 @@
+import { doc, getDoc, setDoc, collection, getDocs } from "firebase/firestore";
+import { db } from "../firebase/config";
+
+/**
+ * Get puzzle data by ID
+ * @param {number} puzzleId - The puzzle number
+ * @returns {Promise<Object|null>} Puzzle data or null if not found
+ */
+export async function getPuzzleById(puzzleId) {
+	try {
+		const puzzleRef = doc(db, "puzzles", puzzleId.toString());
+		const puzzleSnap = await getDoc(puzzleRef);
+
+		if (puzzleSnap.exists()) {
+			return puzzleSnap.data();
+		}
+		return null;
+	} catch (error) {
+		console.error("Error getting puzzle:", error);
+		throw error;
+	}
+}
+
+/**
+ * Get all puzzles
+ * @returns {Promise<Array>} Array of puzzle data
+ */
+export async function getAllPuzzles() {
+	try {
+		const puzzlesRef = collection(db, "puzzles");
+		const querySnapshot = await getDocs(puzzlesRef);
+
+		const puzzles = [];
+		querySnapshot.forEach((doc) => {
+			puzzles.push({ id: doc.id, ...doc.data() });
+		});
+
+		return puzzles.sort((a, b) => a.id - b.id);
+	} catch (error) {
+		console.error("Error getting all puzzles:", error);
+		throw error;
+	}
+}
+
+/**
+ * Save puzzle to Firestore (admin function)
+ * @param {Object} puzzleData - Puzzle data to save
+ */
+export async function savePuzzle(puzzleData) {
+	try {
+		const puzzleRef = doc(db, "puzzles", puzzleData.id.toString());
+		await setDoc(puzzleRef, puzzleData);
+	} catch (error) {
+		console.error("Error saving puzzle:", error);
+		throw error;
+	}
+}
+
+/**
+ * Batch save puzzles to Firestore (admin function)
+ * @param {Array} puzzles - Array of puzzle data
+ */
+export async function batchSavePuzzles(puzzles) {
+	try {
+		const promises = puzzles.map((puzzle) => savePuzzle(puzzle));
+		await Promise.all(promises);
+		console.log(`Successfully saved ${puzzles.length} puzzles`);
+	} catch (error) {
+		console.error("Error batch saving puzzles:", error);
+		throw error;
+	}
+}
