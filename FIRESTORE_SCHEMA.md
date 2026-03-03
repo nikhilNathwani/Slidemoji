@@ -61,9 +61,13 @@ Each authenticated user gets ONE document:
     // High-level stats (kept for potential future use, even if not displayed)
     totalAttempted: 50,               // Any puzzle started (even incomplete)
     totalCompleted: 38,               // Total completions across all difficulties
-    currentStreak: 5,                 // Consecutive days with at least one completion
-    maxStreak: 12,                    // Best ever
-    lastPlayedDate: "2026-03-03",     // For streak calculation
+    
+    // Streaks - track both play and win streaks (Wordle-style)
+    currentPlayStreak: 7,             // Consecutive days played (any attempt, win or lose)
+    maxPlayStreak: 15,                // Best play streak ever
+    currentWinStreak: 5,              // Consecutive days with at least one completion
+    maxWinStreak: 12,                 // Best win streak ever
+    lastPlayedDate: "2026-03-03",     // For streak calculation (daily puzzles only, not archive)
 
     // Completed puzzles - nested by puzzleId then difficulty
     // Allows tracking multiple difficulty completions per puzzle!
@@ -74,12 +78,14 @@ Each authenticated user gets ONE document:
           completedAt: Timestamp,
           startedAt: Timestamp,
           timeSpent: 125,             // Seconds (completedAt - startedAt)
+          isDaily: true,              // true = daily puzzle, false = archive play
         },
         4: {                          // Also completed puzzle 1 on 4x4!
           moves: 58,
           completedAt: Timestamp,
           startedAt: Timestamp,
           timeSpent: 180,
+          isDaily: true,
         },
       },
       2: {
@@ -88,6 +94,7 @@ Each authenticated user gets ONE document:
           completedAt: Timestamp,
           startedAt: Timestamp,
           timeSpent: 92,
+          isDaily: true,
         },
         // No 4x4 completion for puzzle 2
       },
@@ -97,6 +104,16 @@ Each authenticated user gets ONE document:
           completedAt: Timestamp,
           startedAt: Timestamp,
           timeSpent: 210,
+          isDaily: true,
+        },
+      },
+      50: {
+        3: {                          // Archive play - doesn't affect streaks
+          moves: 35,
+          completedAt: Timestamp,
+          startedAt: Timestamp,
+          timeSpent: 95,
+          isDaily: false,             // Played from archive
         },
       },
     }
@@ -207,11 +224,23 @@ Shared puzzle definitions (not user-specific):
 - **Example:** `Object.values(completedPuzzles).filter(p => p[3]).length`
 - **Benefit:** Simpler schema, always accurate
 
-### ✅ **Win-based streaks only**
+### ✅ **Track both play streaks AND win streaks**
 
-- **Track:** Days with at least one completion
-- **Don't track:** "Play streak" (started but didn't finish)
-- **Why:** More meaningful for a daily puzzle game
+- **Play streak:** Consecutive days played (any attempt, even if not completed)
+- **Win streak:** Consecutive days with at least one completion
+- **Why both?**
+  - Play streak = Wordle-style, encourages daily habit without pressure
+  - Win streak = Extra motivation for completionists
+- **No pressure:** Don't emphasize streaks heavily in UI
+- **Daily only:** Archive plays don't count toward streaks (see below)
+
+### ✅ **Archive plays: Track but don't affect streaks**
+
+- **Support:** Users can play any past puzzle anytime
+- **Completions:** Still saved in `completedPuzzles` (with `isDaily: false`)
+- **Streaks:** Only daily puzzles update `lastPlayedDate` and streaks
+- **Why:** Streaks represent daily engagement, not total games played
+- **Example:** Playing puzzle #50 from archive on 2026-03-03 won't break your streak if you haven't played today's puzzle yet
 
 ### ✅ **Track moves & time, but don't be competitive**
 
@@ -381,6 +410,7 @@ const completed4x4 = Object.values(userData.stats.completedPuzzles).filter(p => 
 ```javascript
 const puzzleId = newPuzzleId;
 const difficulty = selectedDifficulty; // 3 or 4
+const isDaily = (puzzleId === getTodaysPuzzleNumber()); // Is this today's puzzle?
 
 // Ensure nested structure exists
 if (!gameState) gameState = {};
@@ -398,6 +428,24 @@ if (!stats.completedPuzzles[puzzleId]?.[difficulty]) {
   stats.totalAttempted++;
 }
 
+// Update play streak (only for daily puzzles)
+if (isDaily) {
+  const today = getTodaysDate(); // e.g., "2026-03-03"
+  const yesterday = getYesterdaysDate(); // e.g., "2026-03-02"
+  
+  if (stats.lastPlayedDate === yesterday) {
+    // Continuing streak
+    stats.currentPlayStreak++;
+    stats.maxPlayStreak = Math.max(stats.maxPlayStreak, stats.currentPlayStreak);
+  } else if (stats.lastPlayedDate !== today) {
+    // First play today, but broke streak
+    stats.currentPlayStreak = 1;
+  }
+  // If lastPlayedDate === today, already played today, don't update
+  
+  stats.lastPlayedDate = today;
+}
+
 // Save to Firestore
 await updateDoc(userDoc, { gameState, stats });
 ```
@@ -407,6 +455,7 @@ await updateDoc(userDoc, { gameState, stats });
 ```javascript
 const puzzleId = currentPuzzleId;
 const difficulty = currentDifficulty;
+const isDaily = (puzzleId === getTodaysPuzzleNumber());
 
 // Get the game state for this puzzle+difficulty
 const game = gameState[puzzleId][difficulty];
@@ -422,11 +471,38 @@ stats.completedPuzzles[puzzleId][difficulty] = {
   completedAt: Timestamp.now(),
   startedAt: game.startedAt,
   timeSpent: Math.floor((Timestamp.now().toMillis() - game.startedAt.toMillis()) / 1000),
+  isDaily: isDaily,  // Track whether this was a daily or archive play
 };
 
 // Update totals
 stats.totalCompleted++;
-stats.lastPlayedDate = getTodaysDate(); // e.g., "2026-03-03"
+
+// Update win streak (only for daily puzzles)
+if (isDaily) {
+  const today = getTodaysDate();
+  const yesterday = getYesterdaysDate();
+  
+  // lastPlayedDate was already updated when they started (for play streak)
+  // Now check if this is their first WIN today
+  const hasWonToday = Object.entries(stats.completedPuzzles).some(
+    ([pId, difficulties]) => 
+      Object.values(difficulties).some(comp => 
+        comp.isDaily && comp.completedAt.toDate().toDateString() === new Date().toDateString()
+      )
+  );
+  
+  if (!hasWonToday) {
+    // First win today
+    if (stats.lastPlayedDate === yesterday) {
+      // Continuing win streak
+      stats.currentWinStreak++;
+      stats.maxWinStreak = Math.max(stats.maxWinStreak, stats.currentWinStreak);
+    } else {
+      // Won today but broke win streak
+      stats.currentWinStreak = 1;
+    }
+  }
+}
 
 // Clear THIS game state (but keep other in-progress games)
 delete gameState[puzzleId][difficulty];
@@ -476,6 +552,35 @@ if (savedGame) {
   board = initialBoard;
   moves = 0;
   startedAt = Timestamp.now();
+}
+```
+
+---
+
+## Helper Functions
+
+**Date utilities for streak calculation:**
+
+```javascript
+// Get today's date as YYYY-MM-DD string
+function getTodaysDate() {
+  const now = new Date();
+  return now.toISOString().split('T')[0];
+}
+
+// Get yesterday's date as YYYY-MM-DD string
+function getYesterdaysDate() {
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  return yesterday.toISOString().split('T')[0];
+}
+
+// Calculate today's puzzle number based on start date
+function getTodaysPuzzleNumber() {
+  const startDate = new Date('2026-01-01'); // First puzzle date
+  const today = new Date();
+  const daysSinceStart = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
+  return (daysSinceStart % 365) + 1;  // Cycle after 365 puzzles
 }
 ```
 
@@ -627,5 +732,202 @@ snapshot.forEach(async (doc) => {
 
 ---
 
+## Next Steps: Integrating with the Game
+
+### **1. Update firestore.js functions**
+
+**Current state:** Basic CRUD functions exist but use old schema
+
+**Changes needed:**
+
+```javascript
+// src/firebase/firestore.js
+
+// Update saveGameState to use nested structure
+export async function saveGameState(userId, puzzleId, difficulty, gameData) {
+  const userRef = doc(db, 'users', userId);
+  await updateDoc(userRef, {
+    [`gameState.${puzzleId}.${difficulty}`]: {
+      moves: gameData.moves,
+      board: gameData.board,
+      startedAt: gameData.startedAt,
+    }
+  });
+}
+
+// Update saveTrophy/saveCompletion to include streak logic
+export async function saveCompletion(userId, puzzleId, difficulty, completionData) {
+  // Implementation from "When user wins" section above
+  // Includes: isDaily flag, streak calculation, nested structure
+}
+
+// New function: Update play streak when starting puzzle
+export async function startPuzzle(userId, puzzleId, difficulty) {
+  // Implementation from "When user starts" section above
+  // Includes: play streak update, totalAttempted increment
+}
+
+// Load user data on app startup
+export async function getUserData(userId) {
+  const userRef = doc(db, 'users', userId);
+  const userSnap = await getDoc(userRef);
+  return userSnap.exists() ? userSnap.data() : null;
+}
+```
+
+### **2. Integrate into Game.jsx**
+
+**Current state:** Game manages local state only
+
+**Changes needed:**
+
+```javascript
+// src/components/Game.jsx
+
+import { saveGameState, saveCompletion, startPuzzle } from '../firebase/firestore';
+import { useAuth } from '../hooks/useAuth';
+
+function Game() {
+  const { user } = useAuth();
+  const [puzzleId, setPuzzleId] = useState(getTodaysPuzzleNumber());
+  const [difficulty, setDifficulty] = useState(3);
+  const [board, setBoard] = useState([]);
+  const [moves, setMoves] = useState(0);
+  const [startedAt, setStartedAt] = useState(null);
+
+  // On mount or puzzle change: Load saved state or start fresh
+  useEffect(() => {
+    if (user && user.gameState?.[puzzleId]?.[difficulty]) {
+      // Resume saved game
+      const saved = user.gameState[puzzleId][difficulty];
+      setBoard(saved.board);
+      setMoves(saved.moves);
+      setStartedAt(saved.startedAt);
+    } else {
+      // Start fresh
+      const initialBoard = getInitialBoard(difficulty);
+      setBoard(initialBoard);
+      setMoves(0);
+      setStartedAt(Timestamp.now());
+      
+      // Save to Firestore (updates play streak if daily)
+      if (user) {
+        startPuzzle(user.uid, puzzleId, difficulty);
+      }
+    }
+  }, [user, puzzleId, difficulty]);
+
+  // On every move: Save to Firestore
+  const handleMove = (newBoard) => {
+    setBoard(newBoard);
+    setMoves(moves + 1);
+    
+    if (user) {
+      saveGameState(user.uid, puzzleId, difficulty, {
+        board: newBoard,
+        moves: moves + 1,
+        startedAt,
+      });
+    }
+  };
+
+  // On win: Save completion
+  const handleWin = () => {
+    if (user) {
+      saveCompletion(user.uid, puzzleId, difficulty, {
+        moves,
+        startedAt,
+      });
+    }
+  };
+
+  // Allow switching between archive and daily puzzles
+  const loadPuzzle = (newPuzzleId) => {
+    setPuzzleId(newPuzzleId);
+    // useEffect will handle loading saved state or starting fresh
+  };
+
+  return (
+    // ... game UI
+  );
+}
+```
+
+### **3. Add archive puzzle picker (future)**
+
+```javascript
+// src/components/ArchivePicker.jsx
+
+function ArchivePicker({ onSelectPuzzle }) {
+  const puzzles = [1, 2, 3, 4, 5]; // List of available puzzles
+  
+  return (
+    <div className="archive">
+      {puzzles.map(id => (
+        <button key={id} onClick={() => onSelectPuzzle(id)}>
+          Puzzle #{id}
+        </button>
+      ))}
+    </div>
+  );
+}
+```
+
+### **4. Update App.jsx to load user data on mount**
+
+```javascript
+// src/App.jsx
+
+import { getUserData } from './firebase/firestore';
+import { useAuth } from './hooks/useAuth';
+
+function App() {
+  const { user } = useAuth();
+  const [userData, setUserData] = useState(null);
+
+  useEffect(() => {
+    if (user) {
+      getUserData(user.uid).then(data => {
+        setUserData(data);
+      });
+    }
+  }, [user]);
+
+  return (
+    <div className={userData?.preferences?.darkMode ? 'dark' : 'light'}>
+      <Game userData={userData} />
+    </div>
+  );
+}
+```
+
+### **5. Update StatsContent.jsx to show streaks**
+
+```javascript
+// src/components/dialogs/StatsContent.jsx
+
+function StatsContent({ userData }) {
+  return (
+    <div className="stats">
+      <div>Play Streak: {userData?.stats?.currentPlayStreak || 0} days</div>
+      <div>Win Streak: {userData?.stats?.currentWinStreak || 0} days</div>
+      <div>Total Completed: {userData?.stats?.totalCompleted || 0}</div>
+      {/* Trophy case showing completedPuzzles */}
+    </div>
+  );
+}
+```
+
+### **Summary of code changes:**
+
+1. ✅ **firestore.js**: Rewrite functions to use nested gameState, add streak logic
+2. ✅ **Game.jsx**: Integrate save/load, call Firestore on moves/wins
+3. ✅ **App.jsx**: Load userData on mount, pass to children
+4. ✅ **StatsContent.jsx**: Display play/win streaks and trophies
+5. 🔜 **ArchivePicker.jsx**: (Later) Let users select old puzzles
+
+---
+
 Does this schema work for you? Any other changes?
+
 
