@@ -42,13 +42,16 @@ function App() {
 	const [highestEarnedDifficulty, setHighestEarnedDifficulty] = useState(0); // 0 = not earned, 3 = 3x3 earned, 4 = 4x4 earned
 	const solveRef = useRef(null);
 
-	// Load user data when user signs in
+	// ===== Load User Data on Sign-In =====
+	// When user signs in, fetch their Firestore document (preferences, stats, game state)
+	// This loads all their data in ONE read - efficient!
 	useEffect(() => {
 		if (user) {
+			// User just signed in - load their data from Firestore
 			getUserData(user.uid)
 				.then((data) => {
 					setUserData(data);
-					// Apply user preferences
+					// Apply saved preferences (dark mode)
 					if (data?.preferences?.darkMode !== undefined) {
 						setDarkMode(data.preferences.darkMode);
 					}
@@ -57,11 +60,14 @@ function App() {
 					console.error("Error loading user data:", error);
 				});
 		} else {
+			// User signed out - clear data
 			setUserData(null);
 		}
-	}, [user]);
+	}, [user]); // Re-run when user changes (sign in/out)
 
-	// Load today's puzzle data
+	// ===== Load Today's Puzzle Data from Firestore =====
+	// Fetches puzzle definition (emoji, initial boards for 3x3 and 4x4)
+	// All users get the same puzzle - ensures fair comparison of moves/time!
 	useEffect(() => {
 		getPuzzleById(todaysPuzzleNumber)
 			.then((data) => {
@@ -72,24 +78,30 @@ function App() {
 			});
 	}, [todaysPuzzleNumber]);
 
-	// Calculate highest earned difficulty from user data
+	// ===== Calculate Trophy Badge (3x3 or 4x4) =====
+	// Shows highest difficulty completed for today's puzzle
+	// User might complete both 3x3 and 4x4 - badge shows the harder one
 	useEffect(() => {
 		if (userData?.stats?.completedPuzzles?.[todaysPuzzleNumber]) {
-			const completions = userData.stats.completedPuzzles[todaysPuzzleNumber];
+			const completions =
+				userData.stats.completedPuzzles[todaysPuzzleNumber];
+			// Get all difficulty levels completed (e.g., [3, 4])
 			const difficulties = Object.keys(completions).map(Number);
+			// Take the highest (4 > 3)
 			const highest = Math.max(...difficulties, 0);
 			setHighestEarnedDifficulty(highest);
 		} else {
-			setHighestEarnedDifficulty(0);
+			setHighestEarnedDifficulty(0); // Not completed yet
 		}
 	}, [userData, todaysPuzzleNumber]);
 
 	const handleWin = () => {
-		// Update highest earned difficulty immediately (before dialog)
+		// Update trophy badge difficulty immediately (before win dialog shows)
+		// User might complete 3x3 then try 4x4 - badge should update right away
 		if (gridSize > highestEarnedDifficulty) {
 			setHighestEarnedDifficulty(gridSize);
 		}
-		// setIsWon and dialog opening happens in Board after delay
+		// Note: setIsWon and dialog opening happens in Board after celebration delay
 	};
 
 	const handleShowWinDialog = () => {
@@ -135,9 +147,11 @@ function App() {
 		setDarkMode(newDarkMode);
 		// Persist to Firestore if user is signed in
 		if (user) {
-			updateUserPreferences(user.uid, { darkMode: newDarkMode }).catch((error) => {
-				console.error("Error saving dark mode preference:", error);
-			});
+			updateUserPreferences(user.uid, { darkMode: newDarkMode }).catch(
+				(error) => {
+					console.error("Error saving dark mode preference:", error);
+				},
+			);
 		}
 	};
 

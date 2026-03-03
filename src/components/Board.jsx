@@ -26,8 +26,22 @@ function Board({
 	onShuffleRef,
 	dailyEmoji,
 	playingEntranceAnimation,
+	// Persistence props - from Game component
+	initialBoard, // The starting board from Firestore (for this puzzle+difficulty)
+	savedBoard, // Previously saved board state (resume game), or null for new game
+	onMove, // Callback to notify parent when board changes (for Firestore saves)
 }) {
-	const [tiles, setTiles] = useState(() => scramblePuzzle(size));
+	// Initialize board state from savedBoard (resume) or initialBoard (new game)
+	// Falls back to scramblePuzzle if neither provided (shouldn't happen in production)
+	const [tiles, setTiles] = useState(() => {
+		if (savedBoard) {
+			return savedBoard; // Resume from saved state
+		}
+		if (initialBoard) {
+			return initialBoard; // Start fresh with provided board
+		}
+		return scramblePuzzle(size); // Fallback (shouldn't happen)
+	});
 	const [isWon, setIsWon] = useState(false);
 	const [celebrating, setCelebrating] = useState(false);
 	const [movingTileValue, setMovingTileValue] = useState(null);
@@ -71,13 +85,14 @@ function Board({
 		setCelebrating(true);
 	}, [size]);
 
-	// Shuffle function
+	// Shuffle function - restart the puzzle with the same initial board
 	const handleShuffle = useCallback(() => {
-		setTiles(scramblePuzzle(size));
+		// Use initialBoard if available (persistence mode), otherwise generate random
+		setTiles(initialBoard || scramblePuzzle(size));
 		setIsWon(false);
 		hasShownWin.current = false;
 		setCelebrating(false);
-	}, [size]);
+	}, [size, initialBoard]);
 
 	// Expose functions to parent
 	useEffect(() => {
@@ -102,11 +117,19 @@ function Board({
 		}
 		isAnimating.current = false;
 		setMovingTileValue(null);
-		setTiles(scramblePuzzle(size));
+		// Use initialBoard or savedBoard if available, otherwise scramble
+		// This triggers when user changes difficulty (3x3 <-> 4x4)
+		if (savedBoard) {
+			setTiles(savedBoard);
+		} else if (initialBoard) {
+			setTiles(initialBoard);
+		} else {
+			setTiles(scramblePuzzle(size));
+		}
 		setIsWon(false);
 		hasShownWin.current = false;
 		setCelebrating(false);
-	}, [size]);
+	}, [size, initialBoard, savedBoard]);
 
 	// Handle window resize
 	useEffect(() => {
@@ -219,6 +242,12 @@ function Board({
 				isAnimating.current = false;
 				setMovingTileValue(null);
 				moveTimeoutRef.current = null;
+
+				// Notify parent component of board change (for persistence)
+				// This triggers saveGameState in Game.jsx to update Firestore
+				if (onMove) {
+					onMove(newTiles);
+				}
 			}, ANIMATION_DURATION_MS);
 		},
 		[tiles, size, tileSizePx],

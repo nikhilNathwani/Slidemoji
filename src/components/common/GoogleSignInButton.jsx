@@ -1,22 +1,38 @@
+/**
+ * GoogleSignInButton - Handles Google authentication
+ *
+ * Shows sign-in or sign-out button based on auth state.
+ * Displays user's profile picture in header when signed in.
+ *
+ * Props:
+ * - isCondensed: If true, shows compact version for header
+ *
+ * States:
+ * - isProcessing: Local loading state for click feedback
+ * - Disabled during loading or processing to prevent double-clicks
+ */
+
 import { useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import styles from "./GoogleSignInButton.module.css";
 
 function GoogleSignInButton({ isCondensed = false }) {
+	// Get auth state from context
 	const { user, signIn, signOut, loading } = useAuth();
+	// Local processing state for better UX (shows loading during click)
 	const [isProcessing, setIsProcessing] = useState(false);
 
 	const handleClick = async () => {
 		try {
 			setIsProcessing(true);
 			if (user) {
-				await signOut();
+				await signOut(); // User is signed in, sign them out
 			} else {
-				await signIn();
+				await signIn(); // User is signed out, sign them in
 			}
 		} catch (error) {
 			console.error("Authentication error:", error);
-			// You could show an error message to the user here
+			// Could show error toast/message here
 		} finally {
 			setIsProcessing(false);
 		}

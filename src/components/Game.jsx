@@ -5,7 +5,11 @@ import Trophy from "./common/Trophy";
 import Dialog from "./dialogs/Dialog";
 import ConfirmContent from "./dialogs/ConfirmContent";
 import { useAuth } from "../hooks/useAuth";
-import { startPuzzle, saveGameState, saveCompletion } from "../firebase/firestore";
+import {
+	startPuzzle,
+	saveGameState,
+	saveCompletion,
+} from "../firebase/firestore";
 import { Timestamp } from "firebase/firestore";
 
 function Game({
@@ -34,41 +38,57 @@ function Game({
 	const solveRef = useRef(null);
 	const restartRef = useRef(null);
 
-	// Load initial or saved board state
+	// ===== Load Initial or Saved Board State =====
+	// This effect runs when:
+	// - Component mounts
+	// - Puzzle changes (new day, or switching puzzle in archive mode)
+	// - Difficulty changes (3x3 ↔ 4x4)
+	// - User data loads/updates
 	useEffect(() => {
-		if (!puzzleData || !user) return;
+		if (!puzzleData || !user) return; // Wait for both puzzle data and user
 
+		// Check if user has a saved game for this puzzle+difficulty
 		const savedGame = userData?.gameState?.[puzzleId]?.[difficulty];
-		const boardKey = difficulty === 3 ? "initialBoard3x3" : "initialBoard4x4";
+
+		// Get the correct initial board based on difficulty
+		const boardKey =
+			difficulty === 3 ? "initialBoard3x3" : "initialBoard4x4";
 		const initial = puzzleData[boardKey];
 
 		if (savedGame) {
-			// Resume saved game
+			// RESUME MODE: User has a saved game, restore it
 			setSavedBoard(savedGame.board);
 			setMoves(savedGame.moves);
 			setStartedAt(savedGame.startedAt);
-			setInitialBoard(initial);
+			setInitialBoard(initial); // Keep initial for reference
 		} else if (initial) {
-			// Start fresh
+			// NEW GAME MODE: Start fresh with initial board
 			setInitialBoard(initial);
 			setSavedBoard(null);
 			setMoves(0);
 			const now = Timestamp.now();
 			setStartedAt(now);
 
-			// Call startPuzzle to update play streak
-			startPuzzle(user.uid, puzzleId, difficulty, initial).catch((error) => {
-				console.error("Error starting puzzle:", error);
-			});
+			// Call startPuzzle to:
+			// - Create gameState entry in Firestore
+			// - Update play streak (if daily puzzle)
+			// - Increment totalAttempted (if first time)
+			startPuzzle(user.uid, puzzleId, difficulty, initial).catch(
+				(error) => {
+					console.error("Error starting puzzle:", error);
+				},
+			);
 		}
 	}, [puzzleData, puzzleId, difficulty, userData, user]);
 
-	// Handle move (called by Board)
+	// ===== Handle Move (called by Board after each tile movement) =====
 	const handleMove = (newBoard) => {
 		const newMoves = moves + 1;
 		setMoves(newMoves);
 
-		// Save to Firestore
+		// Auto-save to Firestore after EVERY move
+		// This ensures progress is never lost (even if user closes tab)
+		// Firestore free tier supports this! (~400 daily active users at 50 moves each)
 		if (user) {
 			saveGameState(user.uid, puzzleId, difficulty, {
 				moves: newMoves,
@@ -79,11 +99,15 @@ function Game({
 		}
 	};
 
-	// Handle win (called by Board)
+	// ===== Handle Win (called by Board when puzzle is completed) =====
 	const handleWin = () => {
-		onWin();
+		onWin(); // Notify parent (App) to update trophy badge
 
-		// Save completion to Firestore
+		// Save completion to Firestore:
+		// - Adds trophy to completedPuzzles[puzzleId][difficulty]
+		// - Updates win streak (if daily puzzle)
+		// - Increments totalCompleted
+		// - Clears game from gameState (puzzle is done!)
 		if (user) {
 			saveCompletion(user.uid, puzzleId, difficulty, {
 				moves,
@@ -105,28 +129,33 @@ function Game({
 	}, [onSolveRef]);
 
 	const handleRestartClick = () => {
-		setShowRestartConfirm(true);
+		setShowRestartConfirm(true); // Show confirmation dialog
 	};
 
 	const handleRestartConfirm = () => {
 		setShowRestartConfirm(false);
+
+		// Reset local state
 		setMoves(0);
 		const now = Timestamp.now();
 		setStartedAt(now);
-		setSavedBoard(null);
+		setSavedBoard(null); // Clear saved board to force fresh start
 
 		if (onShuffle) {
-			onShuffle(); // Reset isWon in parent
+			onShuffle(); // Reset isWon in parent (App)
 		}
 		if (restartRef.current) {
-			restartRef.current();
+			restartRef.current(); // Trigger Board's shuffle function
 		}
 
 		// Re-start puzzle in Firestore
+		// This creates a fresh gameState entry and updates play streak
 		if (user && initialBoard) {
-			startPuzzle(user.uid, puzzleId, difficulty, initialBoard).catch((error) => {
-				console.error("Error restarting puzzle:", error);
-			});
+			startPuzzle(user.uid, puzzleId, difficulty, initialBoard).catch(
+				(error) => {
+					console.error("Error restarting puzzle:", error);
+				},
+			);
 		}
 	};
 

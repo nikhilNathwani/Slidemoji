@@ -1,3 +1,11 @@
+/**
+ * Firebase Authentication Module
+ *
+ * Handles Google Sign-In and user session management.
+ * When a user signs in for the first time, this module automatically
+ * creates their Firestore user document with default preferences and stats.
+ */
+
 import {
 	GoogleAuthProvider,
 	signInWithPopup,
@@ -7,17 +15,29 @@ import {
 import { auth } from "./config";
 import { getUserData, createUserData } from "./firestore";
 
+// Google OAuth provider for Firebase Authentication
 const googleProvider = new GoogleAuthProvider();
 
 /**
- * Sign in with Google
+ * Sign in with Google using a popup window
+ *
+ * Flow:
+ * 1. Opens Google OAuth popup
+ * 2. User selects their Google account
+ * 3. Firebase authenticates and returns user object
+ * 4. Check if user exists in Firestore database
+ * 5. If new user, create their Firestore document with default data
+ *
+ * @returns {Promise<User>} Firebase user object
+ * @throws {Error} If sign-in fails or popup is blocked
  */
 export async function signInWithGoogle() {
 	try {
+		// Open Google sign-in popup
 		const result = await signInWithPopup(auth, googleProvider);
 		const user = result.user;
 
-		// Check if user exists in Firestore, if not create
+		// First-time users: Create Firestore document with default preferences and stats
 		const userData = await getUserData(user.uid);
 		if (!userData) {
 			await createUserData(user.uid, {
@@ -34,7 +54,12 @@ export async function signInWithGoogle() {
 }
 
 /**
- * Sign out
+ * Sign out the current user
+ *
+ * Clears Firebase auth session. The onAuthStateChanged listener
+ * in AuthProvider will automatically update the app's user state.
+ *
+ * @throws {Error} If sign-out fails
  */
 export async function signOut() {
 	try {
@@ -46,14 +71,22 @@ export async function signOut() {
 }
 
 /**
- * Listen to auth state changes
+ * Listen to authentication state changes
+ *
+ * Firebase automatically detects when users sign in/out, even across tabs.
+ * This listener is used by AuthProvider to keep app state in sync.
+ *
+ * @param {Function} callback - Called with user object (or null) when auth state changes
+ * @returns {Function} Unsubscribe function to stop listening
  */
 export function onAuthChange(callback) {
 	return onAuthStateChanged(auth, callback);
 }
 
 /**
- * Get current user
+ * Get the currently signed-in user (synchronous)
+ *
+ * @returns {User|null} Current Firebase user or null if not signed in
  */
 export function getCurrentUser() {
 	return auth.currentUser;

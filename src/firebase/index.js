@@ -14,8 +14,8 @@ export {
 	getUserData,
 	createUserData,
 	updateUserPreferences,
+	startPuzzle,
 	saveGameState,
-	saveTrophy,
-	getUserTrophies,
-	clearGameState,
+	saveCompletion,
+	cleanupOldGames,
 } from "./firestore";

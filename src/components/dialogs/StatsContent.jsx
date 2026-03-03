@@ -33,7 +33,8 @@ function StatsContent({ dailyEmoji, userData, totalPuzzles = 365 }) {
 						<i className="fas fa-shield-alt"></i>
 						<span>
 							We respect your privacy. Your data is never sold or
-							shared. We only use your email to save your progress.
+							shared. We only use your email to save your
+							progress.
 						</span>
 					</p>
 				</div>

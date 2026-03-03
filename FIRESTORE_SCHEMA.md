@@ -121,26 +121,26 @@ Each authenticated user gets ONE document:
 
   // Current games in progress (for resume) - supports multiple puzzles at multiple difficulties
   gameState: {
-    1: {                              // Puzzle ID
+    63: {                             // Today's puzzle (daily)
       3: {                            // Difficulty (3x3)
         moves: 15,
         board: [0,1,2,3,4,5,6,7,8],
         startedAt: Timestamp,
-        fromArchive: false,           // Track if this is an archive play
+        fromArchive: false,           // Daily puzzle
       },
-      4: {                            // Difficulty (4x4)
+      4: {                            // Difficulty (4x4) - also trying hard mode!
         moves: 8,
         board: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
         startedAt: Timestamp,
-        fromArchive: false,
+        fromArchive: false,           // Daily puzzle
       },
     },
-    2: {                              // Another puzzle
+    50: {                             // Old puzzle from archive
       3: {
         moves: 5,
         board: [0,1,2,3,4,5,6,7,8],
         startedAt: Timestamp,
-        fromArchive: false,
+        fromArchive: true,            // Archive play
       },
     },
   } || null
@@ -418,7 +418,7 @@ const completed4x4 = Object.values(userData.stats.completedPuzzles).filter(
 ```javascript
 const puzzleId = newPuzzleId;
 const difficulty = selectedDifficulty; // 3 or 4
-const fromArchive = (puzzleId !== getTodaysPuzzleNumber()); // Is this an archive play?
+const fromArchive = puzzleId !== getTodaysPuzzleNumber(); // Is this an archive play?
 
 // Ensure nested structure exists
 if (!gameState) gameState = {};
@@ -426,10 +426,10 @@ if (!gameState[puzzleId]) gameState[puzzleId] = {};
 
 // Save progress for this puzzle+difficulty combo
 gameState[puzzleId][difficulty] = {
-  moves: 0,
-  board: initialBoard,
-  startedAt: Timestamp.now(),
-  fromArchive: fromArchive,
+	moves: 0,
+	board: initialBoard,
+	startedAt: Timestamp.now(),
+	fromArchive: fromArchive,
 };
 
 // Update play streak (only for daily puzzles, not archive)
@@ -480,7 +480,7 @@ stats.completedPuzzles[puzzleId][difficulty] = {
 	timeSpent: Math.floor(
 		(Timestamp.now().toMillis() - game.startedAt.toMillis()) / 1000,
 	),
-	isDaily: isDaily, // Track whether this was a daily or archive play
+	fromArchive: fromArchive, // Track whether this was a daily or archive play
 };
 
 // Update totals
@@ -497,7 +497,7 @@ if (!fromArchive) {
 		([pId, difficulties]) =>
 			Object.values(difficulties).some(
 				(comp) =>
-					comp.isDaily &&
+					!comp.fromArchive &&
 					comp.completedAt.toDate().toDateString() ===
 						new Date().toDateString(),
 			),

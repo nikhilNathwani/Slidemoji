@@ -67,10 +67,18 @@ In Firebase Console → Firestore Database → Rules, replace with:
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // User documents
+    // User documents - private, user-specific data
     match /users/{userId} {
       // Users can only read/write their own data
       allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Puzzle definitions - public data, anyone can read
+    match /puzzles/{puzzleId} {
+      // Anyone can read puzzle data (emoji, initial boards, etc.)
+      allow read: if true;
+      // Only admins/server can write puzzles (add this later if needed)
+      allow write: if false;
     }
   }
 }
@@ -85,6 +93,17 @@ Click **"Publish"** to apply the rules.
 3. Toggle **"Enable"**
 4. Select a support email
 5. Click **"Save"**
+
+#### Add Authorized Domains (Important!)
+
+To allow sign-in from your production deployment:
+
+1. In Firebase Console, go to **Authentication** → **Settings** → **Authorized domains**
+2. Click **"Add domain"**
+3. Add your Vercel domain: `slidemoji.vercel.app` (or your custom domain)
+4. Click **"Add"**
+
+**Note**: `localhost` is already authorized by default. Without adding your production domain, users will see `auth/unauthorized-domain` errors when signing in on the live site.
 
 ### 6. Test the Setup
 
