@@ -175,70 +175,26 @@ function Board({
 				gapIndex: currentGapIndex,
 			});
 
-			setMovingTileValue(tileValue);
-			// Animation flag already set in handleTileSelect to prevent race conditions
-
-			// Update tile position via DOM (triggers CSS transition)
-			const newPosition = getTilePosition(
-				currentGapIndex,
-				size,
-				tileSizePx,
-			);
-			if (boardRef.current) {
-				const movingTileElement = boardRef.current.querySelector(
-					`[data-tile-number="${tileValue}"]`,
-				);
-				if (movingTileElement) {
-					// Log current DOM position before move
-					const currentTransform = movingTileElement.style.transform;
-					const computedStyle =
-						window.getComputedStyle(movingTileElement);
-					const rect = movingTileElement.getBoundingClientRect();
-					console.log("[moveTile] DOM position before move:", {
-						tileValue,
-						currentTransform,
-						computedTransform: computedStyle.transform,
-						rect: {
-							x: rect.x,
-							y: rect.y,
-							width: rect.width,
-							height: rect.height,
-						},
-						newPosition,
-					});
-
-					movingTileElement.style.transform = `translate(${newPosition.x}px, ${newPosition.y}px)`;
-
-					// Log after applying new transform
-					setTimeout(() => {
-						const afterRect =
-							movingTileElement.getBoundingClientRect();
-						console.log(
-							"[moveTile] DOM position after transform:",
-							{
-								tileValue,
-								newTransform: movingTileElement.style.transform,
-								afterRect: { x: afterRect.x, y: afterRect.y },
-							},
-						);
-					}, 0);
-				}
-			}
-
-			// Update React state after animation completes
+			// Calculate new board state
 			const newTiles = swapTiles(tiles, tileIndex, currentGapIndex);
+
+			// Update state IMMEDIATELY so subsequent moves use correct positions
+			// This prevents race conditions when arrow keys are pressed rapidly
+			setMovingTileValue(tileValue);
+			setTiles(newTiles);
+
+			// Check for win
+			if (checkWin(newTiles, getSolvedState(size))) {
+				setIsWon(true);
+			}
 
 			// Clear any existing timeout
 			if (moveTimeoutRef.current) {
 				clearTimeout(moveTimeoutRef.current);
 			}
 
+			// Reset animation flag and notify parent AFTER animation completes
 			moveTimeoutRef.current = setTimeout(() => {
-				if (checkWin(newTiles, getSolvedState(size))) {
-					setIsWon(true);
-				}
-
-				setTiles(newTiles);
 				isAnimating.current = false;
 				setMovingTileValue(null);
 				moveTimeoutRef.current = null;
@@ -250,7 +206,7 @@ function Board({
 				}
 			}, ANIMATION_DURATION_MS);
 		},
-		[tiles, size, tileSizePx],
+		[tiles, size, onMove],
 	);
 
 	// Validates tile selection and triggers movement if valid
