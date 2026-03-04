@@ -45,10 +45,10 @@ function Board({
 	const [isWon, setIsWon] = useState(false);
 	const [celebrating, setCelebrating] = useState(false);
 	const [movingTileValue, setMovingTileValue] = useState(null);
+	const [isInteractionEnabled, setIsInteractionEnabled] = useState(true);
 	const boardRef = useRef(null);
 	const touchStartRef = useRef(null);
 	const mouseDragRef = useRef(null);
-	const isAnimating = useRef(false);
 	const hasShownWin = useRef(false);
 	const moveTimeoutRef = useRef(null);
 	const winDialogTimeoutRef = useRef(null);
@@ -115,7 +115,7 @@ function Board({
 			clearTimeout(winDialogTimeoutRef.current);
 			winDialogTimeoutRef.current = null;
 		}
-		isAnimating.current = false;
+		setIsInteractionEnabled(true);
 		setMovingTileValue(null);
 		// Use initialBoard or savedBoard if available, otherwise scramble
 		// This triggers when user changes difficulty (3x3 <-> 4x4)
@@ -166,20 +166,14 @@ function Board({
 	// Core tile movement function - assumes all validation has passed
 	const moveTile = useCallback(
 		(tileIndex) => {
-			// Get current gap index from tiles state to avoid race conditions
+			// Get current gap index from tiles state
 			const currentGapIndex = getGapIndex(tiles);
 			const tileValue = tiles[tileIndex];
-			console.log("[moveTile] Moving tile:", {
-				tileIndex,
-				tileValue,
-				gapIndex: currentGapIndex,
-			});
 
 			// Calculate new board state
 			const newTiles = swapTiles(tiles, tileIndex, currentGapIndex);
 
-			// Update state IMMEDIATELY so subsequent moves use correct positions
-			// This prevents race conditions when arrow keys are pressed rapidly
+			// Update state IMMEDIATELY to prevent race conditions
 			setMovingTileValue(tileValue);
 			setTiles(newTiles);
 
@@ -188,14 +182,17 @@ function Board({
 				setIsWon(true);
 			}
 
+			// Disable interaction during animation (like Trigram's stopInteraction)
+			setIsInteractionEnabled(false);
+
 			// Clear any existing timeout
 			if (moveTimeoutRef.current) {
 				clearTimeout(moveTimeoutRef.current);
 			}
 
-			// Reset animation flag and notify parent AFTER animation completes
+			// Re-enable interaction and notify parent AFTER animation completes
 			moveTimeoutRef.current = setTimeout(() => {
-				isAnimating.current = false;
+				setIsInteractionEnabled(true); // Like Trigram's startInteraction
 				setMovingTileValue(null);
 				moveTimeoutRef.current = null;
 
@@ -217,57 +214,34 @@ function Board({
 	//    - Must validate the tile in that direction exists and is valid
 	const handleTileSelect = useCallback(
 		(tileIndex, direction = null) => {
-			// Validation checks
-			if (isWon) {
+			// Exit early if game is won or interaction is disabled
+			if (isWon || !isInteractionEnabled) {
 				return;
 			}
-			if (isAnimating.current) {
-				return;
-			}
-
-			// Set animation flag immediately after validation to prevent race conditions
-			isAnimating.current = true;
 
 			const gapIndex = getGapIndex(tiles);
 			let targetTileIndex;
 
 			if (direction !== null) {
 				// Direction-based movement (keyboard/swipe)
-				console.log("[handleTileSelect] Direction mode:", {
-					direction,
-					gapIndex,
-				});
 				targetTileIndex = getTileIndexFromDirection(
 					gapIndex,
 					direction,
 					size,
 				);
-				console.log(
-					"[handleTileSelect] Target tile from direction:",
-					targetTileIndex,
-				);
 				if (targetTileIndex === null) {
-					isAnimating.current = false; // Reset flag for invalid moves
-					return; // Invalid direction
+					return; // Invalid direction (e.g., trying to move up when gap is at top)
 				}
 			} else {
 				// Direct tile selection (click/tap/drag)
 				// No additional validation needed - handlers only attached to gap-adjacent tiles
-				console.log("[handleTileSelect] Direct selection mode:", {
-					tileIndex,
-					gapIndex,
-				});
 				targetTileIndex = tileIndex;
 			}
 
 			// All checks passed - move the tile
-			console.log("[handleTileSelect] Final validation passed:", {
-				targetTileIndex,
-				tileValue: tiles[targetTileIndex],
-			});
 			moveTile(targetTileIndex);
 		},
-		[tiles, isWon, size, moveTile],
+		[tiles, isWon, isInteractionEnabled, size, moveTile],
 	);
 
 	// ===== Event Handlers =====
@@ -275,7 +249,7 @@ function Board({
 		handleTileSelect(index, null);
 	};
 
-	// Keyboard controls
+	// Keyboard controls - only active when interaction is enabled
 	const handleKeyPress = useCallback(
 		(event) => {
 			const arrowKeys = [
@@ -293,9 +267,13 @@ function Board({
 	);
 
 	useEffect(() => {
-		window.addEventListener("keydown", handleKeyPress);
-		return () => window.removeEventListener("keydown", handleKeyPress);
-	}, [handleKeyPress]);
+		// Only attach keyboard listener when interaction is enabled
+		// This is the "startInteraction/stopInteraction" pattern from Trigram
+		if (isInteractionEnabled && !isWon) {
+			window.addEventListener("keydown", handleKeyPress);
+			return () => window.removeEventListener("keydown", handleKeyPress);
+		}
+	}, [handleKeyPress, isInteractionEnabled, isWon]);
 
 	// Touch/swipe controls
 	const handleTouchStart = (e, tileIndex) => {
@@ -413,7 +391,7 @@ function Board({
 				const isMoving = value === movingTileValue;
 				const isClickable =
 					!isWon &&
-					!isAnimating.current &&
+					isInteractionEnabled &&
 					isAdjacent(gapIndex, index, size);
 
 				return (
