@@ -49,6 +49,7 @@ function Board({
 	const boardRef = useRef(null);
 	const touchStartRef = useRef(null);
 	const mouseDragRef = useRef(null);
+	const isAnimatingRef = useRef(false); // Immediate flag to prevent rapid inputs
 	const hasShownWin = useRef(false);
 	const moveTimeoutRef = useRef(null);
 	const winDialogTimeoutRef = useRef(null);
@@ -116,6 +117,7 @@ function Board({
 			winDialogTimeoutRef.current = null;
 		}
 		setIsInteractionEnabled(true);
+		isAnimatingRef.current = false;
 		setMovingTileValue(null);
 		// Use initialBoard or savedBoard if available, otherwise scramble
 		// This triggers when user changes difficulty (3x3 <-> 4x4)
@@ -173,17 +175,25 @@ function Board({
 			// Calculate new board state
 			const newTiles = swapTiles(tiles, tileIndex, currentGapIndex);
 
-			// Update state IMMEDIATELY to prevent race conditions
+			// CRITICAL: Disable interaction immediately using BOTH ref and state
+			// - Ref blocks same-loop rapid inputs (synchronous)
+			// - State removes event listeners on next render (asynchronous)
+			isAnimatingRef.current = true;
 			setMovingTileValue(tileValue);
-			setTiles(newTiles);
-
-			// Check for win
-			if (checkWin(newTiles, getSolvedState(size))) {
-				setIsWon(true);
-			}
-
-			// Disable interaction during animation (like Trigram's stopInteraction)
 			setIsInteractionEnabled(false);
+
+			// Force browser repaint before updating tile positions
+			// This ensures CSS transition triggers properly for ALL directions
+			// Without this, React updates too fast and skips the transition
+			requestAnimationFrame(() => {
+				// Now update tile positions - CSS will animate the change
+				setTiles(newTiles);
+
+				// Check for win
+				if (checkWin(newTiles, getSolvedState(size))) {
+					setIsWon(true);
+				}
+			});
 
 			// Clear any existing timeout
 			if (moveTimeoutRef.current) {
@@ -192,7 +202,8 @@ function Board({
 
 			// Re-enable interaction and notify parent AFTER animation completes
 			moveTimeoutRef.current = setTimeout(() => {
-				setIsInteractionEnabled(true); // Like Trigram's startInteraction
+				isAnimatingRef.current = false;
+				setIsInteractionEnabled(true);
 				setMovingTileValue(null);
 				moveTimeoutRef.current = null;
 
@@ -214,8 +225,9 @@ function Board({
 	//    - Must validate the tile in that direction exists and is valid
 	const handleTileSelect = useCallback(
 		(tileIndex, direction = null) => {
-			// Exit early if game is won or interaction is disabled
-			if (isWon || !isInteractionEnabled) {
+			// Exit early if game is won or animation is in progress
+			// Check ref first (synchronous) to block rapid inputs in same event loop
+			if (isWon || isAnimatingRef.current) {
 				return;
 			}
 
@@ -241,7 +253,7 @@ function Board({
 			// All checks passed - move the tile
 			moveTile(targetTileIndex);
 		},
-		[tiles, isWon, isInteractionEnabled, size, moveTile],
+		[tiles, isWon, size, moveTile],
 	);
 
 	// ===== Event Handlers =====
