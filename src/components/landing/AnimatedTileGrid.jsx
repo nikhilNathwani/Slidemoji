@@ -5,6 +5,7 @@ import "../../App.css";
 function AnimatedTileGrid() {
 	const [tiles, setTiles] = useState([0, 1, 2, 3, 4, 5, 6, 7, 8]);
 	const moveIntervalRef = useRef(null);
+	const lastGapPositionRef = useRef(null);
 
 	// Perform a random valid move
 	const makeRandomMove = () => {
@@ -22,9 +23,25 @@ function AnimatedTileGrid() {
 
 			if (validMoves.length === 0) return currentTiles;
 
+			// Filter out the move that would undo the previous move
+			let filteredMoves = validMoves;
+			if (lastGapPositionRef.current !== null) {
+				filteredMoves = validMoves.filter(
+					(move) => move !== lastGapPositionRef.current,
+				);
+			}
+
+			// If all moves were filtered out, use original valid moves
+			if (filteredMoves.length === 0) {
+				filteredMoves = validMoves;
+			}
+
 			// Pick a random valid move
 			const swapIndex =
-				validMoves[Math.floor(Math.random() * validMoves.length)];
+				filteredMoves[Math.floor(Math.random() * filteredMoves.length)];
+
+			// Track current gap position before swapping
+			lastGapPositionRef.current = gapIndex;
 
 			// Swap gap with selected tile
 			const newTiles = [...currentTiles];
