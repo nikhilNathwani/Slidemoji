@@ -12,10 +12,6 @@
     "name": "Beer Mug"
   },
   {
-    "emoji": "➖",
-    "name": "Minus Sign"
-  },
-  {
     "emoji": "🧩",
     "name": "Puzzle Piece"
   },
@@ -276,10 +272,6 @@
     "name": "Dango"
   },
   {
-    "emoji": "✝️",
-    "name": "Latin Cross"
-  },
-  {
     "emoji": "💗",
     "name": "Growing Heart"
   },
@@ -292,24 +284,12 @@
     "name": "Fast Up Button"
   },
   {
-    "emoji": "🕎",
-    "name": "Menorah"
-  },
-  {
-    "emoji": "🕉️",
-    "name": "Om"
-  },
-  {
     "emoji": "🈷️",
     "name": "Japanese Monthly Amount Button"
   },
   {
     "emoji": "🦘",
     "name": "Kangaroo"
-  },
-  {
-    "emoji": "❕",
-    "name": "White Exclamation Mark"
   },
   {
     "emoji": "🤩",
@@ -456,16 +436,8 @@
     "name": "COOL Button"
   },
   {
-    "emoji": "➕",
-    "name": "Plus Sign"
-  },
-  {
     "emoji": "🤐",
     "name": "Zipper-Mouth Face"
-  },
-  {
-    "emoji": "♿",
-    "name": "Wheelchair Symbol"
   },
   {
     "emoji": "🥙",
@@ -524,10 +496,6 @@
     "name": "Bullet Train"
   },
   {
-    "emoji": "®️",
-    "name": "Registered"
-  },
-  {
     "emoji": "📔",
     "name": "Notebook with Decorative Cover"
   },
@@ -538,10 +506,6 @@
   {
     "emoji": "📆",
     "name": "Tear-Off Calendar"
-  },
-  {
-    "emoji": "⚪",
-    "name": "White Circle"
   },
   {
     "emoji": "🎵",
@@ -656,14 +620,6 @@
     "name": "Thumbs Down"
   },
   {
-    "emoji": "🕌",
-    "name": "Mosque"
-  },
-  {
-    "emoji": "☸️",
-    "name": "Wheel of Dharma"
-  },
-  {
     "emoji": "🧂",
     "name": "Salt"
   },
@@ -702,10 +658,6 @@
   {
     "emoji": "🔏",
     "name": "Locked with Pen"
-  },
-  {
-    "emoji": "➗",
-    "name": "Division Sign"
   },
   {
     "emoji": "🚑",
@@ -908,10 +860,6 @@
     "name": "Sushi"
   },
   {
-    "emoji": "🔻",
-    "name": "Red Triangle Pointed Down"
-  },
-  {
     "emoji": "🍬",
     "name": "Candy"
   },
@@ -926,10 +874,6 @@
   {
     "emoji": "❎",
     "name": "Cross Mark Button"
-  },
-  {
-    "emoji": "▫️",
-    "name": "White Small Square"
   },
   {
     "emoji": "🔶",
@@ -964,10 +908,6 @@
     "name": "Billed Cap"
   },
   {
-    "emoji": "🔘",
-    "name": "Radio Button"
-  },
-  {
     "emoji": "🦛",
     "name": "Hippopotamus"
   },
@@ -978,10 +918,6 @@
   {
     "emoji": "📗",
     "name": "Green Book"
-  },
-  {
-    "emoji": "⬜",
-    "name": "White Large Square"
   },
   {
     "emoji": "🦉",
@@ -1040,10 +976,6 @@
     "name": "Turtle"
   },
   {
-    "emoji": "☕",
-    "name": "Hot Beverage"
-  },
-  {
     "emoji": "🧨",
     "name": "Firecracker"
   },
@@ -1074,10 +1006,6 @@
   {
     "emoji": "👝",
     "name": "Clutch Bag"
-  },
-  {
-    "emoji": "🔺",
-    "name": "Red Triangle Pointed Up"
   },
   {
     "emoji": "🐼",
@@ -1132,10 +1060,6 @@
     "name": "Artist Palette"
   },
   {
-    "emoji": "⚜️",
-    "name": "Fleur-de-lis"
-  },
-  {
     "emoji": "🚮",
     "name": "Litter in Bin Sign"
   },
@@ -1166,10 +1090,6 @@
   {
     "emoji": "😅",
     "name": "Grinning Face with Sweat"
-  },
-  {
-    "emoji": "✔️",
-    "name": "Check Mark"
   },
   {
     "emoji": "🦡",
@@ -1396,10 +1316,6 @@
     "name": "Stethoscope"
   },
   {
-    "emoji": "⬛",
-    "name": "Black Large Square"
-  },
-  {
     "emoji": "🍛",
     "name": "Curry Rice"
   },
@@ -1452,10 +1368,6 @@
     "name": "Pencil"
   },
   {
-    "emoji": "◾",
-    "name": "Black Medium-Small Square"
-  },
-  {
     "emoji": "🍜",
     "name": "Steaming Bowl"
   },
@@ -1482,10 +1394,6 @@
   {
     "emoji": "😒",
     "name": "Unamused Face"
-  },
-  {
-    "emoji": "🕋",
-    "name": "Kaaba"
   },
   {
     "emoji": "🌂",
@@ -1948,10 +1856,6 @@
     "name": "Grinning Squinting Face"
   },
   {
-    "emoji": "〰️",
-    "name": "Wavy Dash"
-  },
-  {
     "emoji": "🤧",
     "name": "Sneezing Face"
   },
@@ -2078,10 +1982,6 @@
   {
     "emoji": "2️⃣",
     "name": "Keycap Digit Two"
-  },
-  {
-    "emoji": "▪️",
-    "name": "Black Small Square"
   },
   {
     "emoji": "🐡",
@@ -2228,10 +2128,6 @@
     "name": "Zebra"
   },
   {
-    "emoji": "🛐",
-    "name": "Place of Worship"
-  },
-  {
     "emoji": "💚",
     "name": "Green Heart"
   },
@@ -2258,10 +2154,6 @@
   {
     "emoji": "🤍",
     "name": "White Heart"
-  },
-  {
-    "emoji": "◻️",
-    "name": "White Medium Square"
   },
   {
     "emoji": "🐠",
@@ -2326,10 +2218,6 @@
   {
     "emoji": "🥩",
     "name": "Cut of Meat"
-  },
-  {
-    "emoji": "➰",
-    "name": "Curly Loop"
   },
   {
     "emoji": "🚿",
@@ -2444,10 +2332,6 @@
     "name": "No Entry"
   },
   {
-    "emoji": "🔞",
-    "name": "No One Under Eighteen"
-  },
-  {
     "emoji": "📏",
     "name": "Straight Ruler"
   },
@@ -2470,10 +2354,6 @@
   {
     "emoji": "🍌",
     "name": "Banana"
-  },
-  {
-    "emoji": "◽",
-    "name": "White Medium-Small Square"
   },
   {
     "emoji": "✈️",
@@ -2516,14 +2396,6 @@
     "name": "Camera with Flash"
   },
   {
-    "emoji": "📿",
-    "name": "Prayer Beads"
-  },
-  {
-    "emoji": "❗",
-    "name": "Exclamation Mark"
-  },
-  {
     "emoji": "😉",
     "name": "Winking Face"
   },
@@ -2554,10 +2426,6 @@
   {
     "emoji": "🏎️",
     "name": "Racing Car"
-  },
-  {
-    "emoji": "⚫",
-    "name": "Black Circle"
   },
   {
     "emoji": "✋",
@@ -2616,10 +2484,6 @@
     "name": "Volcano"
   },
   {
-    "emoji": "❔",
-    "name": "White Question Mark"
-  },
-  {
     "emoji": "🐄",
     "name": "Cow"
   },
@@ -2646,10 +2510,6 @@
   {
     "emoji": "🔌",
     "name": "Electric Plug"
-  },
-  {
-    "emoji": "🔲",
-    "name": "Black Square Button"
   },
   {
     "emoji": "🤯",
@@ -2714,10 +2574,6 @@
   {
     "emoji": "💎",
     "name": "Gem Stone"
-  },
-  {
-    "emoji": "➿",
-    "name": "Double Curly Loop"
   },
   {
     "emoji": "🚔",
@@ -2832,10 +2688,6 @@
     "name": "Atom Symbol"
   },
   {
-    "emoji": "™️",
-    "name": "Trade Mark"
-  },
-  {
     "emoji": "🥑",
     "name": "Avocado"
   },
@@ -2846,10 +2698,6 @@
   {
     "emoji": "🐜",
     "name": "Ant"
-  },
-  {
-    "emoji": "☔",
-    "name": "Umbrella with Rain Drops"
   },
   {
     "emoji": "🍚",
@@ -2886,10 +2734,6 @@
   {
     "emoji": "🔴",
     "name": "Red Circle"
-  },
-  {
-    "emoji": "⛪",
-    "name": "Church"
   },
   {
     "emoji": "🧼",
@@ -2962,10 +2806,6 @@
   {
     "emoji": "🎰",
     "name": "Slot Machine"
-  },
-  {
-    "emoji": "◼️",
-    "name": "Black Medium Square"
   },
   {
     "emoji": "📴",
@@ -3424,10 +3264,6 @@
     "name": "Bell with Slash"
   },
   {
-    "emoji": "☦️",
-    "name": "Orthodox Cross"
-  },
-  {
     "emoji": "😩",
     "name": "Weary Face"
   },
@@ -3462,10 +3298,6 @@
   {
     "emoji": "🦚",
     "name": "Peacock"
-  },
-  {
-    "emoji": "✒️",
-    "name": "Black Nib"
   },
   {
     "emoji": "📠",
@@ -3534,10 +3366,6 @@
   {
     "emoji": "🦗",
     "name": "Cricket"
-  },
-  {
-    "emoji": "⚓",
-    "name": "Anchor"
   },
   {
     "emoji": "🥜",
@@ -3612,10 +3440,6 @@
     "name": "Money with Wings"
   },
   {
-    "emoji": "🕳️",
-    "name": "Hole"
-  },
-  {
     "emoji": "🦄",
     "name": "Unicorn"
   },
@@ -3650,10 +3474,6 @@
   {
     "emoji": "♻️",
     "name": "Recycling Symbol"
-  },
-  {
-    "emoji": "©️",
-    "name": "Copyright"
   },
   {
     "emoji": "🎄",
@@ -3806,10 +3626,6 @@
   {
     "emoji": "‼️",
     "name": "Double Exclamation Mark"
-  },
-  {
-    "emoji": "⚡",
-    "name": "High Voltage"
   },
   {
     "emoji": "😙",
@@ -4082,10 +3898,6 @@
   {
     "emoji": "🥵",
     "name": "Hot Face"
-  },
-  {
-    "emoji": "🕍",
-    "name": "Synagogue"
   },
   {
     "emoji": "😢",
@@ -4378,9 +4190,5 @@
   {
     "emoji": "🧸",
     "name": "Teddy Bear"
-  },
-  {
-    "emoji": "🧿",
-    "name": "Nazar Amulet"
   }
 ]
