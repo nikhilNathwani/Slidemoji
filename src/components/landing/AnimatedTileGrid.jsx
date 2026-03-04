@@ -15,30 +15,21 @@ function AnimatedTileGrid() {
 			const col = gapIndex % 3;
 
 			const validMoves = [];
-			// Check all 4 directions
-			if (row > 0) validMoves.push(gapIndex - 3); // Up
-			if (row < 2) validMoves.push(gapIndex + 3); // Down
-			if (col > 0) validMoves.push(gapIndex - 1); // Left
-			if (col < 2) validMoves.push(gapIndex + 1); // Right
+			// Check all 4 directions, excluding the move that would undo the previous one
+			if (row > 0 && gapIndex - 3 !== lastGapPositionRef.current)
+				validMoves.push(gapIndex - 3); // Up
+			if (row < 2 && gapIndex + 3 !== lastGapPositionRef.current)
+				validMoves.push(gapIndex + 3); // Down
+			if (col > 0 && gapIndex - 1 !== lastGapPositionRef.current)
+				validMoves.push(gapIndex - 1); // Left
+			if (col < 2 && gapIndex + 1 !== lastGapPositionRef.current)
+				validMoves.push(gapIndex + 1); // Right
 
 			if (validMoves.length === 0) return currentTiles;
 
-			// Filter out the move that would undo the previous move
-			let filteredMoves = validMoves;
-			if (lastGapPositionRef.current !== null) {
-				filteredMoves = validMoves.filter(
-					(move) => move !== lastGapPositionRef.current,
-				);
-			}
-
-			// If all moves were filtered out, use original valid moves
-			if (filteredMoves.length === 0) {
-				filteredMoves = validMoves;
-			}
-
 			// Pick a random valid move
 			const swapIndex =
-				filteredMoves[Math.floor(Math.random() * filteredMoves.length)];
+				validMoves[Math.floor(Math.random() * validMoves.length)];
 
 			// Track current gap position before swapping
 			lastGapPositionRef.current = gapIndex;

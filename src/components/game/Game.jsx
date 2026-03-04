@@ -1,17 +1,17 @@
 import { useState, useRef, useEffect } from "react";
 import styles from "./Game.module.css";
 import Board from "./Board";
-import Trophy from "./common/Trophy";
-import Dialog from "./dialogs/Dialog";
-import ConfirmContent from "./dialogs/ConfirmContent";
-import { useAuth } from "../hooks/useAuth";
+import Trophy from "../common/Trophy";
+import Dialog from "../dialogs/Dialog";
+import ConfirmContent from "../dialogs/ConfirmContent";
+import { useAuth } from "../../hooks/useAuth";
 import {
 	startPuzzle,
 	saveGameState,
 	saveCompletion,
-} from "../firebase/firestore";
+} from "../../firebase/firestore";
 import { Timestamp } from "firebase/firestore";
-import { scramblePuzzle } from "../utils/boardHelpers";
+import { scramblePuzzle } from "../../utils/boardHelpers";
 
 function Game({
 	dailyEmoji,

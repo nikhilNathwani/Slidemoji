@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import Tile from "./Tile";
 import Gap from "./Gap";
-import { isAdjacent } from "../utils/adjacency";
+import { isAdjacent } from "../../utils/adjacency";
 import {
 	getSolvedState,
 	getGapIndex,
@@ -10,9 +10,9 @@ import {
 	scramblePuzzle,
 	getTilePosition,
 	getTileIndexFromDirection,
-} from "../utils/boardHelpers";
-import { createEmojiSvgUrl } from "../utils/emoji";
-import { ANIMATION_DURATION_MS } from "../constants";
+} from "../../utils/boardHelpers";
+import { createEmojiSvgUrl } from "../../utils/emoji";
+import { ANIMATION_DURATION_MS } from "../../constants";
 import styles from "./Board.module.css";
 
 // ===== Main Component =====

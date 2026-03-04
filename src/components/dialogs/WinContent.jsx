@@ -37,7 +37,7 @@ Play at slidemoji.com`;
 				isEarned={true}
 				difficulty={gridSize}
 			/>
-			<h3>You completed today's emoji!</h3>
+			<h3>You unscrambled today's emoji!</h3>
 
 			<button className={styles.shareButton} onClick={handleShare}>
 				<i className="fas fa-share-nodes"></i>
