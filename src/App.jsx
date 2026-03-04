@@ -18,6 +18,13 @@ import {
 	DEFAULT_DARK_MODE,
 	DEFAULT_SHOW_NUMBERS,
 } from "./constants";
+import {
+	isDevMode,
+	getMockPuzzle,
+	getMockUser,
+	getDevConfig,
+	devLog,
+} from "./dev/mockData";
 
 function App() {
 	const { user } = useAuth();
@@ -42,10 +49,35 @@ function App() {
 	const [highestEarnedDifficulty, setHighestEarnedDifficulty] = useState(0); // 0 = not earned, 3 = 3x3 earned, 4 = 4x4 earned
 	const solveRef = useRef(null);
 
+	// Dev mode configuration
+	const devConfig = getDevConfig();
+	console.log(
+		"[DEV] Config:",
+		devConfig,
+		"VITE_DEV_MODE:",
+		import.meta.env.VITE_DEV_MODE,
+	);
+
 	// ===== Load User Data on Sign-In =====
 	// When user signs in, fetch their Firestore document (preferences, stats, game state)
 	// This loads all their data in ONE read - efficient!
+	// In dev mode: uses mock data instead
 	useEffect(() => {
+		if (devConfig.enabled) {
+			// DEV MODE: Use mock user data
+			const mockUser = getMockUser(devConfig.userScenario);
+			console.log(
+				"[DEV] Using mock user:",
+				devConfig.userScenario,
+				mockUser,
+			);
+			setUserData(mockUser);
+			if (mockUser.preferences?.darkMode !== undefined) {
+				setDarkMode(mockUser.preferences.darkMode);
+			}
+			return;
+		}
+
 		if (user) {
 			// User just signed in - load their data from Firestore
 			getUserData(user.uid)
@@ -63,12 +95,21 @@ function App() {
 			// User signed out - clear data
 			setUserData(null);
 		}
-	}, [user]); // Re-run when user changes (sign in/out)
+	}, [user, devConfig.enabled, devConfig.userScenario]); // Re-run when user changes (sign in/out) or dev scenario changes
 
 	// ===== Load Today's Puzzle Data from Firestore =====
 	// Fetches puzzle definition (emoji, initial boards for 3x3 and 4x4)
 	// All users get the same puzzle - ensures fair comparison of moves/time!
+	// In dev mode: uses mock puzzle
 	useEffect(() => {
+		if (devConfig.enabled) {
+			// DEV MODE: Use mock puzzle
+			const mockPuzzle = getMockPuzzle(todaysPuzzleNumber);
+			console.log("[DEV] Using mock puzzle:", mockPuzzle);
+			setPuzzleData(mockPuzzle);
+			return;
+		}
+
 		getPuzzleById(todaysPuzzleNumber)
 			.then((data) => {
 				setPuzzleData(data);
@@ -76,7 +117,7 @@ function App() {
 			.catch((error) => {
 				console.error("Error loading puzzle:", error);
 			});
-	}, [todaysPuzzleNumber]);
+	}, [todaysPuzzleNumber, devConfig.enabled, gridSize]);
 
 	// ===== Calculate Trophy Badge (3x3 or 4x4) =====
 	// Shows highest difficulty completed for today's puzzle

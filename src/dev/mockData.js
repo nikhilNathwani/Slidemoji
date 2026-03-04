@@ -1,0 +1,245 @@
+/**
+ * Mock data for development and testing
+ *
+ * This file provides realistic data for testing different user states
+ * without needing a full Firestore database.
+ *
+ * Enable dev mode by setting: VITE_DEV_MODE=true in .env.local
+ */
+
+import { Timestamp } from "firebase/firestore";
+import { scramblePuzzle } from "../utils/boardHelpers";
+
+// Check if dev mode is enabled
+export const isDevMode = import.meta.env.VITE_DEV_MODE === "true";
+
+/**
+ * Mock puzzle data (matches Firestore schema)
+ * Returns a puzzle with scrambled 3x3 and 4x4 boards
+ */
+export function getMockPuzzle(puzzleId) {
+	return {
+		id: puzzleId,
+		date: "2026-03-03",
+		emoji: "🛝", // Playground slide (today's emoji)
+		emojiName: "Playground Slide",
+		initialBoard3x3: scramblePuzzle(3),
+		initialBoard4x4: scramblePuzzle(4),
+	};
+}
+
+/**
+ * Mock user data scenarios for testing different states
+ */
+export const mockUserScenarios = {
+	// Brand new user - no trophies, no streaks
+	newUser: {
+		uid: "dev-user-new",
+		email: "new@example.com",
+		displayName: "New User",
+		preferences: {
+			darkMode: false,
+		},
+		stats: {
+			totalAttempted: 0,
+			totalCompleted: 0,
+			currentPlayStreak: 0,
+			maxPlayStreak: 0,
+			currentWinStreak: 0,
+			maxWinStreak: 0,
+			lastPlayedDate: null,
+			completedPuzzles: {},
+		},
+		gameState: null,
+	},
+
+	// User with active play streak
+	activePlayer: {
+		uid: "dev-user-active",
+		email: "active@example.com",
+		displayName: "Active Player",
+		preferences: {
+			darkMode: true,
+		},
+		stats: {
+			totalAttempted: 15,
+			totalCompleted: 12,
+			currentPlayStreak: 7,
+			maxPlayStreak: 10,
+			currentWinStreak: 5,
+			maxWinStreak: 8,
+			lastPlayedDate: "2026-03-02", // Yesterday
+			completedPuzzles: {
+				// Completed puzzles 1-10 on both difficulties
+				...Object.fromEntries(
+					Array.from({ length: 10 }, (_, i) => {
+						const puzzleId = i + 1;
+						return [
+							puzzleId,
+							{
+								3: {
+									moves: 30 + Math.floor(Math.random() * 20),
+									completedAt: Timestamp.fromDate(
+										new Date("2026-02-20"),
+									),
+									startedAt: Timestamp.fromDate(
+										new Date("2026-02-20"),
+									),
+									timeSpent:
+										120 + Math.floor(Math.random() * 60),
+									fromArchive: false,
+								},
+								4: {
+									moves: 50 + Math.floor(Math.random() * 30),
+									completedAt: Timestamp.fromDate(
+										new Date("2026-02-21"),
+									),
+									startedAt: Timestamp.fromDate(
+										new Date("2026-02-21"),
+									),
+									timeSpent:
+										180 + Math.floor(Math.random() * 90),
+									fromArchive: false,
+								},
+							},
+						];
+					}),
+				),
+			},
+		},
+		gameState: null,
+	},
+
+	// User with saved game in progress
+	resumePlayer: {
+		uid: "dev-user-resume",
+		email: "resume@example.com",
+		displayName: "Resume Player",
+		preferences: {
+			darkMode: false,
+		},
+		stats: {
+			totalAttempted: 5,
+			totalCompleted: 3,
+			currentPlayStreak: 3,
+			maxPlayStreak: 5,
+			currentWinStreak: 2,
+			maxWinStreak: 3,
+			lastPlayedDate: "2026-03-03", // Today
+			completedPuzzles: {
+				1: {
+					3: {
+						moves: 42,
+						completedAt: Timestamp.fromDate(new Date("2026-03-01")),
+						startedAt: Timestamp.fromDate(new Date("2026-03-01")),
+						timeSpent: 125,
+						fromArchive: false,
+					},
+				},
+			},
+		},
+		gameState: {
+			63: {
+				// Today's puzzle
+				3: {
+					moves: 15,
+					board: scramblePuzzle(3),
+					startedAt: Timestamp.now(),
+					fromArchive: false,
+				},
+			},
+		},
+	},
+
+	// Power user with many trophies
+	powerUser: {
+		uid: "dev-user-power",
+		email: "power@example.com",
+		displayName: "Power User",
+		preferences: {
+			darkMode: true,
+		},
+		stats: {
+			totalAttempted: 50,
+			totalCompleted: 45,
+			currentPlayStreak: 30,
+			maxPlayStreak: 30,
+			currentWinStreak: 25,
+			maxWinStreak: 25,
+			lastPlayedDate: "2026-03-02",
+			completedPuzzles: {
+				// Completed 30 puzzles
+				...Object.fromEntries(
+					Array.from({ length: 30 }, (_, i) => {
+						const puzzleId = i + 1;
+						return [
+							puzzleId,
+							{
+								3: {
+									moves: 25 + Math.floor(Math.random() * 15),
+									completedAt: Timestamp.fromDate(
+										new Date(`2026-02-${(i % 28) + 1}`),
+									),
+									startedAt: Timestamp.fromDate(
+										new Date(`2026-02-${(i % 28) + 1}`),
+									),
+									timeSpent:
+										90 + Math.floor(Math.random() * 30),
+									fromArchive: false,
+								},
+								4: {
+									moves: 45 + Math.floor(Math.random() * 25),
+									completedAt: Timestamp.fromDate(
+										new Date(`2026-02-${(i % 28) + 1}`),
+									),
+									startedAt: Timestamp.fromDate(
+										new Date(`2026-02-${(i % 28) + 1}`),
+									),
+									timeSpent:
+										150 + Math.floor(Math.random() * 60),
+									fromArchive: false,
+								},
+							},
+						];
+					}),
+				),
+			},
+		},
+		gameState: null,
+	},
+};
+
+/**
+ * Get mock user data based on scenario
+ * @param {string} scenario - One of: 'newUser', 'activePlayer', 'resumePlayer', 'powerUser'
+ * @returns {Object} Mock user data
+ */
+export function getMockUser(scenario = "newUser") {
+	return mockUserScenarios[scenario] || mockUserScenarios.newUser;
+}
+
+/**
+ * Dev mode configuration
+ * Control this via localStorage in browser console:
+ *
+ * localStorage.setItem('devMode', 'true')
+ * localStorage.setItem('devUserScenario', 'powerUser')
+ */
+export function getDevConfig() {
+	if (typeof window === "undefined") return { enabled: false };
+
+	return {
+		enabled: isDevMode || localStorage.getItem("devMode") === "true",
+		userScenario: localStorage.getItem("devUserScenario") || "newUser",
+		showDevPanel: localStorage.getItem("devShowPanel") === "true",
+	};
+}
+
+/**
+ * Dev tools helper - log to console
+ */
+export function devLog(message, data) {
+	if (getDevConfig().enabled) {
+		console.log(`[DEV] ${message}`, data || "");
+	}
+}
