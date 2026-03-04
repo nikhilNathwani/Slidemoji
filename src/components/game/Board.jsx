@@ -45,11 +45,9 @@ function Board({
 	const [isWon, setIsWon] = useState(false);
 	const [celebrating, setCelebrating] = useState(false);
 	const [movingTileValue, setMovingTileValue] = useState(null);
-	const [isInteractionEnabled, setIsInteractionEnabled] = useState(true);
 	const boardRef = useRef(null);
 	const touchStartRef = useRef(null);
 	const mouseDragRef = useRef(null);
-	const isAnimatingRef = useRef(false); // Immediate flag to prevent rapid inputs
 	const hasShownWin = useRef(false);
 	const moveTimeoutRef = useRef(null);
 	const winDialogTimeoutRef = useRef(null);
@@ -116,8 +114,6 @@ function Board({
 			clearTimeout(winDialogTimeoutRef.current);
 			winDialogTimeoutRef.current = null;
 		}
-		setIsInteractionEnabled(true);
-		isAnimatingRef.current = false;
 		setMovingTileValue(null);
 		// Use initialBoard or savedBoard if available, otherwise scramble
 		// This triggers when user changes difficulty (3x3 <-> 4x4)
@@ -165,50 +161,36 @@ function Board({
 	// ===== Movement Logic =====
 	const gapIndex = getGapIndex(tiles);
 
-	// Core tile movement function - assumes all validation has passed
+	// Core tile movement function - Simple approach:
+	// 1. Update state immediately (triggers React re-render with new positions)
+	// 2. CSS transition handles the animation automatically
+	// 3. Block interaction during animation via movingTileValue
 	const moveTile = useCallback(
 		(tileIndex) => {
-			// Get current gap index from tiles state
 			const currentGapIndex = getGapIndex(tiles);
 			const tileValue = tiles[tileIndex];
-
-			// Calculate new board state
 			const newTiles = swapTiles(tiles, tileIndex, currentGapIndex);
 
-			// CRITICAL: Disable interaction immediately using BOTH ref and state
-			// - Ref blocks same-loop rapid inputs (synchronous)
-			// - State removes event listeners on next render (asynchronous)
-			isAnimatingRef.current = true;
-			setMovingTileValue(tileValue);
-			setIsInteractionEnabled(false);
+			// Update state immediately - React changes tile positions, CSS animates
+			setTiles(newTiles);
+			setMovingTileValue(tileValue); // Blocks interaction
 
-			// Force browser repaint before updating tile positions
-			// This ensures CSS transition triggers properly for ALL directions
-			// Without this, React updates too fast and skips the transition
-			requestAnimationFrame(() => {
-				// Now update tile positions - CSS will animate the change
-				setTiles(newTiles);
-
-				// Check for win
-				if (checkWin(newTiles, getSolvedState(size))) {
-					setIsWon(true);
-				}
-			});
+			// Check for win
+			if (checkWin(newTiles, getSolvedState(size))) {
+				setIsWon(true);
+			}
 
 			// Clear any existing timeout
 			if (moveTimeoutRef.current) {
 				clearTimeout(moveTimeoutRef.current);
 			}
 
-			// Re-enable interaction and notify parent AFTER animation completes
+			// Re-enable interaction after animation completes
 			moveTimeoutRef.current = setTimeout(() => {
-				isAnimatingRef.current = false;
-				setIsInteractionEnabled(true);
 				setMovingTileValue(null);
 				moveTimeoutRef.current = null;
 
-				// Notify parent component of board change (for persistence)
-				// This triggers saveGameState in Game.jsx to update Firestore
+				// Notify parent for Firestore save
 				if (onMove) {
 					onMove(newTiles);
 				}
@@ -218,16 +200,10 @@ function Board({
 	);
 
 	// Validates tile selection and triggers movement if valid
-	// Supports two modes:
-	// 1. Direct tile selection: handleTileSelect(tileIndex, null)
-	//    - Handlers only attached to gap-adjacent tiles, so no need to re-check
-	// 2. Directional movement: handleTileSelect(null, direction)
-	//    - Must validate the tile in that direction exists and is valid
 	const handleTileSelect = useCallback(
 		(tileIndex, direction = null) => {
-			// Exit early if game is won or animation is in progress
-			// Check ref first (synchronous) to block rapid inputs in same event loop
-			if (isWon || isAnimatingRef.current) {
+			// Block input if game won or tile currently animating
+			if (isWon || movingTileValue !== null) {
 				return;
 			}
 
@@ -235,25 +211,23 @@ function Board({
 			let targetTileIndex;
 
 			if (direction !== null) {
-				// Direction-based movement (keyboard/swipe)
+				// Keyboard/swipe: find tile in that direction from gap
 				targetTileIndex = getTileIndexFromDirection(
 					gapIndex,
 					direction,
 					size,
 				);
 				if (targetTileIndex === null) {
-					return; // Invalid direction (e.g., trying to move up when gap is at top)
+					return; // Invalid direction
 				}
 			} else {
-				// Direct tile selection (click/tap/drag)
-				// No additional validation needed - handlers only attached to gap-adjacent tiles
+				// Click/tap: tile index already known
 				targetTileIndex = tileIndex;
 			}
 
-			// All checks passed - move the tile
 			moveTile(targetTileIndex);
 		},
-		[tiles, isWon, size, moveTile],
+		[tiles, isWon, movingTileValue, size, moveTile],
 	);
 
 	// ===== Event Handlers =====
@@ -261,7 +235,7 @@ function Board({
 		handleTileSelect(index, null);
 	};
 
-	// Keyboard controls - only active when interaction is enabled
+	// Keyboard controls
 	const handleKeyPress = useCallback(
 		(event) => {
 			const arrowKeys = [
@@ -279,13 +253,9 @@ function Board({
 	);
 
 	useEffect(() => {
-		// Only attach keyboard listener when interaction is enabled
-		// This is the "startInteraction/stopInteraction" pattern from Trigram
-		if (isInteractionEnabled && !isWon) {
-			window.addEventListener("keydown", handleKeyPress);
-			return () => window.removeEventListener("keydown", handleKeyPress);
-		}
-	}, [handleKeyPress, isInteractionEnabled, isWon]);
+		window.addEventListener("keydown", handleKeyPress);
+		return () => window.removeEventListener("keydown", handleKeyPress);
+	}, [handleKeyPress]);
 
 	// Touch/swipe controls
 	const handleTouchStart = (e, tileIndex) => {
@@ -403,7 +373,7 @@ function Board({
 				const isMoving = value === movingTileValue;
 				const isClickable =
 					!isWon &&
-					isInteractionEnabled &&
+					movingTileValue === null &&
 					isAdjacent(gapIndex, index, size);
 
 				return (
