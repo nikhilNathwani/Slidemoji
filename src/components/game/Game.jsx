@@ -195,7 +195,9 @@ function Game({
 						visible={showControls}
 					/>
 				</div>
-				{initialBoard && (
+				{!initialBoard ? (
+					<div style={{ padding: '20px', textAlign: 'center' }}>Loading puzzle...</div>
+				) : (
 					<Board
 						size={gridSize}
 						onWin={handleWin}
