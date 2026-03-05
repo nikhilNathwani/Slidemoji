@@ -1,5 +1,5 @@
 import styles from "./Tile.module.css";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { getTilePosition as calculateTilePixelPosition } from "../../utils/boardHelpers";
 
 // ===== Helper Functions =====
@@ -39,6 +39,8 @@ function Tile({
 	isGameWon,
 	onTransitionEnd,
 }) {
+	const tileRef = useRef(null);
+	
 	// Calculate delays from tile index
 	const entranceDelay = tileIndex * 50; // 50ms stagger for entrance
 	const celebrationDelay = tileIndex * 60; // 60ms stagger for celebration
@@ -93,13 +95,29 @@ function Tile({
 		style["--celebration-delay"] = `${celebrationDelay}ms`;
 	}
 
-	// FLIP: Apply offset to visually move tile back to previous position
-	// CSS transition will animate it smoothly to translate(0, 0)
+	// FLIP animation: Apply offset transform, then remove it to trigger transition
 	const hasOffset = offsetX !== 0 || offsetY !== 0;
+	
+	// Step 1: Apply offset in style (Invert - moves tile back to old position)
 	if (hasOffset) {
 		style.transform = `translate(${offsetX}px, ${offsetY}px)`;
-		console.log(`[FLIP] Tile ${tileNumber} APPLYING transform:`, style.transform);
 	}
+	
+	// Step 2: On next frame, set transform to 0 (Play - triggers CSS transition)
+	useEffect(() => {
+		if (hasOffset && tileRef.current) {
+			const element = tileRef.current;
+			console.log(`[FLIP] Tile ${tileNumber} INVERT:`, element.style.transform);
+			
+			// Use requestAnimationFrame to remove transform on next frame
+			const rafId = requestAnimationFrame(() => {
+				element.style.transform = 'translate(0px, 0px)';
+				console.log(`[FLIP] Tile ${tileNumber} PLAY: translate(0px, 0px)`);
+			});
+			
+			return () => cancelAnimationFrame(rafId);
+		}
+	}, [hasOffset, offsetX, offsetY, tileNumber]);
 
 	// Add emoji background styling
 	if (emojiSvgUrl && tileNumber) {
@@ -137,6 +155,7 @@ function Tile({
 
 	return (
 		<div
+			ref={tileRef}
 			className={classNames.join(" ")}
 			onClick={onClick}
 			onTouchStart={onTouchStart}
