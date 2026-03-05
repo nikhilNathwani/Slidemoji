@@ -48,6 +48,7 @@ function Board({
 	const mouseDragRef = useRef(null);
 	const hasShownWin = useRef(false);
 	const winDialogTimeoutRef = useRef(null);
+	const inputUnblockTimeoutRef = useRef(null);
 
 	// Create emoji SVG URL once and memoize it
 	const emojiSvgUrl = useMemo(
@@ -153,6 +154,15 @@ function Board({
 	// ===== Movement Logic =====
 	const gapIndex = getGapIndex(tiles);
 
+	// Unblock input (called by Tile's onTransitionEnd or by timeout)
+	const unblockInput = useCallback(() => {
+		if (inputUnblockTimeoutRef.current) {
+			clearTimeout(inputUnblockTimeoutRef.current);
+			inputUnblockTimeoutRef.current = null;
+		}
+		setIsInputBlocked(false);
+	}, []);
+
 	// Move tile - smooth animation via CSS transitions
 	const moveTile = useCallback(
 		(tileIndex) => {
@@ -175,7 +185,14 @@ function Board({
 			// Block input during animation
 			setIsInputBlocked(true);
 
-			// Note: isInputBlocked will be cleared by onTransitionEnd in Tile
+			// Safety: Unblock input after animation duration (in case transitionEnd doesn't fire)
+			if (inputUnblockTimeoutRef.current) {
+				clearTimeout(inputUnblockTimeoutRef.current);
+			}
+			inputUnblockTimeoutRef.current = setTimeout(() => {
+				setIsInputBlocked(false);
+				inputUnblockTimeoutRef.current = null;
+			}, ANIMATION_DURATION_MS);
 		},
 		[tiles, size, onMove],
 	);
@@ -371,7 +388,7 @@ function Board({
 						boardSize={size}
 						isEntering={isEntering}
 						isGameWon={isGameWon}
-						onTransitionEnd={() => setIsInputBlocked(false)}
+						onTransitionEnd={unblockInput}
 						{...(isClickable && {
 							onClick: () => handleTileClick(index),
 							onTouchStart: (e) => handleTouchStart(e, index),

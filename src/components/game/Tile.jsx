@@ -101,11 +101,8 @@ function Tile({
 
 	// Handle transition end (for slide movements)
 	const handleTransitionEnd = (e) => {
-		// Only handle position transitions (left/top), not border
-		if (
-			(e.propertyName === "left" || e.propertyName === "top") &&
-			onTransitionEnd
-		) {
+		// Only call once per move (fires for both left AND top, but we only need one callback)
+		if (e.propertyName === "left" && onTransitionEnd) {
 			onTransitionEnd();
 		}
 	};
