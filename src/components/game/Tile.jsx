@@ -63,23 +63,23 @@ function Tile({
 			// If position changed, apply old position first, then new
 			if (oldPos.x !== newPos.x || oldPos.y !== newPos.y) {
 				// Step 1: Set old position (no transition yet)
-				element.style.transition = 'none';
-				element.style.setProperty('--x', `${oldPos.x}px`);
-				element.style.setProperty('--y', `${oldPos.y}px`);
-				
+				element.style.transition = "none";
+				element.style.setProperty("--x", `${oldPos.x}px`);
+				element.style.setProperty("--y", `${oldPos.y}px`);
+
 				// Step 2: Force reflow so browser paints old position
 				element.offsetHeight; // Read to force layout
-				
+
 				// Step 3: Re-enable transition and set new position
-				element.style.transition = '';
-				element.style.setProperty('--x', `${newPos.x}px`);
-				element.style.setProperty('--y', `${newPos.y}px`);
+				element.style.transition = "";
+				element.style.setProperty("--x", `${newPos.x}px`);
+				element.style.setProperty("--y", `${newPos.y}px`);
 			}
 
 			// Update ref for next time
 			prevPositionRef.current = newPos;
 		}
-	}, [position.x, position.y, isEntering, isGameWon]);
+	}, [position, isEntering, isGameWon]);
 
 	// Use CSS variables for position so keyframe animations can access them
 	const style = {

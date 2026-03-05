@@ -58,11 +58,13 @@
 @keyframes tileEnter {
 	from {
 		opacity: 0;
-		transform: translate3d(var(--x, 0), var(--y, 0), 0) scale(0.3) rotate(180deg);
+		transform: translate3d(var(--x, 0), var(--y, 0), 0) scale(0.3)
+			rotate(180deg);
 	}
 	to {
 		opacity: 1;
-		transform: translate3d(var(--x, 0), var(--y, 0), 0) scale(1) rotate(0deg);
+		transform: translate3d(var(--x, 0), var(--y, 0), 0) scale(1)
+			rotate(0deg);
 	}
 }
 
@@ -77,10 +79,12 @@
 		transform: translate3d(var(--x, 0), var(--y, 0), 0) scale(1);
 	}
 	30% {
-		transform: translate3d(var(--x, 0), calc(var(--y, 0) - 20px), 0) scale(1.1);
+		transform: translate3d(var(--x, 0), calc(var(--y, 0) - 20px), 0)
+			scale(1.1);
 	}
 	50% {
-		transform: translate3d(var(--x, 0), calc(var(--y, 0) - 15px), 0) scale(1.05);
+		transform: translate3d(var(--x, 0), calc(var(--y, 0) - 15px), 0)
+			scale(1.05);
 	}
 	70% {
 		transform: translate3d(var(--x, 0), var(--y, 0), 0) scale(1.02);
