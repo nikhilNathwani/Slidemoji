@@ -40,7 +40,7 @@ function Tile({
 	onTransitionEnd,
 }) {
 	const tileRef = useRef(null);
-	
+
 	// Calculate delays from tile index
 	const entranceDelay = tileIndex * 50; // 50ms stagger for entrance
 	const celebrationDelay = tileIndex * 60; // 60ms stagger for celebration
@@ -97,24 +97,27 @@ function Tile({
 
 	// FLIP animation: Apply offset transform, then remove it to trigger transition
 	const hasOffset = offsetX !== 0 || offsetY !== 0;
-	
-	// Step 1: Apply offset in style (Invert - moves tile back to old position)
-	if (hasOffset) {
-		style.transform = `translate(${offsetX}px, ${offsetY}px)`;
-	}
-	
-	// Step 2: On next frame, set transform to 0 (Play - triggers CSS transition)
+
+	// Apply FLIP animation via useEffect (not inline style)
 	useEffect(() => {
 		if (hasOffset && tileRef.current) {
 			const element = tileRef.current;
-			console.log(`[FLIP] Tile ${tileNumber} INVERT:`, element.style.transform);
 			
-			// Use requestAnimationFrame to remove transform on next frame
+			// Step 1: Apply offset immediately (Invert - moves tile back to old position)
+			element.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+			console.log(
+				`[FLIP] Tile ${tileNumber} INVERT:`,
+				element.style.transform,
+			);
+
+			// Step 2: On next frame, remove transform (Play - triggers CSS transition)
 			const rafId = requestAnimationFrame(() => {
-				element.style.transform = 'translate(0px, 0px)';
-				console.log(`[FLIP] Tile ${tileNumber} PLAY: translate(0px, 0px)`);
+				element.style.transform = "translate(0px, 0px)";
+				console.log(
+					`[FLIP] Tile ${tileNumber} PLAY: translate(0px, 0px)`,
+				);
 			});
-			
+
 			return () => cancelAnimationFrame(rafId);
 		}
 	}, [hasOffset, offsetX, offsetY, tileNumber]);
