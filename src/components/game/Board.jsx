@@ -43,8 +43,6 @@ function Board({
 	});
 	const [isGameWon, setIsGameWon] = useState(false);
 	const [isInputBlocked, setIsInputBlocked] = useState(false);
-	// Initialize prevPositions with initial tiles for FLIP animation
-	const prevPositions = useRef([...tiles]);
 	const boardRef = useRef(null);
 	const touchStartRef = useRef(null);
 	const mouseDragRef = useRef(null);
@@ -79,7 +77,6 @@ function Board({
 	const handleSolve = useCallback(() => {
 		const solvedTiles = getSolvedState(size);
 		setTiles(solvedTiles);
-		prevPositions.current = [...solvedTiles]; // Sync prevPositions
 		setIsGameWon(true);
 		hasShownWin.current = false;
 	}, [size]);
@@ -89,7 +86,6 @@ function Board({
 		// Use initialBoard if available (persistence mode), otherwise generate random
 		const newTiles = initialBoard || scramblePuzzle(size);
 		setTiles(newTiles);
-		prevPositions.current = [...newTiles]; // Sync prevPositions
 		setIsGameWon(false);
 		hasShownWin.current = false;
 	}, [size, initialBoard]);
@@ -123,7 +119,6 @@ function Board({
 			newTiles = scramblePuzzle(size);
 		}
 		setTiles(newTiles);
-		prevPositions.current = [...newTiles]; // Sync prevPositions with new tiles
 		setIsGameWon(false);
 		hasShownWin.current = false;
 	}, [size, initialBoard, savedBoard]);
@@ -158,21 +153,13 @@ function Board({
 	// ===== Movement Logic =====
 	const gapIndex = getGapIndex(tiles);
 
-	// Move tile - FLIP technique for smooth animation
+	// Move tile - smooth animation via CSS transitions
 	const moveTile = useCallback(
 		(tileIndex) => {
 			const currentGapIndex = getGapIndex(tiles);
 			const newTiles = swapTiles(tiles, tileIndex, currentGapIndex);
 
-			// Store current positions before update (FLIP: First)
-			prevPositions.current = [...tiles];
-			console.log("[FLIP] Before move:", {
-				tiles,
-				newTiles,
-				prevPositions: prevPositions.current,
-			});
-
-			// Update state immediately (FLIP: Last)
+			// Update state (CSS transitions will handle smooth movement)
 			setTiles(newTiles);
 
 			// Check for win
@@ -372,15 +359,11 @@ function Board({
 					!isInputBlocked &&
 					isAdjacent(gapIndex, index, size);
 
-				// Find previous index for FLIP animation (Invert step)
-				const prevIndex = prevPositions.current.indexOf(value);
-
 				return (
 					<Tile
 						key={value}
 						tileNumber={value}
 						tileIndex={index}
-						prevIndex={prevIndex}
 						isClickable={isClickable}
 						showNumbers={showNumbers}
 						tileSizePx={tileSizePx}

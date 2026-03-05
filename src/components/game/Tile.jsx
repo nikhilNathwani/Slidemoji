@@ -1,5 +1,5 @@
 import styles from "./Tile.module.css";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { getTilePosition as calculateTilePixelPosition } from "../../utils/boardHelpers";
 
 // ===== Helper Functions =====
@@ -25,7 +25,6 @@ function getBackgroundStyles(row, col, boardSize) {
 function Tile({
 	tileNumber,
 	tileIndex,
-	prevIndex,
 	isClickable,
 	onClick,
 	onTouchStart,
@@ -40,39 +39,17 @@ function Tile({
 	onTransitionEnd,
 }) {
 	const tileRef = useRef(null);
-	const [isAnimating, setIsAnimating] = useState(false);
 
 	// Calculate delays from tile index
 	const entranceDelay = tileIndex * 50; // 50ms stagger for entrance
 	const celebrationDelay = tileIndex * 60; // 60ms stagger for celebration
 
-	// Calculate current and previous positions for FLIP animation
+	// Calculate position (CSS transitions will handle smooth movement)
 	const position = calculateTilePixelPosition(
 		tileIndex,
 		boardSize,
 		tileSizePx,
 	);
-	const prevPosition = calculateTilePixelPosition(
-		prevIndex,
-		boardSize,
-		tileSizePx,
-	);
-
-	// Calculate FLIP offset (Invert step)
-	const offsetX = prevPosition.x - position.x;
-	const offsetY = prevPosition.y - position.y;
-
-	// Debug logging
-	if (offsetX !== 0 || offsetY !== 0) {
-		console.log(`[FLIP] Tile ${tileNumber}:`, {
-			tileIndex,
-			prevIndex,
-			position,
-			prevPosition,
-			offsetX,
-			offsetY,
-		});
-	}
 
 	const style = {
 		position: "absolute",
@@ -96,24 +73,6 @@ function Tile({
 		style["--celebration-delay"] = `${celebrationDelay}ms`;
 	}
 
-	// FLIP animation via CSS: Set offset as CSS variables
-	const hasOffset = offsetX !== 0 || offsetY !== 0;
-	if (hasOffset) {
-		style["--offset-x"] = `${offsetX}px`;
-		style["--offset-y"] = `${offsetY}px`;
-		console.log(`[FLIP] Tile ${tileNumber}:`, {
-			offsetX,
-			offsetY,
-		});
-	}
-	
-	// Start animation when offset changes
-	useEffect(() => {
-		if (hasOffset) {
-			setIsAnimating(true);
-		}
-	}, [hasOffset, offsetX, offsetY]);
-
 	// Add emoji background styling
 	if (emojiSvgUrl && tileNumber) {
 		const { row, col } = getTilePosition(tileNumber, boardSize);
@@ -132,25 +91,24 @@ function Tile({
 	if (isClickable) classNames.push(styles.clickable);
 	if (isEntering) classNames.push(styles.entering);
 	if (isGameWon) classNames.push(styles.celebrating);
-	if (isAnimating) classNames.push(styles.moving); // Add moving animation when animating
 
-	// Handle animation end - notify parent and remove moving class
-	const handleAnimationEnd = (e) => {
-		// Only handle slide animation (not entrance or celebration)
-		if (e.animationName.includes("slide")) {
-			setIsAnimating(false); // Remove moving class
-			if (onTransitionEnd) {
-				onTransitionEnd();
-			}
+	// Handle animation end (for entrance/celebration)
+	const handleAnimationEnd = () => {
+		if (onTransitionEnd) {
+			onTransitionEnd();
 		}
 	};
 
-	// If no offset, unblock input immediately (no animation to wait for)
-	useEffect(() => {
-		if (!hasOffset && onTransitionEnd) {
+	// Handle transition end (for slide movements)
+	const handleTransitionEnd = (e) => {
+		// Only handle position transitions (left/top), not border
+		if (
+			(e.propertyName === "left" || e.propertyName === "top") &&
+			onTransitionEnd
+		) {
 			onTransitionEnd();
 		}
-	}, [hasOffset, onTransitionEnd]);
+	};
 
 	return (
 		<div
@@ -161,6 +119,7 @@ function Tile({
 			onTouchEnd={onTouchEnd}
 			onMouseDown={onMouseDown}
 			onAnimationEnd={handleAnimationEnd}
+			onTransitionEnd={handleTransitionEnd}
 			style={style}
 			data-tile-number={tileNumber}
 		>
