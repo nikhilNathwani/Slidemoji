@@ -4,7 +4,7 @@ function Gap({ index, size, tileSizePx, onMouseUp }) {
 	const position = getTilePosition(index, size, tileSizePx);
 	const style = {
 		position: "absolute",
-		transform: `translate(${position.x}px, ${position.y}px)`,
+		transform: `translate3d(${position.x}px, ${position.y}px, 0)`,
 		width: `${tileSizePx}px`,
 		height: `${tileSizePx}px`,
 	};

@@ -53,10 +53,9 @@ function Tile({
 
 	const style = {
 		position: "absolute",
-		left: `${position.x}px`,
-		top: `${position.y}px`,
 		width: `${tileSizePx}px`,
 		height: `${tileSizePx}px`,
+		transform: `translate3d(${position.x}px, ${position.y}px, 0)`,
 	};
 
 	// Start invisible if entering (before animation starts)
@@ -101,8 +100,8 @@ function Tile({
 
 	// Handle transition end (for slide movements)
 	const handleTransitionEnd = (e) => {
-		// Only call once per move (fires for both left AND top, but we only need one callback)
-		if (e.propertyName === "left" && onTransitionEnd) {
+		// Only handle transform transitions (not border or other properties)
+		if (e.propertyName === "transform" && onTransitionEnd) {
 			onTransitionEnd();
 		}
 	};
