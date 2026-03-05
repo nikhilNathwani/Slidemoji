@@ -1,4 +1,5 @@
 import styles from "./Tile.module.css";
+import { useEffect } from "react";
 import { getTilePosition as calculateTilePixelPosition } from "../../utils/boardHelpers";
 
 // ===== Helper Functions =====
@@ -57,7 +58,7 @@ function Tile({
 	// Calculate FLIP offset (Invert step)
 	const offsetX = prevPosition.x - position.x;
 	const offsetY = prevPosition.y - position.y;
-	
+
 	// Debug logging
 	if (offsetX !== 0 || offsetY !== 0) {
 		console.log(`[FLIP] Tile ${tileNumber}:`, {
@@ -69,7 +70,7 @@ function Tile({
 			offsetY,
 		});
 	}
-	
+
 	const style = {
 		position: "absolute",
 		left: `${position.x}px`,
@@ -97,6 +98,7 @@ function Tile({
 	const hasOffset = offsetX !== 0 || offsetY !== 0;
 	if (hasOffset) {
 		style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+		console.log(`[FLIP] Tile ${tileNumber} APPLYING transform:`, style.transform);
 	}
 
 	// Add emoji background styling
@@ -127,10 +129,11 @@ function Tile({
 	};
 
 	// If no offset, unblock input immediately (no animation to wait for)
-	if (!hasOffset && onTransitionEnd && offsetX === 0 && offsetY === 0) {
-		// Use setTimeout to avoid calling setState during render
-		setTimeout(() => onTransitionEnd(), 0);
-	}
+	useEffect(() => {
+		if (!hasOffset && onTransitionEnd) {
+			onTransitionEnd();
+		}
+	}, [hasOffset, onTransitionEnd]);
 
 	return (
 		<div
