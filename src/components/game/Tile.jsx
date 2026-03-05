@@ -57,6 +57,19 @@ function Tile({
 	// Calculate FLIP offset (Invert step)
 	const offsetX = prevPosition.x - position.x;
 	const offsetY = prevPosition.y - position.y;
+	
+	// Debug logging
+	if (offsetX !== 0 || offsetY !== 0) {
+		console.log(`[FLIP] Tile ${tileNumber}:`, {
+			tileIndex,
+			prevIndex,
+			position,
+			prevPosition,
+			offsetX,
+			offsetY,
+		});
+	}
+	
 	const style = {
 		position: "absolute",
 		left: `${position.x}px`,

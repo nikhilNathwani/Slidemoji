@@ -43,7 +43,8 @@ function Board({
 	});
 	const [isGameWon, setIsGameWon] = useState(false);
 	const [isInputBlocked, setIsInputBlocked] = useState(false);
-	const prevPositions = useRef([]); // Track previous tile positions for FLIP animation
+	// Initialize prevPositions with initial tiles for FLIP animation
+	const prevPositions = useRef([...tiles]);
 	const boardRef = useRef(null);
 	const touchStartRef = useRef(null);
 	const mouseDragRef = useRef(null);
@@ -76,7 +77,9 @@ function Board({
 
 	// Solve function
 	const handleSolve = useCallback(() => {
-		setTiles(getSolvedState(size));
+		const solvedTiles = getSolvedState(size);
+		setTiles(solvedTiles);
+		prevPositions.current = [...solvedTiles]; // Sync prevPositions
 		setIsGameWon(true);
 		hasShownWin.current = false;
 	}, [size]);
@@ -84,7 +87,9 @@ function Board({
 	// Shuffle function - restart the puzzle with the same initial board
 	const handleShuffle = useCallback(() => {
 		// Use initialBoard if available (persistence mode), otherwise generate random
-		setTiles(initialBoard || scramblePuzzle(size));
+		const newTiles = initialBoard || scramblePuzzle(size);
+		setTiles(newTiles);
+		prevPositions.current = [...newTiles]; // Sync prevPositions
 		setIsGameWon(false);
 		hasShownWin.current = false;
 	}, [size, initialBoard]);
@@ -107,16 +112,18 @@ function Board({
 			winDialogTimeoutRef.current = null;
 		}
 		setIsInputBlocked(false);
-		prevPositions.current = []; // Clear previous positions
 		// Use initialBoard or savedBoard if available, otherwise scramble
 		// This triggers when user changes difficulty (3x3 <-> 4x4)
+		let newTiles;
 		if (savedBoard) {
-			setTiles(savedBoard);
+			newTiles = savedBoard;
 		} else if (initialBoard) {
-			setTiles(initialBoard);
+			newTiles = initialBoard;
 		} else {
-			setTiles(scramblePuzzle(size));
+			newTiles = scramblePuzzle(size);
 		}
+		setTiles(newTiles);
+		prevPositions.current = [...newTiles]; // Sync prevPositions with new tiles
 		setIsGameWon(false);
 		hasShownWin.current = false;
 	}, [size, initialBoard, savedBoard]);
@@ -159,6 +166,11 @@ function Board({
 
 			// Store current positions before update (FLIP: First)
 			prevPositions.current = [...tiles];
+			console.log("[FLIP] Before move:", {
+				tiles,
+				newTiles,
+				prevPositions: prevPositions.current,
+			});
 
 			// Update state immediately (FLIP: Last)
 			setTiles(newTiles);
@@ -361,13 +373,7 @@ function Board({
 					isAdjacent(gapIndex, index, size);
 
 				// Find previous index for FLIP animation (Invert step)
-				let prevIndex = index; // Default: no movement
-				if (prevPositions.current.length > 0) {
-					const foundPrevIndex = prevPositions.current.indexOf(value);
-					if (foundPrevIndex !== -1) {
-						prevIndex = foundPrevIndex;
-					}
-				}
+				const prevIndex = prevPositions.current.indexOf(value);
 
 				return (
 					<Tile
