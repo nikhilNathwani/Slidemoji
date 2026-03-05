@@ -1,5 +1,5 @@
 import styles from "./Tile.module.css";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getTilePosition as calculateTilePixelPosition } from "../../utils/boardHelpers";
 
 // ===== Helper Functions =====
@@ -40,6 +40,7 @@ function Tile({
 	onTransitionEnd,
 }) {
 	const tileRef = useRef(null);
+	const [isAnimating, setIsAnimating] = useState(false);
 
 	// Calculate delays from tile index
 	const entranceDelay = tileIndex * 50; // 50ms stagger for entrance
@@ -105,6 +106,14 @@ function Tile({
 			offsetY,
 		});
 	}
+	
+	// Start animation when offset changes
+	useEffect(() => {
+		if (hasOffset) {
+			setIsAnimating(true);
+		}
+	}, [hasOffset, offsetX, offsetY]);, [hasOffset, offsetX, offsetY]);});
+	}
 
 	// Add emoji background styling
 	if (emojiSvgUrl && tileNumber) {
@@ -119,19 +128,22 @@ function Tile({
 		style.backgroundOrigin = "border-box";
 		style.backgroundClip = "border-box";
 	}
+// Add moving class with unique key to force animation restart
 
 	const classNames = [styles.tile];
 	if (isClickable) classNames.push(styles.clickable);
 	if (isEntering) classNames.push(styles.entering);
 	if (isGameWon) classNames.push(styles.celebrating);
-	if (hasOffset) classNames.push(styles.moving); // Add moving animation
+	if (isAnimating) classNames.push(styles.moving); // Add moving animation when animating
 
-	// Handle animation end - notify parent when slide animation completes
+	// Handle animation end - notify parent and remove moving class
 	const handleAnimationEnd = (e) => {
 		// Only handle slide animation (not entrance or celebration)
-		if (e.animationName.includes('slide') && onTransitionEnd) {
-			onTransitionEnd();
-		}
+		if (e.animationName.includes("slide")) {
+			setIsAnimating(false); // Remove moving class
+			if (onTransitionEnd) {
+				onTransitionEnd();
+			}
 	};
 
 	// If no offset, unblock input immediately (no animation to wait for)
