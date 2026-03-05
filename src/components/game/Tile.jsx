@@ -1,5 +1,5 @@
 import styles from "./Tile.module.css";
-import { useRef } from "react";
+import { useRef, useLayoutEffect } from "react";
 import { getTilePosition as calculateTilePixelPosition } from "../../utils/boardHelpers";
 
 // ===== Helper Functions =====
@@ -39,6 +39,7 @@ function Tile({
 	onTransitionEnd,
 }) {
 	const tileRef = useRef(null);
+	const prevPositionRef = useRef({ x: 0, y: 0 });
 
 	// Calculate delays from tile index
 	const entranceDelay = tileIndex * 50; // 50ms stagger for entrance
@@ -51,20 +52,47 @@ function Tile({
 		tileSizePx,
 	);
 
+	// For smooth transitions: Apply old position first, then new position
+	// This ensures CSS sees the "before" state to transition from
+	useLayoutEffect(() => {
+		if (tileRef.current && !isEntering && !isGameWon) {
+			const element = tileRef.current;
+			const oldPos = prevPositionRef.current;
+			const newPos = position;
+
+			// If position changed, apply old position first, then new
+			if (oldPos.x !== newPos.x || oldPos.y !== newPos.y) {
+				// Step 1: Set old position (no transition yet)
+				element.style.transition = 'none';
+				element.style.setProperty('--x', `${oldPos.x}px`);
+				element.style.setProperty('--y', `${oldPos.y}px`);
+				
+				// Step 2: Force reflow so browser paints old position
+				element.offsetHeight; // Read to force layout
+				
+				// Step 3: Re-enable transition and set new position
+				element.style.transition = '';
+				element.style.setProperty('--x', `${newPos.x}px`);
+				element.style.setProperty('--y', `${newPos.y}px`);
+			}
+
+			// Update ref for next time
+			prevPositionRef.current = newPos;
+		}
+	}, [position.x, position.y, isEntering, isGameWon]);
+
+	// Use CSS variables for position so keyframe animations can access them
 	const style = {
 		position: "absolute",
 		width: `${tileSizePx}px`,
 		height: `${tileSizePx}px`,
-		transform: `translate3d(${position.x}px, ${position.y}px, 0)`,
+		"--x": `${position.x}px`,
+		"--y": `${position.y}px`,
 	};
 
 	// Start invisible if entering (before animation starts)
 	if (isEntering) {
 		style.opacity = 0;
-	}
-
-	// Add animation delays via CSS variables
-	if (isEntering) {
 		style["--entrance-delay"] = `${entranceDelay}ms`;
 	}
 
