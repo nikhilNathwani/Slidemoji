@@ -2,6 +2,7 @@ import TrophyCase from "../common/TrophyCase";
 import GoogleSignInButton from "../common/GoogleSignInButton";
 import { useAuth } from "../../hooks/useAuth";
 import styles from "./StatsContent.module.css";
+import { FontAwesomeIcon } from "../../utils/icons";
 
 function StatsContent({ dailyEmoji, userData, totalPuzzles = 365 }) {
 	const { user } = useAuth();
@@ -45,7 +46,7 @@ function StatsContent({ dailyEmoji, userData, totalPuzzles = 365 }) {
 						<div className={styles.streaksSection}>
 							<div className={styles.statRow}>
 								<span className={styles.statLabel}>
-									<i className="fas fa-fire"></i> Play Streak
+									<FontAwesomeIcon icon="fire" /> Play Streak
 								</span>
 								<span className={styles.statValue}>
 									{stats.currentPlayStreak || 0} days
@@ -53,7 +54,7 @@ function StatsContent({ dailyEmoji, userData, totalPuzzles = 365 }) {
 							</div>
 							<div className={styles.statRow}>
 								<span className={styles.statLabel}>
-									<i className="fas fa-trophy"></i> Win Streak
+									<FontAwesomeIcon icon="trophy" /> Win Streak
 								</span>
 								<span className={styles.statValue}>
 									{stats.currentWinStreak || 0} days

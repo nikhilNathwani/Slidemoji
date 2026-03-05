@@ -1,6 +1,7 @@
 import Toggle from "../common/Toggle";
 import { DIFFICULTIES } from "../../constants";
 import styles from "./SettingsContent.module.css";
+import { FontAwesomeIcon } from "../../utils/icons";
 
 function SettingsContent({
 	gridSize,

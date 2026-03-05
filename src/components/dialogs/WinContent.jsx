@@ -1,6 +1,7 @@
 import Trophy from "../common/Trophy";
 import StatsContent from "./StatsContent";
 import styles from "./WinContent.module.css";
+import { FontAwesomeIcon } from "../../utils/icons";
 
 function WinContent({
 	earnedEmoji,
@@ -40,7 +41,7 @@ Play at slidemoji.com`;
 			<h3>You unscrambled today's emoji!</h3>
 
 			<button className={styles.shareButton} onClick={handleShare}>
-				<i className="fas fa-share-nodes"></i>
+				<FontAwesomeIcon icon="share-nodes" />
 				Share
 			</button>
 
