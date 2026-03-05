@@ -99,8 +99,8 @@ function App() {
 					setUserData({});
 				});
 		} else {
-			// User signed out - clear data
-			setUserData(null);
+			// Anonymous user - allow playing without saved progress
+			setUserData({});
 		}
 	}, [user, devConfig.enabled, devConfig.userScenario]); // Re-run when user changes (sign in/out) or dev scenario changes
 
