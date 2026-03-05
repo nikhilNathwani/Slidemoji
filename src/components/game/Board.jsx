@@ -44,7 +44,7 @@ function Board({
 	});
 	const [isWon, setIsWon] = useState(false);
 	const [celebrating, setCelebrating] = useState(false);
-	const [movingTileValue, setMovingTileValue] = useState(null);
+	const [isInteracting, setIsInteracting] = useState(true);
 	const boardRef = useRef(null);
 	const touchStartRef = useRef(null);
 	const mouseDragRef = useRef(null);
@@ -114,7 +114,7 @@ function Board({
 			clearTimeout(winDialogTimeoutRef.current);
 			winDialogTimeoutRef.current = null;
 		}
-		setMovingTileValue(null);
+		setIsInteracting(true);
 		// Use initialBoard or savedBoard if available, otherwise scramble
 		// This triggers when user changes difficulty (3x3 <-> 4x4)
 		if (savedBoard) {
@@ -161,33 +161,32 @@ function Board({
 	// ===== Movement Logic =====
 	const gapIndex = getGapIndex(tiles);
 
-	// Core tile movement function - Simple approach:
-	// 1. Update state immediately (triggers React re-render with new positions)
-	// 2. CSS transition handles the animation automatically
-	// 3. Block interaction during animation via movingTileValue
+	// Core tile movement - Trigram pattern:
+	// stopInteraction → animate → startInteraction
 	const moveTile = useCallback(
 		(tileIndex) => {
 			const currentGapIndex = getGapIndex(tiles);
-			const tileValue = tiles[tileIndex];
 			const newTiles = swapTiles(tiles, tileIndex, currentGapIndex);
 
-			// Update state immediately - React changes tile positions, CSS animates
+			// Update state - CSS transition animates automatically
 			setTiles(newTiles);
-			setMovingTileValue(tileValue); // Blocks interaction
 
 			// Check for win
 			if (checkWin(newTiles, getSolvedState(size))) {
 				setIsWon(true);
 			}
 
+			// stopInteraction - remove event listeners during animation
+			setIsInteracting(false);
+
 			// Clear any existing timeout
 			if (moveTimeoutRef.current) {
 				clearTimeout(moveTimeoutRef.current);
 			}
 
-			// Re-enable interaction after animation completes
+			// startInteraction after animation completes
 			moveTimeoutRef.current = setTimeout(() => {
-				setMovingTileValue(null);
+				setIsInteracting(true);
 				moveTimeoutRef.current = null;
 
 				// Notify parent for Firestore save
@@ -202,8 +201,8 @@ function Board({
 	// Validates tile selection and triggers movement if valid
 	const handleTileSelect = useCallback(
 		(tileIndex, direction = null) => {
-			// Block input if game won or tile currently animating
-			if (isWon || movingTileValue !== null) {
+			// Block if game won or not interacting
+			if (isWon || !isInteracting) {
 				return;
 			}
 
@@ -227,7 +226,7 @@ function Board({
 
 			moveTile(targetTileIndex);
 		},
-		[tiles, isWon, movingTileValue, size, moveTile],
+		[tiles, isWon, isInteracting, size, moveTile],
 	);
 
 	// ===== Event Handlers =====
@@ -235,7 +234,7 @@ function Board({
 		handleTileSelect(index, null);
 	};
 
-	// Keyboard controls
+	// Keyboard controls - Trigram pattern: conditionally attach listener
 	const handleKeyPress = useCallback(
 		(event) => {
 			const arrowKeys = [
@@ -253,9 +252,12 @@ function Board({
 	);
 
 	useEffect(() => {
-		window.addEventListener("keydown", handleKeyPress);
-		return () => window.removeEventListener("keydown", handleKeyPress);
-	}, [handleKeyPress]);
+		// Only attach listener when interacting (Trigram's start/stopInteraction)
+		if (isInteracting && !isWon) {
+			window.addEventListener("keydown", handleKeyPress);
+			return () => window.removeEventListener("keydown", handleKeyPress);
+		}
+	}, [handleKeyPress, isInteracting, isWon]);
 
 	// Touch/swipe controls
 	const handleTouchStart = (e, tileIndex) => {
@@ -370,17 +372,16 @@ function Board({
 						/>
 					);
 				}
-				const isMoving = value === movingTileValue;
 				const isClickable =
 					!isWon &&
-					movingTileValue === null &&
+					isInteracting &&
 					isAdjacent(gapIndex, index, size);
 
 				return (
 					<Tile
 						key={value}
 						tileNumber={value}
-						isMoving={isMoving}
+						isMoving={false}
 						isClickable={isClickable}
 						showNumbers={showNumbers}
 						position={position}
