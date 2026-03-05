@@ -87,6 +87,7 @@ function App() {
 			// User just signed in - load their data from Firestore
 			getUserData(user.uid)
 				.then((data) => {
+					console.log("[AUTH] User data loaded:", data);
 					setUserData(data);
 					// Apply saved preferences (dark mode)
 					if (data?.preferences?.darkMode !== undefined) {
@@ -94,7 +95,14 @@ function App() {
 					}
 				})
 				.catch((error) => {
-					console.error("Error loading user data:", error);
+					console.error("[AUTH] Error loading user data:", error);
+					console.error("[AUTH] Error details:", {
+						message: error.message,
+						code: error.code,
+						stack: error.stack,
+					});
+					// Set empty userData so board doesn't stay stuck on "Loading..."
+					setUserData({});
 				});
 		} else {
 			// User signed out - clear data

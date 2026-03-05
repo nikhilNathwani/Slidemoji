@@ -43,8 +43,16 @@ function Tile({
 	const celebrationDelay = tileIndex * 60; // 60ms stagger for celebration
 
 	// Calculate current and previous positions for FLIP animation
-	const position = calculateTilePixelPosition(tileIndex, boardSize, tileSizePx);
-	const prevPosition = calculateTilePixelPosition(prevIndex, boardSize, tileSizePx);
+	const position = calculateTilePixelPosition(
+		tileIndex,
+		boardSize,
+		tileSizePx,
+	);
+	const prevPosition = calculateTilePixelPosition(
+		prevIndex,
+		boardSize,
+		tileSizePx,
+	);
 
 	// Calculate FLIP offset (Invert step)
 	const offsetX = prevPosition.x - position.x;

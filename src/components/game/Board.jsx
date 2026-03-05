@@ -374,15 +374,15 @@ function Board({
 						key={value}
 						tileNumber={value}
 						tileIndex={index}
-							prevIndex={prevIndex}
-							isClickable={isClickable}
-							showNumbers={showNumbers}
-							tileSizePx={tileSizePx}
-							emojiSvgUrl={emojiSvgUrl}
-							boardSize={size}
-							isEntering={isEntering}
-							isGameWon={isGameWon}
-							onTransitionEnd={() => setIsInputBlocked(false)}
+						prevIndex={prevIndex}
+						isClickable={isClickable}
+						showNumbers={showNumbers}
+						tileSizePx={tileSizePx}
+						emojiSvgUrl={emojiSvgUrl}
+						boardSize={size}
+						isEntering={isEntering}
+						isGameWon={isGameWon}
+						onTransitionEnd={() => setIsInputBlocked(false)}
 						{...(isClickable && {
 							onClick: () => handleTileClick(index),
 							onTouchStart: (e) => handleTouchStart(e, index),
