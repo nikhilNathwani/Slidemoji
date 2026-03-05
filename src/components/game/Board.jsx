@@ -45,7 +45,7 @@ function Board({
 	const [isWon, setIsWon] = useState(false);
 	const [isCelebrating, setIsCelebrating] = useState(false);
 	const [isInputBlocked, setIsInputBlocked] = useState(false);
-	const [movingTile, setMovingTile] = useState(null); // {value, direction}
+	const prevPositions = useRef([]); // Track previous tile positions for FLIP animation
 	const boardRef = useRef(null);
 	const touchStartRef = useRef(null);
 	const mouseDragRef = useRef(null);
@@ -111,7 +111,7 @@ function Board({
 			winDialogTimeoutRef.current = null;
 		}
 		setIsInputBlocked(false);
-		setMovingTile(null);
+		prevPositions.current = []; // Clear previous positions
 		// Use initialBoard or savedBoard if available, otherwise scramble
 		// This triggers when user changes difficulty (3x3 <-> 4x4)
 		if (savedBoard) {
@@ -158,37 +158,17 @@ function Board({
 	// ===== Movement Logic =====
 	const gapIndex = getGapIndex(tiles);
 
-	// Calculate which direction the tile moves toward the gap
-	const getMovingDirection = useCallback((tileIndex, gapIndex, size) => {
-		const tileRow = Math.floor(tileIndex / size);
-		const tileCol = tileIndex % size;
-		const gapRow = Math.floor(gapIndex / size);
-		const gapCol = gapIndex % size;
-
-		if (gapRow < tileRow) return "up";
-		if (gapRow > tileRow) return "down";
-		if (gapCol < tileCol) return "left";
-		if (gapCol > tileCol) return "right";
-		return null;
-	}, []);
-
-	// Move tile - same pattern as entrance/celebrating animations
+	// Move tile - FLIP technique for smooth animation
 	const moveTile = useCallback(
 		(tileIndex) => {
 			const currentGapIndex = getGapIndex(tiles);
-			const tileValue = tiles[tileIndex];
-			const direction = getMovingDirection(
-				tileIndex,
-				currentGapIndex,
-				size,
-			);
 			const newTiles = swapTiles(tiles, tileIndex, currentGapIndex);
 
-			// Update state immediately
-			setTiles(newTiles);
+			// Store current positions before update (FLIP: First)
+			prevPositions.current = [...tiles];
 
-			// Trigger CSS animation
-			setMovingTile({ value: tileValue, direction });
+			// Update state immediately (FLIP: Last)
+			setTiles(newTiles);
 
 			// Check for win
 			if (checkWin(newTiles, getSolvedState(size))) {
@@ -198,19 +178,23 @@ function Board({
 			// Block input during animation
 			setIsInputBlocked(true);
 
-			// Re-enable input after animation completes
-			setTimeout(() => {
-				setIsInputBlocked(false);
-				setMovingTile(null);
-
-				// Notify parent for Firestore save
-				if (onMove) {
-					onMove(newTiles);
-				}
-			}, ANIMATION_DURATION_MS);
+			// Note: isInputBlocked will be cleared by onTransitionEnd in Tile
 		},
-		[tiles, size, onMove, getMovingDirection],
+		[tiles, size],
 	);
+
+	// Handle animation end - called by each Tile's onTransitionEnd
+	const handleTransitionEnd = useCallback(() => {
+		// Re-enable input (only once when first tile finishes)
+		if (isInputBlocked) {
+			setIsInputBlocked(false);
+
+			// Notify parent for Firestore save
+			if (onMove) {
+				onMove(tiles);
+			}
+		}
+	}, [isInputBlocked, tiles, onMove]);
 
 	// Validates tile selection and triggers movement if valid
 	const handleTileSelect = useCallback(
@@ -391,16 +375,31 @@ function Board({
 					!isInputBlocked &&
 					isAdjacent(gapIndex, index, size);
 
-				const movingDirection =
-					movingTile && movingTile.value === value
-						? movingTile.direction
-						: null;
+				// Calculate FLIP offset (Invert step)
+				let offsetX = 0;
+				let offsetY = 0;
+
+				if (prevPositions.current.length > 0) {
+					// Find where this tile was in previous state
+					const prevIndex = prevPositions.current.indexOf(value);
+					if (prevIndex !== -1 && prevIndex !== index) {
+						// Calculate previous position
+						const prevPosition = getTilePosition(
+							prevIndex,
+							size,
+							tileSizePx,
+						);
+
+						// Calculate offset: where it WAS minus where it IS now
+						offsetX = prevPosition.x - position.x;
+						offsetY = prevPosition.y - position.y;
+					}
+				}
 
 				return (
 					<Tile
 						key={value}
 						tileNumber={value}
-						movingDirection={movingDirection}
 						isClickable={isClickable}
 						showNumbers={showNumbers}
 						position={position}
@@ -411,6 +410,9 @@ function Board({
 						entranceDelay={index * 50}
 						isCelebrating={isCelebrating}
 						celebrationDelay={index * 60}
+						offsetX={offsetX}
+						offsetY={offsetY}
+						onTransitionEnd={handleTransitionEnd}
 						{...(isClickable && {
 							onClick: () => handleTileClick(index),
 							onTouchStart: (e) => handleTouchStart(e, index),

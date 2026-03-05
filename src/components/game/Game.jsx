@@ -196,7 +196,9 @@ function Game({
 					/>
 				</div>
 				{!initialBoard ? (
-					<div style={{ padding: '20px', textAlign: 'center' }}>Loading puzzle...</div>
+					<div style={{ padding: "20px", textAlign: "center" }}>
+						Loading puzzle...
+					</div>
 				) : (
 					<Board
 						size={gridSize}

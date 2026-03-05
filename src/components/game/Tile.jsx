@@ -22,7 +22,6 @@ function getBackgroundStyles(row, col, boardSize) {
 
 function Tile({
 	tileNumber,
-	movingDirection,
 	isClickable,
 	onClick,
 	onTouchStart,
@@ -37,6 +36,9 @@ function Tile({
 	entranceDelay,
 	isCelebrating,
 	celebrationDelay,
+	offsetX = 0,
+	offsetY = 0,
+	onTransitionEnd,
 }) {
 	const style = {
 		position: "absolute",
@@ -60,6 +62,12 @@ function Tile({
 		style["--celebration-delay"] = `${celebrationDelay}ms`;
 	}
 
+	// FLIP: Apply offset to visually move tile back to previous position
+	// CSS transition will animate it smoothly to translate(0, 0)
+	if (offsetX !== 0 || offsetY !== 0) {
+		style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+	}
+
 	// Add emoji background styling
 	if (emojiSvgUrl && tileNumber) {
 		const { row, col } = getTilePosition(tileNumber, boardSize);
@@ -76,15 +84,16 @@ function Tile({
 
 	const classNames = [styles.tile];
 	if (isClickable) classNames.push(styles.clickable);
-	if (movingDirection) {
-		classNames.push(styles.moving);
-		if (movingDirection === "up") classNames.push(styles.slidingUp);
-		if (movingDirection === "down") classNames.push(styles.slidingDown);
-		if (movingDirection === "left") classNames.push(styles.slidingLeft);
-		if (movingDirection === "right") classNames.push(styles.slidingRight);
-	}
 	if (isEntering) classNames.push(styles.entering);
 	if (isCelebrating) classNames.push(styles.celebrating);
+
+	// Handle transition end - notify parent when slide animation completes
+	const handleTransitionEnd = (e) => {
+		// Only handle transform transitions (FLIP slide animation)
+		if (e.propertyName === "transform" && onTransitionEnd) {
+			onTransitionEnd();
+		}
+	};
 
 	return (
 		<div
@@ -93,6 +102,7 @@ function Tile({
 			onTouchStart={onTouchStart}
 			onTouchEnd={onTouchEnd}
 			onMouseDown={onMouseDown}
+			onTransitionEnd={handleTransitionEnd}
 			style={style}
 			data-tile-number={tileNumber}
 		>
