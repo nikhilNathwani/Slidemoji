@@ -81,7 +81,11 @@ function Game({
 
 		if (savedGame) {
 			// RESUME MODE: User has a saved game, restore it
-			setSavedBoard(savedGame.board);
+			// Convert saved board from Firestore format (0 as gap) to client format (null as gap)
+			const convertedBoard = savedGame.board.map((v) =>
+				v === 0 ? null : v,
+			);
+			setSavedBoard(convertedBoard);
 			setMoves(savedGame.moves);
 			setStartedAt(savedGame.startedAt);
 			setInitialBoard(initial); // Keep initial for reference

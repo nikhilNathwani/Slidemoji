@@ -81,7 +81,8 @@ function Tile({
 
 	// FLIP: Apply offset to visually move tile back to previous position
 	// CSS transition will animate it smoothly to translate(0, 0)
-	if (offsetX !== 0 || offsetY !== 0) {
+	const hasOffset = offsetX !== 0 || offsetY !== 0;
+	if (hasOffset) {
 		style.transform = `translate(${offsetX}px, ${offsetY}px)`;
 	}
 
@@ -112,6 +113,12 @@ function Tile({
 		}
 	};
 
+	// If no offset, unblock input immediately (no animation to wait for)
+	if (!hasOffset && onTransitionEnd && offsetX === 0 && offsetY === 0) {
+		// Use setTimeout to avoid calling setState during render
+		setTimeout(() => onTransitionEnd(), 0);
+	}
+
 	return (
 		<div
 			className={classNames.join(" ")}
@@ -123,7 +130,7 @@ function Tile({
 			style={style}
 			data-tile-number={tileNumber}
 		>
-			{showNumbers ? tileNumber : ""}
+			{showNumbers && tileNumber ? tileNumber : ""}
 		</div>
 	);
 }

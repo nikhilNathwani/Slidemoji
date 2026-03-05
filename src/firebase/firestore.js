@@ -226,10 +226,13 @@ export async function startPuzzle(userId, puzzleId, difficulty, initialBoard) {
 			gameState[puzzleId] = {};
 		}
 
+		// Convert client format (null as gap) to Firestore format (0 as gap)
+		const firestoreBoard = initialBoard.map((v) => (v === null ? 0 : v));
+
 		// Initialize game state for this specific puzzle+difficulty combo
 		gameState[puzzleId][difficulty] = {
 			moves: 0,
-			board: initialBoard,
+			board: firestoreBoard,
 			startedAt: Timestamp.now(),
 			fromArchive, // Track whether this is a daily or archive play
 		};
@@ -298,11 +301,13 @@ export async function saveGameState(userId, puzzleId, difficulty, gameData) {
 
 	try {
 		const userDocRef = doc(db, "users", userId);
+		// Convert client format (null as gap) to Firestore format (0 as gap)
+		const firestoreBoard = gameData.board.map((v) => (v === null ? 0 : v));
 		// Use dot notation to update only these specific nested fields
 		// This is more efficient than reading, modifying, and writing the entire document
 		await updateDoc(userDocRef, {
 			[`gameState.${puzzleId}.${difficulty}.moves`]: gameData.moves,
-			[`gameState.${puzzleId}.${difficulty}.board`]: gameData.board,
+			[`gameState.${puzzleId}.${difficulty}.board`]: firestoreBoard,
 			updatedAt: serverTimestamp(),
 		});
 	} catch (error) {

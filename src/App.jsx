@@ -119,6 +119,19 @@ function App() {
 
 		getPuzzleById(todaysPuzzleNumber)
 			.then((data) => {
+				// Convert Firestore format (0-8 with 0 as gap) to client format (1-8 with null as gap)
+				if (data) {
+					if (data.initialBoard3x3) {
+						data.initialBoard3x3 = data.initialBoard3x3.map((v) =>
+							v === 0 ? null : v,
+						);
+					}
+					if (data.initialBoard4x4) {
+						data.initialBoard4x4 = data.initialBoard4x4.map((v) =>
+							v === 0 ? null : v,
+						);
+					}
+				}
 				setPuzzleData(data);
 			})
 			.catch((error) => {
