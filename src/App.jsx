@@ -13,7 +13,6 @@ import { getTodaysPuzzleNumber } from "./utils/dateUtils";
 import { getPuzzleById } from "./utils/puzzleUtils";
 import { getUserData, updateUserPreferences } from "./firebase/firestore";
 import { useAuth } from "./hooks/useAuth";
-import { loadFontAwesome } from "./utils/fontAwesome";
 import {
 	DEFAULT_GRID_SIZE,
 	DEFAULT_DARK_MODE,
@@ -48,11 +47,6 @@ function App() {
 	const [puzzleData, setPuzzleData] = useState(null);
 	const [highestEarnedDifficulty, setHighestEarnedDifficulty] = useState(0); // 0 = not earned, 3 = 3x3 earned, 4 = 4x4 earned
 	const solveRef = useRef(null);
-
-	// Load FontAwesome on app mount
-	useEffect(() => {
-		loadFontAwesome();
-	}, []);
 
 	// Dev mode configuration
 	const devConfig = getDevConfig();

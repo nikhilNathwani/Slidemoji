@@ -5,6 +5,7 @@ import Trophy from "../common/Trophy";
 import Dialog from "../dialogs/Dialog";
 import ConfirmContent from "../dialogs/ConfirmContent";
 import { useAuth } from "../../hooks/useAuth";
+import { FontAwesomeIcon } from "../../utils/icons";
 import {
 	startPuzzle,
 	saveGameState,
@@ -227,7 +228,7 @@ function Game({
 						onClick={handleRestartClick}
 						title="Restart Puzzle"
 					>
-						<i className="fas fa-redo"></i>
+						<FontAwesomeIcon icon="redo" />
 						Restart
 					</button>
 				</div>

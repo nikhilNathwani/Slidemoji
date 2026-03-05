@@ -88,7 +88,7 @@ function Header({ onSettingsClick, onStatsClick }) {
 									className={styles.accountMenuItem}
 									onClick={handleSignOut}
 								>
-									<i className="fas fa-sign-out-alt"></i>
+									<FontAwesomeIcon icon="sign-out-alt" />
 									Sign out
 								</button>
 							</div>
