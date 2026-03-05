@@ -21,7 +21,7 @@ function Game({
 	showNumbers,
 	isWon,
 	onSolveRef,
-	playingEntranceAnimation,
+	isEntering,
 	showControls,
 	onShuffle,
 	highestEarnedDifficulty = 0,
@@ -204,7 +204,7 @@ function Game({
 						onSolveRef={solveRef}
 						onShuffleRef={restartRef}
 						dailyEmoji={dailyEmoji.emoji}
-						playingEntranceAnimation={playingEntranceAnimation}
+						isEntering={isEntering}
 						initialBoard={initialBoard}
 						savedBoard={savedBoard}
 						onMove={handleMove}

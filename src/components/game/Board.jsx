@@ -25,7 +25,7 @@ function Board({
 	onSolveRef,
 	onShuffleRef,
 	dailyEmoji,
-	playingEntranceAnimation,
+	isEntering,
 	// Persistence props - from Game component
 	initialBoard, // The starting board from Firestore (for this puzzle+difficulty)
 	savedBoard, // Previously saved board state (resume game), or null for new game
@@ -43,15 +43,14 @@ function Board({
 		return scramblePuzzle(size); // Fallback (shouldn't happen)
 	});
 	const [isWon, setIsWon] = useState(false);
-	const [celebrating, setCelebrating] = useState(false);
-	const [isInteracting, setIsInteracting] = useState(true);
-	const [animatingTile, setAnimatingTile] = useState(null); // {value, direction}
+	const [isCelebrating, setIsCelebrating] = useState(false);
+	const [isInputBlocked, setIsInputBlocked] = useState(false);
+	const [movingTile, setMovingTile] = useState(null); // {value, direction}
 	const boardRef = useRef(null);
 	const touchStartRef = useRef(null);
 	const mouseDragRef = useRef(null);
 	const hasShownWin = useRef(false);
 	const winDialogTimeoutRef = useRef(null);
-	const pendingMoveRef = useRef(null); // Store the move to apply after animation
 
 	// Create emoji SVG URL once and memoize it
 	const emojiSvgUrl = useMemo(
@@ -82,7 +81,7 @@ function Board({
 		setTiles(getSolvedState(size));
 		setIsWon(true);
 		hasShownWin.current = false;
-		setCelebrating(true);
+		setIsCelebrating(true);
 	}, [size]);
 
 	// Shuffle function - restart the puzzle with the same initial board
@@ -91,7 +90,7 @@ function Board({
 		setTiles(initialBoard || scramblePuzzle(size));
 		setIsWon(false);
 		hasShownWin.current = false;
-		setCelebrating(false);
+		setIsCelebrating(false);
 	}, [size, initialBoard]);
 
 	// Expose functions to parent
@@ -111,9 +110,8 @@ function Board({
 			clearTimeout(winDialogTimeoutRef.current);
 			winDialogTimeoutRef.current = null;
 		}
-		setIsInteracting(true);
-		setAnimatingTile(null);
-		pendingMoveRef.current = null;
+		setIsInputBlocked(false);
+		setMovingTile(null);
 		// Use initialBoard or savedBoard if available, otherwise scramble
 		// This triggers when user changes difficulty (3x3 <-> 4x4)
 		if (savedBoard) {
@@ -125,7 +123,7 @@ function Board({
 		}
 		setIsWon(false);
 		hasShownWin.current = false;
-		setCelebrating(false);
+		setIsCelebrating(false);
 	}, [size, initialBoard, savedBoard]);
 
 	// Handle window resize
@@ -144,7 +142,7 @@ function Board({
 			// Call onWin immediately to trigger trophy transformation
 			onWin();
 			// Start celebration
-			setCelebrating(true);
+			setIsCelebrating(true);
 			// Delay to show trophy transformation and celebration before dialog
 			// Clear any existing timeout
 			if (winDialogTimeoutRef.current) {
@@ -160,8 +158,8 @@ function Board({
 	// ===== Movement Logic =====
 	const gapIndex = getGapIndex(tiles);
 
-	// Calculate direction tile needs to move (toward the gap)
-	const getAnimationDirection = useCallback((tileIndex, gapIndex, size) => {
+	// Calculate which direction the tile moves toward the gap
+	const getMovingDirection = useCallback((tileIndex, gapIndex, size) => {
 		const tileRow = Math.floor(tileIndex / size);
 		const tileCol = tileIndex % size;
 		const gapRow = Math.floor(gapIndex / size);
@@ -174,65 +172,51 @@ function Board({
 		return null;
 	}, []);
 
-	// Handle animation end - update state after CSS animation completes
-	const handleAnimationEnd = useCallback(() => {
-		if (!pendingMoveRef.current) return;
-
-		const { newTiles } = pendingMoveRef.current;
-
-		// Update state now that animation is complete
-		setTiles(newTiles);
-
-		// Check for win
-		if (checkWin(newTiles, getSolvedState(size))) {
-			setIsWon(true);
-		}
-
-		// Clear animation state
-		setAnimatingTile(null);
-		pendingMoveRef.current = null;
-
-		// startInteraction - re-enable input
-		setIsInteracting(true);
-
-		// Notify parent for Firestore save
-		if (onMove) {
-			onMove(newTiles);
-		}
-	}, [size, onMove]);
-
-	// Core tile movement - your model:
-	// 1. stopInteraction
-	// 2. Start CSS animation (translateX/Y)
-	// 3. onAnimationEnd → setTiles, checkWin, startInteraction
+	// Move tile - same pattern as entrance/celebrating animations
 	const moveTile = useCallback(
 		(tileIndex) => {
 			const currentGapIndex = getGapIndex(tiles);
 			const tileValue = tiles[tileIndex];
-			const newTiles = swapTiles(tiles, tileIndex, currentGapIndex);
-			const direction = getAnimationDirection(
+			const direction = getMovingDirection(
 				tileIndex,
 				currentGapIndex,
 				size,
 			);
+			const newTiles = swapTiles(tiles, tileIndex, currentGapIndex);
 
-			// stopInteraction - remove event listeners
-			setIsInteracting(false);
+			// Update state immediately
+			setTiles(newTiles);
 
-			// Start CSS animation
-			setAnimatingTile({ value: tileValue, direction });
+			// Trigger CSS animation
+			setMovingTile({ value: tileValue, direction });
 
-			// Store the move to apply after animation
-			pendingMoveRef.current = { newTiles };
+			// Check for win
+			if (checkWin(newTiles, getSolvedState(size))) {
+				setIsWon(true);
+			}
+
+			// Block input during animation
+			setIsInputBlocked(true);
+
+			// Re-enable input after animation completes
+			setTimeout(() => {
+				setIsInputBlocked(false);
+				setMovingTile(null);
+
+				// Notify parent for Firestore save
+				if (onMove) {
+					onMove(newTiles);
+				}
+			}, ANIMATION_DURATION_MS);
 		},
-		[tiles, size, getAnimationDirection],
+		[tiles, size, onMove, getMovingDirection],
 	);
 
 	// Validates tile selection and triggers movement if valid
 	const handleTileSelect = useCallback(
 		(tileIndex, direction = null) => {
-			// Block if game won or not interacting
-			if (isWon || !isInteracting) {
+			// Block if game won or input blocked
+			if (isWon || isInputBlocked) {
 				return;
 			}
 
@@ -256,7 +240,7 @@ function Board({
 
 			moveTile(targetTileIndex);
 		},
-		[tiles, isWon, isInteracting, size, moveTile],
+		[tiles, isWon, isInputBlocked, size, moveTile],
 	);
 
 	// ===== Event Handlers =====
@@ -264,7 +248,7 @@ function Board({
 		handleTileSelect(index, null);
 	};
 
-	// Keyboard controls - Trigram pattern: conditionally attach listener
+	// Keyboard controls
 	const handleKeyPress = useCallback(
 		(event) => {
 			const arrowKeys = [
@@ -282,12 +266,12 @@ function Board({
 	);
 
 	useEffect(() => {
-		// Only attach listener when interacting (Trigram's start/stopInteraction)
-		if (isInteracting && !isWon) {
+		// Only attach listener when input is not blocked
+		if (!isInputBlocked && !isWon) {
 			window.addEventListener("keydown", handleKeyPress);
 			return () => window.removeEventListener("keydown", handleKeyPress);
 		}
-	}, [handleKeyPress, isInteracting, isWon]);
+	}, [handleKeyPress, isInputBlocked, isWon]);
 
 	// Touch/swipe controls
 	const handleTouchStart = (e, tileIndex) => {
@@ -404,33 +388,29 @@ function Board({
 				}
 				const isClickable =
 					!isWon &&
-					isInteracting &&
+					!isInputBlocked &&
 					isAdjacent(gapIndex, index, size);
 
-				const isAnimating =
-					animatingTile && animatingTile.value === value;
+				const movingDirection =
+					movingTile && movingTile.value === value
+						? movingTile.direction
+						: null;
 
 				return (
 					<Tile
 						key={value}
 						tileNumber={value}
-						isMoving={isAnimating}
-						animationDirection={
-							isAnimating ? animatingTile.direction : null
-						}
-						onAnimationEnd={isAnimating ? handleAnimationEnd : null}
+						movingDirection={movingDirection}
 						isClickable={isClickable}
 						showNumbers={showNumbers}
 						position={position}
 						tileSizePx={tileSizePx}
-						animationDuration={ANIMATION_DURATION_MS}
 						emojiSvgUrl={emojiSvgUrl}
 						boardSize={size}
-						playingEntranceAnimation={playingEntranceAnimation}
+						isEntering={isEntering}
 						entranceDelay={index * 50}
-						celebrating={celebrating}
+						isCelebrating={isCelebrating}
 						celebrationDelay={index * 60}
-						isWon={isWon}
 						{...(isClickable && {
 							onClick: () => handleTileClick(index),
 							onTouchStart: (e) => handleTouchStart(e, index),
