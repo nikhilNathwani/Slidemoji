@@ -1,4 +1,5 @@
 import styles from "./Tile.module.css";
+import { getTilePosition as calculateTilePixelPosition } from "../../utils/boardHelpers";
 
 // ===== Helper Functions =====
 
@@ -23,25 +24,31 @@ function getBackgroundStyles(row, col, boardSize) {
 function Tile({
 	tileNumber,
 	tileIndex,
+	prevIndex,
 	isClickable,
 	onClick,
 	onTouchStart,
 	onTouchEnd,
 	onMouseDown,
 	showNumbers,
-	position,
 	tileSizePx,
 	emojiSvgUrl,
 	boardSize,
 	isEntering,
 	isGameWon,
-	offsetX = 0,
-	offsetY = 0,
 	onTransitionEnd,
 }) {
 	// Calculate delays from tile index
 	const entranceDelay = tileIndex * 50; // 50ms stagger for entrance
 	const celebrationDelay = tileIndex * 60; // 60ms stagger for celebration
+
+	// Calculate current and previous positions for FLIP animation
+	const position = calculateTilePixelPosition(tileIndex, boardSize, tileSizePx);
+	const prevPosition = calculateTilePixelPosition(prevIndex, boardSize, tileSizePx);
+
+	// Calculate FLIP offset (Invert step)
+	const offsetX = prevPosition.x - position.x;
+	const offsetY = prevPosition.y - position.y;
 	const style = {
 		position: "absolute",
 		left: `${position.x}px`,
@@ -55,12 +62,12 @@ function Tile({
 		style.opacity = 0;
 	}
 
-	// Add animation delays via CSS variables (consistent pattern)
-	if (isEntering && entranceDelay !== undefined) {
+	// Add animation delays via CSS variables
+	if (isEntering) {
 		style["--entrance-delay"] = `${entranceDelay}ms`;
 	}
 
-	if (isGameWon && celebrationDelay !== undefined) {
+	if (isGameWon) {
 		style["--celebration-delay"] = `${celebrationDelay}ms`;
 	}
 

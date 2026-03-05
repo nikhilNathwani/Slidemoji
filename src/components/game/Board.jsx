@@ -8,7 +8,6 @@ import {
 	swapTiles,
 	checkWin,
 	scramblePuzzle,
-	getTilePosition,
 	getTileIndexFromDirection,
 } from "../../utils/boardHelpers";
 import { createEmojiSvgUrl } from "../../utils/emoji";
@@ -182,14 +181,6 @@ function Board({
 		[tiles, size, onMove],
 	);
 
-	// Handle animation end - called by each Tile's onTransitionEnd
-	const handleTransitionEnd = useCallback(() => {
-		// Re-enable input (only once when first tile finishes)
-		if (isInputBlocked) {
-			setIsInputBlocked(false);
-		}
-	}, [isInputBlocked]);
-
 	// Validates tile selection and triggers movement if valid
 	const handleTileSelect = useCallback(
 		(tileIndex, direction = null) => {
@@ -351,14 +342,14 @@ function Board({
 			}}
 		>
 			{tiles.map((value, index) => {
-				const position = getTilePosition(index, size, tileSizePx);
 				const isGap = value === null;
 
 				if (isGap) {
 					return (
 						<Gap
 							key="gap"
-							position={position}
+							index={index}
+							size={size}
 							tileSizePx={tileSizePx}
 							onMouseUp={handleMouseUpOnGap}
 						/>
@@ -369,24 +360,12 @@ function Board({
 					!isInputBlocked &&
 					isAdjacent(gapIndex, index, size);
 
-				// Calculate FLIP offset (Invert step)
-				let offsetX = 0;
-				let offsetY = 0;
-
+				// Find previous index for FLIP animation (Invert step)
+				let prevIndex = index; // Default: no movement
 				if (prevPositions.current.length > 0) {
-					// Find where this tile was in previous state
-					const prevIndex = prevPositions.current.indexOf(value);
-					if (prevIndex !== -1 && prevIndex !== index) {
-						// Calculate previous position
-						const prevPosition = getTilePosition(
-							prevIndex,
-							size,
-							tileSizePx,
-						);
-
-						// Calculate offset: where it WAS minus where it IS now
-						offsetX = prevPosition.x - position.x;
-						offsetY = prevPosition.y - position.y;
+					const foundPrevIndex = prevPositions.current.indexOf(value);
+					if (foundPrevIndex !== -1) {
+						prevIndex = foundPrevIndex;
 					}
 				}
 
@@ -395,17 +374,15 @@ function Board({
 						key={value}
 						tileNumber={value}
 						tileIndex={index}
-						isClickable={isClickable}
-						showNumbers={showNumbers}
-						position={position}
-						tileSizePx={tileSizePx}
-						emojiSvgUrl={emojiSvgUrl}
-						boardSize={size}
-						isEntering={isEntering}
-						isGameWon={isGameWon}
-						offsetX={offsetX}
-						offsetY={offsetY}
-						onTransitionEnd={handleTransitionEnd}
+							prevIndex={prevIndex}
+							isClickable={isClickable}
+							showNumbers={showNumbers}
+							tileSizePx={tileSizePx}
+							emojiSvgUrl={emojiSvgUrl}
+							boardSize={size}
+							isEntering={isEntering}
+							isGameWon={isGameWon}
+							onTransitionEnd={() => setIsInputBlocked(false)}
 						{...(isClickable && {
 							onClick: () => handleTileClick(index),
 							onTouchStart: (e) => handleTouchStart(e, index),

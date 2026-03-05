@@ -1,4 +1,4 @@
-function Gap({ position, tileSizePx, onMouseUp }) {
+import { getTilePosition } from "../../utils/boardHelpers";\n\nfunction Gap({ index, size, tileSizePx, onMouseUp }) {\n\tconst position = getTilePosition(index, size, tileSizePx);
 	const style = {
 		position: "absolute",
 		transform: `translate(${position.x}px, ${position.y}px)`,
