@@ -11,10 +11,8 @@
 	user-select: none;
 	box-sizing: border-box;
 	cursor: default;
-	/* Smooth transitions - border and FLIP slide animations */
-	transition:
-		border 0.3s ease,
-		transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+	/* Smooth border transition */
+	transition: border 0.3s ease;
 }
 
 /* Theme-specific text shadows */
@@ -60,6 +58,20 @@
 	to {
 		opacity: 1;
 		transform: scale(1) rotate(0deg);
+	}
+}
+
+/* Slide animation (FLIP technique via CSS) */
+.moving {
+	animation: slide 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+@keyframes slide {
+	from {
+		transform: translate(var(--offset-x), var(--offset-y));
+	}
+	to {
+		transform: translate(0, 0);
 	}
 }
 

@@ -1,5 +1,5 @@
 import styles from "./Tile.module.css";
-import { useEffect, useRef, useLayoutEffect } from "react";
+import { useEffect, useRef } from "react";
 import { getTilePosition as calculateTilePixelPosition } from "../../utils/boardHelpers";
 
 // ===== Helper Functions =====
@@ -95,32 +95,16 @@ function Tile({
 		style["--celebration-delay"] = `${celebrationDelay}ms`;
 	}
 
-	// FLIP animation: Apply offset transform, then remove it to trigger transition
+	// FLIP animation via CSS: Set offset as CSS variables
 	const hasOffset = offsetX !== 0 || offsetY !== 0;
-
-	// Apply FLIP animation via useLayoutEffect (runs BEFORE browser paint)
-	useLayoutEffect(() => {
-		if (hasOffset && tileRef.current) {
-			const element = tileRef.current;
-			
-			// Step 1: Apply offset immediately (Invert - moves tile back to old position)
-			element.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
-			console.log(
-				`[FLIP] Tile ${tileNumber} INVERT:`,
-				element.style.transform,
-			);
-
-			// Step 2: On next frame, remove transform (Play - triggers CSS transition)
-			const rafId = requestAnimationFrame(() => {
-				element.style.transform = "translate(0px, 0px)";
-				console.log(
-					`[FLIP] Tile ${tileNumber} PLAY: translate(0px, 0px)`,
-				);
-			});
-
-			return () => cancelAnimationFrame(rafId);
-		}
-	}, [hasOffset, offsetX, offsetY, tileNumber]);
+	if (hasOffset) {
+		style["--offset-x"] = `${offsetX}px`;
+		style["--offset-y"] = `${offsetY}px`;
+		console.log(`[FLIP] Tile ${tileNumber}:`, {
+			offsetX,
+			offsetY,
+		});
+	}
 
 	// Add emoji background styling
 	if (emojiSvgUrl && tileNumber) {
@@ -140,11 +124,12 @@ function Tile({
 	if (isClickable) classNames.push(styles.clickable);
 	if (isEntering) classNames.push(styles.entering);
 	if (isGameWon) classNames.push(styles.celebrating);
+	if (hasOffset) classNames.push(styles.moving); // Add moving animation
 
-	// Handle transition end - notify parent when slide animation completes
-	const handleTransitionEnd = (e) => {
-		// Only handle transform transitions (FLIP slide animation)
-		if (e.propertyName === "transform" && onTransitionEnd) {
+	// Handle animation end - notify parent when slide animation completes
+	const handleAnimationEnd = (e) => {
+		// Only handle slide animation (not entrance or celebration)
+		if (e.animationName.includes('slide') && onTransitionEnd) {
 			onTransitionEnd();
 		}
 	};
@@ -164,7 +149,7 @@ function Tile({
 			onTouchStart={onTouchStart}
 			onTouchEnd={onTouchEnd}
 			onMouseDown={onMouseDown}
-			onTransitionEnd={handleTransitionEnd}
+			onAnimationEnd={handleAnimationEnd}
 			style={style}
 			data-tile-number={tileNumber}
 		>
