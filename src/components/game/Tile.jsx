@@ -23,6 +23,8 @@ function getBackgroundStyles(row, col, boardSize) {
 function Tile({
 	tileNumber,
 	isMoving,
+	animationDirection,
+	onAnimationEnd,
 	isClickable,
 	onClick,
 	onTouchStart,
@@ -40,10 +42,26 @@ function Tile({
 	celebrationDelay,
 	isWon = false,
 }) {
+	// Base transform to position tile
+	let transform = `translate(${position.x}px, ${position.y}px)`;
+
+	// Add animation transform if tile is moving
+	if (isMoving && animationDirection) {
+		const directionTransforms = {
+			up: "translateY(-100%)",
+			down: "translateY(100%)",
+			left: "translateX(-100%)",
+			right: "translateX(100%)",
+		};
+		transform += ` ${directionTransforms[animationDirection]}`;
+	}
+
 	const style = {
 		position: "absolute",
-		transform: `translate(${position.x}px, ${position.y}px)`,
-		willChange: isMoving ? "transform" : "auto",
+		transform,
+		transition: isMoving
+			? `transform ${animationDuration}ms ease-out`
+			: undefined,
 		width: `${tileSizePx}px`,
 		height: `${tileSizePx}px`,
 		"--tile-x": `${position.x}px`,
@@ -63,11 +81,6 @@ function Tile({
 	// Add celebration animation delay
 	if (celebrating && celebrationDelay !== undefined) {
 		style["--celebration-delay"] = `${celebrationDelay}ms`;
-	}
-
-	// Set transition duration dynamically when moving
-	if (isMoving) {
-		style.transition = `transform ${animationDuration}ms ease-out`;
 	}
 
 	// Add emoji background styling
@@ -98,6 +111,16 @@ function Tile({
 			onTouchStart={onTouchStart}
 			onTouchEnd={onTouchEnd}
 			onMouseDown={onMouseDown}
+			onTransitionEnd={
+				onAnimationEnd
+					? (e) => {
+							// Only respond to transform transitions, not other properties
+							if (e.propertyName === "transform") {
+								onAnimationEnd();
+							}
+						}
+					: undefined
+			}
 			style={style}
 			data-tile-number={tileNumber}
 		>

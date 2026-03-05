@@ -45,12 +45,13 @@ function Board({
 	const [isWon, setIsWon] = useState(false);
 	const [celebrating, setCelebrating] = useState(false);
 	const [isInteracting, setIsInteracting] = useState(true);
+	const [animatingTile, setAnimatingTile] = useState(null); // {value, direction}
 	const boardRef = useRef(null);
 	const touchStartRef = useRef(null);
 	const mouseDragRef = useRef(null);
 	const hasShownWin = useRef(false);
-	const moveTimeoutRef = useRef(null);
 	const winDialogTimeoutRef = useRef(null);
+	const pendingMoveRef = useRef(null); // Store the move to apply after animation
 
 	// Create emoji SVG URL once and memoize it
 	const emojiSvgUrl = useMemo(
@@ -105,16 +106,14 @@ function Board({
 
 	// Reset board when size changes
 	useEffect(() => {
-		// Clear any pending timeouts to prevent race conditions
-		if (moveTimeoutRef.current) {
-			clearTimeout(moveTimeoutRef.current);
-			moveTimeoutRef.current = null;
-		}
+		// Clear any pending state
 		if (winDialogTimeoutRef.current) {
 			clearTimeout(winDialogTimeoutRef.current);
 			winDialogTimeoutRef.current = null;
 		}
 		setIsInteracting(true);
+		setAnimatingTile(null);
+		pendingMoveRef.current = null;
 		// Use initialBoard or savedBoard if available, otherwise scramble
 		// This triggers when user changes difficulty (3x3 <-> 4x4)
 		if (savedBoard) {
@@ -161,41 +160,72 @@ function Board({
 	// ===== Movement Logic =====
 	const gapIndex = getGapIndex(tiles);
 
-	// Core tile movement - Trigram pattern:
-	// stopInteraction → animate → startInteraction
+	// Calculate direction tile needs to move (toward the gap)
+	const getAnimationDirection = useCallback((tileIndex, gapIndex, size) => {
+		const tileRow = Math.floor(tileIndex / size);
+		const tileCol = tileIndex % size;
+		const gapRow = Math.floor(gapIndex / size);
+		const gapCol = gapIndex % size;
+
+		if (gapRow < tileRow) return "up";
+		if (gapRow > tileRow) return "down";
+		if (gapCol < tileCol) return "left";
+		if (gapCol > tileCol) return "right";
+		return null;
+	}, []);
+
+	// Handle animation end - update state after CSS animation completes
+	const handleAnimationEnd = useCallback(() => {
+		if (!pendingMoveRef.current) return;
+
+		const { newTiles } = pendingMoveRef.current;
+
+		// Update state now that animation is complete
+		setTiles(newTiles);
+
+		// Check for win
+		if (checkWin(newTiles, getSolvedState(size))) {
+			setIsWon(true);
+		}
+
+		// Clear animation state
+		setAnimatingTile(null);
+		pendingMoveRef.current = null;
+
+		// startInteraction - re-enable input
+		setIsInteracting(true);
+
+		// Notify parent for Firestore save
+		if (onMove) {
+			onMove(newTiles);
+		}
+	}, [size, onMove]);
+
+	// Core tile movement - your model:
+	// 1. stopInteraction
+	// 2. Start CSS animation (translateX/Y)
+	// 3. onAnimationEnd → setTiles, checkWin, startInteraction
 	const moveTile = useCallback(
 		(tileIndex) => {
 			const currentGapIndex = getGapIndex(tiles);
+			const tileValue = tiles[tileIndex];
 			const newTiles = swapTiles(tiles, tileIndex, currentGapIndex);
+			const direction = getAnimationDirection(
+				tileIndex,
+				currentGapIndex,
+				size,
+			);
 
-			// Update state - CSS transition animates automatically
-			setTiles(newTiles);
-
-			// Check for win
-			if (checkWin(newTiles, getSolvedState(size))) {
-				setIsWon(true);
-			}
-
-			// stopInteraction - remove event listeners during animation
+			// stopInteraction - remove event listeners
 			setIsInteracting(false);
 
-			// Clear any existing timeout
-			if (moveTimeoutRef.current) {
-				clearTimeout(moveTimeoutRef.current);
-			}
+			// Start CSS animation
+			setAnimatingTile({ value: tileValue, direction });
 
-			// startInteraction after animation completes
-			moveTimeoutRef.current = setTimeout(() => {
-				setIsInteracting(true);
-				moveTimeoutRef.current = null;
-
-				// Notify parent for Firestore save
-				if (onMove) {
-					onMove(newTiles);
-				}
-			}, ANIMATION_DURATION_MS);
+			// Store the move to apply after animation
+			pendingMoveRef.current = { newTiles };
 		},
-		[tiles, size, onMove],
+		[tiles, size, getAnimationDirection],
 	);
 
 	// Validates tile selection and triggers movement if valid
@@ -377,11 +407,18 @@ function Board({
 					isInteracting &&
 					isAdjacent(gapIndex, index, size);
 
+				const isAnimating =
+					animatingTile && animatingTile.value === value;
+
 				return (
 					<Tile
 						key={value}
 						tileNumber={value}
-						isMoving={false}
+						isMoving={isAnimating}
+						animationDirection={
+							isAnimating ? animatingTile.direction : null
+						}
+						onAnimationEnd={isAnimating ? handleAnimationEnd : null}
 						isClickable={isClickable}
 						showNumbers={showNumbers}
 						position={position}
