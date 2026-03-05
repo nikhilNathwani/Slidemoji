@@ -112,8 +112,7 @@ function Tile({
 		if (hasOffset) {
 			setIsAnimating(true);
 		}
-	}, [hasOffset, offsetX, offsetY]);, [hasOffset, offsetX, offsetY]);});
-	}
+	}, [hasOffset, offsetX, offsetY]);
 
 	// Add emoji background styling
 	if (emojiSvgUrl && tileNumber) {
@@ -128,7 +127,6 @@ function Tile({
 		style.backgroundOrigin = "border-box";
 		style.backgroundClip = "border-box";
 	}
-// Add moving class with unique key to force animation restart
 
 	const classNames = [styles.tile];
 	if (isClickable) classNames.push(styles.clickable);
@@ -144,6 +142,7 @@ function Tile({
 			if (onTransitionEnd) {
 				onTransitionEnd();
 			}
+		}
 	};
 
 	// If no offset, unblock input immediately (no animation to wait for)
