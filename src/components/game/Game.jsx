@@ -19,7 +19,7 @@ function Game({
 	onWin,
 	onShowWinDialog,
 	showNumbers,
-	isWon,
+	isGameWon,
 	onSolveRef,
 	isEntering,
 	showControls,
@@ -62,7 +62,13 @@ function Game({
 		// REQUIRE BOTH PUZZLE DATA AND USER DATA
 		// In dev mode: userData is mock data, puzzleData is mock puzzle
 		// In production: userData is from Firestore, puzzleData is from Firestore
-		if (!puzzleData || !userData) return; // Wait for both puzzle data and user data
+		if (!puzzleData || !userData) {
+			console.log("Waiting for data:", {
+				puzzleData: !!puzzleData,
+				userData: !!userData,
+			});
+			return; // Wait for both puzzle data and user data
+		}
 
 		// Check if user has a saved game for this puzzle+difficulty
 		const savedGame = userData?.gameState?.[puzzleId]?.[difficulty];
@@ -164,7 +170,7 @@ function Game({
 		setSavedBoard(null); // Clear saved board to force fresh start
 
 		if (onShuffle) {
-			onShuffle(); // Reset isWon in parent (App)
+			onShuffle(); // Reset isGameWon in parent (App)
 		}
 		if (restartRef.current) {
 			restartRef.current(); // Trigger Board's shuffle function
@@ -204,7 +210,7 @@ function Game({
 						size={gridSize}
 						onWin={handleWin}
 						onShowWinDialog={onShowWinDialog}
-						showNumbers={showNumbers && !isWon}
+						showNumbers={showNumbers && !isGameWon}
 						onSolveRef={solveRef}
 						onShuffleRef={restartRef}
 						dailyEmoji={dailyEmoji.emoji}

@@ -42,8 +42,7 @@ function Board({
 		}
 		return scramblePuzzle(size); // Fallback (shouldn't happen)
 	});
-	const [isWon, setIsWon] = useState(false);
-	const [isCelebrating, setIsCelebrating] = useState(false);
+	const [isGameWon, setIsGameWon] = useState(false);
 	const [isInputBlocked, setIsInputBlocked] = useState(false);
 	const prevPositions = useRef([]); // Track previous tile positions for FLIP animation
 	const boardRef = useRef(null);
@@ -79,18 +78,16 @@ function Board({
 	// Solve function
 	const handleSolve = useCallback(() => {
 		setTiles(getSolvedState(size));
-		setIsWon(true);
+		setIsGameWon(true);
 		hasShownWin.current = false;
-		setIsCelebrating(true);
 	}, [size]);
 
 	// Shuffle function - restart the puzzle with the same initial board
 	const handleShuffle = useCallback(() => {
 		// Use initialBoard if available (persistence mode), otherwise generate random
 		setTiles(initialBoard || scramblePuzzle(size));
-		setIsWon(false);
+		setIsGameWon(false);
 		hasShownWin.current = false;
-		setIsCelebrating(false);
 	}, [size, initialBoard]);
 
 	// Expose functions to parent
@@ -121,9 +118,8 @@ function Board({
 		} else {
 			setTiles(scramblePuzzle(size));
 		}
-		setIsWon(false);
+		setIsGameWon(false);
 		hasShownWin.current = false;
-		setIsCelebrating(false);
 	}, [size, initialBoard, savedBoard]);
 
 	// Handle window resize
@@ -137,12 +133,10 @@ function Board({
 
 	// Show win dialog (only once per win) - delayed to allow trophy transformation and celebration
 	useEffect(() => {
-		if (isWon && onWin && onShowWinDialog && !hasShownWin.current) {
+		if (isGameWon && onWin && onShowWinDialog && !hasShownWin.current) {
 			hasShownWin.current = true;
 			// Call onWin immediately to trigger trophy transformation
 			onWin();
-			// Start celebration
-			setIsCelebrating(true);
 			// Delay to show trophy transformation and celebration before dialog
 			// Clear any existing timeout
 			if (winDialogTimeoutRef.current) {
@@ -153,7 +147,7 @@ function Board({
 				winDialogTimeoutRef.current = null;
 			}, 2500); // Delay win dialog by 2500ms to allow celebration and trophy transformation
 		}
-	}, [isWon, onWin, onShowWinDialog]);
+	}, [isGameWon, onWin, onShowWinDialog]);
 
 	// ===== Movement Logic =====
 	const gapIndex = getGapIndex(tiles);
@@ -172,7 +166,12 @@ function Board({
 
 			// Check for win
 			if (checkWin(newTiles, getSolvedState(size))) {
-				setIsWon(true);
+				setIsGameWon(true);
+			}
+
+			// Notify parent for Firestore save immediately (not after animation)
+			if (onMove) {
+				onMove(newTiles);
 			}
 
 			// Block input during animation
@@ -180,7 +179,7 @@ function Board({
 
 			// Note: isInputBlocked will be cleared by onTransitionEnd in Tile
 		},
-		[tiles, size],
+		[tiles, size, onMove],
 	);
 
 	// Handle animation end - called by each Tile's onTransitionEnd
@@ -188,19 +187,14 @@ function Board({
 		// Re-enable input (only once when first tile finishes)
 		if (isInputBlocked) {
 			setIsInputBlocked(false);
-
-			// Notify parent for Firestore save
-			if (onMove) {
-				onMove(tiles);
-			}
 		}
-	}, [isInputBlocked, tiles, onMove]);
+	}, [isInputBlocked]);
 
 	// Validates tile selection and triggers movement if valid
 	const handleTileSelect = useCallback(
 		(tileIndex, direction = null) => {
 			// Block if game won or input blocked
-			if (isWon || isInputBlocked) {
+			if (isGameWon || isInputBlocked) {
 				return;
 			}
 
@@ -224,7 +218,7 @@ function Board({
 
 			moveTile(targetTileIndex);
 		},
-		[tiles, isWon, isInputBlocked, size, moveTile],
+		[tiles, isGameWon, isInputBlocked, size, moveTile],
 	);
 
 	// ===== Event Handlers =====
@@ -251,11 +245,11 @@ function Board({
 
 	useEffect(() => {
 		// Only attach listener when input is not blocked
-		if (!isInputBlocked && !isWon) {
+		if (!isInputBlocked && !isGameWon) {
 			window.addEventListener("keydown", handleKeyPress);
 			return () => window.removeEventListener("keydown", handleKeyPress);
 		}
-	}, [handleKeyPress, isInputBlocked, isWon]);
+	}, [handleKeyPress, isInputBlocked, isGameWon]);
 
 	// Touch/swipe controls
 	const handleTouchStart = (e, tileIndex) => {
@@ -350,7 +344,7 @@ function Board({
 	return (
 		<div
 			ref={boardRef}
-			className={`${styles.board}${isWon ? " " + styles.won : ""}`}
+			className={`${styles.board}${isGameWon ? " " + styles.won : ""}`}
 			style={{
 				width: `${boardSizePx}px`,
 				height: `${boardSizePx}px`,
@@ -371,7 +365,7 @@ function Board({
 					);
 				}
 				const isClickable =
-					!isWon &&
+					!isGameWon &&
 					!isInputBlocked &&
 					isAdjacent(gapIndex, index, size);
 
@@ -400,6 +394,7 @@ function Board({
 					<Tile
 						key={value}
 						tileNumber={value}
+						tileIndex={index}
 						isClickable={isClickable}
 						showNumbers={showNumbers}
 						position={position}
@@ -407,9 +402,7 @@ function Board({
 						emojiSvgUrl={emojiSvgUrl}
 						boardSize={size}
 						isEntering={isEntering}
-						entranceDelay={index * 50}
-						isCelebrating={isCelebrating}
-						celebrationDelay={index * 60}
+						isGameWon={isGameWon}
 						offsetX={offsetX}
 						offsetY={offsetY}
 						onTransitionEnd={handleTransitionEnd}

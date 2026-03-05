@@ -22,6 +22,7 @@ function getBackgroundStyles(row, col, boardSize) {
 
 function Tile({
 	tileNumber,
+	tileIndex,
 	isClickable,
 	onClick,
 	onTouchStart,
@@ -33,13 +34,14 @@ function Tile({
 	emojiSvgUrl,
 	boardSize,
 	isEntering,
-	entranceDelay,
-	isCelebrating,
-	celebrationDelay,
+	isGameWon,
 	offsetX = 0,
 	offsetY = 0,
 	onTransitionEnd,
 }) {
+	// Calculate delays from tile index
+	const entranceDelay = tileIndex * 50; // 50ms stagger for entrance
+	const celebrationDelay = tileIndex * 60; // 60ms stagger for celebration
 	const style = {
 		position: "absolute",
 		left: `${position.x}px`,
@@ -58,7 +60,7 @@ function Tile({
 		style["--entrance-delay"] = `${entranceDelay}ms`;
 	}
 
-	if (isCelebrating && celebrationDelay !== undefined) {
+	if (isGameWon && celebrationDelay !== undefined) {
 		style["--celebration-delay"] = `${celebrationDelay}ms`;
 	}
 
@@ -85,7 +87,7 @@ function Tile({
 	const classNames = [styles.tile];
 	if (isClickable) classNames.push(styles.clickable);
 	if (isEntering) classNames.push(styles.entering);
-	if (isCelebrating) classNames.push(styles.celebrating);
+	if (isGameWon) classNames.push(styles.celebrating);
 
 	// Handle transition end - notify parent when slide animation completes
 	const handleTransitionEnd = (e) => {
