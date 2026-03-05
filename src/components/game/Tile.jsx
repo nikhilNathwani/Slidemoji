@@ -1,5 +1,5 @@
 import styles from "./Tile.module.css";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useLayoutEffect } from "react";
 import { getTilePosition as calculateTilePixelPosition } from "../../utils/boardHelpers";
 
 // ===== Helper Functions =====
@@ -98,8 +98,8 @@ function Tile({
 	// FLIP animation: Apply offset transform, then remove it to trigger transition
 	const hasOffset = offsetX !== 0 || offsetY !== 0;
 
-	// Apply FLIP animation via useEffect (not inline style)
-	useEffect(() => {
+	// Apply FLIP animation via useLayoutEffect (runs BEFORE browser paint)
+	useLayoutEffect(() => {
 		if (hasOffset && tileRef.current) {
 			const element = tileRef.current;
 			
