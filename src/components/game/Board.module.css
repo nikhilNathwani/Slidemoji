@@ -2,9 +2,11 @@
 	background-color: var(--surface-primary);
 	padding: 0;
 	margin: 0 auto;
-	position: relative;
 	touch-action: none;
 	border: 8px ridge var(--border-primary);
 	border-radius: 8px;
 	box-sizing: content-box;
+	/* CSS Grid layout - Framer Motion animates grid changes */
+	display: grid;
+	gap: 0;
 }

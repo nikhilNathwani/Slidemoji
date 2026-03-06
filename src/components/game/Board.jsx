@@ -72,7 +72,6 @@ function Board({
 	}, [size]);
 
 	const [boardSizePx, setBoardSizePx] = useState(getResponsiveBoardSize());
-	const tileSizePx = boardSizePx / size;
 
 	// Solve function
 	const handleSolve = useCallback(() => {
@@ -355,21 +354,15 @@ function Board({
 			style={{
 				width: `${boardSizePx}px`,
 				height: `${boardSizePx}px`,
+				gridTemplateColumns: `repeat(${size}, 1fr)`,
+				gridTemplateRows: `repeat(${size}, 1fr)`,
 			}}
 		>
 			{tiles.map((value, index) => {
 				const isGap = value === null;
 
 				if (isGap) {
-					return (
-						<Gap
-							key="gap"
-							index={index}
-							size={size}
-							tileSizePx={tileSizePx}
-							onMouseUp={handleMouseUpOnGap}
-						/>
-					);
+					return <Gap key="gap" onMouseUp={handleMouseUpOnGap} />;
 				}
 				const isClickable =
 					!isGameWon &&
@@ -383,7 +376,6 @@ function Board({
 						tileIndex={index}
 						isClickable={isClickable}
 						showNumbers={showNumbers}
-						tileSizePx={tileSizePx}
 						emojiSvgUrl={emojiSvgUrl}
 						boardSize={size}
 						isEntering={isEntering}

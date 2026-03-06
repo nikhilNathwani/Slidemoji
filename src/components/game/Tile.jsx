@@ -1,6 +1,5 @@
 import styles from "./Tile.module.css";
 import { motion } from "framer-motion";
-import { getTilePosition as calculateTilePixelPosition } from "../../utils/boardHelpers";
 
 // ===== Helper Functions =====
 
@@ -31,31 +30,17 @@ function Tile({
 	onTouchEnd,
 	onMouseDown,
 	showNumbers,
-	tileSizePx,
 	emojiSvgUrl,
 	boardSize,
 	isEntering,
 	isGameWon,
 	onTransitionEnd,
 }) {
-	// Calculate position
-	const position = calculateTilePixelPosition(
-		tileIndex,
-		boardSize,
-		tileSizePx,
-	);
-
 	// Calculate delays from tile index
 	const entranceDelay = tileIndex * 0.05; // 50ms stagger in seconds
 	const celebrationDelay = tileIndex * 0.06; // 60ms stagger in seconds
 
-	const style = {
-		position: "absolute",
-		left: `${position.x}px`,
-		top: `${position.y}px`,
-		width: `${tileSizePx}px`,
-		height: `${tileSizePx}px`,
-	};
+	const style = {};
 
 	// Add emoji background styling
 	if (emojiSvgUrl && tileNumber) {
