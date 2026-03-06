@@ -77,9 +77,9 @@ function Tile({
 	// Framer Motion animation variants
 	const variants = {
 		entering: {
-			opacity: [0, 1],
-			scale: [0.3, 1],
-			rotate: [180, 0],
+			opacity: 1,
+			scale: 1,
+			rotate: 0,
 			transition: {
 				duration: 0.6,
 				delay: entranceDelay,
@@ -95,7 +95,12 @@ function Tile({
 				ease: "easeInOut",
 			},
 		},
-		normal: {},
+		normal: {
+			opacity: 1,
+			scale: 1,
+			rotate: 0,
+			y: 0,
+		},
 	};
 
 	// Determine current animation state
@@ -103,11 +108,18 @@ function Tile({
 	if (isEntering) animateState = "entering";
 	else if (isGameWon) animateState = "celebrating";
 
+	// Initial state for entrance animation
+	const initialState = isEntering
+		? { opacity: 0, scale: 0.3, rotate: 180 }
+		: false;
+
 	return (
 		<motion.div
+			layoutId={`tile-${tileNumber}`} // Stable ID for layout animations
 			layout // Auto-animates position changes!
-			initial={isEntering ? { opacity: 0, scale: 0.3, rotate: 180 } : false}
-			animate={variants[animateState]}
+			initial={initialState}
+			animate={animateState}
+			variants={variants}
 			transition={{
 				layout: { duration: 0.3, ease: "easeInOut" },
 			}}
