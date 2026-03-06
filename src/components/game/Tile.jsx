@@ -70,7 +70,7 @@ function Tile({
 					delay: entranceDelay,
 					ease: "easeOut",
 				},
-		  }
+			}
 		: undefined;
 
 	const celebrationAnimation = isGameWon
@@ -82,7 +82,7 @@ function Tile({
 					delay: celebrationDelay,
 					ease: "easeInOut",
 				},
-		  }
+			}
 		: undefined;
 
 	return (
