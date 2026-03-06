@@ -377,7 +377,6 @@ function Board({
 						showNumbers={showNumbers}
 						emojiSvgUrl={emojiSvgUrl}
 						boardSize={size}
-
 						isGameWon={isGameWon}
 						onTransitionEnd={unblockInput}
 						{...(isClickable && {

@@ -23,7 +23,6 @@ function getBackgroundStyles(row, col, boardSize) {
 
 function Tile({
 	tileNumber,
-	tileIndex,
 	isClickable,
 	onClick,
 	onTouchStart,
@@ -32,7 +31,6 @@ function Tile({
 	showNumbers,
 	emojiSvgUrl,
 	boardSize,
-	isGameWon,
 	onTransitionEnd,
 }) {
 	const style = {};

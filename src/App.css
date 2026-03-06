@@ -112,7 +112,7 @@ html {
 }
 
 .landing-subtitle {
-	font-size: 1.35rem;
+	font-size: 1.625rem;
 	color: var(--text-secondary);
 	margin: 0;
 	max-width: 500px;
@@ -133,7 +133,7 @@ html {
 	display: flex;
 	align-items: center;
 	gap: 12px;
-	margin-top: 16px;
+	margin-top: 2.5rem;
 }
 
 .play-button:hover {
@@ -209,15 +209,16 @@ html {
 	}
 
 	.landing-title {
-		font-size: 3rem;
+		font-size: 3.75rem;
 	}
 
 	.landing-subtitle {
-		font-size: 1.1rem;
+		font-size: 1.375rem;
 	}
 
 	.play-button {
 		padding: 14px 40px;
 		font-size: 1.2rem;
+		margin-top: 2.25rem;
 	}
 }
