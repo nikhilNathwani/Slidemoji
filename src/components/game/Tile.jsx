@@ -59,52 +59,37 @@ function Tile({
 	const classNames = [styles.tile];
 	if (isClickable) classNames.push(styles.clickable);
 
-	// Framer Motion animation variants
-	const variants = {
-		entering: {
-			opacity: 1,
-			scale: 1,
-			rotate: 0,
-			transition: {
-				duration: 0.6,
-				delay: entranceDelay,
-				ease: "easeOut",
-			},
-		},
-		celebrating: {
-			y: [0, -20, -15, 0, 0],
-			scale: [1, 1.1, 1.05, 1.02, 1],
-			transition: {
-				duration: 0.6,
-				delay: celebrationDelay,
-				ease: "easeInOut",
-			},
-		},
-		normal: {
-			opacity: 1,
-			scale: 1,
-			rotate: 0,
-			y: 0,
-		},
-	};
+	// Animation configuration
+	const entranceAnimation = isEntering
+		? {
+				opacity: [0, 1],
+				scale: [0.3, 1],
+				rotate: [180, 0],
+				transition: {
+					duration: 0.6,
+					delay: entranceDelay,
+					ease: "easeOut",
+				},
+		  }
+		: undefined;
 
-	// Determine current animation state
-	let animateState = "normal";
-	if (isEntering) animateState = "entering";
-	else if (isGameWon) animateState = "celebrating";
-
-	// Initial state for entrance animation
-	const initialState = isEntering
-		? { opacity: 0, scale: 0.3, rotate: 180 }
-		: false;
+	const celebrationAnimation = isGameWon
+		? {
+				y: [0, -20, -15, 0, 0],
+				scale: [1, 1.1, 1.05, 1.02, 1],
+				transition: {
+					duration: 0.6,
+					delay: celebrationDelay,
+					ease: "easeInOut",
+				},
+		  }
+		: undefined;
 
 	return (
 		<motion.div
-			layoutId={`tile-${tileNumber}`} // Stable ID for layout animations
-			layout // Auto-animates position changes!
-			initial={initialState}
-			animate={animateState}
-			variants={variants}
+			layoutId={`tile-${tileNumber}`}
+			layout
+			animate={celebrationAnimation || entranceAnimation}
 			transition={{
 				layout: { duration: 0.3, ease: "easeInOut" },
 			}}
