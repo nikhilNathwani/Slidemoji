@@ -32,8 +32,6 @@ function App() {
 	const todaysPuzzleNumber = getTodaysPuzzleNumber();
 
 	const [showLanding, setShowLanding] = useState(true);
-	const [isEntering, setIsEntering] = useState(false);
-	const [showControls, setShowControls] = useState(false);
 	const [gridSize, setGridSize] = useState(DEFAULT_GRID_SIZE);
 	const [showSettings, setShowSettings] = useState(false);
 	const [showWinDialog, setShowWinDialog] = useState(false);
@@ -216,23 +214,8 @@ function App() {
 		}
 	};
 
-	// Handle entrance animation timing
-	useEffect(() => {
-		if (isEntering) {
-			// Tiles animate in over ~800ms (staggered)
-			// Wait for tiles to finish, then show controls
-			const timer = setTimeout(() => {
-				setShowControls(true);
-				setIsEntering(false);
-			}, 1000); // Adjust timing as needed
-			return () => clearTimeout(timer);
-		}
-	}, [isEntering]);
-
 	const handlePlay = () => {
 		setShowLanding(false);
-		setIsEntering(true);
-		setShowControls(false);
 	};
 
 	if (showLanding) {
@@ -257,8 +240,6 @@ function App() {
 				showNumbers={showNumbers}
 				isWon={isWon}
 				onSolveRef={solveRef}
-				isEntering={isEntering}
-				showControls={showControls}
 				onShuffle={() => setIsWon(false)}
 				highestEarnedDifficulty={highestEarnedDifficulty}
 				userData={userData}

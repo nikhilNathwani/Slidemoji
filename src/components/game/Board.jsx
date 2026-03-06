@@ -24,7 +24,6 @@ function Board({
 	onSolveRef,
 	onShuffleRef,
 	dailyEmoji,
-	isEntering,
 	// Persistence props - from Game component
 	initialBoard, // The starting board from Firestore (for this puzzle+difficulty)
 	savedBoard, // Previously saved board state (resume game), or null for new game
@@ -378,7 +377,7 @@ function Board({
 						showNumbers={showNumbers}
 						emojiSvgUrl={emojiSvgUrl}
 						boardSize={size}
-						isEntering={isEntering}
+
 						isGameWon={isGameWon}
 						onTransitionEnd={unblockInput}
 						{...(isClickable && {

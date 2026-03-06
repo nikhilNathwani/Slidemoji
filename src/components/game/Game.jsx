@@ -22,8 +22,6 @@ function Game({
 	showNumbers,
 	isGameWon,
 	onSolveRef,
-	isEntering,
-	showControls,
 	onShuffle,
 	highestEarnedDifficulty = 0,
 	userData,
@@ -203,7 +201,7 @@ function Game({
 						trophyName={dailyEmoji.name}
 						isEarned={highestEarnedDifficulty > 0}
 						difficulty={highestEarnedDifficulty || gridSize}
-						visible={showControls}
+						visible={true}
 					/>
 				</div>
 				{!initialBoard ? (
@@ -219,7 +217,6 @@ function Game({
 						onSolveRef={solveRef}
 						onShuffleRef={restartRef}
 						dailyEmoji={dailyEmoji.emoji}
-						isEntering={isEntering}
 						initialBoard={initialBoard}
 						savedBoard={savedBoard}
 						onMove={handleMove}
@@ -228,7 +225,7 @@ function Game({
 
 				<div className={styles.restartContainer}>
 					<button
-						className={`${styles.restartButton} ${showControls ? styles.visible : styles.hidden}`}
+						className={`${styles.restartButton} ${styles.visible}`}
 						onClick={handleRestartClick}
 						title="Restart Puzzle"
 					>

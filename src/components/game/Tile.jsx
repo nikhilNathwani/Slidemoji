@@ -32,14 +32,9 @@ function Tile({
 	showNumbers,
 	emojiSvgUrl,
 	boardSize,
-	isEntering,
 	isGameWon,
 	onTransitionEnd,
 }) {
-	// Calculate delays from tile index
-	const entranceDelay = tileIndex * 0.05; // 50ms stagger in seconds
-	const celebrationDelay = tileIndex * 0.06; // 60ms stagger in seconds
-
 	const style = {};
 
 	// Add emoji background styling
@@ -59,49 +54,16 @@ function Tile({
 	const classNames = [styles.tile];
 	if (isClickable) classNames.push(styles.clickable);
 
-	// Animation configuration
-	const entranceAnimation = isEntering
-		? {
-				opacity: [0, 1],
-				scale: [0.3, 1],
-				rotate: [180, 0],
-				transition: {
-					duration: 0.6,
-					delay: entranceDelay,
-					ease: "easeOut",
-				},
-			}
-		: undefined;
-
-	const celebrationAnimation = isGameWon
-		? {
-				y: [0, -20, -15, 0, 0],
-				scale: [1, 1.1, 1.05, 1.02, 1],
-				transition: {
-					duration: 0.6,
-					delay: celebrationDelay,
-					ease: "easeInOut",
-				},
-			}
-		: undefined;
-
 	return (
 		<motion.div
 			layoutId={`tile-${tileNumber}`}
 			layout
-			animate={celebrationAnimation || entranceAnimation}
 			transition={{
 				layout: { duration: 0.3, ease: "easeInOut" },
 			}}
 			onLayoutAnimationComplete={() => {
 				// Called when layout (position) animation completes
-				if (!isEntering && !isGameWon && onTransitionEnd) {
-					onTransitionEnd();
-				}
-			}}
-			onAnimationComplete={() => {
-				// Called when entrance/celebration animation completes
-				if ((isEntering || isGameWon) && onTransitionEnd) {
+				if (onTransitionEnd) {
 					onTransitionEnd();
 				}
 			}}
