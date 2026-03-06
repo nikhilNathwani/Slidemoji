@@ -11,7 +11,7 @@ import {
 	getTileIndexFromDirection,
 } from "../../utils/boardHelpers";
 import { createEmojiSvgUrl } from "../../utils/emoji";
-import { ANIMATION_DURATION_MS } from "../../constants";
+import { playTileMoveSound } from "../../utils/sound";
 import styles from "./Board.module.css";
 
 // ===== Main Component =====
@@ -28,6 +28,7 @@ function Board({
 	initialBoard, // The starting board from Firestore (for this puzzle+difficulty)
 	savedBoard, // Previously saved board state (resume game), or null for new game
 	onMove, // Callback to notify parent when board changes (for Firestore saves)
+	soundEnabled, // Whether to play sound effects
 }) {
 	// Initialize board state from savedBoard (resume) or initialBoard (new game)
 	// Falls back to scramblePuzzle if neither provided (shouldn't happen in production)
@@ -38,6 +39,7 @@ function Board({
 		if (initialBoard) {
 			return initialBoard; // Start fresh with provided board
 		}
+		console.log("Falling back to random scramble");
 		return scramblePuzzle(size); // Fallback (shouldn't happen)
 	});
 	const [isGameWon, setIsGameWon] = useState(false);
@@ -47,7 +49,6 @@ function Board({
 	const mouseDragRef = useRef(null);
 	const hasShownWin = useRef(false);
 	const winDialogTimeoutRef = useRef(null);
-	const inputUnblockTimeoutRef = useRef(null);
 
 	// Create emoji SVG URL once and memoize it
 	const emojiSvgUrl = useMemo(
@@ -152,12 +153,8 @@ function Board({
 	// ===== Movement Logic =====
 	const gapIndex = getGapIndex(tiles);
 
-	// Unblock input (called by Tile's onTransitionEnd or by timeout)
+	// Unblock input (called by Tile's onLayoutAnimationComplete)
 	const unblockInput = useCallback(() => {
-		if (inputUnblockTimeoutRef.current) {
-			clearTimeout(inputUnblockTimeoutRef.current);
-			inputUnblockTimeoutRef.current = null;
-		}
 		setIsInputBlocked(false);
 	}, []);
 
@@ -175,24 +172,20 @@ function Board({
 				setIsGameWon(true);
 			}
 
+			// Play tile move sound
+			if (soundEnabled) {
+				playTileMoveSound();
+			}
+
 			// Notify parent for Firestore save immediately (not after animation)
 			if (onMove) {
 				onMove(newTiles);
 			}
 
-			// Block input during animation
+			// Block input during animation (unblocked by onLayoutAnimationComplete)
 			setIsInputBlocked(true);
-
-			// Safety: Unblock input after animation duration (in case transitionEnd doesn't fire)
-			if (inputUnblockTimeoutRef.current) {
-				clearTimeout(inputUnblockTimeoutRef.current);
-			}
-			inputUnblockTimeoutRef.current = setTimeout(() => {
-				setIsInputBlocked(false);
-				inputUnblockTimeoutRef.current = null;
-			}, ANIMATION_DURATION_MS);
 		},
-		[tiles, size, onMove],
+		[tiles, size, onMove, soundEnabled],
 	);
 
 	// Validates tile selection and triggers movement if valid

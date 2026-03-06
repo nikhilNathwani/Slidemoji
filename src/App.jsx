@@ -17,6 +17,7 @@ import {
 	DEFAULT_GRID_SIZE,
 	DEFAULT_DARK_MODE,
 	DEFAULT_SHOW_NUMBERS,
+	DEFAULT_SOUND_ENABLED,
 } from "./constants";
 import {
 	isDevMode,
@@ -39,6 +40,7 @@ function App() {
 	const [showNumbers, setShowNumbers] = useState(DEFAULT_SHOW_NUMBERS);
 	const [isWon, setIsWon] = useState(false);
 	const [darkMode, setDarkMode] = useState(DEFAULT_DARK_MODE);
+	const [soundEnabled, setSoundEnabled] = useState(DEFAULT_SOUND_ENABLED);
 	const [showDifficultyConfirm, setShowDifficultyConfirm] = useState(false);
 	const [pendingSize, setPendingSize] = useState(null);
 	const [userData, setUserData] = useState(null);
@@ -72,6 +74,9 @@ function App() {
 			if (mockUser.preferences?.darkMode !== undefined) {
 				setDarkMode(mockUser.preferences.darkMode);
 			}
+			if (mockUser.preferences?.soundEnabled !== undefined) {
+				setSoundEnabled(mockUser.preferences.soundEnabled);
+			}
 			return;
 		}
 
@@ -81,9 +86,12 @@ function App() {
 				.then((data) => {
 					console.log("[AUTH] User data loaded:", data);
 					setUserData(data);
-					// Apply saved preferences (dark mode)
+					// Apply saved preferences
 					if (data?.preferences?.darkMode !== undefined) {
 						setDarkMode(data.preferences.darkMode);
+					}
+					if (data?.preferences?.soundEnabled !== undefined) {
+						setSoundEnabled(data.preferences.soundEnabled);
 					}
 				})
 				.catch((error) => {
@@ -214,6 +222,18 @@ function App() {
 		}
 	};
 
+	const handleSoundEnabledChange = (newSoundEnabled) => {
+		setSoundEnabled(newSoundEnabled);
+		// Persist to Firestore if user is signed in
+		if (user) {
+			updateUserPreferences(user.uid, {
+				soundEnabled: newSoundEnabled,
+			}).catch((error) => {
+				console.error("Error saving sound preference:", error);
+			});
+		}
+	};
+
 	const handlePlay = () => {
 		setShowLanding(false);
 	};
@@ -246,6 +266,7 @@ function App() {
 				puzzleData={puzzleData}
 				puzzleId={todaysPuzzleNumber}
 				difficulty={gridSize}
+				soundEnabled={soundEnabled}
 			/>
 
 			<Dialog
@@ -257,8 +278,10 @@ function App() {
 					gridSize={gridSize}
 					darkMode={darkMode}
 					showNumbers={showNumbers}
+					soundEnabled={soundEnabled}
 					onDarkModeChange={handleDarkModeChange}
 					onShowNumbersChange={setShowNumbers}
+					onSoundEnabledChange={handleSoundEnabledChange}
 					onGridSizeChange={handleSizeChange}
 					onSolve={handleSolve}
 				/>

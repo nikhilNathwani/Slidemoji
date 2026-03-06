@@ -10,6 +10,8 @@ function SettingsContent({
 	onDarkModeChange,
 	showNumbers,
 	onShowNumbersChange,
+	soundEnabled,
+	onSoundEnabledChange,
 	onSolve,
 }) {
 	const difficulties = DIFFICULTIES;
@@ -44,6 +46,13 @@ function SettingsContent({
 				<Toggle
 					isOn={showNumbers}
 					onToggle={() => onShowNumbersChange(!showNumbers)}
+				/>
+			</div>
+			<div className={styles.settingsItem}>
+				<label className={styles.settingsLabel}>Sound Effects</label>
+				<Toggle
+					isOn={soundEnabled}
+					onToggle={() => onSoundEnabledChange(!soundEnabled)}
 				/>
 			</div>
 			<div className={styles.settingsItem}>
