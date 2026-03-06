@@ -1,5 +1,5 @@
 import styles from "./Tile.module.css";
-import { useRef, useLayoutEffect } from "react";
+import { motion } from "framer-motion";
 import { getTilePosition as calculateTilePixelPosition } from "../../utils/boardHelpers";
 
 // ===== Helper Functions =====
@@ -38,67 +38,24 @@ function Tile({
 	isGameWon,
 	onTransitionEnd,
 }) {
-	const tileRef = useRef(null);
-	const prevPositionRef = useRef({ x: 0, y: 0 });
-
-	// Calculate delays from tile index
-	const entranceDelay = tileIndex * 50; // 50ms stagger for entrance
-	const celebrationDelay = tileIndex * 60; // 60ms stagger for celebration
-
-	// Calculate position (CSS transitions will handle smooth movement)
+	// Calculate position
 	const position = calculateTilePixelPosition(
 		tileIndex,
 		boardSize,
 		tileSizePx,
 	);
 
-	// For smooth transitions: Apply old position first, then new position
-	// This ensures CSS sees the "before" state to transition from
-	useLayoutEffect(() => {
-		if (tileRef.current && !isEntering && !isGameWon) {
-			const element = tileRef.current;
-			const oldPos = prevPositionRef.current;
-			const newPos = position;
+	// Calculate delays from tile index
+	const entranceDelay = tileIndex * 0.05; // 50ms stagger in seconds
+	const celebrationDelay = tileIndex * 0.06; // 60ms stagger in seconds
 
-			// If position changed, apply old position first, then new
-			if (oldPos.x !== newPos.x || oldPos.y !== newPos.y) {
-				// Step 1: Set old position (no transition yet)
-				element.style.transition = "none";
-				element.style.setProperty("--x", `${oldPos.x}px`);
-				element.style.setProperty("--y", `${oldPos.y}px`);
-
-				// Step 2: Force reflow so browser paints old position
-				element.offsetHeight; // Read to force layout
-
-				// Step 3: Re-enable transition and set new position
-				element.style.transition = "";
-				element.style.setProperty("--x", `${newPos.x}px`);
-				element.style.setProperty("--y", `${newPos.y}px`);
-			}
-
-			// Update ref for next time
-			prevPositionRef.current = newPos;
-		}
-	}, [position, isEntering, isGameWon]);
-
-	// Use CSS variables for position so keyframe animations can access them
 	const style = {
 		position: "absolute",
+		left: `${position.x}px`,
+		top: `${position.y}px`,
 		width: `${tileSizePx}px`,
 		height: `${tileSizePx}px`,
-		"--x": `${position.x}px`,
-		"--y": `${position.y}px`,
 	};
-
-	// Start invisible if entering (before animation starts)
-	if (isEntering) {
-		style.opacity = 0;
-		style["--entrance-delay"] = `${entranceDelay}ms`;
-	}
-
-	if (isGameWon) {
-		style["--celebration-delay"] = `${celebrationDelay}ms`;
-	}
 
 	// Add emoji background styling
 	if (emojiSvgUrl && tileNumber) {
@@ -116,39 +73,66 @@ function Tile({
 
 	const classNames = [styles.tile];
 	if (isClickable) classNames.push(styles.clickable);
-	if (isEntering) classNames.push(styles.entering);
-	if (isGameWon) classNames.push(styles.celebrating);
 
-	// Handle animation end (for entrance/celebration)
-	const handleAnimationEnd = () => {
-		if (onTransitionEnd) {
-			onTransitionEnd();
-		}
+	// Framer Motion animation variants
+	const variants = {
+		entering: {
+			opacity: [0, 1],
+			scale: [0.3, 1],
+			rotate: [180, 0],
+			transition: {
+				duration: 0.6,
+				delay: entranceDelay,
+				ease: "easeOut",
+			},
+		},
+		celebrating: {
+			y: [0, -20, -15, 0, 0],
+			scale: [1, 1.1, 1.05, 1.02, 1],
+			transition: {
+				duration: 0.6,
+				delay: celebrationDelay,
+				ease: "easeInOut",
+			},
+		},
+		normal: {},
 	};
 
-	// Handle transition end (for slide movements)
-	const handleTransitionEnd = (e) => {
-		// Only handle transform transitions (not border or other properties)
-		if (e.propertyName === "transform" && onTransitionEnd) {
-			onTransitionEnd();
-		}
-	};
+	// Determine current animation state
+	let animateState = "normal";
+	if (isEntering) animateState = "entering";
+	else if (isGameWon) animateState = "celebrating";
 
 	return (
-		<div
-			ref={tileRef}
+		<motion.div
+			layout // Auto-animates position changes!
+			initial={isEntering ? { opacity: 0, scale: 0.3, rotate: 180 } : false}
+			animate={variants[animateState]}
+			transition={{
+				layout: { duration: 0.3, ease: "easeInOut" },
+			}}
+			onLayoutAnimationComplete={() => {
+				// Called when layout (position) animation completes
+				if (!isEntering && !isGameWon && onTransitionEnd) {
+					onTransitionEnd();
+				}
+			}}
+			onAnimationComplete={() => {
+				// Called when entrance/celebration animation completes
+				if ((isEntering || isGameWon) && onTransitionEnd) {
+					onTransitionEnd();
+				}
+			}}
 			className={classNames.join(" ")}
 			onClick={onClick}
 			onTouchStart={onTouchStart}
 			onTouchEnd={onTouchEnd}
 			onMouseDown={onMouseDown}
-			onAnimationEnd={handleAnimationEnd}
-			onTransitionEnd={handleTransitionEnd}
 			style={style}
 			data-tile-number={tileNumber}
 		>
 			{showNumbers && tileNumber ? tileNumber : ""}
-		</div>
+		</motion.div>
 	);
 }
 
