@@ -19,55 +19,66 @@ export function playTileMoveSound() {
 		const ctx = getAudioContext();
 		const now = ctx.currentTime;
 
-		// Layer 1: Low woody thump (like wood hitting wood)
+		// Layer 1: Deep wooden thump (like hardwood hitting hardwood)
 		const lowOsc = ctx.createOscillator();
 		const lowGain = ctx.createGain();
 		lowOsc.connect(lowGain);
 		lowGain.connect(ctx.destination);
 
-		lowOsc.type = "triangle"; // Warmer than sine
-		lowOsc.frequency.setValueAtTime(120, now); // Deep woody tone
-		lowOsc.frequency.exponentialRampToValueAtTime(80, now + 0.05);
+		lowOsc.type = "sine"; // Pure, deeper tone
+		lowOsc.frequency.setValueAtTime(90, now); // Lower for deeper wood sound
+		lowOsc.frequency.exponentialRampToValueAtTime(60, now + 0.06);
 
 		lowGain.gain.setValueAtTime(0, now);
-		lowGain.gain.linearRampToValueAtTime(0.2, now + 0.005); // Sharp attack
-		lowGain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+		lowGain.gain.linearRampToValueAtTime(0.25, now + 0.003); // Sharper attack
+		lowGain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
 
 		lowOsc.start(now);
-		lowOsc.stop(now + 0.08);
+		lowOsc.stop(now + 0.1);
 
-		// Layer 2: Mid-range slide (friction sound)
+		// Layer 2: Wood slide/scrape (friction as tile slides)
 		const midOsc = ctx.createOscillator();
 		const midGain = ctx.createGain();
-		midOsc.connect(midGain);
+		const midFilter = ctx.createBiquadFilter();
+		midOsc.connect(midFilter);
+		midFilter.connect(midGain);
 		midGain.connect(ctx.destination);
 
-		midOsc.type = "sawtooth"; // Rougher texture
-		midOsc.frequency.setValueAtTime(400, now);
-		midOsc.frequency.exponentialRampToValueAtTime(200, now + 0.04);
+		midOsc.type = "sawtooth"; // Rough texture for wood grain
+		midOsc.frequency.setValueAtTime(280, now);
+		midOsc.frequency.exponentialRampToValueAtTime(160, now + 0.05);
+
+		midFilter.type = "lowpass";
+		midFilter.frequency.setValueAtTime(1200, now); // Muffle for more natural wood sound
 
 		midGain.gain.setValueAtTime(0, now);
-		midGain.gain.linearRampToValueAtTime(0.08, now + 0.01);
-		midGain.gain.exponentialRampToValueAtTime(0.01, now + 0.06);
+		midGain.gain.linearRampToValueAtTime(0.06, now + 0.008);
+		midGain.gain.exponentialRampToValueAtTime(0.01, now + 0.07);
 
 		midOsc.start(now);
-		midOsc.stop(now + 0.06);
+		midOsc.stop(now + 0.07);
 
-		// Layer 3: High click (wood settling)
+		// Layer 3: Sharp wooden click (tile settling into place)
 		const clickOsc = ctx.createOscillator();
 		const clickGain = ctx.createGain();
-		clickOsc.connect(clickGain);
+		const clickFilter = ctx.createBiquadFilter();
+		clickOsc.connect(clickFilter);
+		clickFilter.connect(clickGain);
 		clickGain.connect(ctx.destination);
 
-		clickOsc.type = "square"; // Sharp click
-		clickOsc.frequency.setValueAtTime(800, now);
+		clickOsc.type = "square"; // Sharp percussive attack
+		clickOsc.frequency.setValueAtTime(650, now); // Lower for more wooden clack
+
+		clickFilter.type = "bandpass";
+		clickFilter.frequency.setValueAtTime(800, now); // Focus on mid-range click
+		clickFilter.Q.setValueAtTime(2, now);
 
 		clickGain.gain.setValueAtTime(0, now);
-		clickGain.gain.linearRampToValueAtTime(0.05, now + 0.002);
-		clickGain.gain.exponentialRampToValueAtTime(0.01, now + 0.015);
+		clickGain.gain.linearRampToValueAtTime(0.08, now + 0.001); // Very sharp attack
+		clickGain.gain.exponentialRampToValueAtTime(0.01, now + 0.02);
 
 		clickOsc.start(now);
-		clickOsc.stop(now + 0.015);
+		clickOsc.stop(now + 0.02);
 	} catch (error) {
 		// Silently fail if Web Audio API is not supported
 		console.warn("Unable to play sound:", error);

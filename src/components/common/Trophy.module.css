@@ -105,11 +105,11 @@
 	}
 }
 
-/* Variant: Special Trophy (4x4 Hard) - Lavender */
+/* Variant: Special Trophy (4x4 Hard) - Electric Teal */
 .trophy.special {
-	background: linear-gradient(135deg, #c084fc 0%, #e9d5ff 50%, #c084fc 100%);
+	background: linear-gradient(135deg, #14b8a6 0%, #5eead4 50%, #14b8a6 100%);
 	box-shadow:
-		0 4px 8px rgba(192, 132, 252, 0.4),
+		0 4px 8px rgba(20, 184, 166, 0.4),
 		inset 0 1px 0 rgba(255, 255, 255, 0.5),
 		inset 0 -1px 0 rgba(0, 0, 0, 0.15);
 }
@@ -165,7 +165,7 @@
 	transition:
 		color 0.8s ease,
 		text-shadow 0.8s ease;
-	color: #6b21a8;
+	color: #0f766e;
 	text-shadow: 0 1px 1px rgba(255, 255, 255, 0.4);
 }
 

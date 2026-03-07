@@ -3,16 +3,16 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 25px;
+	gap: 20px; /* Reduced from 25px for better fit on smaller screens */
 	flex: 1;
 	justify-content: center;
 	width: 100%;
-	padding: 25px 15px;
+	padding: 20px 15px; /* Reduced from 25px for better fit */
 }
 
 /* Trophy container - matches restart button height for vertical centering */
 .trophyContainer {
-	min-height: 48px; /* Match restart button height + padding */
+	min-height: 120px; /* Taller to accommodate full trophy (emoji + number + padding) */
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -29,7 +29,7 @@
 
 /* Restart Button Container - matches trophy height for vertical centering */
 .restartContainer {
-	min-height: 48px; /* Match button height */
+	min-height: 120px; /* Match trophy container height */
 	display: flex;
 	align-items: center;
 	justify-content: center;
