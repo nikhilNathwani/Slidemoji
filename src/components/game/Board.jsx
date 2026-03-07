@@ -61,8 +61,6 @@ function Board({
 
 	// ===== Refs =====
 	const boardRef = useRef(null);
-	const touchStartRef = useRef(null); // Track touch drag start
-	const mouseDragRef = useRef(null); // Track mouse drag start
 	const hasShownWin = useRef(false);
 	const winDialogTimeoutRef = useRef(null);
 
@@ -231,7 +229,7 @@ function Board({
 	);
 
 	// ===== Event Handlers =====
-	// Click/Tap on tile
+	// Click/Tap on tile - instant move if adjacent to gap
 	const handleTileClick = (index) => {
 		handleTileSelect(index, null);
 	};
@@ -262,80 +260,6 @@ function Board({
 		}
 	}, [handleKeyPress, isInputBlocked, isGameWon]);
 
-	// Mouse drag controls - user can click tile and drag INTO the gap
-	const handleMouseDown = (e, tileIndex) => {
-		e.preventDefault(); // Prevent text selection while dragging
-		mouseDragRef.current = {
-			startTileIndex: tileIndex,
-		};
-	};
-
-	const handleMouseUpOnGap = () => {
-		if (!mouseDragRef.current) return;
-
-		const { startTileIndex } = mouseDragRef.current;
-
-		// User dragged from a tile into the gap - move that tile
-		handleTileSelect(startTileIndex, null);
-
-		mouseDragRef.current = null;
-	};
-
-	const handleMouseUpAnywhere = () => {
-		// Clear drag state if mouse is released anywhere else
-		mouseDragRef.current = null;
-	};
-
-	// Touch controls - user can tap tile or tap+drag tile INTO the gap (mirrors mouse UX)
-	const handleTouchStart = (e, tileIndex) => {
-		const touch = e.touches[0];
-		touchStartRef.current = {
-			tileIndex,
-			x: touch.clientX,
-			y: touch.clientY,
-		};
-	};
-
-	const handleTouchEnd = (e, tileIndex) => {
-		if (!touchStartRef.current) return;
-
-		// Verify touch ended on same tile it started on
-		if (touchStartRef.current.tileIndex !== tileIndex) {
-			touchStartRef.current = null;
-			return;
-		}
-
-		// Tap on tile - will only move if adjacent to gap
-		handleTileSelect(tileIndex, null);
-		touchStartRef.current = null;
-	};
-
-	const handleTouchEndOnGap = () => {
-		if (!touchStartRef.current) return;
-
-		const { tileIndex } = touchStartRef.current;
-
-		// User dragged from a tile into the gap - move that tile
-		handleTileSelect(tileIndex, null);
-
-		touchStartRef.current = null;
-	};
-
-	const handleTouchEndAnywhere = () => {
-		// Clear touch state if touch ends anywhere else
-		touchStartRef.current = null;
-	};
-
-	// Global mouse/touch up listeners: Handle release anywhere (cleanup drag state)
-	useEffect(() => {
-		window.addEventListener("mouseup", handleMouseUpAnywhere);
-		window.addEventListener("touchend", handleTouchEndAnywhere);
-		return () => {
-			window.removeEventListener("mouseup", handleMouseUpAnywhere);
-			window.removeEventListener("touchend", handleTouchEndAnywhere);
-		};
-	}, []);
-
 	// ===== Render =====
 	return (
 		<div
@@ -352,13 +276,7 @@ function Board({
 				const isGap = value === null;
 
 				if (isGap) {
-					return (
-						<Gap
-							key="gap"
-							onMouseUp={handleMouseUpOnGap}
-							onTouchEnd={handleTouchEndOnGap}
-						/>
-					);
+					return <Gap key="gap" />;
 				}
 				const isClickable =
 					!isGameWon &&
@@ -378,9 +296,7 @@ function Board({
 						onTransitionEnd={unblockInput}
 						{...(isClickable && {
 							onClick: () => handleTileClick(index),
-							onTouchStart: (e) => handleTouchStart(e, index),
-							onTouchEnd: (e) => handleTouchEnd(e, index),
-							onMouseDown: (e) => handleMouseDown(e, index),
+
 						})}
 					/>
 				);
