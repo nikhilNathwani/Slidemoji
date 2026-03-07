@@ -15,8 +15,6 @@ import {
 	BOARD_RIDGE_BORDER,
 	BOARD_MAX_SIZE,
 	WIN_DIALOG_DELAY_MS,
-	MIN_SWIPE_DISTANCE,
-	MAX_SWIPE_TIME_MS,
 } from "../../constants";
 import { createEmojiSvgUrl } from "../../utils/emoji";
 import { playTileMoveSound } from "../../utils/sound";
@@ -38,6 +36,7 @@ function Board({
 	onMove, // Callback to notify parent when board changes (for Firestore saves)
 	soundEnabled, // Whether to play sound effects
 }) {
+	// ===== State =====
 	// Initialize board state from savedBoard (resume) or initialBoard (new game)
 	// Falls back to scramblePuzzle if neither provided (shouldn't happen in production)
 	const [tiles, setTiles] = useState(() => {
@@ -52,18 +51,29 @@ function Board({
 	});
 	const [isGameWon, setIsGameWon] = useState(false);
 	const [isInputBlocked, setIsInputBlocked] = useState(false);
+	const [boardSizePx, setBoardSizePx] = useState(() => {
+		const maxContentSize = Math.min(
+			window.innerWidth - BOARD_VIEWPORT_PADDING - BOARD_RIDGE_BORDER,
+			BOARD_MAX_SIZE,
+		);
+		return Math.floor(maxContentSize / size) * size;
+	});
+
+	// ===== Refs =====
 	const boardRef = useRef(null);
-	const touchStartRef = useRef(null);
-	const mouseDragRef = useRef(null);
+	const touchStartRef = useRef(null); // Track touch drag start
+	const mouseDragRef = useRef(null); // Track mouse drag start
 	const hasShownWin = useRef(false);
 	const winDialogTimeoutRef = useRef(null);
 
+	// ===== Memoized Values =====
 	// Create emoji SVG URL once and memoize it
 	const emojiSvgUrl = useMemo(
 		() => (dailyEmoji ? createEmojiSvgUrl(dailyEmoji) : null),
 		[dailyEmoji],
 	);
 
+	// ===== Callbacks =====
 	// Responsive sizing
 	const getResponsiveBoardSize = useCallback(() => {
 		const maxContentSize = Math.min(
@@ -74,8 +84,7 @@ function Board({
 		return Math.floor(maxContentSize / size) * size;
 	}, [size]);
 
-	const [boardSizePx, setBoardSizePx] = useState(getResponsiveBoardSize);
-
+	// ===== Effects =====
 	// Update board size on window resize
 	useEffect(() => {
 		const handleResize = () => setBoardSizePx(getResponsiveBoardSize());
@@ -152,7 +161,7 @@ function Board({
 		}
 	}, [isGameWon, onWin, onShowWinDialog]);
 
-	// ===== Movement Logic =====
+	// ===== Tile Movement Logic =====
 	const gapIndex = getGapIndex(tiles);
 
 	// Unblock input (called by Tile's onLayoutAnimationComplete)
@@ -222,11 +231,12 @@ function Board({
 	);
 
 	// ===== Event Handlers =====
+	// Click/Tap on tile
 	const handleTileClick = (index) => {
 		handleTileSelect(index, null);
 	};
 
-	// Keyboard controls
+	// Keyboard controls (arrow keys move tile FROM gap in that direction)
 	const handleKeyPress = useCallback(
 		(event) => {
 			const arrowKeys = [
@@ -252,37 +262,12 @@ function Board({
 		}
 	}, [handleKeyPress, isInputBlocked, isGameWon]);
 
-	// Touch/swipe controls
-	const handleTouchStart = (e, tileIndex) => {
-		const touch = e.touches[0];
-		touchStartRef.current = {
-			tileIndex,
-			x: touch.clientX,
-			y: touch.clientY,
-			time: Date.now(),
-		};
-	};
-
-	// Mouse drag controls - drag tile INTO the gap
+	// Mouse drag controls - user can click tile and drag INTO the gap
 	const handleMouseDown = (e, tileIndex) => {
 		e.preventDefault(); // Prevent text selection while dragging
 		mouseDragRef.current = {
 			startTileIndex: tileIndex,
 		};
-	};
-
-	const handleTouchEnd = (e, tileIndex) => {
-		if (!touchStartRef.current) return;
-
-		// Verify touch ended on same tile it started on
-		if (touchStartRef.current.tileIndex !== tileIndex) {
-			touchStartRef.current = null;
-			return;
-		}
-
-		// Tap or swipe on tile - will only move if adjacent to gap
-		handleTileSelect(tileIndex, null);
-		touchStartRef.current = null;
 	};
 
 	const handleMouseUpOnGap = () => {
@@ -301,11 +286,54 @@ function Board({
 		mouseDragRef.current = null;
 	};
 
-	// Global mouse up listener: Handle mouse release anywhere
+	// Touch controls - user can tap tile or tap+drag tile INTO the gap (mirrors mouse UX)
+	const handleTouchStart = (e, tileIndex) => {
+		const touch = e.touches[0];
+		touchStartRef.current = {
+			tileIndex,
+			x: touch.clientX,
+			y: touch.clientY,
+		};
+	};
+
+	const handleTouchEnd = (e, tileIndex) => {
+		if (!touchStartRef.current) return;
+
+		// Verify touch ended on same tile it started on
+		if (touchStartRef.current.tileIndex !== tileIndex) {
+			touchStartRef.current = null;
+			return;
+		}
+
+		// Tap on tile - will only move if adjacent to gap
+		handleTileSelect(tileIndex, null);
+		touchStartRef.current = null;
+	};
+
+	const handleTouchEndOnGap = () => {
+		if (!touchStartRef.current) return;
+
+		const { tileIndex } = touchStartRef.current;
+
+		// User dragged from a tile into the gap - move that tile
+		handleTileSelect(tileIndex, null);
+
+		touchStartRef.current = null;
+	};
+
+	const handleTouchEndAnywhere = () => {
+		// Clear touch state if touch ends anywhere else
+		touchStartRef.current = null;
+	};
+
+	// Global mouse/touch up listeners: Handle release anywhere (cleanup drag state)
 	useEffect(() => {
 		window.addEventListener("mouseup", handleMouseUpAnywhere);
-		return () =>
+		window.addEventListener("touchend", handleTouchEndAnywhere);
+		return () => {
 			window.removeEventListener("mouseup", handleMouseUpAnywhere);
+			window.removeEventListener("touchend", handleTouchEndAnywhere);
+		};
 	}, []);
 
 	// ===== Render =====
@@ -324,7 +352,13 @@ function Board({
 				const isGap = value === null;
 
 				if (isGap) {
-					return <Gap key="gap" onMouseUp={handleMouseUpOnGap} />;
+					return (
+						<Gap
+							key="gap"
+							onMouseUp={handleMouseUpOnGap}
+							onTouchEnd={handleTouchEndOnGap}
+						/>
+					);
 				}
 				const isClickable =
 					!isGameWon &&

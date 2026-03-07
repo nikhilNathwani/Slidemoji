@@ -9,10 +9,6 @@ export const DIFFICULTIES = [
 export const ANIMATION_DURATION_MS = 400;
 export const WIN_DIALOG_DELAY_MS = 2500; // Delay before showing win dialog to allow celebration
 
-// Touch/Swipe
-export const MIN_SWIPE_DISTANCE = 30;
-export const MAX_SWIPE_TIME_MS = 500;
-
 // Responsive
 export const MOBILE_BREAKPOINT = 600;
 export const BOARD_VIEWPORT_PADDING = 40; // Padding on each side of viewport
