@@ -14,6 +14,9 @@ import {
 	BOARD_VIEWPORT_PADDING,
 	BOARD_RIDGE_BORDER,
 	BOARD_MAX_SIZE,
+	WIN_DIALOG_DELAY_MS,
+	MIN_SWIPE_DISTANCE,
+	MAX_SWIPE_TIME_MS,
 } from "../../constants";
 import { createEmojiSvgUrl } from "../../utils/emoji";
 import { playTileMoveSound } from "../../utils/sound";
@@ -27,7 +30,7 @@ function Board({
 	onShowWinDialog,
 	showNumbers,
 	onSolveRef,
-	onShuffleRef,
+	onRestartRef,
 	dailyEmoji,
 	// Persistence props - from Game component
 	initialBoard, // The starting board from Firestore (for this puzzle+difficulty)
@@ -88,8 +91,8 @@ function Board({
 		hasShownWin.current = false;
 	}, [size]);
 
-	// Shuffle function - restart the puzzle with the same initial board
-	const handleShuffle = useCallback(() => {
+	// Restart function - reset puzzle with the same initial board
+	const handleRestart = useCallback(() => {
 		// Use initialBoard if available (persistence mode), otherwise generate random
 		const newTiles = initialBoard || scramblePuzzle(size);
 		setTiles(newTiles);
@@ -97,15 +100,16 @@ function Board({
 		hasShownWin.current = false;
 	}, [size, initialBoard]);
 
-	// Expose functions to parent
+	// Expose solve/restart functions to parent via refs (for Settings dialog buttons)
+	// This enables imperative calls: Game -> Board -> handleSolve/handleRestart
 	useEffect(() => {
 		if (onSolveRef) {
 			onSolveRef.current = handleSolve;
 		}
-		if (onShuffleRef) {
-			onShuffleRef.current = handleShuffle;
+		if (onRestartRef) {
+			onRestartRef.current = handleRestart;
 		}
-	}, [handleSolve, handleShuffle, onSolveRef, onShuffleRef]);
+	}, [handleSolve, handleRestart, onSolveRef, onRestartRef]);
 
 	// Reset board when size changes
 	useEffect(() => {
@@ -130,16 +134,7 @@ function Board({
 		hasShownWin.current = false;
 	}, [size, initialBoard, savedBoard]);
 
-	// Handle window resize
-	useEffect(() => {
-		const handleResize = () => {
-			setBoardSizePx(getResponsiveBoardSize());
-		};
-		window.addEventListener("resize", handleResize);
-		return () => window.removeEventListener("resize", handleResize);
-	}, [getResponsiveBoardSize]);
-
-	// Show win dialog (only once per win) - delayed to allow trophy transformation and celebration
+	// Show win dialog after delay (allows trophy transformation and celebration)
 	useEffect(() => {
 		if (isGameWon && onWin && onShowWinDialog && !hasShownWin.current) {
 			hasShownWin.current = true;
@@ -153,7 +148,7 @@ function Board({
 			winDialogTimeoutRef.current = setTimeout(() => {
 				onShowWinDialog();
 				winDialogTimeoutRef.current = null;
-			}, 2500); // Delay win dialog by 2500ms to allow celebration and trophy transformation
+			}, WIN_DIALOG_DELAY_MS);
 		}
 	}, [isGameWon, onWin, onShowWinDialog]);
 
@@ -248,6 +243,7 @@ function Board({
 		[handleTileSelect],
 	);
 
+	// Keyboard listener: Attach/detach based on game state
 	useEffect(() => {
 		// Only attach listener when input is not blocked
 		if (!isInputBlocked && !isGameWon) {
@@ -284,41 +280,8 @@ function Board({
 			return;
 		}
 
-		const touch = e.changedTouches[0];
-		const deltaX = touch.clientX - touchStartRef.current.x;
-		const deltaY = touch.clientY - touchStartRef.current.y;
-		const deltaTime = Date.now() - touchStartRef.current.time;
-
-		// Require minimum swipe distance and speed
-		const minSwipeDistance = 30;
-		const maxSwipeTime = 500;
-
-		if (deltaTime > maxSwipeTime) {
-			touchStartRef.current = null;
-			return;
-		}
-
-		const absX = Math.abs(deltaX);
-		const absY = Math.abs(deltaY);
-
-		if (absX < minSwipeDistance && absY < minSwipeDistance) {
-			// Not a swipe, treat as click
-			handleTileSelect(tileIndex, null);
-			touchStartRef.current = null;
-			return;
-		}
-
-		// Determine swipe direction
-		let direction;
-		if (absX > absY) {
-			direction = deltaX > 0 ? "ArrowRight" : "ArrowLeft";
-		} else {
-			direction = deltaY > 0 ? "ArrowDown" : "ArrowUp";
-		}
-
-		// Let handleTileSelect validate and execute the move
-		handleTileSelect(tileIndex, direction);
-
+		// Tap or swipe on tile - will only move if adjacent to gap
+		handleTileSelect(tileIndex, null);
 		touchStartRef.current = null;
 	};
 
@@ -338,7 +301,7 @@ function Board({
 		mouseDragRef.current = null;
 	};
 
-	// Global mouse up listener to handle mouse release anywhere
+	// Global mouse up listener: Handle mouse release anywhere
 	useEffect(() => {
 		window.addEventListener("mouseup", handleMouseUpAnywhere);
 		return () =>

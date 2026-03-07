@@ -1,3 +1,4 @@
+import { FontAwesomeIcon } from "../../utils/icons";
 import Trophy from "./Trophy";
 import styles from "./TrophyCase.module.css";
 
@@ -25,7 +26,7 @@ function TrophyCase({
 	return (
 		<div className={styles.trophyCase}>
 			<h3>
-				<i className="fas fa-trophy"></i> Trophy Case
+				<FontAwesomeIcon icon="trophy" /> Trophy Case
 				<span className={styles.trophyCount}>
 					{earnedPuzzleIds.size}/{totalPuzzles}
 				</span>

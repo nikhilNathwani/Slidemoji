@@ -1,3 +1,4 @@
+import { FontAwesomeIcon } from "../../utils/icons";
 import styles from "./Trophy.module.css";
 
 function Trophy({
@@ -36,7 +37,7 @@ function Trophy({
 			</div>
 			{isLocked ? (
 				<div className={styles.lockIcon}>
-					<i className="fas fa-lock"></i>
+					<FontAwesomeIcon icon="lock" />
 				</div>
 			) : (
 				<div className={styles.emoji}>{trophyEmoji}</div>
