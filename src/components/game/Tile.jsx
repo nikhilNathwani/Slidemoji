@@ -28,10 +28,7 @@ function getTileStyle(tileNumber, boardSize, emojiSvgUrl) {
 function Tile({
 	tileNumber,
 	isClickable,
-	onClick,
-	onTouchStart,
-	onTouchEnd,
-	onMouseDown,
+	onPointerDown,
 	showNumbers,
 	emojiSvgUrl,
 	boardSize,
@@ -49,10 +46,7 @@ function Tile({
 			}}
 			onLayoutAnimationComplete={onTransitionEnd}
 			className={classNames.join(" ")}
-			onClick={onClick}
-			onTouchStart={onTouchStart}
-			onTouchEnd={onTouchEnd}
-			onMouseDown={onMouseDown}
+			onPointerDown={onPointerDown}
 			style={getTileStyle(tileNumber, boardSize, emojiSvgUrl)}
 			data-tile-number={tileNumber}
 		>

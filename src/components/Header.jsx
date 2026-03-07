@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import styles from "./Header.module.css";
 import GoogleSignInButton from "./common/GoogleSignInButton";
 import { useAuth } from "../hooks/useAuth";
+import { FontAwesomeIcon } from "../utils/icons";
 
 function Header({ onSettingsClick, onStatsClick }) {
 	const { user, signOut } = useAuth();
@@ -38,7 +39,7 @@ function Header({ onSettingsClick, onStatsClick }) {
 					aria-label="Settings"
 					title="Settings"
 				>
-					<i className="fas fa-cog"></i>
+					<FontAwesomeIcon icon="cog" />
 				</button>
 				<button
 					className={styles.iconButton}
@@ -46,7 +47,7 @@ function Header({ onSettingsClick, onStatsClick }) {
 					aria-label="Stats"
 					title="Stats"
 				>
-					<i className="fas fa-trophy"></i>
+					<FontAwesomeIcon icon="trophy" />
 				</button>
 				{user ? (
 					<div className={styles.accountContainer} ref={menuRef}>
@@ -64,7 +65,7 @@ function Header({ onSettingsClick, onStatsClick }) {
 									referrerPolicy="no-referrer"
 								/>
 							) : (
-								<i className="fas fa-user-circle"></i>
+								<FontAwesomeIcon icon="user-circle" />
 							)}
 						</button>
 						{showAccountMenu && (

@@ -28,6 +28,7 @@ function Game({
 	puzzleData,
 	puzzleId,
 	difficulty,
+	soundEnabled,
 }) {
 	const { user } = useAuth();
 	const [showRestartConfirm, setShowRestartConfirm] = useState(false);
@@ -215,11 +216,12 @@ function Game({
 						onShowWinDialog={onShowWinDialog}
 						showNumbers={showNumbers && !isGameWon}
 						onSolveRef={solveRef}
-						onShuffleRef={restartRef}
+						onRestartRef={restartRef}
 						dailyEmoji={dailyEmoji.emoji}
 						initialBoard={initialBoard}
 						savedBoard={savedBoard}
 						onMove={handleMove}
+						soundEnabled={soundEnabled}
 					/>
 				)}
 

@@ -31,7 +31,7 @@ function StatsContent({ dailyEmoji, userData, totalPuzzles = 365 }) {
 					</p>
 					<GoogleSignInButton />
 					<p className={styles.privacyNote}>
-						<i className="fas fa-shield-alt"></i>
+						<FontAwesomeIcon icon="shield-alt" />
 						<span>
 							We respect your privacy. Your data is never sold or
 							shared. We only use your email to save your
@@ -95,7 +95,7 @@ function StatsContent({ dailyEmoji, userData, totalPuzzles = 365 }) {
 								alert("Archive unlock feature coming soon!")
 							}
 						>
-							<i className="fas fa-unlock"></i>
+							<FontAwesomeIcon icon="unlock" />
 							Unlock Archive
 						</button>
 					</div>

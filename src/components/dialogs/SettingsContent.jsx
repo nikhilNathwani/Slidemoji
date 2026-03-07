@@ -68,7 +68,7 @@ function SettingsContent({
 					href="mailto:nnathwani36@gmail.com?subject=Slidemoji%20Feedback"
 					className={`${styles.actionButton} ${styles.feedback}`}
 				>
-					<i className="fas fa-comment"></i>
+					<FontAwesomeIcon icon="comment" />
 					Give Feedback
 				</a>
 				<a
@@ -83,14 +83,14 @@ function SettingsContent({
 					)}`}
 					className={`${styles.actionButton} ${styles.report}`}
 				>
-					<i className="fas fa-bug"></i>
+					<FontAwesomeIcon icon="bug" />
 					Report an Issue
 				</a>
 				<button
 					className={`${styles.actionButton} ${styles.solve}`}
 					onClick={onSolve}
 				>
-					<i className="fas fa-magic"></i>
+					<FontAwesomeIcon icon="magic" />
 					Solve (Dev)
 				</button>
 			</div>

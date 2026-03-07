@@ -229,8 +229,8 @@ function Board({
 	);
 
 	// ===== Event Handlers =====
-	// Click/Tap on tile - instant move if adjacent to gap
-	const handleTileClick = (index) => {
+	// Pointer down on tile - instant move if adjacent to gap
+	const handleTilePointerDown = (index) => {
 		handleTileSelect(index, null);
 	};
 
@@ -295,8 +295,7 @@ function Board({
 						isGameWon={isGameWon}
 						onTransitionEnd={unblockInput}
 						{...(isClickable && {
-							onClick: () => handleTileClick(index),
-
+							onPointerDown: () => handleTilePointerDown(index),
 						})}
 					/>
 				);
