@@ -28,7 +28,6 @@ function Game({
 	puzzleData,
 	puzzleId,
 	difficulty,
-	soundEnabled,
 }) {
 	const { user } = useAuth();
 	const [showRestartConfirm, setShowRestartConfirm] = useState(false);
@@ -220,7 +219,8 @@ function Game({
 						dailyEmoji={dailyEmoji.emoji}
 						initialBoard={initialBoard}
 						savedBoard={savedBoard}
-						onMove={handleMove}					soundEnabled={soundEnabled}					/>
+						onMove={handleMove}
+					/>
 				)}
 
 				<div className={styles.restartContainer}>

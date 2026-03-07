@@ -100,22 +100,6 @@ export function scramblePuzzle(size, numMoves = 100) {
 }
 
 /**
- * Calculate tile position based on index
- * @param {number} index - Tile index in the array
- * @param {number} size - Board size (3 or 4)
- * @param {number} tileSizePx - Size of each tile in pixels
- * @returns {Object} Object with x and y coordinates
- */
-export function getTilePosition(index, size, tileSizePx) {
-	const row = Math.floor(index / size);
-	const col = index % size;
-	return {
-		x: col * tileSizePx,
-		y: row * tileSizePx,
-	};
-}
-
-/**
  * Get tile index from arrow key direction for keyboard controls
  * @param {number} gapIndex - Current gap index
  * @param {string} direction - Arrow key direction

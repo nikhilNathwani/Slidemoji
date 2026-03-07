@@ -13,6 +13,10 @@
 	cursor: default;
 	/* Smooth border transition */
 	transition: border 0.3s ease;
+	/* Static background styles for emoji tiles */
+	background-repeat: no-repeat;
+	background-origin: border-box;
+	background-clip: border-box;
 }
 
 /* Theme-specific text shadows */

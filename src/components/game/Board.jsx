@@ -10,6 +10,11 @@ import {
 	scramblePuzzle,
 	getTileIndexFromDirection,
 } from "../../utils/boardHelpers";
+import {
+	BOARD_VIEWPORT_PADDING,
+	BOARD_RIDGE_BORDER,
+	BOARD_MAX_SIZE,
+} from "../../constants";
 import { createEmojiSvgUrl } from "../../utils/emoji";
 import { playTileMoveSound } from "../../utils/sound";
 import styles from "./Board.module.css";
@@ -58,20 +63,22 @@ function Board({
 
 	// Responsive sizing
 	const getResponsiveBoardSize = useCallback(() => {
-		// padding is 20px on each side of viewport (40 total)
-		// With content-box, width/height we set is the content area (tiles)
-		// Ridge border (8px each side) is added outside
-		const viewportPadding = 40;
-		const ridgeBorder = 16; // 8px each side, added outside content
 		const maxContentSize = Math.min(
-			window.innerWidth - viewportPadding - ridgeBorder,
-			456, // 5% smaller than previous 480
+			window.innerWidth - BOARD_VIEWPORT_PADDING - BOARD_RIDGE_BORDER,
+			BOARD_MAX_SIZE,
 		);
 		// Ensure content area is divisible by grid size for perfect tile sizing
 		return Math.floor(maxContentSize / size) * size;
 	}, [size]);
 
-	const [boardSizePx, setBoardSizePx] = useState(getResponsiveBoardSize());
+	const [boardSizePx, setBoardSizePx] = useState(getResponsiveBoardSize);
+
+	// Update board size on window resize
+	useEffect(() => {
+		const handleResize = () => setBoardSizePx(getResponsiveBoardSize());
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, [getResponsiveBoardSize]);
 
 	// Solve function
 	const handleSolve = useCallback(() => {
@@ -197,24 +204,24 @@ function Board({
 			}
 
 			const gapIndex = getGapIndex(tiles);
-			let targetTileIndex;
 
-			if (direction !== null) {
-				// Keyboard/swipe: find tile in that direction from gap
-				targetTileIndex = getTileIndexFromDirection(
+			// For keyboard controls: find tile in direction from gap
+			if (direction !== null && tileIndex === null) {
+				const targetTileIndex = getTileIndexFromDirection(
 					gapIndex,
 					direction,
 					size,
 				);
-				if (targetTileIndex === null) {
-					return; // Invalid direction
+				if (targetTileIndex !== null) {
+					moveTile(targetTileIndex);
 				}
-			} else {
-				// Click/tap: tile index already known
-				targetTileIndex = tileIndex;
+				return;
 			}
 
-			moveTile(targetTileIndex);
+			// For click/tap/swipe: verify tile is adjacent to gap before moving
+			if (tileIndex !== null && isAdjacent(gapIndex, tileIndex, size)) {
+				moveTile(tileIndex);
+			}
 		},
 		[tiles, isGameWon, isInputBlocked, size, moveTile],
 	);

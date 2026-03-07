@@ -1,14 +1,7 @@
 import AnimatedTileGrid from "./AnimatedTileGrid";
 import LandingFooter from "./LandingFooter";
-import { loadFontAwesome } from "../../utils/fontAwesome";
 
 function LandingPage({ onPlay }) {
-	const handlePlay = () => {
-		// Load Font Awesome before transitioning to game
-		loadFontAwesome();
-		onPlay();
-	};
-
 	return (
 		<div className="landing-page">
 			<div className="landing-content">
@@ -18,7 +11,7 @@ function LandingPage({ onPlay }) {
 					Slide the tiles to unscramble the daily emoji
 				</p>
 
-				<button className="play-button" onClick={handlePlay}>
+				<button className="play-button" onClick={onPlay}>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						viewBox="0 0 384 512"

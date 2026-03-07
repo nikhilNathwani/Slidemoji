@@ -12,34 +12,62 @@ function getAudioContext() {
 
 /**
  * Play a tile move sound
- * Creates a pleasant click/pop sound using oscillators
+ * Creates a warm, wooden slide and click sound
  */
 export function playTileMoveSound() {
 	try {
 		const ctx = getAudioContext();
 		const now = ctx.currentTime;
 
-		// Create oscillator for the main tone
-		const oscillator = ctx.createOscillator();
-		const gainNode = ctx.createGain();
+		// Layer 1: Low woody thump (like wood hitting wood)
+		const lowOsc = ctx.createOscillator();
+		const lowGain = ctx.createGain();
+		lowOsc.connect(lowGain);
+		lowGain.connect(ctx.destination);
 
-		// Connect nodes
-		oscillator.connect(gainNode);
-		gainNode.connect(ctx.destination);
+		lowOsc.type = "triangle"; // Warmer than sine
+		lowOsc.frequency.setValueAtTime(120, now); // Deep woody tone
+		lowOsc.frequency.exponentialRampToValueAtTime(80, now + 0.05);
 
-		// Configure a pleasant click sound
-		oscillator.type = "sine";
-		oscillator.frequency.setValueAtTime(800, now); // Start at 800Hz
-		oscillator.frequency.exponentialRampToValueAtTime(400, now + 0.05); // Drop to 400Hz
+		lowGain.gain.setValueAtTime(0, now);
+		lowGain.gain.linearRampToValueAtTime(0.2, now + 0.005); // Sharp attack
+		lowGain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
 
-		// Quick attack and decay for a crisp click
-		gainNode.gain.setValueAtTime(0, now);
-		gainNode.gain.linearRampToValueAtTime(0.15, now + 0.01); // Quick attack
-		gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1); // Quick decay
+		lowOsc.start(now);
+		lowOsc.stop(now + 0.08);
 
-		// Start and stop
-		oscillator.start(now);
-		oscillator.stop(now + 0.1);
+		// Layer 2: Mid-range slide (friction sound)
+		const midOsc = ctx.createOscillator();
+		const midGain = ctx.createGain();
+		midOsc.connect(midGain);
+		midGain.connect(ctx.destination);
+
+		midOsc.type = "sawtooth"; // Rougher texture
+		midOsc.frequency.setValueAtTime(400, now);
+		midOsc.frequency.exponentialRampToValueAtTime(200, now + 0.04);
+
+		midGain.gain.setValueAtTime(0, now);
+		midGain.gain.linearRampToValueAtTime(0.08, now + 0.01);
+		midGain.gain.exponentialRampToValueAtTime(0.01, now + 0.06);
+
+		midOsc.start(now);
+		midOsc.stop(now + 0.06);
+
+		// Layer 3: High click (wood settling)
+		const clickOsc = ctx.createOscillator();
+		const clickGain = ctx.createGain();
+		clickOsc.connect(clickGain);
+		clickGain.connect(ctx.destination);
+
+		clickOsc.type = "square"; // Sharp click
+		clickOsc.frequency.setValueAtTime(800, now);
+
+		clickGain.gain.setValueAtTime(0, now);
+		clickGain.gain.linearRampToValueAtTime(0.05, now + 0.002);
+		clickGain.gain.exponentialRampToValueAtTime(0.01, now + 0.015);
+
+		clickOsc.start(now);
+		clickOsc.stop(now + 0.015);
 	} catch (error) {
 		// Silently fail if Web Audio API is not supported
 		console.warn("Unable to play sound:", error);
