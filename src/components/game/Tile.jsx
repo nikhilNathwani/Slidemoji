@@ -46,7 +46,7 @@ function Tile({
 			}}
 			onLayoutAnimationComplete={onTransitionEnd}
 			className={classNames.join(" ")}
-			onPointerDown={onPointerDown}
+			{...(isClickable && { onPointerDown })}
 			style={getTileStyle(tileNumber, boardSize, emojiSvgUrl)}
 			data-tile-number={tileNumber}
 		>

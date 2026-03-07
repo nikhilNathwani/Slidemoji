@@ -9,18 +9,12 @@ import {
 	checkWin,
 	scramblePuzzle,
 	getTileIndexFromDirection,
+	calcBoardSizePx,
 } from "../../utils/boardHelpers";
-import {
-	BOARD_VIEWPORT_PADDING,
-	BOARD_RIDGE_BORDER,
-	BOARD_MAX_SIZE,
-	WIN_DIALOG_DELAY_MS,
-} from "../../constants";
+import { WIN_DIALOG_DELAY_MS } from "../../constants";
 import { createEmojiSvgUrl } from "../../utils/emoji";
 import { playTileMoveSound } from "../../utils/sound";
 import styles from "./Board.module.css";
-
-// ===== Main Component =====
 
 function Board({
 	size,
@@ -40,29 +34,15 @@ function Board({
 	// Initialize board state from savedBoard (resume) or initialBoard (new game)
 	// Falls back to scramblePuzzle if neither provided (shouldn't happen in production)
 	const [tiles, setTiles] = useState(() => {
-		if (savedBoard) {
-			return savedBoard; // Resume from saved state
-		}
-		if (initialBoard) {
-			return initialBoard; // Start fresh with provided board
-		}
-		console.log("Falling back to random scramble");
-		return scramblePuzzle(size); // Fallback (shouldn't happen)
+		return savedBoard || initialBoard || scramblePuzzle(size);
 	});
 	const [isGameWon, setIsGameWon] = useState(false);
 	const [isInputBlocked, setIsInputBlocked] = useState(false);
-	const [boardSizePx, setBoardSizePx] = useState(() => {
-		const maxContentSize = Math.min(
-			window.innerWidth - BOARD_VIEWPORT_PADDING - BOARD_RIDGE_BORDER,
-			BOARD_MAX_SIZE,
-		);
-		return Math.floor(maxContentSize / size) * size;
-	});
+	const [boardSizePx, setBoardSizePx] = useState(() => calcBoardSizePx(size));
 
 	// ===== Refs =====
 	const boardRef = useRef(null);
-	const hasShownWin = useRef(false);
-	const winDialogTimeoutRef = useRef(null);
+	const hasShownWinDialog = useRef(false);
 
 	// ===== Memoized Values =====
 	// Create emoji SVG URL once and memoize it
@@ -72,15 +52,11 @@ function Board({
 	);
 
 	// ===== Callbacks =====
-	// Responsive sizing
-	const getResponsiveBoardSize = useCallback(() => {
-		const maxContentSize = Math.min(
-			window.innerWidth - BOARD_VIEWPORT_PADDING - BOARD_RIDGE_BORDER,
-			BOARD_MAX_SIZE,
-		);
-		// Ensure content area is divisible by grid size for perfect tile sizing
-		return Math.floor(maxContentSize / size) * size;
-	}, [size]);
+	// Responsive board size calculation (memoized)
+	const getResponsiveBoardSize = useCallback(
+		() => calcBoardSizePx(size),
+		[size],
+	);
 
 	// ===== Effects =====
 	// Update board size on window resize
@@ -88,14 +64,14 @@ function Board({
 		const handleResize = () => setBoardSizePx(getResponsiveBoardSize());
 		window.addEventListener("resize", handleResize);
 		return () => window.removeEventListener("resize", handleResize);
-	}, [getResponsiveBoardSize]);
+	}, [size, getResponsiveBoardSize]); // size for clarity, getResponsiveBoardSize for actual dependency
 
 	// Solve function
 	const handleSolve = useCallback(() => {
 		const solvedTiles = getSolvedState(size);
 		setTiles(solvedTiles);
 		setIsGameWon(true);
-		hasShownWin.current = false;
+		hasShownWinDialog.current = false;
 	}, [size]);
 
 	// Restart function - reset puzzle with the same initial board
@@ -104,68 +80,43 @@ function Board({
 		const newTiles = initialBoard || scramblePuzzle(size);
 		setTiles(newTiles);
 		setIsGameWon(false);
-		hasShownWin.current = false;
+		hasShownWinDialog.current = false;
 	}, [size, initialBoard]);
 
 	// Expose solve/restart functions to parent via refs (for Settings dialog buttons)
-	// This enables imperative calls: Game -> Board -> handleSolve/handleRestart
 	useEffect(() => {
-		if (onSolveRef) {
-			onSolveRef.current = handleSolve;
-		}
-		if (onRestartRef) {
-			onRestartRef.current = handleRestart;
-		}
+		onSolveRef.current = handleSolve;
+		onRestartRef.current = handleRestart;
 	}, [handleSolve, handleRestart, onSolveRef, onRestartRef]);
 
-	// Reset board when size changes
+	// Reset board when size, initialBoard, or savedBoard changes
 	useEffect(() => {
-		// Clear any pending state
-		if (winDialogTimeoutRef.current) {
-			clearTimeout(winDialogTimeoutRef.current);
-			winDialogTimeoutRef.current = null;
-		}
-		setIsInputBlocked(false);
-		// Use initialBoard or savedBoard if available, otherwise scramble
-		// This triggers when user changes difficulty (3x3 <-> 4x4)
-		let newTiles;
-		if (savedBoard) {
-			newTiles = savedBoard;
-		} else if (initialBoard) {
-			newTiles = initialBoard;
-		} else {
-			newTiles = scramblePuzzle(size);
-		}
-		setTiles(newTiles);
-		setIsGameWon(false);
-		hasShownWin.current = false;
+		// Update board state (deferred to avoid cascading renders warning)
+		Promise.resolve().then(() => {
+			setTiles(savedBoard || initialBoard || scramblePuzzle(size));
+			setIsGameWon(false);
+			hasShownWinDialog.current = false;
+			setIsInputBlocked(false);
+		});
 	}, [size, initialBoard, savedBoard]);
 
 	// Show win dialog after delay (allows trophy transformation and celebration)
 	useEffect(() => {
-		if (isGameWon && onWin && onShowWinDialog && !hasShownWin.current) {
-			hasShownWin.current = true;
-			// Call onWin immediately to trigger trophy transformation
+		if (isGameWon && onShowWinDialog && !hasShownWinDialog.current) {
+			hasShownWinDialog.current = true;
+
+			// Trigger trophy transformation
 			onWin();
-			// Delay to show trophy transformation and celebration before dialog
-			// Clear any existing timeout
-			if (winDialogTimeoutRef.current) {
-				clearTimeout(winDialogTimeoutRef.current);
-			}
-			winDialogTimeoutRef.current = setTimeout(() => {
+
+			// Delay dialog to show trophy transformation and celebration
+			setTimeout(() => {
 				onShowWinDialog();
-				winDialogTimeoutRef.current = null;
 			}, WIN_DIALOG_DELAY_MS);
 		}
 	}, [isGameWon, onWin, onShowWinDialog]);
 
 	// ===== Tile Movement Logic =====
 	const gapIndex = getGapIndex(tiles);
-
-	// Unblock input (called by Tile's onLayoutAnimationComplete)
-	const unblockInput = useCallback(() => {
-		setIsInputBlocked(false);
-	}, []);
 
 	// Move tile - smooth animation via CSS transitions
 	const moveTile = useCallback(
@@ -186,10 +137,8 @@ function Board({
 				playTileMoveSound();
 			}
 
-			// Notify parent for Firestore save immediately (not after animation)
-			if (onMove) {
-				onMove(newTiles);
-			}
+			// Notify parent for Firestore save
+			onMove(newTiles);
 
 			// Block input during animation (unblocked by onLayoutAnimationComplete)
 			setIsInputBlocked(true);
@@ -229,13 +178,9 @@ function Board({
 	);
 
 	// ===== Event Handlers =====
-	// Pointer down on tile - instant move if adjacent to gap
-	const handleTilePointerDown = (index) => {
-		handleTileSelect(index, null);
-	};
 
 	// Keyboard controls (arrow keys move tile FROM gap in that direction)
-	const handleKeyPress = useCallback(
+	const handleArrowKeyPress = useCallback(
 		(event) => {
 			const arrowKeys = [
 				"ArrowUp",
@@ -255,10 +200,11 @@ function Board({
 	useEffect(() => {
 		// Only attach listener when input is not blocked
 		if (!isInputBlocked && !isGameWon) {
-			window.addEventListener("keydown", handleKeyPress);
-			return () => window.removeEventListener("keydown", handleKeyPress);
+			window.addEventListener("keydown", handleArrowKeyPress);
+			return () =>
+				window.removeEventListener("keydown", handleArrowKeyPress);
 		}
-	}, [handleKeyPress, isInputBlocked, isGameWon]);
+	}, [handleArrowKeyPress, isInputBlocked, isGameWon]);
 
 	// ===== Render =====
 	return (
@@ -287,15 +233,13 @@ function Board({
 					<Tile
 						key={value}
 						tileNumber={value}
-						tileIndex={index}
 						isClickable={isClickable}
 						showNumbers={showNumbers}
 						emojiSvgUrl={emojiSvgUrl}
 						boardSize={size}
-						isGameWon={isGameWon}
-						onTransitionEnd={unblockInput}
+						onTransitionEnd={() => setIsInputBlocked(false)}
 						{...(isClickable && {
-							onPointerDown: () => handleTilePointerDown(index),
+							onPointerDown: () => handleTileSelect(index, null),
 						})}
 					/>
 				);

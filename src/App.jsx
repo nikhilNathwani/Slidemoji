@@ -168,6 +168,36 @@ function App() {
 		if (gridSize > highestEarnedDifficulty) {
 			setHighestEarnedDifficulty(gridSize);
 		}
+
+		// Update local userData to add this completion immediately (for trophy case)
+		// This ensures the trophy shows up right away in the win dialog
+		setUserData((prevData) => {
+			if (!prevData || !prevData.stats) return prevData;
+
+			const updatedStats = { ...prevData.stats };
+			if (!updatedStats.completedPuzzles) {
+				updatedStats.completedPuzzles = {};
+			}
+			if (!updatedStats.completedPuzzles[todaysPuzzleNumber]) {
+				updatedStats.completedPuzzles[todaysPuzzleNumber] = {};
+			}
+			// Add this difficulty completion with emoji data
+			updatedStats.completedPuzzles[todaysPuzzleNumber][gridSize] = {
+				completedAt: new Date(),
+				emoji: dailyEmoji.emoji,
+				emojiName: dailyEmoji.name,
+			};
+
+			return {
+				...prevData,
+				stats: updatedStats,
+			};
+		});
+
+		// Block all input during win celebration period
+		setShowSettings(false);
+		setShowStats(false);
+
 		// Note: setIsWon and dialog opening happens in Board after celebration delay
 	};
 
@@ -251,6 +281,7 @@ function App() {
 			<Header
 				onSettingsClick={() => setShowSettings(true)}
 				onStatsClick={() => setShowStats(true)}
+				isWinCelebrating={isWon && !showWinDialog}
 			/>
 			<Game
 				dailyEmoji={dailyEmoji}
@@ -301,12 +332,11 @@ function App() {
 				title="🎉 Congratulations!"
 			>
 				<WinContent
+					puzzleNumber={todaysPuzzleNumber}
 					earnedEmoji={dailyEmoji.emoji}
 					earnedEmojiName={dailyEmoji.name}
 					gridSize={gridSize}
 					dailyEmoji={dailyEmoji}
-					earnedPuzzleIds={new Set([todaysPuzzleNumber])}
-					totalPuzzles={365}
 					userData={userData}
 				/>
 			</Dialog>

@@ -393,6 +393,8 @@ export async function saveCompletion(
 			startedAt: game.startedAt,
 			timeSpent, // In seconds
 			fromArchive, // Preserve whether this was daily or archive
+			emoji: completionData.emoji,
+			emojiName: completionData.emojiName,
 		};
 
 		// Update totals (both daily and archive count here)

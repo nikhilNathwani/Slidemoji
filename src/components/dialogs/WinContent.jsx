@@ -4,12 +4,12 @@ import styles from "./WinContent.module.css";
 import { FontAwesomeIcon } from "../../utils/icons";
 
 function WinContent({
+	puzzleNumber,
 	earnedEmoji,
 	earnedEmojiName,
 	gridSize,
 	dailyEmoji,
-	earnedPuzzleIds = new Set([1]),
-	totalPuzzles = 12,
+	userData,
 }) {
 	const handleShare = () => {
 		const shareText = `Slidemoji #001 ${earnedEmoji}
@@ -32,13 +32,13 @@ Play at slidemoji.com`;
 	return (
 		<div className={styles.winDialogContent}>
 			<Trophy
-				trophyNum={1}
+				trophyNum={puzzleNumber}
 				trophyEmoji={earnedEmoji}
 				trophyName={earnedEmojiName}
 				isEarned={true}
 				difficulty={gridSize}
 			/>
-			<h3>You unscrambled today's emoji!</h3>
+			<h3>You earned today's emoji!</h3>
 
 			<button className={styles.shareButton} onClick={handleShare}>
 				<FontAwesomeIcon icon="share-nodes" />
@@ -47,11 +47,7 @@ Play at slidemoji.com`;
 
 			<div className={styles.winDivider}></div>
 
-			<StatsContent
-				dailyEmoji={dailyEmoji}
-				earnedPuzzleIds={earnedPuzzleIds}
-				totalPuzzles={totalPuzzles}
-			/>
+			<StatsContent dailyEmoji={dailyEmoji} userData={userData} />
 		</div>
 	);
 }

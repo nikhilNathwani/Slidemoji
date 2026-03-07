@@ -38,7 +38,7 @@
 
 .puzzleEmojiName {
 	font-size: 0.95rem;
-	color: var(--text-tertiary);
+	color: var(--text-secondary);
 	margin-top: 6px;
 	font-weight: 500;
 }

@@ -143,6 +143,8 @@ function Game({
 		if (user && puzzleData) {
 			saveCompletion(user.uid, puzzleId, difficulty, {
 				moves,
+				emoji: puzzleData.emoji,
+				emojiName: puzzleData.name,
 			}).catch((error) => {
 				console.error("Error saving completion:", error);
 			});

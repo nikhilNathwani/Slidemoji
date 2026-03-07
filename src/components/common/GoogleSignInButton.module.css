@@ -2,9 +2,9 @@
 	padding: 12px 20px; /* Match icon button visual weight */
 	height: 48px; /* Match icon button height */
 	border-radius: 24px; /* Fully rounded to match icon buttons */
-	border: 1px solid var(--border-secondary); /* Match icon button border */
-	background-color: var(--surface-primary);
-	color: var(--text-primary);
+	border: 2px solid rgba(0, 0, 0, 0.12); /* Thicker, more visible border on white background */
+	background-color: #ffffff; /* White background */
+	color: #333333;
 	font-size: 0.9rem;
 	font-weight: 600;
 	cursor: pointer;
@@ -16,7 +16,7 @@
 }
 
 .googleSignInButton:hover {
-	background-color: var(--surface-secondary);
+	background-color: #f8f9fa;
 	border-color: var(--border-primary);
 	transform: scale(1.05);
 }

@@ -6,20 +6,34 @@ function TrophyCase({
 	dailyEmoji,
 	earnedPuzzleIds = new Set(),
 	totalPuzzles = 12,
+	userData,
 }) {
 	// Generate trophy slots (with gaps for missed puzzles)
 	const trophySlots = [];
 	for (let i = 1; i <= totalPuzzles; i++) {
 		const isEarned = earnedPuzzleIds.has(i);
+		// Get actual emoji from userData completedPuzzles if available
+		let emoji = null;
+		let name = null;
+		if (isEarned && userData?.stats?.completedPuzzles?.[i]) {
+			// Get emoji from first completed difficulty for this puzzle
+			const difficulties = Object.keys(
+				userData.stats.completedPuzzles[i],
+			);
+			if (difficulties.length > 0) {
+				emoji =
+					userData.stats.completedPuzzles[i][difficulties[0]].emoji ||
+					dailyEmoji.emoji;
+				name =
+					userData.stats.completedPuzzles[i][difficulties[0]]
+						.emojiName || dailyEmoji.name;
+			}
+		}
 		trophySlots.push({
 			puzzleNum: i,
 			isEarned,
-			emoji: isEarned ? (i === 1 ? dailyEmoji.emoji : "🎨") : null, // Mock emoji
-			name: isEarned
-				? i === 1
-					? dailyEmoji.name
-					: "Daily Puzzle"
-				: null,
+			emoji,
+			name,
 		});
 	}
 

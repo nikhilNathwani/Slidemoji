@@ -77,6 +77,7 @@ function StatsContent({ dailyEmoji, userData, totalPuzzles = 365 }) {
 						dailyEmoji={dailyEmoji}
 						earnedPuzzleIds={earnedPuzzleIds}
 						totalPuzzles={totalPuzzles}
+						userData={userData}
 					/>
 
 					{/* Archive upsell (signed-in only) */}
