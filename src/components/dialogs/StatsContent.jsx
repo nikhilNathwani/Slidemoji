@@ -47,7 +47,8 @@ function StatsContent({
 					{showTitle && (
 						<>
 							<h3 className={styles.trophyCaseTitle}>
-								<FontAwesomeIcon icon="trophy" /> Trophy Case
+								<FontAwesomeIcon icon="trophy" /> Trophy Case (
+								{earnedPuzzleIds.size}/{totalPuzzles})
 							</h3>
 							<div className={styles.statsDivider}></div>
 						</>
@@ -59,7 +60,7 @@ function StatsContent({
 						earnedPuzzleIds={earnedPuzzleIds}
 						totalPuzzles={totalPuzzles}
 						userData={userData}
-						showTitle={!showTitle}
+						showTitle={false}
 					/>
 
 					{/* Archive upsell (signed-in only) */}

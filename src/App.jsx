@@ -308,12 +308,19 @@ function App() {
 			<Dialog
 				isOpen={showStats}
 				onClose={() => setShowStats(false)}
-				title="Trophy Case"
+				title={(() => {
+					// Calculate earned puzzles count for title
+					const earnedCount = userData?.stats?.completedPuzzles
+						? Object.keys(userData.stats.completedPuzzles).length
+						: 0;
+					return `Trophy Case (${earnedCount}/${todaysPuzzleNumber})`;
+				})()}
 			>
 				<StatsContent
 					dailyEmoji={dailyEmoji}
 					userData={userData}
 					totalPuzzles={todaysPuzzleNumber}
+					showTitle={false}
 				/>
 			</Dialog>
 
