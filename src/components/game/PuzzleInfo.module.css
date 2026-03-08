@@ -10,7 +10,6 @@
 	background-color: var(--surface-secondary);
 	border-radius: 12px;
 	border: 2px solid var(--border-secondary);
-	transition: opacity 0.5s ease;
 }
 
 .puzzleInfo.hidden {
@@ -41,5 +40,3 @@
 	margin-top: 6px;
 	font-weight: 500;
 }
-
-

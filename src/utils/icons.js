@@ -18,6 +18,8 @@ import {
 	faShieldAlt,
 	faFire,
 	faUnlock,
+	faChevronLeft,
+	faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 
 // Add all icons to the library so they can be used throughout the app
@@ -35,6 +37,8 @@ library.add(
 	faShieldAlt,
 	faFire,
 	faUnlock,
+	faChevronLeft,
+	faChevronRight,
 );
 
 // Export FontAwesomeIcon component for use in other files

@@ -315,11 +315,10 @@ function App() {
 				userData={userData}
 				totalPuzzles={todaysPuzzleNumber}
 			/>
-				onClose={handleCloseWinDialog}
-				title="🎉 Congratulations!"
-			>
-				<WinContent
-					puzzleNumber={todaysPuzzleNumber}
+		</Dialog>
+
+		<Dialog
+			isOpen={showWinDialog}
 					earnedEmoji={dailyEmoji.emoji}
 					earnedEmojiName={dailyEmoji.name}
 					gridSize={gridSize}

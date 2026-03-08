@@ -30,11 +30,55 @@
 	grid-template-columns: repeat(auto-fit, minmax(70px, 70px));
 	justify-content: center;
 	gap: 12px;
-	max-height: 400px;
-	overflow-y: auto;
 	padding: 12px;
 	background-color: var(--surface-secondary);
 	border-radius: 12px;
 	border: 1px solid var(--border-secondary);
 	position: relative;
+}
+
+.pagination {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 16px;
+	margin-bottom: 16px;
+}
+
+.paginationButton {
+	width: 36px;
+	height: 36px;
+	border-radius: 50%;
+	background-color: var(--surface-primary);
+	border: 1px solid var(--border-secondary);
+	color: var(--text-primary);
+	font-size: 0.9rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.paginationButton:hover:not(:disabled) {
+	background-color: var(--surface-secondary);
+	border-color: var(--border-primary);
+	transform: scale(1.05);
+}
+
+.paginationButton:active:not(:disabled) {
+	transform: scale(0.95);
+}
+
+.paginationButton:disabled {
+	opacity: 0.3;
+	cursor: not-allowed;
+}
+
+.pageInfo {
+	font-size: 0.9rem;
+	color: var(--text-secondary);
+	font-weight: 500;
+	min-width: 100px;
+	text-align: center;
 }
