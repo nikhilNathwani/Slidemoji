@@ -4,7 +4,6 @@
 	align-items: center;
 	justify-content: center;
 	flex-flow: column nowrap;
-	padding: 15px 0;
 	text-align: center;
 	padding: 8px 16px;
 	background-color: var(--surface-secondary);

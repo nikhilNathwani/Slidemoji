@@ -268,7 +268,7 @@ function App() {
 			<Header
 				onSettingsClick={() => setShowSettings(true)}
 				onStatsClick={() => setShowStats(true)}
-				isWinCelebrating={isWon && !showWinDialog}
+				isWinCelebrating={false}
 			/>
 			<Game
 				dailyEmoji={dailyEmoji}
@@ -308,23 +308,21 @@ function App() {
 			<Dialog
 				isOpen={showStats}
 				onClose={() => setShowStats(false)}
-				title="Stats"
+				title="Trophy Case"
 			>
-			<StatsContent
-				dailyEmoji={dailyEmoji}
-				userData={userData}
-				totalPuzzles={todaysPuzzleNumber}
-			/>
-		</Dialog>
-
-		<Dialog
-			isOpen={showWinDialog}
-			onClose={handleCloseWinDialog}
-			title="🎉 Congratulations!"
-		>
-			<WinContent
-				puzzleNumber={todaysPuzzleNumber}
+				<StatsContent
+					dailyEmoji={dailyEmoji}
+					userData={userData}
+					totalPuzzles={todaysPuzzleNumber}
 				/>
+			</Dialog>
+
+			<Dialog
+				isOpen={showWinDialog}
+				onClose={handleCloseWinDialog}
+				title="🎉 Congratulations!"
+			>
+				<WinContent puzzleNumber={todaysPuzzleNumber} />
 			</Dialog>
 
 			<Dialog

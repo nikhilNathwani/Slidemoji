@@ -4,6 +4,20 @@
 	gap: 30px;
 }
 
+.trophyCaseTitle {
+	font-size: 1.3rem;
+	color: var(--text-primary);
+	margin: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+}
+
+.trophyCaseTitle i {
+	color: var(--text-secondary);
+}
+
 .statsDivider {
 	height: 1px;
 	background: var(--border-secondary);

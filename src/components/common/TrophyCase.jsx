@@ -8,6 +8,7 @@ function TrophyCase({
 	earnedPuzzleIds = new Set(),
 	totalPuzzles = 12,
 	userData,
+	showTitle = true,
 }) {
 	const TROPHIES_PER_PAGE = 12;
 	const totalPages = Math.ceil(totalPuzzles / TROPHIES_PER_PAGE);
@@ -68,12 +69,29 @@ function TrophyCase({
 
 	return (
 		<div className={styles.trophyCase}>
-			<h3>
-				<FontAwesomeIcon icon="trophy" /> Trophy Case
-				<span className={styles.trophyCount}>
-					{earnedPuzzleIds.size}/{totalPuzzles}
-				</span>
-			</h3>
+			{showTitle && (
+				<h3>
+					<FontAwesomeIcon icon="trophy" /> Trophy Case
+					<span className={styles.trophyCount}>
+						{earnedPuzzleIds.size}/{totalPuzzles}
+					</span>
+				</h3>
+			)}
+
+			<div className={styles.emojiGrid}>
+				{trophySlots.map((slot) => (
+					<Trophy
+						key={slot.puzzleNum}
+						trophyNum={slot.puzzleNum}
+						trophyEmoji={slot.emoji}
+						trophyName={slot.name}
+						isLocked={!slot.isEarned}
+						isEarned={slot.isEarned}
+						difficulty={3}
+						isMini={true}
+					/>
+				))}
+			</div>
 
 			{totalPages > 1 && (
 				<div className={styles.pagination}>
@@ -98,21 +116,6 @@ function TrophyCase({
 					</button>
 				</div>
 			)}
-
-			<div className={styles.emojiGrid}>
-				{trophySlots.map((slot) => (
-					<Trophy
-						key={slot.puzzleNum}
-						trophyNum={slot.puzzleNum}
-						trophyEmoji={slot.emoji}
-						trophyName={slot.name}
-						isLocked={!slot.isEarned}
-						isEarned={slot.isEarned}
-						difficulty={3}
-						isMini={true}
-					/>
-				))}
-			</div>
 		</div>
 	);
 }

@@ -47,7 +47,12 @@ Play at slidemoji.com`;
 
 			<div className={styles.winDivider}></div>
 
-			<StatsContent dailyEmoji={dailyEmoji} userData={userData} />
+			<StatsContent
+				dailyEmoji={dailyEmoji}
+				userData={userData}
+				totalPuzzles={puzzleNumber}
+				showTitle={true}
+			/>
 		</div>
 	);
 }

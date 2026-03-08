@@ -4,7 +4,7 @@ import { useAuth } from "../../hooks/useAuth";
 import styles from "./StatsContent.module.css";
 import { FontAwesomeIcon } from "../../utils/icons";
 
-function StatsContent({ dailyEmoji, userData, totalPuzzles = 1 }) {
+function StatsContent({ dailyEmoji, userData, totalPuzzles = 1, showTitle = false }) {
 	const { user } = useAuth();
 
 	// Extract earned puzzle IDs from userData
@@ -14,8 +14,6 @@ function StatsContent({ dailyEmoji, userData, totalPuzzles = 1 }) {
 			earnedPuzzleIds.add(parseInt(puzzleId));
 		});
 	}
-
-	const stats = userData?.stats || {};
 
 	return (
 		<div className={styles.statsContent}>
@@ -41,28 +39,13 @@ function StatsContent({ dailyEmoji, userData, totalPuzzles = 1 }) {
 				</div>
 			) : (
 				<>
-					{/* Streaks (signed-in only) */}
-					{userData && (
-						<div className={styles.streaksSection}>
-							<div className={styles.statRow}>
-								<span className={styles.statLabel}>
-									<FontAwesomeIcon icon="fire" /> Play Streak
-								</span>
-								<span className={styles.statValue}>
-									{stats.currentPlayStreak || 0} days
-								</span>
-							</div>
-							<div className={styles.statRow}>
-								<span className={styles.statLabel}>
-									<FontAwesomeIcon icon="trophy" /> Win Streak
-								</span>
-								<span className={styles.statValue}>
-									{stats.currentWinStreak || 0} days
-								</span>
-							</div>
-
+					{showTitle && (
+						<>
+							<h3 className={styles.trophyCaseTitle}>
+								<FontAwesomeIcon icon="trophy" /> Trophy Case
+							</h3>
 							<div className={styles.statsDivider}></div>
-						</div>
+						</>
 					)}
 
 					{/* Trophy Case (signed-in only) */}
@@ -71,6 +54,7 @@ function StatsContent({ dailyEmoji, userData, totalPuzzles = 1 }) {
 						earnedPuzzleIds={earnedPuzzleIds}
 						totalPuzzles={totalPuzzles}
 						userData={userData}
+						showTitle={!showTitle}
 					/>
 
 					{/* Archive upsell (signed-in only) */}

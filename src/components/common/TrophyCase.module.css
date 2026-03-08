@@ -28,8 +28,10 @@
 .emojiGrid {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(70px, 70px));
+	grid-template-rows: repeat(4, 1fr);
 	justify-content: center;
 	gap: 12px;
+	min-height: 400px;
 	padding: 12px;
 	background-color: var(--surface-secondary);
 	border-radius: 12px;
@@ -42,7 +44,7 @@
 	align-items: center;
 	justify-content: center;
 	gap: 16px;
-	margin-bottom: 16px;
+	margin-top: 16px;
 }
 
 .paginationButton {
