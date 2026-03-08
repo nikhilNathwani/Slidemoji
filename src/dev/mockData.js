@@ -29,6 +29,45 @@ export function getMockPuzzle(puzzleId) {
 }
 
 /**
+ * Get mock emoji for a puzzle ID (for mock completedPuzzles data)
+ */
+function getMockEmoji(puzzleId) {
+	const emojis = [
+		{ emoji: "🎯", name: "Direct Hit" },
+		{ emoji: "🎨", name: "Artist Palette" },
+		{ emoji: "🎭", name: "Performing Arts" },
+		{ emoji: "🎪", name: "Circus Tent" },
+		{ emoji: "🎸", name: "Guitar" },
+		{ emoji: "🎹", name: "Musical Keyboard" },
+		{ emoji: "🎺", name: "Trumpet" },
+		{ emoji: "🎻", name: "Violin" },
+		{ emoji: "🎮", name: "Video Game" },
+		{ emoji: "🎲", name: "Game Die" },
+		{ emoji: "🎰", name: "Slot Machine" },
+		{ emoji: "🎳", name: "Bowling" },
+		{ emoji: "🏀", name: "Basketball" },
+		{ emoji: "⚽", name: "Soccer Ball" },
+		{ emoji: "🏈", name: "Football" },
+		{ emoji: "⚾", name: "Baseball" },
+		{ emoji: "🎾", name: "Tennis" },
+		{ emoji: "🏐", name: "Volleyball" },
+		{ emoji: "🏉", name: "Rugby" },
+		{ emoji: "🎱", name: "Pool 8 Ball" },
+		{ emoji: "🏓", name: "Ping Pong" },
+		{ emoji: "🏸", name: "Badminton" },
+		{ emoji: "🏒", name: "Ice Hockey" },
+		{ emoji: "🏑", name: "Field Hockey" },
+		{ emoji: "🥏", name: "Flying Disc" },
+		{ emoji: "🎿", name: "Skis" },
+		{ emoji: "🛷", name: "Sled" },
+		{ emoji: "⛸️", name: "Ice Skate" },
+		{ emoji: "🥌", name: "Curling Stone" },
+		{ emoji: "🎯", name: "Bullseye" },
+	];
+	return emojis[(puzzleId - 1) % emojis.length];
+}
+
+/**
  * Mock user data scenarios for testing different states
  */
 export const mockUserScenarios = {
@@ -74,6 +113,7 @@ export const mockUserScenarios = {
 				...Object.fromEntries(
 					Array.from({ length: 10 }, (_, i) => {
 						const puzzleId = i + 1;
+						const emojiData = getMockEmoji(puzzleId);
 						return [
 							puzzleId,
 							{
@@ -88,6 +128,8 @@ export const mockUserScenarios = {
 									timeSpent:
 										120 + Math.floor(Math.random() * 60),
 									fromArchive: false,
+									emoji: emojiData.emoji,
+									emojiName: emojiData.name,
 								},
 								4: {
 									moves: 50 + Math.floor(Math.random() * 30),
@@ -100,6 +142,8 @@ export const mockUserScenarios = {
 									timeSpent:
 										180 + Math.floor(Math.random() * 90),
 									fromArchive: false,
+									emoji: emojiData.emoji,
+									emojiName: emojiData.name,
 								},
 							},
 						];
@@ -134,6 +178,8 @@ export const mockUserScenarios = {
 						startedAt: Timestamp.fromDate(new Date("2026-03-01")),
 						timeSpent: 125,
 						fromArchive: false,
+						emoji: getMockEmoji(1).emoji,
+						emojiName: getMockEmoji(1).name,
 					},
 				},
 			},
@@ -172,6 +218,7 @@ export const mockUserScenarios = {
 				...Object.fromEntries(
 					Array.from({ length: 30 }, (_, i) => {
 						const puzzleId = i + 1;
+						const emojiData = getMockEmoji(puzzleId);
 						return [
 							puzzleId,
 							{
@@ -186,6 +233,8 @@ export const mockUserScenarios = {
 									timeSpent:
 										90 + Math.floor(Math.random() * 30),
 									fromArchive: false,
+									emoji: emojiData.emoji,
+									emojiName: emojiData.name,
 								},
 								4: {
 									moves: 45 + Math.floor(Math.random() * 25),
@@ -198,6 +247,8 @@ export const mockUserScenarios = {
 									timeSpent:
 										150 + Math.floor(Math.random() * 60),
 									fromArchive: false,
+									emoji: emojiData.emoji,
+									emojiName: emojiData.name,
 								},
 							},
 						];

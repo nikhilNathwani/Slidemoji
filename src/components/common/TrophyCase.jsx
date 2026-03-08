@@ -46,12 +46,9 @@ function TrophyCase({
 			}
 		}
 
-		// Only mark as earned if we have emoji data
-		const hasEmojiData = emoji !== null;
-
 		trophySlots.push({
 			puzzleNum: i,
-			isEarned: isEarned && hasEmojiData,
+			isEarned,
 			emoji,
 			name,
 		});

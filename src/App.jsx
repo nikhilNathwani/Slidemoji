@@ -319,11 +319,11 @@ function App() {
 
 		<Dialog
 			isOpen={showWinDialog}
-					earnedEmoji={dailyEmoji.emoji}
-					earnedEmojiName={dailyEmoji.name}
-					gridSize={gridSize}
-					dailyEmoji={dailyEmoji}
-					userData={userData}
+			onClose={handleCloseWinDialog}
+			title="🎉 Congratulations!"
+		>
+			<WinContent
+				puzzleNumber={todaysPuzzleNumber}
 				/>
 			</Dialog>
 
