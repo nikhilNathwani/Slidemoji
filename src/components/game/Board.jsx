@@ -190,7 +190,9 @@ function Board({
 			];
 			if (!arrowKeys.includes(event.key)) return;
 
+			// Prevent default behavior (scrolling the page)
 			event.preventDefault();
+			event.stopPropagation();
 			handleTileSelect(null, event.key);
 		},
 		[handleTileSelect],

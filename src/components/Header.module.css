@@ -187,4 +187,9 @@
 	.iconButton i {
 		font-size: 1rem;
 	}
+
+	.avatarButton {
+		width: 42px;
+		height: 42px;
+	}
 }

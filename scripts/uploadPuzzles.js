@@ -83,11 +83,13 @@ const db = getFirestore(app);
 
 /**
  * Scramble puzzle board - creates a solvable random configuration
+ * Ensures the gap always ends up in the bottom-right corner
  * (Same logic as src/utils/boardHelpers.js)
  */
 function scramblePuzzle(size) {
 	const totalTiles = size * size;
 	const board = Array.from({ length: totalTiles }, (_, i) => i);
+	const bottomRightIndex = totalTiles - 1;
 
 	// Perform 500 random valid moves to ensure solvability
 	let emptyIndex = totalTiles - 1;
@@ -113,6 +115,35 @@ function scramblePuzzle(size) {
 			board[emptyIndex],
 		];
 		emptyIndex = randomMove;
+	}
+
+	// Ensure gap ends up in bottom-right corner
+	while (emptyIndex !== bottomRightIndex) {
+		const row = Math.floor(emptyIndex / size);
+		const col = emptyIndex % size;
+		const targetRow = size - 1;
+		const targetCol = size - 1;
+
+		let nextIndex;
+
+		// Prioritize moving down, then right
+		if (row < targetRow) {
+			// Move gap down (swap with tile below)
+			nextIndex = emptyIndex + size;
+		} else if (col < targetCol) {
+			// Move gap right (swap with tile to the right)
+			nextIndex = emptyIndex + 1;
+		} else {
+			// Should not reach here, but break to prevent infinite loop
+			break;
+		}
+
+		// Swap
+		[board[emptyIndex], board[nextIndex]] = [
+			board[nextIndex],
+			board[emptyIndex],
+		];
+		emptyIndex = nextIndex;
 	}
 
 	return board;

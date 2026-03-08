@@ -4,7 +4,7 @@ import { useAuth } from "../../hooks/useAuth";
 import styles from "./StatsContent.module.css";
 import { FontAwesomeIcon } from "../../utils/icons";
 
-function StatsContent({ dailyEmoji, userData, totalPuzzles = 365 }) {
+function StatsContent({ dailyEmoji, userData, totalPuzzles = 1 }) {
 	const { user } = useAuth();
 
 	// Extract earned puzzle IDs from userData
@@ -60,14 +60,7 @@ function StatsContent({ dailyEmoji, userData, totalPuzzles = 365 }) {
 									{stats.currentWinStreak || 0} days
 								</span>
 							</div>
-							<div className={styles.statRow}>
-								<span className={styles.statLabel}>
-									Puzzles Completed
-								</span>
-								<span className={styles.statValue}>
-									{stats.totalCompleted || 0}
-								</span>
-							</div>
+
 							<div className={styles.statsDivider}></div>
 						</div>
 					)}

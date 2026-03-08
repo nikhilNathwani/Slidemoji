@@ -86,15 +86,12 @@ export async function getUserData(userId) {
 	}
 
 	try {
-		console.log("[FIRESTORE] Getting user data for:", userId);
 		const userDocRef = doc(db, "users", userId);
 		const userDoc = await getDoc(userDocRef);
 
 		if (userDoc.exists()) {
-			console.log("[FIRESTORE] User data found");
 			return userDoc.data();
 		}
-		console.log("[FIRESTORE] User document does not exist, returning null");
 		return null;
 	} catch (error) {
 		console.error("[FIRESTORE] Error getting user data:", {

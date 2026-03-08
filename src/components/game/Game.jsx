@@ -63,10 +63,6 @@ function Game({
 		// In dev mode: userData is mock data, puzzleData is mock puzzle
 		// In production: userData is from Firestore, puzzleData is from Firestore
 		if (!puzzleData || !userData) {
-			console.log("Waiting for data:", {
-				puzzleData: !!puzzleData,
-				userData: !!userData,
-			});
 			return; // Wait for both puzzle data and user data
 		}
 

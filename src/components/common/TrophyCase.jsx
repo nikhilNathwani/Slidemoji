@@ -21,12 +21,9 @@ function TrophyCase({
 				userData.stats.completedPuzzles[i],
 			);
 			if (difficulties.length > 0) {
-				emoji =
-					userData.stats.completedPuzzles[i][difficulties[0]].emoji ||
-					dailyEmoji.emoji;
-				name =
-					userData.stats.completedPuzzles[i][difficulties[0]]
-						.emojiName || dailyEmoji.name;
+				const puzzleData = userData.stats.completedPuzzles[i][difficulties[0]];
+				emoji = puzzleData?.emoji || null;
+				name = puzzleData?.emojiName || null;
 			}
 		}
 		trophySlots.push({

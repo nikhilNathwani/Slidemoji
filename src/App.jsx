@@ -50,12 +50,6 @@ function App() {
 
 	// Dev mode configuration
 	const devConfig = getDevConfig();
-	console.log(
-		"[DEV] Config:",
-		devConfig,
-		"VITE_DEV_MODE:",
-		import.meta.env.VITE_DEV_MODE,
-	);
 
 	// ===== Load User Data on Sign-In =====
 	// When user signs in, fetch their Firestore document (preferences, stats, game state)
@@ -65,11 +59,6 @@ function App() {
 		if (devConfig.enabled) {
 			// DEV MODE: Use mock user data
 			const mockUser = getMockUser(devConfig.userScenario);
-			console.log(
-				"[DEV] Using mock user:",
-				devConfig.userScenario,
-				mockUser,
-			);
 			setUserData(mockUser);
 			if (mockUser.preferences?.darkMode !== undefined) {
 				setDarkMode(mockUser.preferences.darkMode);
@@ -84,7 +73,6 @@ function App() {
 			// User just signed in - load their data from Firestore
 			getUserData(user.uid)
 				.then((data) => {
-					console.log("[AUTH] User data loaded:", data);
 					setUserData(data);
 					// Apply saved preferences
 					if (data?.preferences?.darkMode !== undefined) {
@@ -118,7 +106,6 @@ function App() {
 		if (devConfig.enabled) {
 			// DEV MODE: Use mock puzzle
 			const mockPuzzle = getMockPuzzle(todaysPuzzleNumber);
-			console.log("[DEV] Using mock puzzle:", mockPuzzle);
 			setPuzzleData(mockPuzzle);
 			return;
 		}
@@ -323,11 +310,11 @@ function App() {
 				onClose={() => setShowStats(false)}
 				title="Stats"
 			>
-				<StatsContent dailyEmoji={dailyEmoji} userData={userData} />
-			</Dialog>
-
-			<Dialog
-				isOpen={showWinDialog}
+			<StatsContent
+				dailyEmoji={dailyEmoji}
+				userData={userData}
+				totalPuzzles={todaysPuzzleNumber}
+			/>
 				onClose={handleCloseWinDialog}
 				title="🎉 Congratulations!"
 			>
