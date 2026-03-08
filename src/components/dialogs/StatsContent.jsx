@@ -47,8 +47,11 @@ function StatsContent({
 					{showTitle && (
 						<>
 							<h3 className={styles.trophyCaseTitle}>
-								<FontAwesomeIcon icon="trophy" /> Trophy Case (
-								{earnedPuzzleIds.size}/{totalPuzzles})
+								Trophy Case{" "}
+								<span className={styles.trophyCountPill}>
+									{earnedPuzzleIds.size}/{totalPuzzles}{" "}
+									<FontAwesomeIcon icon="trophy" />
+								</span>
 							</h3>
 							<div className={styles.statsDivider}></div>
 						</>

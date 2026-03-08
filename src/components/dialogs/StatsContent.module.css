@@ -18,6 +18,18 @@
 	color: var(--text-secondary);
 }
 
+.trophyCountPill {
+	font-size: 1rem;
+	color: var(--text-secondary);
+	background-color: var(--surface-primary);
+	padding: 4px 12px;
+	border-radius: 12px;
+	font-weight: 600;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+}
+
 .statsDivider {
 	height: 1px;
 	background: var(--border-secondary);

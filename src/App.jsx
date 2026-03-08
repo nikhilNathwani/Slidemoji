@@ -308,13 +308,19 @@ function App() {
 			<Dialog
 				isOpen={showStats}
 				onClose={() => setShowStats(false)}
-				title={(() => {
-					// Calculate earned puzzles count for title
-					const earnedCount = userData?.stats?.completedPuzzles
-						? Object.keys(userData.stats.completedPuzzles).length
-						: 0;
-					return `Trophy Case (${earnedCount}/${todaysPuzzleNumber})`;
-				})()}
+				title={
+					<>
+						Trophy Case{" "}
+						<span className="trophyCountPill">
+							{userData?.stats?.completedPuzzles
+								? Object.keys(userData.stats.completedPuzzles)
+										.length
+								: 0}
+							/{todaysPuzzleNumber}{" "}
+							<i className="fas fa-trophy" />
+						</span>
+					</>
+				}
 			>
 				<StatsContent
 					dailyEmoji={dailyEmoji}
@@ -329,7 +335,14 @@ function App() {
 				onClose={handleCloseWinDialog}
 				title="🎉 Congratulations!"
 			>
-				<WinContent puzzleNumber={todaysPuzzleNumber} />
+				<WinContent
+					puzzleNumber={todaysPuzzleNumber}
+					earnedEmoji={dailyEmoji.emoji}
+					earnedEmojiName={dailyEmoji.name}
+					gridSize={gridSize}
+					dailyEmoji={dailyEmoji}
+					userData={userData}
+				/>
 			</Dialog>
 
 			<Dialog
