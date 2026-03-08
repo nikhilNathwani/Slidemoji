@@ -200,7 +200,6 @@ function Game({
 						trophyName={dailyEmoji.name}
 						isEarned={highestEarnedDifficulty > 0}
 						difficulty={highestEarnedDifficulty || gridSize}
-						visible={true}
 					/>
 				</div>
 				{!initialBoard ? (

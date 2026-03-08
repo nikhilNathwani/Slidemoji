@@ -4,7 +4,12 @@ import { useAuth } from "../../hooks/useAuth";
 import styles from "./StatsContent.module.css";
 import { FontAwesomeIcon } from "../../utils/icons";
 
-function StatsContent({ dailyEmoji, userData, totalPuzzles = 1, showTitle = false }) {
+function StatsContent({
+	dailyEmoji,
+	userData,
+	totalPuzzles = 1,
+	showTitle = false,
+}) {
 	const { user } = useAuth();
 
 	// Extract earned puzzle IDs from userData

@@ -1,10 +1,8 @@
 import styles from "./PuzzleInfo.module.css";
 
-function PuzzleInfo({ puzzleNumber, emoji, emojiName, visible }) {
+function PuzzleInfo({ puzzleNumber, emoji, emojiName }) {
 	return (
-		<div
-			className={`${styles.puzzleInfo} ${visible ? styles.visible : styles.hidden}`}
-		>
+		<div className={`${styles.puzzleInfo}`}>
 			<div className={styles.puzzleTitle}>#{puzzleNumber}</div>
 			<div className={styles.puzzleEmoji}>{emoji}</div>
 			<div className={styles.puzzleEmojiName}>"{emojiName}"</div>
