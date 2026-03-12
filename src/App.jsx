@@ -3,12 +3,12 @@ import "./App.css";
 import Game from "./components/game/Game";
 import LandingPage from "./components/landing/LandingPage";
 import Header from "./components/Header";
-import TrophyCaseTitle from "./components/common/trophy/TrophyCaseTitle";
+import TrophyCaseTitle from "./components/stats/TrophyCaseTitle";
 import Dialog from "./components/dialogs/Dialog";
-import SettingsContent from "./components/dialogs/SettingsContent";
-import WinContent from "./components/dialogs/WinContent";
-import ConfirmContent from "./components/dialogs/ConfirmContent";
-import StatsContent from "./components/dialogs/StatsContent";
+import SettingsDialog from "./components/dialogs/SettingsDialog";
+import WinDialog from "./components/dialogs/WinDialog";
+import ConfirmResetDialog from "./components/dialogs/ConfirmResetDialog";
+import StatsDialog from "./components/dialogs/StatsDialog";
 import { getDailyEmoji } from "./utils/emoji";
 import { getTodaysPuzzleNumber } from "./utils/dateUtils";
 import { getPuzzleById } from "./utils/puzzleUtils";
@@ -272,6 +272,7 @@ function App() {
 				onStatsClick={() => setShowStats(true)}
 				isWinCelebrating={false}
 			/>
+
 			<Game
 				dailyEmoji={dailyEmoji}
 				gridSize={gridSize}
@@ -289,82 +290,49 @@ function App() {
 				soundEnabled={soundEnabled}
 			/>
 
-			<Dialog
+			<SettingsDialog
 				isOpen={showSettings}
 				onClose={() => setShowSettings(false)}
-				title="Settings"
-			>
-				<SettingsContent
-					gridSize={gridSize}
-					darkMode={darkMode}
-					showNumbers={showNumbers}
-					soundEnabled={soundEnabled}
-					onDarkModeChange={handleDarkModeChange}
-					onShowNumbersChange={setShowNumbers}
-					onSoundEnabledChange={handleSoundEnabledChange}
-					onGridSizeChange={handleSizeChange}
-					onSolve={handleSolve}
-				/>
-			</Dialog>
+				//
+				gridSize={gridSize}
+				darkMode={darkMode}
+				showNumbers={showNumbers}
+				soundEnabled={soundEnabled}
+				onDarkModeChange={handleDarkModeChange}
+				onShowNumbersChange={setShowNumbers}
+				onSoundEnabledChange={handleSoundEnabledChange}
+				onGridSizeChange={handleSizeChange}
+				onSolve={handleSolve}
+			/>
 
-			<Dialog
+			<StatsDialog
 				isOpen={showStats}
 				onClose={() => setShowStats(false)}
-				title={
-					<>
-						<TrophyCaseTitle
-							numEarnedTrophies={
-								userData?.stats?.completedPuzzles
-									? Object.keys(
-											userData.stats.completedPuzzles,
-										).length
-									: 0
-							}
-							numTotalTrophies={todaysPuzzleNumber}
-							isDialogHeader={true}
-						></TrophyCaseTitle>
-					</>
-				}
-			>
-				<StatsContent
-					dailyEmoji={dailyEmoji}
-					userData={userData}
-					totalPuzzles={todaysPuzzleNumber}
-					showTitle={false}
-				/>
-			</Dialog>
+				//
+				userData={userData}
+				numTotalPuzzles={todaysPuzzleNumber}
+			/>
 
-			<Dialog
+			<WinDialog
 				isOpen={showWinDialog}
 				onClose={handleCloseWinDialog}
-				title={
-					<>
-						{/* <FontAwesomeIcon icon="medal" /> */}
-						Congratulations!
-					</>
-				}
-			>
-				<WinContent
-					puzzleNumber={todaysPuzzleNumber}
-					earnedEmoji={dailyEmoji.emoji}
-					earnedEmojiName={dailyEmoji.name}
-					gridSize={gridSize}
-					dailyEmoji={dailyEmoji}
-					userData={userData}
-				/>
-			</Dialog>
+				//
+				puzzleNumber={todaysPuzzleNumber}
+				earnedEmoji={dailyEmoji.emoji}
+				earnedEmojiName={dailyEmoji.name}
+				gridSize={gridSize}
+				userData={userData}
+			/>
 
-			<Dialog
+			<ConfirmResetDialog
 				isOpen={showDifficultyConfirm}
 				onClose={handleDifficultyCancel}
-				title="Change Difficulty?"
-			>
-				<ConfirmContent
-					message="Changing difficulty will restart the puzzle. Continue?"
-					onConfirm={handleDifficultyConfirm}
-					onCancel={handleDifficultyCancel}
-				/>
-			</Dialog>
+				//
+				onConfirm={handleDifficultyConfirm}
+				message={
+					"Changing difficulty will restart the puzzle. Continue?"
+				}
+			/>
 		</div>
 	);
 }

@@ -1,13 +1,12 @@
-import { FontAwesomeIcon } from "../../../utils/icons";
-import Trophy from "./Trophy";
+import { FontAwesomeIcon } from "../../utils/icons";
+import Trophy from "../common/Trophy";
 import styles from "./TrophyCase.module.css";
 import { useState, useEffect } from "react";
 
 function TrophyCase({
-	dailyEmoji,
 	earnedPuzzleIds = new Set(),
 	totalPuzzles = 12,
-	userData,
+	completedPuzzles,
 	showTitle = true,
 }) {
 	const TROPHIES_PER_PAGE = 12;
@@ -34,14 +33,11 @@ function TrophyCase({
 		// Get actual emoji from userData completedPuzzles if available
 		let emoji = null;
 		let name = null;
-		if (isEarned && userData?.stats?.completedPuzzles?.[i]) {
+		if (isEarned && completedPuzzles?.[i]) {
 			// Get emoji from first completed difficulty for this puzzle
-			const difficulties = Object.keys(
-				userData.stats.completedPuzzles[i],
-			);
+			const difficulties = Object.keys(completedPuzzles[i]);
 			if (difficulties.length > 0) {
-				const puzzleData =
-					userData.stats.completedPuzzles[i][difficulties[0]];
+				const puzzleData = completedPuzzles[i][difficulties[0]];
 				emoji = puzzleData?.emoji || null;
 				name = puzzleData?.emojiName || null;
 			}

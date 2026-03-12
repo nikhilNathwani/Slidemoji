@@ -1,25 +1,17 @@
-import TrophyCase from "../common/trophy/TrophyCase";
+import TrophyCase from "../stats/TrophyCase";
+import TrophyCaseTitle from "../stats/TrophyCaseTitle";
 import GoogleSignInButton from "../common/GoogleSignInButton";
-import TrophyCaseTitle from "../common/trophy/TrophyCaseTitle";
 import { useAuth } from "../../hooks/useAuth";
 import styles from "./StatsContent.module.css";
 import { FontAwesomeIcon } from "../../utils/icons";
 
 function StatsContent({
-	dailyEmoji,
 	userData,
-	totalPuzzles = 1,
+	earnedPuzzleIds,
+	numTotalPuzzles = 1,
 	showTitle = false,
 }) {
 	const { user } = useAuth();
-
-	// Extract earned puzzle IDs from userData
-	const earnedPuzzleIds = new Set();
-	if (userData?.stats?.completedPuzzles) {
-		Object.keys(userData.stats.completedPuzzles).forEach((puzzleId) => {
-			earnedPuzzleIds.add(parseInt(puzzleId));
-		});
-	}
 
 	return (
 		<div className={styles.statsContent}>
@@ -49,7 +41,7 @@ function StatsContent({
 						<>
 							<TrophyCaseTitle
 								numEarnedTrophies={earnedPuzzleIds.size}
-								numTotalTrophies={totalPuzzles}
+								numTotalTrophies={numTotalPuzzles}
 								isDialogHeader={false}
 							></TrophyCaseTitle>
 						</>
@@ -57,10 +49,9 @@ function StatsContent({
 
 					{/* Trophy Case (signed-in only) */}
 					<TrophyCase
-						dailyEmoji={dailyEmoji}
 						earnedPuzzleIds={earnedPuzzleIds}
-						totalPuzzles={totalPuzzles}
-						userData={userData}
+						totalPuzzles={numTotalPuzzles}
+						completedPuzzles={userData.stats.completedPuzzles}
 						showTitle={false}
 					/>
 

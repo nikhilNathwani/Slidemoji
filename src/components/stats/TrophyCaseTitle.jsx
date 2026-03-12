@@ -1,5 +1,5 @@
 import styles from "./TrophyCaseTitle.module.css";
-import { FontAwesomeIcon } from "../../../utils/icons";
+import { FontAwesomeIcon } from "../../utils/icons";
 
 function TrophyCaseTitle({
 	numEarnedTrophies,
