@@ -3,6 +3,7 @@ import "./App.css";
 import Game from "./components/game/Game";
 import LandingPage from "./components/landing/LandingPage";
 import Header from "./components/Header";
+import TrophyCaseTitle from "./components/common/trophy/TrophyCaseTitle";
 import Dialog from "./components/dialogs/Dialog";
 import SettingsContent from "./components/dialogs/SettingsContent";
 import WinContent from "./components/dialogs/WinContent";
@@ -11,6 +12,7 @@ import StatsContent from "./components/dialogs/StatsContent";
 import { getDailyEmoji } from "./utils/emoji";
 import { getTodaysPuzzleNumber } from "./utils/dateUtils";
 import { getPuzzleById } from "./utils/puzzleUtils";
+import { FontAwesomeIcon } from "./utils/icons";
 import { getUserData, updateUserPreferences } from "./firebase/firestore";
 import { useAuth } from "./hooks/useAuth";
 import {
@@ -310,15 +312,17 @@ function App() {
 				onClose={() => setShowStats(false)}
 				title={
 					<>
-						Trophy Case{" "}
-						<span className="trophyCountPill">
-							{userData?.stats?.completedPuzzles
-								? Object.keys(userData.stats.completedPuzzles)
-										.length
-								: 0}
-							/{todaysPuzzleNumber}{" "}
-							<i className="fas fa-trophy" />
-						</span>
+						<TrophyCaseTitle
+							numEarnedTrophies={
+								userData?.stats?.completedPuzzles
+									? Object.keys(
+											userData.stats.completedPuzzles,
+										).length
+									: 0
+							}
+							numTotalTrophies={todaysPuzzleNumber}
+							isDialogHeader={true}
+						></TrophyCaseTitle>
 					</>
 				}
 			>
@@ -333,7 +337,12 @@ function App() {
 			<Dialog
 				isOpen={showWinDialog}
 				onClose={handleCloseWinDialog}
-				title="🎉 Congratulations!"
+				title={
+					<>
+						{/* <FontAwesomeIcon icon="medal" /> */}
+						Congratulations!
+					</>
+				}
 			>
 				<WinContent
 					puzzleNumber={todaysPuzzleNumber}

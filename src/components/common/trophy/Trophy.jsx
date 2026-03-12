@@ -1,4 +1,4 @@
-import { FontAwesomeIcon } from "../../utils/icons";
+import { FontAwesomeIcon } from "../../../utils/icons";
 import styles from "./Trophy.module.css";
 
 function Trophy({

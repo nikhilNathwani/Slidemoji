@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import styles from "./Game.module.css";
 import Board from "./Board";
-import Trophy from "../common/Trophy";
+import Trophy from "../common/trophy/Trophy";
 import Dialog from "../dialogs/Dialog";
 import ConfirmContent from "../dialogs/ConfirmContent";
 import { useAuth } from "../../hooks/useAuth";

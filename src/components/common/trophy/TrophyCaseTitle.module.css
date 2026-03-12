@@ -1,0 +1,34 @@
+.trophyCaseTitle {
+	display: flex;
+	align-items: center; /* vertically align elements */
+	justify-content: center; /* centers text for section title*/
+	white-space: nowrap; /* prevents "Trophy Case" from wrapping onto 2nd line */
+}
+
+.titleIcon {
+	height: 0.875em;
+	margin-right: 0.175em;
+	position: relative;
+	top: 0.025em;
+}
+
+.trophyCountPill {
+	margin-left: 0.825em;
+
+	/* Pill background */
+	padding: 0.2875rem 0.5rem;
+	border-radius: 999px;
+	background-color: var(--surface-primary);
+
+	font-size: 0.625em;
+	font-variant-numeric: tabular-nums;
+	font-weight: bold;
+	color: var(--text-secondary);
+
+	position: relative;
+	top: 0.05em;
+}
+
+.trophyCountSlash {
+	margin-inline: 0.375em;
+}

@@ -1,4 +1,4 @@
-import Trophy from "../common/Trophy";
+import Trophy from "../common/trophy/Trophy";
 import StatsContent from "./StatsContent";
 import styles from "./WinContent.module.css";
 import { FontAwesomeIcon } from "../../utils/icons";

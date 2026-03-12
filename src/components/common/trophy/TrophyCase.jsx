@@ -1,4 +1,4 @@
-import { FontAwesomeIcon } from "../../utils/icons";
+import { FontAwesomeIcon } from "../../../utils/icons";
 import Trophy from "./Trophy";
 import styles from "./TrophyCase.module.css";
 import { useState, useEffect } from "react";

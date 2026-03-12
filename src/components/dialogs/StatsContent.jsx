@@ -1,5 +1,6 @@
-import TrophyCase from "../common/TrophyCase";
+import TrophyCase from "../common/trophy/TrophyCase";
 import GoogleSignInButton from "../common/GoogleSignInButton";
+import TrophyCaseTitle from "../common/trophy/TrophyCaseTitle";
 import { useAuth } from "../../hooks/useAuth";
 import styles from "./StatsContent.module.css";
 import { FontAwesomeIcon } from "../../utils/icons";
@@ -46,14 +47,11 @@ function StatsContent({
 				<>
 					{showTitle && (
 						<>
-							<h3 className={styles.trophyCaseTitle}>
-								Trophy Case{" "}
-								<span className={styles.trophyCountPill}>
-									{earnedPuzzleIds.size}/{totalPuzzles}{" "}
-									<FontAwesomeIcon icon="trophy" />
-								</span>
-							</h3>
-							<div className={styles.statsDivider}></div>
+							<TrophyCaseTitle
+								numEarnedTrophies={earnedPuzzleIds.size}
+								numTotalTrophies={totalPuzzles}
+								isDialogHeader={false}
+							></TrophyCaseTitle>
 						</>
 					)}
 
