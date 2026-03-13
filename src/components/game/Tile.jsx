@@ -29,7 +29,7 @@ function Tile({
 	tileNumber,
 	isClickable,
 	onPointerDown,
-	showNumbers,
+	hasNumbersShown,
 	emojiSvgUrl,
 	boardSize,
 	onTransitionEnd,

@@ -32,7 +32,9 @@
 	min-height: 120px; /* Match trophy container height */
 	display: flex;
 	align-items: flex-start; /* Align to top for equal spacing from board */
-	justify-content: center;\tgap: 12px; /* Space between Solve and Restart buttons */}
+	justify-content: center;
+	gap: 2rem; /* Space between Solve and Restart buttons */
+}
 
 /* Restart Button */
 .restartButton {

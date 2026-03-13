@@ -196,7 +196,6 @@ function App() {
 		// Keep puzzle in solved state, don't reset
 	};
 
-
 	const handleSizeChange = (newSize) => {
 		if (newSize !== gridSize) {
 			setPendingSize(newSize);
@@ -276,11 +275,11 @@ function App() {
 				}
 				highestCompletedDifficulty={highestCompletedDifficulty}
 				hasNumbersShown={hasNumbersShown}
-			isGameWon={isGameWon}
-			hasSoundEnabled={hasSoundEnabled}
-			onWin={handleWin}
-			onShowWinDialog={handleShowWinDialog}
-			onShuffle={() => setIsGameWon(false)}
+				isGameWon={isGameWon}
+				hasSoundEnabled={hasSoundEnabled}
+				onWin={handleWin}
+				onShowWinDialog={handleShowWinDialog}
+				onShuffle={() => setIsGameWon(false)}
 			/>
 
 			<SettingsDialog

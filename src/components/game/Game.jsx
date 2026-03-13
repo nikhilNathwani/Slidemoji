@@ -136,13 +136,11 @@ function Game({
 		}
 	};
 
-const handleSolve = () => {
-if (solveRef.current) {
-solveRef.current();
-}
-};
-
-
+	const handleSolve = () => {
+		if (solveRef.current) {
+			solveRef.current();
+		}
+	};
 
 	const handleRestartClick = () => {
 		setShowRestartConfirm(true); // Show confirmation dialog
@@ -211,19 +209,19 @@ solveRef.current();
 				<div className={styles.restartContainer}>
 					<button
 						className={`${styles.restartButton} ${styles.visible}`}
-						onClick={handleSolve}
-						title="Solve Puzzle (Dev)"
-					>
-						<FontAwesomeIcon icon="magic" />
-						Solve
-					</button>
-					<button
-						className={`${styles.restartButton} ${styles.visible}`}
 						onClick={handleRestartClick}
 						title="Restart Puzzle"
 					>
 						<FontAwesomeIcon icon="redo" />
 						Restart
+					</button>
+					<button
+						className={`${styles.restartButton} ${styles.visible}`}
+						onClick={handleSolve}
+						title="Solve Puzzle (Dev)"
+					>
+						<FontAwesomeIcon icon="magic" />
+						Solve
 					</button>
 				</div>
 			</main>
