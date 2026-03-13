@@ -3,6 +3,7 @@
 	flex-flow: column nowrap;
 	align-items: center;
 	text-align: center;
+	padding-top: 18px;
 	padding-bottom: 6px;
 }
 
@@ -15,8 +16,8 @@
 .winDialogContent > h3 {
 	font-size: var(--text-3xl);
 	color: var(--text-primary);
-	margin-top: 20px;
-	margin-bottom: 32px;
+	margin-top: 36px;
+	margin-bottom: 8px;
 }
 
 /* Target only direct p children to avoid affecting nested components */
@@ -32,7 +33,7 @@
 
 .shareButton {
 	margin: 16px auto 8px auto;
-	padding: 12px 32px;
+	padding: 12px 21px;
 	background-color: var(--text-primary);
 	color: var(--bg-gradient-start);
 	border: 1px solid var(--border-primary);
@@ -62,38 +63,6 @@
 	font-size: var(--text-base);
 }
 
-.viewStatsButton {
-	margin: 16px auto 8px auto;
-	padding: 12px 32px;
-	background-color: var(--surface-primary);
-	color: var(--text-primary);
-	border: 1px solid var(--border-primary);
-	border-radius: 8px;
-	font-size: 1rem;
-	font-weight: 600;
-	cursor: pointer;
-	transition: all 0.2s ease;
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	justify-content: center;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.viewStatsButton:hover {
-	transform: translateY(-2px);
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-	background-color: var(--surface-secondary);
-}
-
-.viewStatsButton:active {
-	transform: translateY(0);
-}
-
-.viewStatsButton i {
-	font-size: 0.95rem;
-}
-
 .winTrophyDisplay {
 	margin: 20px auto 15px auto;
 	display: inline-block;
@@ -103,7 +72,7 @@
 	width: 100%;
 	height: 1px;
 	background: var(--border-secondary);
-	margin: 24px 0 20px 0;
+	margin: 36px 0 32px 0;
 }
 
 .winSigninPrompt {
