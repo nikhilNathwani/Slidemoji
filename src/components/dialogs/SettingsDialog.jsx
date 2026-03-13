@@ -15,7 +15,6 @@ function SettingsDialog({
 	onShowNumbersChange,
 	hasSoundEnabled,
 	onSoundEnabledChange,
-	onSolve,
 }) {
 	const difficulties = DIFFICULTIES;
 
@@ -92,13 +91,6 @@ function SettingsDialog({
 						<FontAwesomeIcon icon="bug" />
 						Report an Issue
 					</a>
-					<button
-						className={`${styles.actionButton} ${styles.solve}`}
-						onClick={onSolve}
-					>
-						<FontAwesomeIcon icon="magic" />
-						Solve (Dev)
-					</button>
 				</div>
 			</div>
 		</Dialog>

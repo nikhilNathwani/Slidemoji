@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 import Game from "./components/game/Game";
 import LandingPage from "./components/landing/LandingPage";
@@ -34,10 +34,8 @@ function App() {
 	const dailyEmoji = getDailyEmoji();
 	const todaysPuzzleNumber = getTodaysPuzzleNumber();
 
-	// UI State
+	// Show Page / Dialog
 	const [showLandingPage, setShowLandingPage] = useState(true);
-
-	// Dialog State
 	const [showSettingsDialog, setShowSettingsDialog] = useState(false);
 	const [showWinDialog, setShowWinDialog] = useState(false);
 	const [showStatsDialog, setShowStatsDialog] = useState(false);
@@ -46,20 +44,20 @@ function App() {
 
 	// Settings
 	const [hasDarkMode, setHasDarkMode] = useState(DEFAULT_DARK_MODE);
-	const [hasNumbersShown, setHasNumbersShown] = useState(DEFAULT_SHOW_NUMBERS);
-	const [hasSoundEnabled, setHasSoundEnabled] = useState(DEFAULT_SOUND_ENABLED);
+	const [hasNumbersShown, setHasNumbersShown] =
+		useState(DEFAULT_SHOW_NUMBERS);
+	const [hasSoundEnabled, setHasSoundEnabled] = useState(
+		DEFAULT_SOUND_ENABLED,
+	);
 
 	// Game State
 	const [gridSize, setGridSize] = useState(DEFAULT_GRID_SIZE);
-	const [isWon, setIsWon] = useState(false);
+	const [isGameWon, setIsGameWon] = useState(false);
 	const [pendingSize, setPendingSize] = useState(null);
 	const [userData, setUserData] = useState(null);
 	const [puzzleData, setPuzzleData] = useState(null);
 	const [highestCompletedDifficulty, setHighestCompletedDifficulty] =
 		useState(0); // 0 = not completed, 3 = 3x3, 4 = 4x4
-
-	// Refs
-	const solveRef = useRef(null);
 
 	// Dev mode configuration
 	const devConfig = getDevConfig();
@@ -189,7 +187,7 @@ function App() {
 	};
 
 	const handleShowWinDialog = () => {
-		setIsWon(true);
+		setIsGameWon(true);
 		setShowWinDialog(true);
 	};
 
@@ -198,12 +196,6 @@ function App() {
 		// Keep puzzle in solved state, don't reset
 	};
 
-	const handleSolve = () => {
-		if (solveRef.current) {
-			solveRef.current();
-		}
-		setShowSettingsDialog(false);
-	};
 
 	const handleSizeChange = (newSize) => {
 		if (newSize !== gridSize) {
@@ -217,7 +209,7 @@ function App() {
 			setGridSize(pendingSize);
 			setPendingSize(null);
 		}
-		setIsWon(false);
+		setIsGameWon(false);
 		setShowWinDialog(false); // Close win dialog if open
 		setShowDifficultyConfirmDialog(false);
 	};
@@ -257,7 +249,9 @@ function App() {
 
 	if (showLandingPage) {
 		return (
-			<div className={`app ${hasDarkMode ? "dark-theme" : "light-theme"}`}>
+			<div
+				className={`app ${hasDarkMode ? "dark-theme" : "light-theme"}`}
+			>
 				<LandingPage onPlay={handlePlay} />
 			</div>
 		);
@@ -282,12 +276,11 @@ function App() {
 				}
 				highestCompletedDifficulty={highestCompletedDifficulty}
 				hasNumbersShown={hasNumbersShown}
-				isGameWon={isWon}
-				hasSoundEnabled={hasSoundEnabled}
-				onWin={handleWin}
-				onShowWinDialog={handleShowWinDialog}
-				onSolveRef={solveRef}
-				onShuffle={() => setIsWon(false)}
+			isGameWon={isGameWon}
+			hasSoundEnabled={hasSoundEnabled}
+			onWin={handleWin}
+			onShowWinDialog={handleShowWinDialog}
+			onShuffle={() => setIsGameWon(false)}
 			/>
 
 			<SettingsDialog
@@ -301,7 +294,6 @@ function App() {
 				onShowNumbersChange={setHasNumbersShown}
 				onSoundEnabledChange={handleSoundEnabledChange}
 				onGridSizeChange={handleSizeChange}
-				onSolve={handleSolve}
 			/>
 
 			<StatsDialog

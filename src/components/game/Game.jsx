@@ -27,7 +27,6 @@ function Game({
 	hasSoundEnabled,
 	onWin,
 	onShowWinDialog,
-	onSolveRef,
 	onShuffle,
 }) {
 	const { user } = useAuth();
@@ -137,16 +136,13 @@ function Game({
 		}
 	};
 
-	// Expose solve ref to parent component (for Settings dialog)
-	useEffect(() => {
-		if (onSolveRef) {
-			onSolveRef.current = () => {
-				if (solveRef.current) {
-					solveRef.current();
-				}
-			};
-		}
-	}, [onSolveRef]);
+const handleSolve = () => {
+if (solveRef.current) {
+solveRef.current();
+}
+};
+
+
 
 	const handleRestartClick = () => {
 		setShowRestartConfirm(true); // Show confirmation dialog
@@ -213,6 +209,14 @@ function Game({
 				)}
 
 				<div className={styles.restartContainer}>
+					<button
+						className={`${styles.restartButton} ${styles.visible}`}
+						onClick={handleSolve}
+						title="Solve Puzzle (Dev)"
+					>
+						<FontAwesomeIcon icon="magic" />
+						Solve
+					</button>
 					<button
 						className={`${styles.restartButton} ${styles.visible}`}
 						onClick={handleRestartClick}
