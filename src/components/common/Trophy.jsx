@@ -7,14 +7,14 @@ function Trophy({
 	trophyName = null,
 	isMini = false,
 	isLocked = false,
-	maxSolvedDifficulty = 0, // 3 for normal (gold), 4 for hard (teal)
+	maxDifficultySolved = 0, // 3 for normal (gold), 4 for hard (teal)
 }) {
 	// Determine variant-specific class based on boolean props
 	const variantClass = isLocked
 		? styles.locked
-		: !maxSolvedDifficulty
+		: !maxDifficultySolved
 			? styles.puzzleInfo
-			: maxSolvedDifficulty === 4
+			: maxDifficultySolved === 4
 				? styles.special
 				: styles.gold;
 

@@ -31,7 +31,7 @@ import {
 
 function App() {
 	const { user } = useAuth();
-	const dailyEmoji = getDailyEmoji();
+	const puzzleEmoji = getDailyEmoji();
 	const todaysPuzzleNumber = getTodaysPuzzleNumber();
 
 	// Show Page / Dialog
@@ -55,8 +55,8 @@ function App() {
 	const [isGameWon, setIsGameWon] = useState(false);
 	const [pendingSize, setPendingSize] = useState(null);
 	const [userData, setUserData] = useState(null);
-	const [puzzleData, setPuzzleData] = useState(null);
-	const [maxSolvedDifficulty, setMaxSolvedDifficulty] = useState(0); // 0 = not solved, 3 = 3x3, 4 = 4x4
+	const [puzzle, setPuzzle] = useState(null);
+	const [maxDifficultySolved, setMaxDifficultySolved] = useState(0); // 0 = not solved, 3 = 3x3, 4 = 4x4
 
 	// Dev mode configuration
 	const devConfig = getDevConfig();
@@ -116,14 +116,14 @@ function App() {
 		if (devConfig.enabled) {
 			// DEV MODE: Use mock puzzle
 			const mockPuzzle = getMockPuzzle(todaysPuzzleNumber);
-			setPuzzleData(mockPuzzle);
+			setPuzzle(mockPuzzle);
 			return;
 		}
 
 		getPuzzleById(todaysPuzzleNumber)
 			.then((data) => {
 				const convertedData = convertPuzzleFromFirestore(data);
-				setPuzzleData(convertedData);
+				setPuzzle(convertedData);
 			})
 			.catch((error) => {
 				console.error("Error loading puzzle:", error);
@@ -139,17 +139,17 @@ function App() {
 			const difficulties = Object.keys(solutions).map(Number);
 			// Take the highest (4 > 3)
 			const highest = Math.max(...difficulties, 0);
-			setMaxSolvedDifficulty(highest);
+			setMaxDifficultySolved(highest);
 		} else {
-			setMaxSolvedDifficulty(0); // Not solved yet
+			setMaxDifficultySolved(0); // Not solved yet
 		}
 	}, [userData, todaysPuzzleNumber]);
 
 	const handleWin = () => {
 		// Update trophy badge difficulty immediately (before win dialog shows)
 		// User might solve 3x3 then try 4x4 - badge should update right away
-		if (gridSize > maxSolvedDifficulty) {
-			setMaxSolvedDifficulty(gridSize);
+		if (gridSize > maxDifficultySolved) {
+			setMaxDifficultySolved(gridSize);
 		}
 
 		// Update local userData to add this solution immediately (for trophy case)
@@ -167,8 +167,8 @@ function App() {
 			// Add this difficulty solution with emoji data
 			updatedStats.solvedPuzzles[todaysPuzzleNumber][gridSize] = {
 				completedAt: new Date(),
-				emoji: dailyEmoji.emoji,
-				emojiName: dailyEmoji.name,
+				emoji: puzzleEmoji.emoji,
+				emojiName: puzzleEmoji.name,
 			};
 
 			return {
@@ -263,15 +263,15 @@ function App() {
 			/>
 
 			<Game
-				dailyEmoji={dailyEmoji}
-				puzzleData={puzzleData}
+				puzzleEmoji={puzzleEmoji}
+				puzzle={puzzle}
 				puzzleId={todaysPuzzleNumber}
 				difficulty={gridSize}
 				gridSize={gridSize}
 				savedGame={
 					userData?.gameState?.[todaysPuzzleNumber]?.[gridSize]
 				}
-				maxSolvedDifficulty={maxSolvedDifficulty}
+				maxDifficultySolved={maxDifficultySolved}
 				hasNumbersShown={hasNumbersShown}
 				isGameWon={isGameWon}
 				hasSoundEnabled={hasSoundEnabled}
@@ -304,8 +304,8 @@ function App() {
 				isOpen={showWinDialog}
 				onClose={handleCloseWinDialog}
 				puzzleNumber={todaysPuzzleNumber}
-				puzzleEmoji={dailyEmoji.emoji}
-				puzzleEmojiName={dailyEmoji.name}
+				puzzleEmoji={puzzleEmoji.emoji}
+				puzzleEmojiName={puzzleEmoji.name}
 				gridSize={gridSize}
 				solvedPuzzles={userData?.stats?.solvedPuzzles}
 			/>

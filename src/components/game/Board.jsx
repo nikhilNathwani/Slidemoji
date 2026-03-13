@@ -23,7 +23,7 @@ function Board({
 	hasNumbersShown,
 	onSolveRef,
 	onRestartRef,
-	dailyEmoji,
+	emoji,
 	// Persistence props - from Game component
 	initialBoard, // The starting board from Firestore (for this puzzle+difficulty)
 	savedBoard, // Previously saved board state (resume game), or null for new game
@@ -47,8 +47,8 @@ function Board({
 	// ===== Memoized Values =====
 	// Create emoji SVG URL once and memoize it
 	const emojiSvgUrl = useMemo(
-		() => (dailyEmoji ? createEmojiSvgUrl(dailyEmoji) : null),
-		[dailyEmoji],
+		() => (emoji ? createEmojiSvgUrl(emoji) : null),
+		[emoji],
 	);
 
 	// ===== Callbacks =====

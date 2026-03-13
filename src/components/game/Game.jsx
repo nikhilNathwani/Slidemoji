@@ -7,21 +7,22 @@ import ConfirmResetDialog from "../dialogs/ConfirmResetDialog";
 import { useAuth } from "../../hooks/useAuth";
 import { FontAwesomeIcon } from "../../utils/icons";
 import {
-	startPuzzle,
+	recordPuzzleStart,
 	saveGameState,
 	saveCompletion,
 } from "../../firebase/firestore";
 import { Timestamp } from "firebase/firestore";
 import { scramblePuzzle } from "../../utils/boardHelpers";
+import { convertBoardFromFirestore } from "../../utils/puzzleUtils";
 
 function Game({
-	dailyEmoji,
-	puzzleData,
+	puzzleEmoji,
+	puzzle,
 	puzzleId,
 	difficulty,
 	gridSize,
 	savedGame,
-	maxSolvedDifficulty = 0,
+	maxDifficultySolved = 0,
 	hasNumbersShown,
 	isGameWon,
 	hasSoundEnabled,
@@ -47,7 +48,7 @@ function Game({
 	useEffect(() => {
 		// DEVELOPMENT MODE: Allow playing without puzzle data (no persistence)
 		// This lets you test the game before uploading puzzles to Firestore
-		if (!puzzleData) {
+		if (!puzzle) {
 			console.warn(
 				"Dev mode: No puzzle data - using random puzzle (no persistence)",
 			);
@@ -61,14 +62,12 @@ function Game({
 		// Get the correct initial board based on difficulty
 		const boardKey =
 			difficulty === 3 ? "initialBoard3x3" : "initialBoard4x4";
-		const initial = puzzleData[boardKey];
+		const initial = puzzle[boardKey];
 
 		if (savedGame) {
 			// RESUME MODE: User has a saved game, restore it
 			// Convert saved board from Firestore format (0 as gap) to client format (null as gap)
-			const convertedBoard = savedGame.board.map((v) =>
-				v === 0 ? null : v,
-			);
+			const convertedBoard = convertBoardFromFirestore(savedGame.board);
 			setSavedBoard(convertedBoard);
 			setMoves(savedGame.moves);
 			setStartedAt(savedGame.startedAt);
@@ -81,31 +80,31 @@ function Game({
 			const now = Timestamp.now();
 			setStartedAt(now);
 
-			// Call startPuzzle to:
+			// Call recordPuzzleStart to:
 			// - Create gameState entry in Firestore
 			// - Update play streak (if daily puzzle)
 			// - Increment totalAttempted (if first time)
 			// Skip in dev mode when no real user is signed in
 			if (user) {
-				startPuzzle(user.uid, puzzleId, difficulty, initial).catch(
+				recordPuzzleStart(user.uid, puzzleId, difficulty, initial).catch(
 					(error) => {
 						console.error("Error starting puzzle:", error);
 					},
 				);
 			}
 		}
-	}, [puzzleData, puzzleId, difficulty, savedGame, user]);
+	}, [puzzle, puzzleId, difficulty, savedGame, user]);
 
 	// ===== Handle Move (called by Board after each tile movement) =====
 	const handleMove = (newBoard) => {
 		const newMoves = moves + 1;
 		setMoves(newMoves);
 
-		// Auto-save to Firestore after EVERY move (only if signed in and have puzzleData)
+		// Auto-save to Firestore after EVERY move (only if signed in and have puzzle)
 		// This ensures progress is never lost (even if user closes tab)
 		// Firestore free tier supports this! (~400 daily active users at 50 moves each)
-		// In development mode (no user/puzzleData), this is skipped
-		if (user && puzzleData) {
+		// In development mode (no user/puzzle), this is skipped
+		if (user && puzzle) {
 			saveGameState(user.uid, puzzleId, difficulty, {
 				moves: newMoves,
 				board: newBoard,
@@ -119,17 +118,17 @@ function Game({
 	const handleWin = () => {
 		onWin(); // Notify parent (App) to update trophy badge
 
-		// Save solution to Firestore (only if signed in and have puzzleData):
+		// Save solution to Firestore (only if signed in and have puzzle):
 		// - Adds trophy to solvedPuzzles[puzzleId][difficulty]
 		// - Updates win streak (if daily puzzle)
 		// - Increments totalSolved
 		// - Clears game from gameState (puzzle is done!)
-		// In development mode (no user/puzzleData), this is skipped
-		if (user && puzzleData) {
+		// In development mode (no user/puzzle), this is skipped
+		if (user && puzzle) {
 			saveCompletion(user.uid, puzzleId, difficulty, {
 				moves,
-				emoji: puzzleData.emoji,
-				emojiName: puzzleData.name,
+				emoji: puzzle.emoji,
+				emojiName: puzzle.name,
 			}).catch((error) => {
 				console.error("Error saving completion:", error);
 			});
@@ -165,8 +164,8 @@ function Game({
 		// Re-start puzzle in Firestore (only if user is signed in and has initialBoard)
 		// This creates a fresh gameState entry and updates play streak
 		// In development mode (no user), this is skipped - just local restart
-		if (user && initialBoard && puzzleData) {
-			startPuzzle(user.uid, puzzleId, difficulty, initialBoard).catch(
+		if (user && initialBoard && puzzle) {
+			recordPuzzleStart(user.uid, puzzleId, difficulty, initialBoard).catch(
 				(error) => {
 					console.error("Error restarting puzzle:", error);
 				},
@@ -180,9 +179,9 @@ function Game({
 				<div className={styles.trophyContainer}>
 					<PuzzleInfo
 						puzzleNumber={String(puzzleId).padStart(3, "0")}
-						emoji={dailyEmoji.emoji}
-						emojiName={dailyEmoji.name}
-						maxSolvedDifficulty={maxSolvedDifficulty}
+					emoji={puzzleEmoji.emoji}
+					emojiName={puzzleEmoji.name}
+					maxDifficultySolved={maxDifficultySolved}
 					/>
 				</div>
 				{!initialBoard ? (
@@ -197,7 +196,7 @@ function Game({
 						hasNumbersShown={hasNumbersShown && !isGameWon}
 						onSolveRef={solveRef}
 						onRestartRef={restartRef}
-						dailyEmoji={dailyEmoji.emoji}
+					emoji={puzzleEmoji.emoji}
 						initialBoard={initialBoard}
 						savedBoard={savedBoard}
 						onMove={handleMove}

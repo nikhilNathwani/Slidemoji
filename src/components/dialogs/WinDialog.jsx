@@ -38,7 +38,7 @@ Play at slidemoji.com`;
 					trophyNum={puzzleNumber}
 					trophyEmoji={puzzleEmoji}
 					trophyName={puzzleEmojiName}
-					maxSolvedDifficulty={gridSize}
+					maxDifficultySolved={gridSize}
 				/>
 				<h3>You earned today's emoji!</h3>
 

@@ -82,7 +82,7 @@ function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true }) {
 						trophyEmoji={slot.emoji}
 						trophyName={slot.name}
 						isLocked={!slot.isEarned}
-						maxCompletedDifficulty={slot.maxDifficulty}
+					maxDifficultySolved={slot.maxDifficulty}
 						isMini={true}
 					/>
 				))}
