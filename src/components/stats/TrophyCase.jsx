@@ -30,6 +30,7 @@ function TrophyCase({ totalPuzzles = 12, completedPuzzles, showTitle = true }) {
 		// Get actual emoji from completedPuzzles if available
 		let emoji = null;
 		let name = null;
+		let maxDifficulty = 0;
 		if (isEarned) {
 			// Get emoji from first completed difficulty for this puzzle
 			const difficulties = Object.keys(completedPuzzles[i]);
@@ -37,6 +38,7 @@ function TrophyCase({ totalPuzzles = 12, completedPuzzles, showTitle = true }) {
 				const puzzleData = completedPuzzles[i][difficulties[0]];
 				emoji = puzzleData?.emoji || null;
 				name = puzzleData?.emojiName || null;
+				maxDifficulty = Math.max(difficulties);
 			}
 		}
 
@@ -45,6 +47,7 @@ function TrophyCase({ totalPuzzles = 12, completedPuzzles, showTitle = true }) {
 			isEarned,
 			emoji,
 			name,
+			maxDifficulty: maxDifficulty,
 		});
 	}
 
@@ -79,8 +82,7 @@ function TrophyCase({ totalPuzzles = 12, completedPuzzles, showTitle = true }) {
 						trophyEmoji={slot.emoji}
 						trophyName={slot.name}
 						isLocked={!slot.isEarned}
-						isEarned={slot.isEarned}
-						difficulty={3}
+						highestCompletedDifficulty={slot.maxDifficulty}
 						isMini={true}
 					/>
 				))}

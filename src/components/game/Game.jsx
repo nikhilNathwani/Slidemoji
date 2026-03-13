@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import styles from "./Game.module.css";
 import Board from "./Board";
 import Trophy from "../common/Trophy";
-import Dialog from "../dialogs/Dialog";
+import PuzzleInfo from "./PuzzleInfo";
 import ConfirmResetDialog from "../dialogs/ConfirmResetDialog";
 import { useAuth } from "../../hooks/useAuth";
 import { FontAwesomeIcon } from "../../utils/icons";
@@ -178,12 +178,11 @@ function Game({
 		<>
 			<main className={styles.main}>
 				<div className={styles.trophyContainer}>
-					<Trophy
-						trophyNum={String(puzzleId).padStart(3, "0")}
-						trophyEmoji={dailyEmoji.emoji}
-						trophyName={dailyEmoji.name}
-						isEarned={highestCompletedDifficulty > 0}
-						difficulty={highestCompletedDifficulty || gridSize}
+					<PuzzleInfo
+						puzzleNumber={String(puzzleId).padStart(3, "0")}
+						emoji={dailyEmoji.emoji}
+						emojiName={dailyEmoji.name}
+						highestCompletedDifficulty={highestCompletedDifficulty}
 					/>
 				</div>
 				{!initialBoard ? (
