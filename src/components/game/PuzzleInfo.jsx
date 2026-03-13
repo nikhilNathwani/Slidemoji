@@ -1,13 +1,12 @@
 import Trophy from "../common/Trophy";
-import styles from "./PuzzleInfo.module.css";
 
-function PuzzleInfo({ puzzleNumber, emoji, emojiName, maxDifficultySolved }) {
+function PuzzleInfo({ puzzleNumber, emoji, emojiName, maxGridSizeSolved }) {
 	return (
 		<Trophy
 			trophyNum={puzzleNumber}
 			trophyEmoji={emoji}
 			trophyName={emojiName}
-			maxDifficultySolved={maxDifficultySolved}
+			maxGridSizeSolved={maxGridSizeSolved}
 		/>
 	);
 }

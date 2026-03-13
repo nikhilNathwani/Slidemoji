@@ -202,7 +202,12 @@ export async function updateUserPreferences(userId, preferences) {
  * @param {Array} initialBoard - Starting board configuration from Firestore
  * @returns {Promise<Object>} Updated gameState and stats
  */
-export async function recordPuzzleStart(userId, puzzleId, difficulty, initialBoard) {
+export async function recordPuzzleStart(
+	userId,
+	puzzleId,
+	difficulty,
+	initialBoard,
+) {
 	if (!userId) {
 		throw new Error("User ID is required");
 	}
@@ -228,9 +233,7 @@ export async function recordPuzzleStart(userId, puzzleId, difficulty, initialBoa
 
 		// Initialize game state for this specific puzzle+difficulty combo
 		gameState[puzzleId][difficulty] = {
-			moves: 0,
 			board: firestoreBoard,
-			startedAt: Timestamp.now(),
 			fromArchive, // Track whether this is a daily or archive play
 		};
 
@@ -283,13 +286,10 @@ export async function recordPuzzleStart(userId, puzzleId, difficulty, initialBoa
  * Called after each tile movement to persist progress.
  * Uses Firestore's dot notation to update nested fields efficiently.
  *
- * Within free tier limits: ~400 daily active users can save every move!
- * (5k writes/day at 50 moves/user = plenty of capacity)
- *
  * @param {string} userId - Firebase Auth user ID
  * @param {number} puzzleId - Puzzle number (1-365)
  * @param {number} difficulty - Grid size (3 or 4)
- * @param {Object} gameData - { moves: number, board: Array }
+ * @param {Object} gameData - { board: Array }
  */
 export async function saveGameState(userId, puzzleId, difficulty, gameData) {
 	if (!userId) {
@@ -300,10 +300,9 @@ export async function saveGameState(userId, puzzleId, difficulty, gameData) {
 		const userDocRef = doc(db, "users", userId);
 		// Convert client format (null as gap) to Firestore format (0 as gap)
 		const firestoreBoard = gameData.board.map((v) => (v === null ? 0 : v));
-		// Use dot notation to update only these specific nested fields
+		// Use dot notation to update only this specific nested field
 		// This is more efficient than reading, modifying, and writing the entire document
 		await updateDoc(userDocRef, {
-			[`gameState.${puzzleId}.${difficulty}.moves`]: gameData.moves,
 			[`gameState.${puzzleId}.${difficulty}.board`]: firestoreBoard,
 			updatedAt: serverTimestamp(),
 		});
@@ -319,11 +318,10 @@ export async function saveGameState(userId, puzzleId, difficulty, gameData) {
  * Called when user solves a puzzle. This is the most complex persistence function!
  *
  * What it does:
- * 1. Saves trophy to solvedPuzzles[puzzleId][difficulty] with moves/time stats
- * 2. Calculates time spent (completedAt - startedAt)
- * 3. Increments totalSolved counter
- * 4. Updates win streak (daily puzzles only, first win of the day)
- * 5. Clears the game from gameState (puzzle is done)
+ * 1. Saves trophy to solvedPuzzles[puzzleId][difficulty] with emoji data
+ * 2. Increments totalSolved counter
+ * 3. Updates win streak (daily puzzles only, first win of the day)
+ * 4. Clears the game from gameState (puzzle is done)
  *
  * Win Streak Logic:
  * - Only daily puzzles update win streak (archive plays tracked but don't affect streaks)
@@ -339,7 +337,7 @@ export async function saveGameState(userId, puzzleId, difficulty, gameData) {
  * @param {string} userId - Firebase Auth user ID
  * @param {number} puzzleId - Puzzle number (1-365)
  * @param {number} difficulty - Grid size (3 or 4)
- * @param {Object} completionData - { moves: number }
+ * @param {Object} completionData - { emoji: string, emojiName: string }
  * @returns {Promise<Object>} Updated stats
  */
 export async function saveCompletion(
@@ -378,17 +376,11 @@ export async function saveCompletion(
 			stats.solvedPuzzles[puzzleId] = {};
 		}
 
-		// Save solution trophy with all the details
+		// Save solution trophy with emoji data
 		const completedAt = Timestamp.now();
-		const timeSpent = Math.floor(
-			(completedAt.toMillis() - game.startedAt.toMillis()) / 1000,
-		);
 
 		stats.solvedPuzzles[puzzleId][difficulty] = {
-			moves: completionData.moves,
 			completedAt,
-			startedAt: game.startedAt,
-			timeSpent, // In seconds
 			fromArchive, // Preserve whether this was daily or archive
 			emoji: completionData.emoji,
 			emojiName: completionData.emojiName,

@@ -11,18 +11,24 @@ import {
 	saveGameState,
 	saveCompletion,
 } from "../../firebase/firestore";
-import { Timestamp } from "firebase/firestore";
 import { scramblePuzzle } from "../../utils/boardHelpers";
 import { convertBoardFromFirestore } from "../../utils/puzzleUtils";
 
+/**
+ * Game Component - Main puzzle game interface
+ *
+ * Props:
+ * @param {Object} puzzle - Puzzle document from Firestore with structure:
+ *   { id, date, emoji, emojiName, initialBoard3x3, initialBoard4x4 }
+ * @param {number} gridSize - Current difficulty/board size (3 for 3x3, 4 for 4x4)
+ * @param {Object} savedGame - Saved game state from Firestore for resume (or null for new game)
+ * @param {number} maxGridSizeSolved - Highest difficulty solved for this puzzle (0, 3, or 4)
+ */
 function Game({
-	puzzleEmoji,
 	puzzle,
-	puzzleId,
-	difficulty,
 	gridSize,
 	savedGame,
-	maxDifficultySolved = 0,
+	maxGridSizeSolved = 0,
 	hasNumbersShown,
 	isGameWon,
 	hasSoundEnabled,
@@ -32,8 +38,6 @@ function Game({
 }) {
 	const { user } = useAuth();
 	const [showRestartConfirm, setShowRestartConfirm] = useState(false);
-	const [moves, setMoves] = useState(0);
-	const [startedAt, setStartedAt] = useState(null);
 	const [initialBoard, setInitialBoard] = useState(null);
 	const [savedBoard, setSavedBoard] = useState(null);
 	const solveRef = useRef(null);
@@ -52,16 +56,13 @@ function Game({
 			console.warn(
 				"Dev mode: No puzzle data - using random puzzle (no persistence)",
 			);
-			setInitialBoard(scramblePuzzle(difficulty));
+			setInitialBoard(scramblePuzzle(gridSize));
 			setSavedBoard(null);
-			setMoves(0);
-			setStartedAt(Timestamp.now());
 			return;
 		}
 
 		// Get the correct initial board based on difficulty
-		const boardKey =
-			difficulty === 3 ? "initialBoard3x3" : "initialBoard4x4";
+		const boardKey = gridSize === 3 ? "initialBoard3x3" : "initialBoard4x4";
 		const initial = puzzle[boardKey];
 
 		if (savedGame) {
@@ -69,16 +70,11 @@ function Game({
 			// Convert saved board from Firestore format (0 as gap) to client format (null as gap)
 			const convertedBoard = convertBoardFromFirestore(savedGame.board);
 			setSavedBoard(convertedBoard);
-			setMoves(savedGame.moves);
-			setStartedAt(savedGame.startedAt);
 			setInitialBoard(initial); // Keep initial for reference
 		} else if (initial) {
 			// NEW GAME MODE: Start fresh with initial board
 			setInitialBoard(initial);
 			setSavedBoard(null);
-			setMoves(0);
-			const now = Timestamp.now();
-			setStartedAt(now);
 
 			// Call recordPuzzleStart to:
 			// - Create gameState entry in Firestore
@@ -86,27 +82,22 @@ function Game({
 			// - Increment totalAttempted (if first time)
 			// Skip in dev mode when no real user is signed in
 			if (user) {
-				recordPuzzleStart(user.uid, puzzleId, difficulty, initial).catch(
+				recordPuzzleStart(user.uid, puzzle.id, gridSize, initial).catch(
 					(error) => {
 						console.error("Error starting puzzle:", error);
 					},
 				);
 			}
 		}
-	}, [puzzle, puzzleId, difficulty, savedGame, user]);
+	}, [puzzle, savedGame, gridSize, user]);
 
 	// ===== Handle Move (called by Board after each tile movement) =====
 	const handleMove = (newBoard) => {
-		const newMoves = moves + 1;
-		setMoves(newMoves);
-
 		// Auto-save to Firestore after EVERY move (only if signed in and have puzzle)
 		// This ensures progress is never lost (even if user closes tab)
-		// Firestore free tier supports this! (~400 daily active users at 50 moves each)
 		// In development mode (no user/puzzle), this is skipped
 		if (user && puzzle) {
-			saveGameState(user.uid, puzzleId, difficulty, {
-				moves: newMoves,
+			saveGameState(user.uid, puzzle.id, gridSize, {
 				board: newBoard,
 			}).catch((error) => {
 				console.error("Error saving game state:", error);
@@ -125,10 +116,9 @@ function Game({
 		// - Clears game from gameState (puzzle is done!)
 		// In development mode (no user/puzzle), this is skipped
 		if (user && puzzle) {
-			saveCompletion(user.uid, puzzleId, difficulty, {
-				moves,
+			saveCompletion(user.uid, puzzle.id, gridSize, {
 				emoji: puzzle.emoji,
-				emojiName: puzzle.name,
+				emojiName: puzzle.emojiName,
 			}).catch((error) => {
 				console.error("Error saving completion:", error);
 			});
@@ -148,11 +138,8 @@ function Game({
 	const handleRestartConfirm = () => {
 		setShowRestartConfirm(false);
 
-		// Reset local state
-		setMoves(0);
-		const now = Timestamp.now();
-		setStartedAt(now);
-		setSavedBoard(null); // Clear saved board to force fresh start
+		// Clear saved board to force fresh start
+		setSavedBoard(null);
 
 		if (onShuffle) {
 			onShuffle(); // Reset isGameWon in parent (App)
@@ -165,11 +152,14 @@ function Game({
 		// This creates a fresh gameState entry and updates play streak
 		// In development mode (no user), this is skipped - just local restart
 		if (user && initialBoard && puzzle) {
-			recordPuzzleStart(user.uid, puzzleId, difficulty, initialBoard).catch(
-				(error) => {
-					console.error("Error restarting puzzle:", error);
-				},
-			);
+			recordPuzzleStart(
+				user.uid,
+				puzzle.id,
+				gridSize,
+				initialBoard,
+			).catch((error) => {
+				console.error("Error restarting puzzle:", error);
+			});
 		}
 	};
 
@@ -178,10 +168,10 @@ function Game({
 			<main className={styles.main}>
 				<div className={styles.trophyContainer}>
 					<PuzzleInfo
-						puzzleNumber={String(puzzleId).padStart(3, "0")}
-					emoji={puzzleEmoji.emoji}
-					emojiName={puzzleEmoji.name}
-					maxDifficultySolved={maxDifficultySolved}
+						puzzleNumber={String(puzzle.id).padStart(3, "0")}
+						emoji={puzzle.emoji}
+						emojiName={puzzle.emojiName}
+						maxGridSizeSolved={maxGridSizeSolved}
 					/>
 				</div>
 				{!initialBoard ? (
@@ -196,7 +186,7 @@ function Game({
 						hasNumbersShown={hasNumbersShown && !isGameWon}
 						onSolveRef={solveRef}
 						onRestartRef={restartRef}
-					emoji={puzzleEmoji.emoji}
+						emoji={puzzle.emoji}
 						initialBoard={initialBoard}
 						savedBoard={savedBoard}
 						onMove={handleMove}

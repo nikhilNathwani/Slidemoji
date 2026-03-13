@@ -4,19 +4,11 @@ import StatsContent from "../stats/StatsContent";
 import styles from "./WinDialog.module.css";
 import { FontAwesomeIcon } from "../../utils/icons";
 
-function WinDialog({
-	isOpen,
-	onClose,
-	puzzleNumber,
-	puzzleEmoji,
-	puzzleEmojiName,
-	gridSize,
-	solvedPuzzles,
-}) {
+function WinDialog({ isOpen, onClose, puzzle, gridSize, solvedPuzzles }) {
 	const handleShare = () => {
 		const shareText = `Slidemoji #001 
 
-I unscrambled today's emoji! ${puzzleEmoji}
+I unscrambled today's emoji! ${puzzle?.emoji}
 
 Play at slidemoji.com`;
 
@@ -35,10 +27,10 @@ Play at slidemoji.com`;
 		<Dialog isOpen={isOpen} onClose={onClose} title="Congratulations!">
 			<div className={styles.winDialogContent}>
 				<Trophy
-					trophyNum={puzzleNumber}
-					trophyEmoji={puzzleEmoji}
-					trophyName={puzzleEmojiName}
-					maxDifficultySolved={gridSize}
+					trophyNum={puzzle?.id}
+					trophyEmoji={puzzle?.emoji}
+					trophyName={puzzle?.emojiName}
+					maxGridSizeSolved={gridSize}
 				/>
 				<h3>You earned today's emoji!</h3>
 
@@ -51,7 +43,7 @@ Play at slidemoji.com`;
 
 				<StatsContent
 					solvedPuzzles={solvedPuzzles}
-					numTotalPuzzles={puzzleNumber}
+					numTotalPuzzles={puzzle?.id}
 					showTitle={true}
 				/>
 			</div>

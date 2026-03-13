@@ -7,14 +7,14 @@ function Trophy({
 	trophyName = null,
 	isMini = false,
 	isLocked = false,
-	maxDifficultySolved = 0, // 3 for normal (gold), 4 for hard (teal)
+	maxGridSizeSolved = 0, // 3 for 3x3 (gold), 4 for 4x4 (teal)
 }) {
-	// Determine variant-specific class based on boolean props
+	// Determine variant-specific class based on props
 	const variantClass = isLocked
 		? styles.locked
-		: !maxDifficultySolved
+		: !maxGridSizeSolved
 			? styles.puzzleInfo
-			: maxDifficultySolved === 4
+			: maxGridSizeSolved === 4
 				? styles.special
 				: styles.gold;
 

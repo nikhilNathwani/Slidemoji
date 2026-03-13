@@ -9,7 +9,6 @@ import SettingsDialog from "./components/dialogs/SettingsDialog";
 import WinDialog from "./components/dialogs/WinDialog";
 import ConfirmResetDialog from "./components/dialogs/ConfirmResetDialog";
 import StatsDialog from "./components/dialogs/StatsDialog";
-import { getDailyEmoji } from "./utils/emoji";
 import { getTodaysPuzzleNumber } from "./utils/dateUtils";
 import { getPuzzleById, convertPuzzleFromFirestore } from "./utils/puzzleUtils";
 import { FontAwesomeIcon } from "./utils/icons";
@@ -31,7 +30,6 @@ import {
 
 function App() {
 	const { user } = useAuth();
-	const puzzleEmoji = getDailyEmoji();
 	const todaysPuzzleNumber = getTodaysPuzzleNumber();
 
 	// Show Page / Dialog
@@ -53,10 +51,10 @@ function App() {
 	// Game State
 	const [gridSize, setGridSize] = useState(DEFAULT_GRID_SIZE);
 	const [isGameWon, setIsGameWon] = useState(false);
-	const [pendingSize, setPendingSize] = useState(null);
+	const [pendingGridSize, setPendingGridSize] = useState(null);
 	const [userData, setUserData] = useState(null);
 	const [puzzle, setPuzzle] = useState(null);
-	const [maxDifficultySolved, setMaxDifficultySolved] = useState(0); // 0 = not solved, 3 = 3x3, 4 = 4x4
+	const [maxGridSizeSolved, setMaxGridSizeSolved] = useState(0); // 0 = not solved, 3 = 3x3, 4 = 4x4
 
 	// Dev mode configuration
 	const devConfig = getDevConfig();
@@ -139,17 +137,17 @@ function App() {
 			const difficulties = Object.keys(solutions).map(Number);
 			// Take the highest (4 > 3)
 			const highest = Math.max(...difficulties, 0);
-			setMaxDifficultySolved(highest);
+			setMaxGridSizeSolved(highest);
 		} else {
-			setMaxDifficultySolved(0); // Not solved yet
+			setMaxGridSizeSolved(0); // Not solved yet
 		}
 	}, [userData, todaysPuzzleNumber]);
 
 	const handleWin = () => {
 		// Update trophy badge difficulty immediately (before win dialog shows)
 		// User might solve 3x3 then try 4x4 - badge should update right away
-		if (gridSize > maxDifficultySolved) {
-			setMaxDifficultySolved(gridSize);
+		if (gridSize > maxGridSizeSolved) {
+			setMaxGridSizeSolved(gridSize);
 		}
 
 		// Update local userData to add this solution immediately (for trophy case)
@@ -167,8 +165,8 @@ function App() {
 			// Add this difficulty solution with emoji data
 			updatedStats.solvedPuzzles[todaysPuzzleNumber][gridSize] = {
 				completedAt: new Date(),
-				emoji: puzzleEmoji.emoji,
-				emojiName: puzzleEmoji.name,
+				emoji: puzzle?.emoji,
+				emojiName: puzzle?.emojiName,
 			};
 
 			return {
@@ -196,15 +194,15 @@ function App() {
 
 	const handleSizeChange = (newSize) => {
 		if (newSize !== gridSize) {
-			setPendingSize(newSize);
+			setPendingGridSize(newSize);
 			setShowDifficultyConfirmDialog(true);
 		}
 	};
 
 	const handleDifficultyConfirm = () => {
-		if (pendingSize !== null) {
-			setGridSize(pendingSize);
-			setPendingSize(null);
+		if (pendingGridSize !== null) {
+			setGridSize(pendingGridSize);
+			setPendingGridSize(null);
 		}
 		setIsGameWon(false);
 		setShowWinDialog(false); // Close win dialog if open
@@ -212,7 +210,7 @@ function App() {
 	};
 
 	const handleDifficultyCancel = () => {
-		setPendingSize(null);
+		setPendingGridSize(null);
 		setShowDifficultyConfirmDialog(false);
 	};
 
@@ -263,15 +261,12 @@ function App() {
 			/>
 
 			<Game
-				puzzleEmoji={puzzleEmoji}
 				puzzle={puzzle}
-				puzzleId={todaysPuzzleNumber}
-				difficulty={gridSize}
 				gridSize={gridSize}
 				savedGame={
 					userData?.gameState?.[todaysPuzzleNumber]?.[gridSize]
 				}
-				maxDifficultySolved={maxDifficultySolved}
+				maxGridSizeSolved={maxGridSizeSolved}
 				hasNumbersShown={hasNumbersShown}
 				isGameWon={isGameWon}
 				hasSoundEnabled={hasSoundEnabled}
@@ -303,9 +298,7 @@ function App() {
 			<WinDialog
 				isOpen={showWinDialog}
 				onClose={handleCloseWinDialog}
-				puzzleNumber={todaysPuzzleNumber}
-				puzzleEmoji={puzzleEmoji.emoji}
-				puzzleEmojiName={puzzleEmoji.name}
+				puzzle={puzzle}
 				gridSize={gridSize}
 				solvedPuzzles={userData?.stats?.solvedPuzzles}
 			/>
