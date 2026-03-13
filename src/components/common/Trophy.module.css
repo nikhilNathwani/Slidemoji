@@ -40,6 +40,7 @@
 /* Mini trophies have fixed width for consistency */
 .trophy.trophyMini {
 	width: 70px;
+	height: 80px;
 }
 
 /* Variant: Puzzle Info (when playing) */
