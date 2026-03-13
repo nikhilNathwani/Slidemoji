@@ -1,17 +1,14 @@
 import { useState, useEffect } from "react";
 import "./App.css";
-import Game from "./components/game/Game";
 import LandingPage from "./components/landing/LandingPage";
 import Header from "./components/Header";
-import TrophyCaseTitle from "./components/stats/TrophyCaseTitle";
-import Dialog from "./components/dialogs/Dialog";
+import Game from "./components/game/Game";
 import SettingsDialog from "./components/dialogs/SettingsDialog";
+import StatsDialog from "./components/dialogs/StatsDialog";
 import WinDialog from "./components/dialogs/WinDialog";
 import ConfirmResetDialog from "./components/dialogs/ConfirmResetDialog";
-import StatsDialog from "./components/dialogs/StatsDialog";
 import { getTodaysPuzzleNumber } from "./utils/dateUtils";
-import { getPuzzleById, convertPuzzleFromFirestore } from "./utils/puzzleUtils";
-import { FontAwesomeIcon } from "./utils/icons";
+import { getPuzzleById } from "./utils/puzzleUtils";
 import { getUserData, updateUserPreferences } from "./firebase/firestore";
 import { useAuth } from "./hooks/useAuth";
 import {
@@ -20,13 +17,7 @@ import {
 	DEFAULT_SHOW_NUMBERS,
 	DEFAULT_SOUND_ENABLED,
 } from "./constants";
-import {
-	isDevMode,
-	getMockPuzzle,
-	getMockUser,
-	getDevConfig,
-	devLog,
-} from "./dev/mockData";
+import { getMockPuzzle, getMockUser, getDevConfig } from "./dev/mockData";
 
 function App() {
 	const { user } = useAuth();
@@ -108,7 +99,8 @@ function App() {
 
 	// ===== Load Today's Puzzle Data from Firestore =====
 	// Fetches puzzle definition (emoji, initial boards for 3x3 and 4x4)
-	// All users get the same puzzle - ensures fair comparison of moves/time!
+	// All users get the same puzzle - ensures fair comparison!
+	// Note: Puzzle data is passed raw to Game component, which handles format conversion
 	// In dev mode: uses mock puzzle
 	useEffect(() => {
 		if (devConfig.enabled) {
@@ -120,8 +112,8 @@ function App() {
 
 		getPuzzleById(todaysPuzzleNumber)
 			.then((data) => {
-				const convertedData = convertPuzzleFromFirestore(data);
-				setPuzzle(convertedData);
+				// Pass raw puzzle data - Game component handles format conversion
+				setPuzzle(data);
 			})
 			.catch((error) => {
 				console.error("Error loading puzzle:", error);
