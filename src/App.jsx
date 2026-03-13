@@ -275,25 +275,24 @@ function App() {
 
 			<Game
 				dailyEmoji={dailyEmoji}
-				gridSize={gridSize}
-				onWin={handleWin}
-				onShowWinDialog={handleShowWinDialog}
-				showNumbers={showNumbers}
-				isWon={isWon}
-				onSolveRef={solveRef}
-				onShuffle={() => setIsWon(false)}
-				highestEarnedDifficulty={highestEarnedDifficulty}
-				userData={userData}
 				puzzleData={puzzleData}
 				puzzleId={todaysPuzzleNumber}
 				difficulty={gridSize}
+				gridSize={gridSize}
+				savedGame={userData?.gameState?.[todaysPuzzleNumber]?.[gridSize]}
+				highestEarnedDifficulty={highestEarnedDifficulty}
+				showNumbers={showNumbers}
+				isGameWon={isWon}
 				soundEnabled={soundEnabled}
+				onWin={handleWin}
+				onShowWinDialog={handleShowWinDialog}
+				onSolveRef={solveRef}
+				onShuffle={() => setIsWon(false)}
 			/>
 
 			<SettingsDialog
 				isOpen={showSettings}
 				onClose={() => setShowSettings(false)}
-				//
 				gridSize={gridSize}
 				darkMode={darkMode}
 				showNumbers={showNumbers}
@@ -308,20 +307,18 @@ function App() {
 			<StatsDialog
 				isOpen={showStats}
 				onClose={() => setShowStats(false)}
-				//
-				userData={userData}
+				completedPuzzles={userData?.stats?.completedPuzzles}
 				numTotalPuzzles={todaysPuzzleNumber}
 			/>
 
 			<WinDialog
 				isOpen={showWinDialog}
 				onClose={handleCloseWinDialog}
-				//
 				puzzleNumber={todaysPuzzleNumber}
 				earnedEmoji={dailyEmoji.emoji}
 				earnedEmojiName={dailyEmoji.name}
 				gridSize={gridSize}
-				userData={userData}
+				completedPuzzles={userData?.stats?.completedPuzzles}
 			/>
 
 			<ConfirmResetDialog

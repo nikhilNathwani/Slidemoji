@@ -16,19 +16,19 @@ import { scramblePuzzle } from "../../utils/boardHelpers";
 
 function Game({
 	dailyEmoji,
-	gridSize,
-	onWin,
-	onShowWinDialog,
-	showNumbers,
-	isGameWon,
-	onSolveRef,
-	onShuffle,
-	highestEarnedDifficulty = 0,
-	userData,
 	puzzleData,
 	puzzleId,
 	difficulty,
+	gridSize,
+	savedGame,
+	highestEarnedDifficulty = 0,
+	showNumbers,
+	isGameWon,
 	soundEnabled,
+	onWin,
+	onShowWinDialog,
+	onSolveRef,
+	onShuffle,
 }) {
 	const { user } = useAuth();
 	const [showRestartConfirm, setShowRestartConfirm] = useState(false);
@@ -46,9 +46,9 @@ function Game({
 	// - Difficulty changes (3x3 ↔ 4x4)
 	// - User data loads/updates
 	useEffect(() => {
-		// DEVELOPMENT MODE: Allow playing without puzzle data or signed-in user (no persistence)
+		// DEVELOPMENT MODE: Allow playing without puzzle data (no persistence)
 		// This lets you test the game before uploading puzzles to Firestore
-		if (!puzzleData && !userData) {
+		if (!puzzleData) {
 			console.warn(
 				"Dev mode: No puzzle data - using random puzzle (no persistence)",
 			);
@@ -58,16 +58,6 @@ function Game({
 			setStartedAt(Timestamp.now());
 			return;
 		}
-
-		// REQUIRE BOTH PUZZLE DATA AND USER DATA
-		// In dev mode: userData is mock data, puzzleData is mock puzzle
-		// In production: userData is from Firestore, puzzleData is from Firestore
-		if (!puzzleData || !userData) {
-			return; // Wait for both puzzle data and user data
-		}
-
-		// Check if user has a saved game for this puzzle+difficulty
-		const savedGame = userData?.gameState?.[puzzleId]?.[difficulty];
 
 		// Get the correct initial board based on difficulty
 		const boardKey =
@@ -105,7 +95,7 @@ function Game({
 				);
 			}
 		}
-	}, [puzzleData, puzzleId, difficulty, userData, user]);
+	}, [puzzleData, puzzleId, difficulty, savedGame, user]);
 
 	// ===== Handle Move (called by Board after each tile movement) =====
 	const handleMove = (newBoard) => {

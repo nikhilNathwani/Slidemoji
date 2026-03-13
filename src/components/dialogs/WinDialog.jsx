@@ -11,7 +11,7 @@ function WinDialog({
 	earnedEmoji,
 	earnedEmojiName,
 	gridSize,
-	userData,
+	completedPuzzles,
 }) {
 	const handleShare = () => {
 		const shareText = `Slidemoji #001 ${earnedEmoji}
@@ -30,13 +30,6 @@ Play at slidemoji.com`;
 				console.error("Failed to copy:", err);
 			});
 	};
-
-	const earnedPuzzleIds = new Set();
-	if (userData?.stats?.completedPuzzles) {
-		Object.keys(userData.stats.completedPuzzles).forEach((puzzleId) => {
-			earnedPuzzleIds.add(parseInt(puzzleId));
-		});
-	}
 
 	return (
 		<Dialog isOpen={isOpen} onClose={onClose} title="Congratulations!">
@@ -58,8 +51,7 @@ Play at slidemoji.com`;
 				<div className={styles.winDivider}></div>
 
 				<StatsContent
-					userData={userData}
-					earnedPuzzleIds={earnedPuzzleIds}
+					completedPuzzles={completedPuzzles}
 					numTotalPuzzles={puzzleNumber}
 					showTitle={true}
 				/>

@@ -2,14 +2,13 @@ import Dialog from "./Dialog";
 import StatsContent from "../stats/StatsContent";
 import TrophyCaseTitle from "../stats/TrophyCaseTitle";
 
-function StatsDialog({ isOpen, onClose, userData, numTotalPuzzles = 1 }) {
-	// Extract earned puzzle IDs from userData
-	const earnedPuzzleIds = new Set();
-	if (userData?.stats?.completedPuzzles) {
-		Object.keys(userData.stats.completedPuzzles).forEach((puzzleId) => {
-			earnedPuzzleIds.add(parseInt(puzzleId));
-		});
-	}
+function StatsDialog({
+	isOpen,
+	onClose,
+	completedPuzzles,
+	numTotalPuzzles = 1,
+}) {
+	const numEarnedTrophies = Object.keys(completedPuzzles || {}).length;
 
 	return (
 		<Dialog
@@ -18,7 +17,7 @@ function StatsDialog({ isOpen, onClose, userData, numTotalPuzzles = 1 }) {
 			title={
 				<>
 					<TrophyCaseTitle
-						numEarnedTrophies={earnedPuzzleIds.size}
+						numEarnedTrophies={numEarnedTrophies}
 						numTotalTrophies={numTotalPuzzles}
 						isDialogHeader={true}
 					></TrophyCaseTitle>
@@ -26,8 +25,7 @@ function StatsDialog({ isOpen, onClose, userData, numTotalPuzzles = 1 }) {
 			}
 		>
 			<StatsContent
-				userData={userData}
-				earnedPuzzleIds={earnedPuzzleIds}
+				completedPuzzles={completedPuzzles}
 				numTotalPuzzles={numTotalPuzzles}
 				showTitle={false}
 			></StatsContent>

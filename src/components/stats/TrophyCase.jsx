@@ -3,14 +3,10 @@ import Trophy from "../common/Trophy";
 import styles from "./TrophyCase.module.css";
 import { useState, useEffect } from "react";
 
-function TrophyCase({
-	earnedPuzzleIds = new Set(),
-	totalPuzzles = 12,
-	completedPuzzles,
-	showTitle = true,
-}) {
+function TrophyCase({ totalPuzzles = 12, completedPuzzles, showTitle = true }) {
 	const TROPHIES_PER_PAGE = 12;
 	const totalPages = Math.ceil(totalPuzzles / TROPHIES_PER_PAGE);
+	const numEarnedTrophies = Object.keys(completedPuzzles || {}).length;
 
 	// Calculate initial page based on today's puzzle
 	const initialPage = Math.ceil(totalPuzzles / TROPHIES_PER_PAGE);
@@ -29,11 +25,12 @@ function TrophyCase({
 	// Generate trophy slots for current page only
 	const trophySlots = [];
 	for (let i = startIndex; i <= endIndex; i++) {
-		const isEarned = earnedPuzzleIds.has(i);
-		// Get actual emoji from userData completedPuzzles if available
+		// Check if puzzle is earned
+		const isEarned = completedPuzzles?.[i];
+		// Get actual emoji from completedPuzzles if available
 		let emoji = null;
 		let name = null;
-		if (isEarned && completedPuzzles?.[i]) {
+		if (isEarned) {
 			// Get emoji from first completed difficulty for this puzzle
 			const difficulties = Object.keys(completedPuzzles[i]);
 			if (difficulties.length > 0) {
@@ -69,7 +66,7 @@ function TrophyCase({
 				<h3>
 					<FontAwesomeIcon icon="trophy" /> Trophy Case
 					<span className={styles.trophyCount}>
-						{earnedPuzzleIds.size}/{totalPuzzles}
+						{numEarnedTrophies}/{totalPuzzles}
 					</span>
 				</h3>
 			)}
