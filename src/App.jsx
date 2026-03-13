@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import "./App.css";
 import LandingPage from "./components/landing/LandingPage";
 import Header from "./components/Header";
@@ -18,6 +18,7 @@ import {
 	DEFAULT_SOUND_ENABLED,
 } from "./constants";
 import { getMockPuzzle, getMockUser, getDevConfig } from "./dev/mockData";
+import { addPuzzleSolution, getMaxGridSizeSolved } from "./utils/statsHelpers";
 
 function App() {
 	const { user } = useAuth();
@@ -45,10 +46,15 @@ function App() {
 	const [pendingGridSize, setPendingGridSize] = useState(null);
 	const [userData, setUserData] = useState(null);
 	const [puzzle, setPuzzle] = useState(null);
-	const [maxGridSizeSolved, setMaxGridSizeSolved] = useState(0); // 0 = not solved, 3 = 3x3, 4 = 4x4
 
 	// Dev mode configuration
 	const devConfig = getDevConfig();
+
+	// Derive maxGridSizeSolved from userData (no separate state needed)
+	const maxGridSizeSolved = useMemo(
+		() => getMaxGridSizeSolved(userData, todaysPuzzleNumber),
+		[userData, todaysPuzzleNumber],
+	);
 
 	// ===== Load User Data on Sign-In =====
 	// When user signs in, fetch their Firestore document (preferences, stats, game state)
@@ -59,12 +65,10 @@ function App() {
 			// DEV MODE: Use mock user data
 			const mockUser = getMockUser(devConfig.userScenario);
 			setUserData(mockUser);
-			if (mockUser.preferences?.darkMode !== undefined) {
-				setHasDarkMode(mockUser.preferences.darkMode);
-			}
-			if (mockUser.preferences?.soundEnabled !== undefined) {
-				setHasSoundEnabled(mockUser.preferences.soundEnabled);
-			}
+			setHasDarkMode(mockUser.preferences?.darkMode ?? DEFAULT_DARK_MODE);
+			setHasSoundEnabled(
+				mockUser.preferences?.soundEnabled ?? DEFAULT_SOUND_ENABLED,
+			);
 			return;
 		}
 
@@ -73,13 +77,14 @@ function App() {
 			getUserData(user.uid)
 				.then((data) => {
 					setUserData(data);
-					// Apply saved preferences
-					if (data?.preferences?.darkMode !== undefined) {
-						setHasDarkMode(data.preferences.darkMode);
-					}
-					if (data?.preferences?.soundEnabled !== undefined) {
-						setHasSoundEnabled(data.preferences.soundEnabled);
-					}
+					// Apply saved preferences (fallback to defaults for backward compatibility)
+					setHasDarkMode(
+						data?.preferences?.darkMode ?? DEFAULT_DARK_MODE,
+					);
+					setHasSoundEnabled(
+						data?.preferences?.soundEnabled ??
+							DEFAULT_SOUND_ENABLED,
+					);
 				})
 				.catch((error) => {
 					console.error("[AUTH] Error loading user data:", error);
@@ -120,52 +125,17 @@ function App() {
 			});
 	}, [todaysPuzzleNumber, devConfig.enabled, gridSize]);
 
-	// ===== Calculate Trophy Badge (highest difficulty solved for today's puzzle) =====
-	// User might solve both 3x3 and 4x4 - badge shows the harder one
-	useEffect(() => {
-		if (userData?.stats?.solvedPuzzles?.[todaysPuzzleNumber]) {
-			const solutions = userData.stats.solvedPuzzles[todaysPuzzleNumber];
-			// Get all difficulty levels solved (e.g., [3, 4])
-			const difficulties = Object.keys(solutions).map(Number);
-			// Take the highest (4 > 3)
-			const highest = Math.max(...difficulties, 0);
-			setMaxGridSizeSolved(highest);
-		} else {
-			setMaxGridSizeSolved(0); // Not solved yet
-		}
-	}, [userData, todaysPuzzleNumber]);
-
 	const handleWin = () => {
-		// Update trophy badge difficulty immediately (before win dialog shows)
-		// User might solve 3x3 then try 4x4 - badge should update right away
-		if (gridSize > maxGridSizeSolved) {
-			setMaxGridSizeSolved(gridSize);
-		}
-
 		// Update local userData to add this solution immediately (for trophy case)
 		// This ensures the trophy shows up right away in the win dialog
-		setUserData((prevData) => {
-			if (!prevData || !prevData.stats) return prevData;
-
-			const updatedStats = { ...prevData.stats };
-			if (!updatedStats.solvedPuzzles) {
-				updatedStats.solvedPuzzles = {};
-			}
-			if (!updatedStats.solvedPuzzles[todaysPuzzleNumber]) {
-				updatedStats.solvedPuzzles[todaysPuzzleNumber] = {};
-			}
-			// Add this difficulty solution with emoji data
-			updatedStats.solvedPuzzles[todaysPuzzleNumber][gridSize] = {
+		// maxGridSizeSolved will auto-update via useMemo when userData changes
+		setUserData((prevData) =>
+			addPuzzleSolution(prevData, todaysPuzzleNumber, gridSize, {
 				completedAt: new Date(),
 				emoji: puzzle?.emoji,
 				emojiName: puzzle?.emojiName,
-			};
-
-			return {
-				...prevData,
-				stats: updatedStats,
-			};
-		});
+			}),
+		);
 
 		// Block all input during win celebration period
 		setShowSettingsDialog(false);
@@ -230,16 +200,12 @@ function App() {
 		}
 	};
 
-	const handlePlay = () => {
-		setShowLandingPage(false);
-	};
-
 	if (showLandingPage) {
 		return (
 			<div
 				className={`app ${hasDarkMode ? "dark-theme" : "light-theme"}`}
 			>
-				<LandingPage onPlay={handlePlay} />
+				<LandingPage onPlay={() => setShowLandingPage(false)} />
 			</div>
 		);
 	}
