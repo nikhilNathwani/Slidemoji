@@ -279,7 +279,9 @@ function App() {
 				puzzleId={todaysPuzzleNumber}
 				difficulty={gridSize}
 				gridSize={gridSize}
-				savedGame={userData?.gameState?.[todaysPuzzleNumber]?.[gridSize]}
+				savedGame={
+					userData?.gameState?.[todaysPuzzleNumber]?.[gridSize]
+				}
 				highestEarnedDifficulty={highestEarnedDifficulty}
 				showNumbers={showNumbers}
 				isGameWon={isWon}
@@ -293,6 +295,7 @@ function App() {
 			<SettingsDialog
 				isOpen={showSettings}
 				onClose={() => setShowSettings(false)}
+				//
 				gridSize={gridSize}
 				darkMode={darkMode}
 				showNumbers={showNumbers}
@@ -307,6 +310,7 @@ function App() {
 			<StatsDialog
 				isOpen={showStats}
 				onClose={() => setShowStats(false)}
+				//
 				completedPuzzles={userData?.stats?.completedPuzzles}
 				numTotalPuzzles={todaysPuzzleNumber}
 			/>
@@ -314,6 +318,7 @@ function App() {
 			<WinDialog
 				isOpen={showWinDialog}
 				onClose={handleCloseWinDialog}
+				//
 				puzzleNumber={todaysPuzzleNumber}
 				earnedEmoji={dailyEmoji.emoji}
 				earnedEmojiName={dailyEmoji.name}
