@@ -3,10 +3,10 @@ import Trophy from "../common/Trophy";
 import styles from "./TrophyCase.module.css";
 import { useState, useEffect } from "react";
 
-function TrophyCase({ totalPuzzles = 12, completedPuzzles, showTitle = true }) {
+function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true }) {
 	const TROPHIES_PER_PAGE = 12;
 	const totalPages = Math.ceil(totalPuzzles / TROPHIES_PER_PAGE);
-	const numEarnedTrophies = Object.keys(completedPuzzles || {}).length;
+	const numEarnedTrophies = Object.keys(solvedPuzzles || {}).length;
 
 	// Calculate initial page based on today's puzzle
 	const initialPage = Math.ceil(totalPuzzles / TROPHIES_PER_PAGE);
@@ -26,19 +26,19 @@ function TrophyCase({ totalPuzzles = 12, completedPuzzles, showTitle = true }) {
 	const trophySlots = [];
 	for (let i = startIndex; i <= endIndex; i++) {
 		// Check if puzzle is earned
-		const isEarned = completedPuzzles?.[i];
-		// Get actual emoji from completedPuzzles if available
+		const isEarned = solvedPuzzles?.[i];
+		// Get actual emoji from solvedPuzzles if available
 		let emoji = null;
 		let name = null;
 		let maxDifficulty = 0;
 		if (isEarned) {
-			// Get emoji from first completed difficulty for this puzzle
-			const difficulties = Object.keys(completedPuzzles[i]);
+			// Get emoji from first solved difficulty for this puzzle
+			const difficulties = Object.keys(solvedPuzzles[i]);
 			if (difficulties.length > 0) {
-				const puzzleData = completedPuzzles[i][difficulties[0]];
+				const puzzleData = solvedPuzzles[i][difficulties[0]];
 				emoji = puzzleData?.emoji || null;
 				name = puzzleData?.emojiName || null;
-				maxDifficulty = Math.max(difficulties);
+				maxDifficulty = Math.max(...difficulties.map(Number));
 			}
 		}
 
@@ -82,7 +82,7 @@ function TrophyCase({ totalPuzzles = 12, completedPuzzles, showTitle = true }) {
 						trophyEmoji={slot.emoji}
 						trophyName={slot.name}
 						isLocked={!slot.isEarned}
-						highestCompletedDifficulty={slot.maxDifficulty}
+						maxCompletedDifficulty={slot.maxDifficulty}
 						isMini={true}
 					/>
 				))}

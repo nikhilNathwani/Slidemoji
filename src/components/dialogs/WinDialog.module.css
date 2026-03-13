@@ -13,7 +13,7 @@
 
 /* Target only direct h3 children to avoid affecting nested components */
 .winDialogContent > h3 {
-	font-size: 1.8rem;
+	font-size: var(--text-3xl);
 	color: var(--text-primary);
 	margin-top: 20px;
 	margin-bottom: 32px;
@@ -59,7 +59,7 @@
 }
 
 .shareButton i {
-	font-size: 0.95rem;
+	font-size: var(--text-base);
 }
 
 .viewStatsButton {

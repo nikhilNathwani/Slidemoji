@@ -3,7 +3,7 @@
 }
 
 .trophyCase h3 {
-	font-size: 1.3rem;
+	font-size: var(--text-xl);
 	color: var(--text-primary);
 	margin-bottom: 20px;
 	display: flex;

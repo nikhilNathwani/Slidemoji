@@ -2,13 +2,8 @@ import Dialog from "./Dialog";
 import StatsContent from "../stats/StatsContent";
 import TrophyCaseTitle from "../stats/TrophyCaseTitle";
 
-function StatsDialog({
-	isOpen,
-	onClose,
-	completedPuzzles,
-	numTotalPuzzles = 1,
-}) {
-	const numEarnedTrophies = Object.keys(completedPuzzles || {}).length;
+function StatsDialog({ isOpen, onClose, solvedPuzzles, numTotalPuzzles = 1 }) {
+	const numEarnedTrophies = Object.keys(solvedPuzzles || {}).length;
 
 	return (
 		<Dialog
@@ -25,7 +20,7 @@ function StatsDialog({
 			}
 		>
 			<StatsContent
-				completedPuzzles={completedPuzzles}
+				solvedPuzzles={solvedPuzzles}
 				numTotalPuzzles={numTotalPuzzles}
 				showTitle={false}
 			></StatsContent>

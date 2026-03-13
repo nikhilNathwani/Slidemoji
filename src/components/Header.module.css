@@ -13,7 +13,7 @@
 }
 
 .appTitle {
-	font-size: 1.5rem;
+	font-size: var(--text-2xl);
 	font-weight: 600;
 	font-family: "Fredoka", sans-serif;
 	color: var(--text-primary);
@@ -34,7 +34,7 @@
 	background-color: var(--surface-primary);
 	border: 1px solid var(--border-secondary);
 	color: var(--text-primary);
-	font-size: 1.2rem;
+	font-size: var(--text-xl);
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -43,7 +43,7 @@
 }
 
 .iconButton i {
-	font-size: 1.2rem;
+	font-size: var(--text-xl);
 }
 
 .iconButton:hover {
@@ -63,7 +63,7 @@
 	background-color: var(--surface-primary);
 	border: 1px solid var(--border-secondary);
 	color: var(--text-primary);
-	font-size: 1.5rem;
+	font-size: var(--text-2xl);
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -131,11 +131,11 @@
 .accountName {
 	font-weight: 600;
 	color: var(--text-primary);
-	font-size: 0.95rem;
+	font-size: var(--text-base);
 }
 
 .accountEmail {
-	font-size: 0.85rem;
+	font-size: var(--text-sm);
 	color: var(--text-secondary);
 }
 
@@ -151,7 +151,7 @@
 	background: transparent;
 	border: none;
 	color: var(--text-primary);
-	font-size: 0.9rem;
+	font-size: var(--text-sm);
 	text-align: left;
 	cursor: pointer;
 	display: flex;
@@ -165,14 +165,14 @@
 }
 
 .accountMenuItem i {
-	font-size: 1rem;
+	font-size: var(--text-base);
 	width: 18px;
 }
 
 /* Mobile Responsive */
 @media (max-width: 600px) {
 	.appTitle {
-		font-size: 1.2rem;
+		font-size: var(--text-xl);
 	}
 
 	.appHeader {
@@ -185,7 +185,7 @@
 	}
 
 	.iconButton i {
-		font-size: 1rem;
+		font-size: var(--text-base);
 	}
 
 	.avatarButton {

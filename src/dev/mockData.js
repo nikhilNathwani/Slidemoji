@@ -81,13 +81,13 @@ export const mockUserScenarios = {
 		},
 		stats: {
 			totalAttempted: 0,
-			totalCompleted: 0,
+			totalSolved: 0,
 			currentPlayStreak: 0,
 			maxPlayStreak: 0,
 			currentWinStreak: 0,
 			maxWinStreak: 0,
 			lastPlayedDate: null,
-			completedPuzzles: {},
+			solvedPuzzles: {},
 		},
 		gameState: null,
 	},
@@ -102,14 +102,14 @@ export const mockUserScenarios = {
 		},
 		stats: {
 			totalAttempted: 15,
-			totalCompleted: 12,
+			totalSolved: 12,
 			currentPlayStreak: 7,
 			maxPlayStreak: 10,
 			currentWinStreak: 5,
 			maxWinStreak: 8,
 			lastPlayedDate: "2026-03-02", // Yesterday
-			completedPuzzles: {
-				// Completed puzzles 1-10 on both difficulties
+			solvedPuzzles: {
+				// Solved puzzles 1-10 on both difficulties
 				...Object.fromEntries(
 					Array.from({ length: 10 }, (_, i) => {
 						const puzzleId = i + 1;
@@ -164,13 +164,13 @@ export const mockUserScenarios = {
 		},
 		stats: {
 			totalAttempted: 5,
-			totalCompleted: 3,
+			totalSolved: 3,
 			currentPlayStreak: 3,
 			maxPlayStreak: 5,
 			currentWinStreak: 2,
 			maxWinStreak: 3,
 			lastPlayedDate: "2026-03-03", // Today
-			completedPuzzles: {
+			solvedPuzzles: {
 				1: {
 					3: {
 						moves: 42,
@@ -207,14 +207,14 @@ export const mockUserScenarios = {
 		},
 		stats: {
 			totalAttempted: 50,
-			totalCompleted: 45,
+			totalSolved: 45,
 			currentPlayStreak: 30,
 			maxPlayStreak: 30,
 			currentWinStreak: 25,
 			maxWinStreak: 25,
 			lastPlayedDate: "2026-03-02",
-			completedPuzzles: {
-				// Completed 30 puzzles
+			solvedPuzzles: {
+				// Solved 30 puzzles
 				...Object.fromEntries(
 					Array.from({ length: 30 }, (_, i) => {
 						const puzzleId = i + 1;

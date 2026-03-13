@@ -7,29 +7,20 @@ function Trophy({
 	trophyName = null,
 	isMini = false,
 	isLocked = false,
-	highestCompletedDifficulty = 0, // 3 for normal (gold), 4 for hard (green)
-	visible = true,
+	maxSolvedDifficulty = 0, // 3 for normal (gold), 4 for hard (teal)
 }) {
 	// Determine variant-specific class based on boolean props
 	const variantClass = isLocked
 		? styles.locked
-		: !highestCompletedDifficulty
+		: !maxSolvedDifficulty
 			? styles.puzzleInfo
-			: highestCompletedDifficulty === 4
+			: maxSolvedDifficulty === 4
 				? styles.special
 				: styles.gold;
 
-	// Visibility class (only applies when not earned and not locked)
-	const visibilityClass =
-		!highestCompletedDifficulty && !isLocked
-			? visible
-				? styles.visible
-				: styles.hidden
-			: "";
-
 	return (
 		<div
-			className={`${styles.trophy} ${variantClass} ${isMini && styles.trophyMini} ${visibilityClass}`}
+			className={`${styles.trophy} ${variantClass} ${isMini && styles.trophyMini}`}
 		>
 			<div className={styles.number}>
 				#{String(trophyNum).padStart(3, "0")}

@@ -56,8 +56,7 @@ function App() {
 	const [pendingSize, setPendingSize] = useState(null);
 	const [userData, setUserData] = useState(null);
 	const [puzzleData, setPuzzleData] = useState(null);
-	const [highestCompletedDifficulty, setHighestCompletedDifficulty] =
-		useState(0); // 0 = not completed, 3 = 3x3, 4 = 4x4
+	const [maxSolvedDifficulty, setMaxSolvedDifficulty] = useState(0); // 0 = not solved, 3 = 3x3, 4 = 4x4
 
 	// Dev mode configuration
 	const devConfig = getDevConfig();
@@ -131,43 +130,42 @@ function App() {
 			});
 	}, [todaysPuzzleNumber, devConfig.enabled, gridSize]);
 
-	// ===== Calculate Trophy Badge (highest difficulty completed for today's puzzle) =====
-	// User might complete both 3x3 and 4x4 - badge shows the harder one
+	// ===== Calculate Trophy Badge (highest difficulty solved for today's puzzle) =====
+	// User might solve both 3x3 and 4x4 - badge shows the harder one
 	useEffect(() => {
-		if (userData?.stats?.completedPuzzles?.[todaysPuzzleNumber]) {
-			const completions =
-				userData.stats.completedPuzzles[todaysPuzzleNumber];
-			// Get all difficulty levels completed (e.g., [3, 4])
-			const difficulties = Object.keys(completions).map(Number);
+		if (userData?.stats?.solvedPuzzles?.[todaysPuzzleNumber]) {
+			const solutions = userData.stats.solvedPuzzles[todaysPuzzleNumber];
+			// Get all difficulty levels solved (e.g., [3, 4])
+			const difficulties = Object.keys(solutions).map(Number);
 			// Take the highest (4 > 3)
 			const highest = Math.max(...difficulties, 0);
-			setHighestCompletedDifficulty(highest);
+			setMaxSolvedDifficulty(highest);
 		} else {
-			setHighestCompletedDifficulty(0); // Not completed yet
+			setMaxSolvedDifficulty(0); // Not solved yet
 		}
 	}, [userData, todaysPuzzleNumber]);
 
 	const handleWin = () => {
 		// Update trophy badge difficulty immediately (before win dialog shows)
-		// User might complete 3x3 then try 4x4 - badge should update right away
-		if (gridSize > highestCompletedDifficulty) {
-			setHighestCompletedDifficulty(gridSize);
+		// User might solve 3x3 then try 4x4 - badge should update right away
+		if (gridSize > maxSolvedDifficulty) {
+			setMaxSolvedDifficulty(gridSize);
 		}
 
-		// Update local userData to add this completion immediately (for trophy case)
+		// Update local userData to add this solution immediately (for trophy case)
 		// This ensures the trophy shows up right away in the win dialog
 		setUserData((prevData) => {
 			if (!prevData || !prevData.stats) return prevData;
 
 			const updatedStats = { ...prevData.stats };
-			if (!updatedStats.completedPuzzles) {
-				updatedStats.completedPuzzles = {};
+			if (!updatedStats.solvedPuzzles) {
+				updatedStats.solvedPuzzles = {};
 			}
-			if (!updatedStats.completedPuzzles[todaysPuzzleNumber]) {
-				updatedStats.completedPuzzles[todaysPuzzleNumber] = {};
+			if (!updatedStats.solvedPuzzles[todaysPuzzleNumber]) {
+				updatedStats.solvedPuzzles[todaysPuzzleNumber] = {};
 			}
-			// Add this difficulty completion with emoji data
-			updatedStats.completedPuzzles[todaysPuzzleNumber][gridSize] = {
+			// Add this difficulty solution with emoji data
+			updatedStats.solvedPuzzles[todaysPuzzleNumber][gridSize] = {
 				completedAt: new Date(),
 				emoji: dailyEmoji.emoji,
 				emojiName: dailyEmoji.name,
@@ -273,7 +271,7 @@ function App() {
 				savedGame={
 					userData?.gameState?.[todaysPuzzleNumber]?.[gridSize]
 				}
-				highestCompletedDifficulty={highestCompletedDifficulty}
+				maxSolvedDifficulty={maxSolvedDifficulty}
 				hasNumbersShown={hasNumbersShown}
 				isGameWon={isGameWon}
 				hasSoundEnabled={hasSoundEnabled}
@@ -298,7 +296,7 @@ function App() {
 			<StatsDialog
 				isOpen={showStatsDialog}
 				onClose={() => setShowStatsDialog(false)}
-				completedPuzzles={userData?.stats?.completedPuzzles}
+				solvedPuzzles={userData?.stats?.solvedPuzzles}
 				numTotalPuzzles={todaysPuzzleNumber}
 			/>
 
@@ -309,7 +307,7 @@ function App() {
 				puzzleEmoji={dailyEmoji.emoji}
 				puzzleEmojiName={dailyEmoji.name}
 				gridSize={gridSize}
-				completedPuzzles={userData?.stats?.completedPuzzles}
+				solvedPuzzles={userData?.stats?.solvedPuzzles}
 			/>
 
 			<ConfirmResetDialog

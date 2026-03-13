@@ -11,12 +11,12 @@ function WinDialog({
 	puzzleEmoji,
 	puzzleEmojiName,
 	gridSize,
-	completedPuzzles,
+	solvedPuzzles,
 }) {
 	const handleShare = () => {
-		const shareText = `Slidemoji #001 ${puzzleEmoji}
+		const shareText = `Slidemoji #001 
 
-I completed today's emoji! 🎉
+I unscrambled today's emoji! ${puzzleEmoji}
 
 Play at slidemoji.com`;
 
@@ -38,7 +38,7 @@ Play at slidemoji.com`;
 					trophyNum={puzzleNumber}
 					trophyEmoji={puzzleEmoji}
 					trophyName={puzzleEmojiName}
-					difficulty={gridSize}
+					maxSolvedDifficulty={gridSize}
 				/>
 				<h3>You earned today's emoji!</h3>
 
@@ -50,7 +50,7 @@ Play at slidemoji.com`;
 				<div className={styles.winDivider}></div>
 
 				<StatsContent
-					completedPuzzles={completedPuzzles}
+					solvedPuzzles={solvedPuzzles}
 					numTotalPuzzles={puzzleNumber}
 					showTitle={true}
 				/>

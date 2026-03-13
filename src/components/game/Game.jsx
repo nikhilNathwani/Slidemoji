@@ -21,7 +21,7 @@ function Game({
 	difficulty,
 	gridSize,
 	savedGame,
-	highestCompletedDifficulty = 0,
+	maxSolvedDifficulty = 0,
 	hasNumbersShown,
 	isGameWon,
 	hasSoundEnabled,
@@ -115,14 +115,14 @@ function Game({
 		}
 	};
 
-	// ===== Handle Win (called by Board when puzzle is completed) =====
+	// ===== Handle Win (called by Board when puzzle is solved) =====
 	const handleWin = () => {
 		onWin(); // Notify parent (App) to update trophy badge
 
-		// Save completion to Firestore (only if signed in and have puzzleData):
-		// - Adds trophy to completedPuzzles[puzzleId][difficulty]
+		// Save solution to Firestore (only if signed in and have puzzleData):
+		// - Adds trophy to solvedPuzzles[puzzleId][difficulty]
 		// - Updates win streak (if daily puzzle)
-		// - Increments totalCompleted
+		// - Increments totalSolved
 		// - Clears game from gameState (puzzle is done!)
 		// In development mode (no user/puzzleData), this is skipped
 		if (user && puzzleData) {
@@ -182,7 +182,7 @@ function Game({
 						puzzleNumber={String(puzzleId).padStart(3, "0")}
 						emoji={dailyEmoji.emoji}
 						emojiName={dailyEmoji.name}
-						highestCompletedDifficulty={highestCompletedDifficulty}
+						maxSolvedDifficulty={maxSolvedDifficulty}
 					/>
 				</div>
 				{!initialBoard ? (

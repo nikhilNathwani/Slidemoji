@@ -5,7 +5,7 @@
 }
 
 .trophyCaseTitle {
-	font-size: 1.3rem;
+	font-size: var(--text-xl);
 	color: var(--text-primary);
 	margin: 0;
 	display: flex;
@@ -39,7 +39,7 @@
 
 .statLabel {
 	color: var(--text-secondary);
-	font-size: 0.95rem;
+	font-size: var(--text-base);
 	display: flex;
 	align-items: center;
 	gap: 8px;
@@ -52,7 +52,7 @@
 
 .statValue {
 	color: var(--text-primary);
-	font-size: 1.1rem;
+	font-size: var(--text-lg);
 	font-weight: 600;
 }
 
@@ -65,7 +65,7 @@
 }
 
 .statsSigninTitle {
-	font-size: 1.3rem;
+	font-size: var(--text-xl);
 	color: var(--text-primary);
 	margin: 0;
 }
@@ -77,27 +77,27 @@
 }
 
 .statsIcon {
-	font-size: 3rem;
+	font-size: var(--text-5xl);
 	color: var(--text-tertiary);
 	margin-bottom: 20px;
 }
 
 .statsEmpty h3 {
-	font-size: 1.5rem;
+	font-size: var(--text-2xl);
 	color: var(--text-primary);
 	margin-bottom: 10px;
 }
 
 .statsDescription {
 	color: var(--text-secondary);
-	font-size: 0.95rem;
+	font-size: var(--text-base);
 	margin: 0;
 	line-height: 1.5;
 	max-width: 380px;
 }
 
 .privacyNote {
-	font-size: 0.85rem;
+	font-size: var(--text-sm);
 	color: var(--text-tertiary);
 	line-height: 1.6;
 	max-width: 380px;
@@ -125,14 +125,14 @@
 }
 
 .archiveTitle {
-	font-size: 1.2rem;
+	font-size: var(--text-xl);
 	color: var(--text-primary);
 	margin: 0;
 }
 
 .archiveDescription {
 	color: var(--text-secondary);
-	font-size: 0.95rem;
+	font-size: var(--text-base);
 	line-height: 1.5;
 	max-width: 400px;
 	margin: 0;
@@ -145,7 +145,7 @@
 	color: var(--bg-gradient-start);
 	border: 1px solid var(--border-primary);
 	border-radius: 8px;
-	font-size: 1rem;
+	font-size: var(--text-base);
 	font-weight: 600;
 	cursor: pointer;
 	transition: all 0.2s ease;
@@ -166,5 +166,5 @@
 }
 
 .unlockArchiveButton i {
-	font-size: 0.95rem;
+	font-size: var(--text-base);
 }

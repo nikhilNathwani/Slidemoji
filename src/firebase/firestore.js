@@ -38,13 +38,13 @@ import {
  *   },
  *   stats: {
  *     totalAttempted: number,
- *     totalCompleted: number,
+ *     totalSolved: number,
  *     currentPlayStreak: number,
  *     maxPlayStreak: number,
  *     currentWinStreak: number,
  *     maxWinStreak: number,
  *     lastPlayedDate: string (YYYY-MM-DD),
- *     completedPuzzles: {
+ *     solvedPuzzles: {
  *       [puzzleId]: {
  *         [difficulty]: {
  *           moves: number,
@@ -74,7 +74,7 @@ import {
  *
  * Retrieves the complete user document including:
  * - preferences (dark mode, etc.)
- * - stats (streaks, totals, completed puzzles)
+ * - stats (streaks, totals, solved puzzles)
  * - gameState (in-progress games for resume)
  *
  * @param {string} userId - Firebase Auth user ID (uid)
@@ -133,7 +133,7 @@ export async function createUserData(userId, userData = {}) {
 			stats: {
 				// High-level counters
 				totalAttempted: 0,
-				totalCompleted: 0,
+				totalSolved: 0,
 				// Play streak: consecutive days played (any attempt)
 				currentPlayStreak: 0,
 				maxPlayStreak: 0,
@@ -142,7 +142,7 @@ export async function createUserData(userId, userData = {}) {
 				maxWinStreak: 0,
 				lastPlayedDate: null, // YYYY-MM-DD format
 				// Trophy collection: nested by puzzle ID → difficulty
-				completedPuzzles: {},
+				solvedPuzzles: {},
 			},
 			// In-progress games (for resume functionality)
 			gameState: null,
@@ -235,8 +235,8 @@ export async function startPuzzle(userId, puzzleId, difficulty, initialBoard) {
 		};
 
 		// Increment attempts counter (only if first time trying this puzzle+difficulty)
-		// If user already completed this combo, we still allow retry but don't re-count it
-		if (!stats.completedPuzzles?.[puzzleId]?.[difficulty]) {
+		// If user already solved this combo, we still allow retry but don't re-count it
+		if (!stats.solvedPuzzles?.[puzzleId]?.[difficulty]) {
 			stats.totalAttempted++;
 		}
 
@@ -316,12 +316,12 @@ export async function saveGameState(userId, puzzleId, difficulty, gameData) {
 /**
  * Save completion when puzzle is won (trophy + win streak logic)
  *
- * Called when user completes a puzzle. This is the most complex persistence function!
+ * Called when user solves a puzzle. This is the most complex persistence function!
  *
  * What it does:
- * 1. Saves trophy to completedPuzzles[puzzleId][difficulty] with moves/time stats
+ * 1. Saves trophy to solvedPuzzles[puzzleId][difficulty] with moves/time stats
  * 2. Calculates time spent (completedAt - startedAt)
- * 3. Increments totalCompleted counter
+ * 3. Increments totalSolved counter
  * 4. Updates win streak (daily puzzles only, first win of the day)
  * 5. Clears the game from gameState (puzzle is done)
  *
@@ -332,8 +332,8 @@ export async function saveGameState(userId, puzzleId, difficulty, gameData) {
  * - If won today but not yesterday → reset to 1
  *
  * Trophy System:
- * - User can complete same puzzle on multiple difficulties
- * - Each completion saved separately: completedPuzzles[1][3] and completedPuzzles[1][4]
+ * - User can solve same puzzle on multiple difficulties
+ * - Each solution saved separately: solvedPuzzles[1][3] and solvedPuzzles[1][4]
  * - UI shows highest difficulty trophy (4x4 > 3x3)
  *
  * @param {string} userId - Firebase Auth user ID
@@ -371,20 +371,20 @@ export async function saveCompletion(
 		const fromArchive = game.fromArchive;
 
 		// Ensure nested trophy structure exists
-		if (!stats.completedPuzzles) {
-			stats.completedPuzzles = {};
+		if (!stats.solvedPuzzles) {
+			stats.solvedPuzzles = {};
 		}
-		if (!stats.completedPuzzles[puzzleId]) {
-			stats.completedPuzzles[puzzleId] = {};
+		if (!stats.solvedPuzzles[puzzleId]) {
+			stats.solvedPuzzles[puzzleId] = {};
 		}
 
-		// Save completion trophy with all the details
+		// Save solution trophy with all the details
 		const completedAt = Timestamp.now();
 		const timeSpent = Math.floor(
 			(completedAt.toMillis() - game.startedAt.toMillis()) / 1000,
 		);
 
-		stats.completedPuzzles[puzzleId][difficulty] = {
+		stats.solvedPuzzles[puzzleId][difficulty] = {
 			moves: completionData.moves,
 			completedAt,
 			startedAt: game.startedAt,
@@ -395,17 +395,17 @@ export async function saveCompletion(
 		};
 
 		// Update totals (both daily and archive count here)
-		stats.totalCompleted++;
+		stats.totalSolved++;
 
 		// Update win streak - ONLY for daily puzzles, not archive
-		// Win streak = consecutive days with at least ONE completion
+		// Win streak = consecutive days with at least ONE win
 		if (!fromArchive) {
 			const today = getTodaysDate();
 			const yesterday = getYesterdaysDate();
 
 			// Check if this is their FIRST WIN today (not just first play)
-			// User might complete both 3x3 and 4x4 - only first counts for streak
-			const hasWonToday = Object.entries(stats.completedPuzzles).some(
+			// User might solve both 3x3 and 4x4 - only first counts for streak
+			const hasWonToday = Object.entries(stats.solvedPuzzles).some(
 				([pId, difficulties]) =>
 					Object.values(difficulties).some((comp) => {
 						// Filter to daily completions (not archive) from today

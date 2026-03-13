@@ -14,7 +14,7 @@
 
 .settingsLabel {
 	font-weight: 600;
-	font-size: 1rem;
+	font-size: var(--text-base);
 	color: var(--text-primary);
 }
 
@@ -58,11 +58,11 @@
 
 .difficultyLabel {
 	font-weight: 600;
-	font-size: 0.95rem;
+	font-size: var(--text-base);
 }
 
 .difficultySize {
-	font-size: 0.85rem;
+	font-size: var(--text-sm);
 	opacity: 0.8;
 }
 
@@ -89,7 +89,7 @@
 	border: 2px solid var(--border-secondary);
 	background-color: var(--surface-secondary);
 	color: var(--text-primary);
-	font-size: 1rem;
+	font-size: var(--text-base);
 	font-weight: 600;
 	cursor: pointer;
 	transition: all 0.2s ease;

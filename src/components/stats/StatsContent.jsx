@@ -6,15 +6,15 @@ import styles from "./StatsContent.module.css";
 import { FontAwesomeIcon } from "../../utils/icons";
 
 function StatsContent({
-	completedPuzzles,
+	solvedPuzzles,
 	numTotalPuzzles = 1,
 	showTitle = false,
 }) {
 	const { user } = useAuth();
 	// Calculate number of earned trophies
-	// completedPuzzles is an object/map: { 1: { 3: {...}, 4: {...} }, 2: { 3: {...} } }
+	// solvedPuzzles is an object/map: { 1: { 3: {...}, 4: {...} }, 2: { 3: {...} } }
 	// Each key is a puzzle ID, so Object.keys().length gives us the count
-	const numEarnedTrophies = Object.keys(completedPuzzles || {}).length;
+	const numEarnedTrophies = Object.keys(solvedPuzzles || {}).length;
 
 	return (
 		<div className={styles.statsContent}>
@@ -53,7 +53,7 @@ function StatsContent({
 					{/* Trophy Case (signed-in only) */}
 					<TrophyCase
 						totalPuzzles={numTotalPuzzles}
-						completedPuzzles={completedPuzzles}
+						solvedPuzzles={solvedPuzzles}
 						showTitle={false}
 					/>
 

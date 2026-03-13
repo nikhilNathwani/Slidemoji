@@ -36,7 +36,7 @@
 
 .dialogHeader h2 {
 	margin: 0;
-	font-size: 1.5rem;
+	font-size: var(--text-2xl);
 	color: var(--text-primary);
 	display: flex;
 	align-items: center;
@@ -46,7 +46,7 @@
 .dialogClose {
 	background: none;
 	border: none;
-	font-size: 2rem;
+	font-size: var(--text-4xl);
 	color: var(--text-secondary);
 	cursor: pointer;
 	padding: 0;
