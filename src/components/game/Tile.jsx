@@ -50,7 +50,7 @@ function Tile({
 			style={getTileStyle(tileNumber, boardSize, emojiSvgUrl)}
 			data-tile-number={tileNumber}
 		>
-			{showNumbers && tileNumber ? tileNumber : ""}
+			{hasNumbersShown && tileNumber ? tileNumber : ""}
 		</motion.div>
 	);
 }

@@ -21,10 +21,10 @@ function Game({
 	difficulty,
 	gridSize,
 	savedGame,
-	highestEarnedDifficulty = 0,
-	showNumbers,
+	highestCompletedDifficulty = 0,
+	hasNumbersShown,
 	isGameWon,
-	soundEnabled,
+	hasSoundEnabled,
 	onWin,
 	onShowWinDialog,
 	onSolveRef,
@@ -188,8 +188,8 @@ function Game({
 						trophyNum={String(puzzleId).padStart(3, "0")}
 						trophyEmoji={dailyEmoji.emoji}
 						trophyName={dailyEmoji.name}
-						isEarned={highestEarnedDifficulty > 0}
-						difficulty={highestEarnedDifficulty || gridSize}
+						isEarned={highestCompletedDifficulty > 0}
+						difficulty={highestCompletedDifficulty || gridSize}
 					/>
 				</div>
 				{!initialBoard ? (
@@ -201,14 +201,14 @@ function Game({
 						size={gridSize}
 						onWin={handleWin}
 						onShowWinDialog={onShowWinDialog}
-						showNumbers={showNumbers && !isGameWon}
+						hasNumbersShown={hasNumbersShown && !isGameWon}
 						onSolveRef={solveRef}
 						onRestartRef={restartRef}
 						dailyEmoji={dailyEmoji.emoji}
 						initialBoard={initialBoard}
 						savedBoard={savedBoard}
 						onMove={handleMove}
-						soundEnabled={soundEnabled}
+						hasSoundEnabled={hasSoundEnabled}
 					/>
 				)}
 

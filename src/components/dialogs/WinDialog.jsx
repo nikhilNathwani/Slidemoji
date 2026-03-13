@@ -8,13 +8,13 @@ function WinDialog({
 	isOpen,
 	onClose,
 	puzzleNumber,
-	earnedEmoji,
-	earnedEmojiName,
+	puzzleEmoji,
+	puzzleEmojiName,
 	gridSize,
 	completedPuzzles,
 }) {
 	const handleShare = () => {
-		const shareText = `Slidemoji #001 ${earnedEmoji}
+		const shareText = `Slidemoji #001 ${puzzleEmoji}
 
 I completed today's emoji! 🎉
 
@@ -36,8 +36,8 @@ Play at slidemoji.com`;
 			<div className={styles.winDialogContent}>
 				<Trophy
 					trophyNum={puzzleNumber}
-					trophyEmoji={earnedEmoji}
-					trophyName={earnedEmojiName}
+					trophyEmoji={puzzleEmoji}
+					trophyName={puzzleEmojiName}
 					isEarned={true}
 					difficulty={gridSize}
 				/>

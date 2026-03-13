@@ -20,7 +20,7 @@ function Board({
 	size,
 	onWin,
 	onShowWinDialog,
-	showNumbers,
+	hasNumbersShown,
 	onSolveRef,
 	onRestartRef,
 	dailyEmoji,
@@ -28,7 +28,7 @@ function Board({
 	initialBoard, // The starting board from Firestore (for this puzzle+difficulty)
 	savedBoard, // Previously saved board state (resume game), or null for new game
 	onMove, // Callback to notify parent when board changes (for Firestore saves)
-	soundEnabled, // Whether to play sound effects
+	hasSoundEnabled,
 }) {
 	// ===== State =====
 	// Initialize board state from savedBoard (resume) or initialBoard (new game)
@@ -133,7 +133,7 @@ function Board({
 			}
 
 			// Play tile move sound
-			if (soundEnabled) {
+			if (hasSoundEnabled) {
 				playTileMoveSound();
 			}
 
@@ -143,7 +143,7 @@ function Board({
 			// Block input during animation (unblocked by onLayoutAnimationComplete)
 			setIsInputBlocked(true);
 		},
-		[tiles, size, onMove, soundEnabled],
+		[tiles, size, onMove, hasSoundEnabled],
 	);
 
 	// Validates tile selection and triggers movement if valid
@@ -236,7 +236,7 @@ function Board({
 						key={value}
 						tileNumber={value}
 						isClickable={isClickable}
-						showNumbers={showNumbers}
+						hasNumbersShown={hasNumbersShown}
 						emojiSvgUrl={emojiSvgUrl}
 						boardSize={size}
 						onTransitionEnd={() => setIsInputBlocked(false)}

@@ -2,6 +2,31 @@ import { doc, getDoc, setDoc, collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase/config";
 
 /**
+ * Convert puzzle data from Firestore format to client format
+ * Firestore uses 0 for gap, client uses null for gap
+ * @param {Object} puzzleData - Puzzle data from Firestore
+ * @returns {Object} Puzzle data with converted board arrays
+ */
+export function convertPuzzleFromFirestore(puzzleData) {
+	if (!puzzleData) return null;
+
+	const converted = { ...puzzleData };
+
+	if (converted.initialBoard3x3) {
+		converted.initialBoard3x3 = converted.initialBoard3x3.map((v) =>
+			v === 0 ? null : v,
+		);
+	}
+	if (converted.initialBoard4x4) {
+		converted.initialBoard4x4 = converted.initialBoard4x4.map((v) =>
+			v === 0 ? null : v,
+		);
+	}
+
+	return converted;
+}
+
+/**
  * Get puzzle data by ID
  * @param {number} puzzleId - The puzzle number
  * @returns {Promise<Object|null>} Puzzle data or null if not found

@@ -11,7 +11,7 @@ import ConfirmResetDialog from "./components/dialogs/ConfirmResetDialog";
 import StatsDialog from "./components/dialogs/StatsDialog";
 import { getDailyEmoji } from "./utils/emoji";
 import { getTodaysPuzzleNumber } from "./utils/dateUtils";
-import { getPuzzleById } from "./utils/puzzleUtils";
+import { getPuzzleById, convertPuzzleFromFirestore } from "./utils/puzzleUtils";
 import { FontAwesomeIcon } from "./utils/icons";
 import { getUserData, updateUserPreferences } from "./firebase/firestore";
 import { useAuth } from "./hooks/useAuth";
@@ -34,20 +34,31 @@ function App() {
 	const dailyEmoji = getDailyEmoji();
 	const todaysPuzzleNumber = getTodaysPuzzleNumber();
 
-	const [showLanding, setShowLanding] = useState(true);
-	const [gridSize, setGridSize] = useState(DEFAULT_GRID_SIZE);
-	const [showSettings, setShowSettings] = useState(false);
+	// UI State
+	const [showLandingPage, setShowLandingPage] = useState(true);
+
+	// Dialog State
+	const [showSettingsDialog, setShowSettingsDialog] = useState(false);
 	const [showWinDialog, setShowWinDialog] = useState(false);
-	const [showStats, setShowStats] = useState(false);
-	const [showNumbers, setShowNumbers] = useState(DEFAULT_SHOW_NUMBERS);
+	const [showStatsDialog, setShowStatsDialog] = useState(false);
+	const [showDifficultyConfirmDialog, setShowDifficultyConfirmDialog] =
+		useState(false);
+
+	// Settings
+	const [hasDarkMode, setHasDarkMode] = useState(DEFAULT_DARK_MODE);
+	const [hasNumbersShown, setHasNumbersShown] = useState(DEFAULT_SHOW_NUMBERS);
+	const [hasSoundEnabled, setHasSoundEnabled] = useState(DEFAULT_SOUND_ENABLED);
+
+	// Game State
+	const [gridSize, setGridSize] = useState(DEFAULT_GRID_SIZE);
 	const [isWon, setIsWon] = useState(false);
-	const [darkMode, setDarkMode] = useState(DEFAULT_DARK_MODE);
-	const [soundEnabled, setSoundEnabled] = useState(DEFAULT_SOUND_ENABLED);
-	const [showDifficultyConfirm, setShowDifficultyConfirm] = useState(false);
 	const [pendingSize, setPendingSize] = useState(null);
 	const [userData, setUserData] = useState(null);
 	const [puzzleData, setPuzzleData] = useState(null);
-	const [highestEarnedDifficulty, setHighestEarnedDifficulty] = useState(0); // 0 = not earned, 3 = 3x3 earned, 4 = 4x4 earned
+	const [highestCompletedDifficulty, setHighestCompletedDifficulty] =
+		useState(0); // 0 = not completed, 3 = 3x3, 4 = 4x4
+
+	// Refs
 	const solveRef = useRef(null);
 
 	// Dev mode configuration
@@ -63,10 +74,10 @@ function App() {
 			const mockUser = getMockUser(devConfig.userScenario);
 			setUserData(mockUser);
 			if (mockUser.preferences?.darkMode !== undefined) {
-				setDarkMode(mockUser.preferences.darkMode);
+				setHasDarkMode(mockUser.preferences.darkMode);
 			}
 			if (mockUser.preferences?.soundEnabled !== undefined) {
-				setSoundEnabled(mockUser.preferences.soundEnabled);
+				setHasSoundEnabled(mockUser.preferences.soundEnabled);
 			}
 			return;
 		}
@@ -78,10 +89,10 @@ function App() {
 					setUserData(data);
 					// Apply saved preferences
 					if (data?.preferences?.darkMode !== undefined) {
-						setDarkMode(data.preferences.darkMode);
+						setHasDarkMode(data.preferences.darkMode);
 					}
 					if (data?.preferences?.soundEnabled !== undefined) {
-						setSoundEnabled(data.preferences.soundEnabled);
+						setHasSoundEnabled(data.preferences.soundEnabled);
 					}
 				})
 				.catch((error) => {
@@ -114,28 +125,15 @@ function App() {
 
 		getPuzzleById(todaysPuzzleNumber)
 			.then((data) => {
-				// Convert Firestore format (0-8 with 0 as gap) to client format (1-8 with null as gap)
-				if (data) {
-					if (data.initialBoard3x3) {
-						data.initialBoard3x3 = data.initialBoard3x3.map((v) =>
-							v === 0 ? null : v,
-						);
-					}
-					if (data.initialBoard4x4) {
-						data.initialBoard4x4 = data.initialBoard4x4.map((v) =>
-							v === 0 ? null : v,
-						);
-					}
-				}
-				setPuzzleData(data);
+				const convertedData = convertPuzzleFromFirestore(data);
+				setPuzzleData(convertedData);
 			})
 			.catch((error) => {
 				console.error("Error loading puzzle:", error);
 			});
 	}, [todaysPuzzleNumber, devConfig.enabled, gridSize]);
 
-	// ===== Calculate Trophy Badge (3x3 or 4x4) =====
-	// Shows highest difficulty completed for today's puzzle
+	// ===== Calculate Trophy Badge (highest difficulty completed for today's puzzle) =====
 	// User might complete both 3x3 and 4x4 - badge shows the harder one
 	useEffect(() => {
 		if (userData?.stats?.completedPuzzles?.[todaysPuzzleNumber]) {
@@ -145,17 +143,17 @@ function App() {
 			const difficulties = Object.keys(completions).map(Number);
 			// Take the highest (4 > 3)
 			const highest = Math.max(...difficulties, 0);
-			setHighestEarnedDifficulty(highest);
+			setHighestCompletedDifficulty(highest);
 		} else {
-			setHighestEarnedDifficulty(0); // Not completed yet
+			setHighestCompletedDifficulty(0); // Not completed yet
 		}
 	}, [userData, todaysPuzzleNumber]);
 
 	const handleWin = () => {
 		// Update trophy badge difficulty immediately (before win dialog shows)
 		// User might complete 3x3 then try 4x4 - badge should update right away
-		if (gridSize > highestEarnedDifficulty) {
-			setHighestEarnedDifficulty(gridSize);
+		if (gridSize > highestCompletedDifficulty) {
+			setHighestCompletedDifficulty(gridSize);
 		}
 
 		// Update local userData to add this completion immediately (for trophy case)
@@ -184,8 +182,8 @@ function App() {
 		});
 
 		// Block all input during win celebration period
-		setShowSettings(false);
-		setShowStats(false);
+		setShowSettingsDialog(false);
+		setShowStatsDialog(false);
 
 		// Note: setIsWon and dialog opening happens in Board after celebration delay
 	};
@@ -204,13 +202,13 @@ function App() {
 		if (solveRef.current) {
 			solveRef.current();
 		}
-		setShowSettings(false);
+		setShowSettingsDialog(false);
 	};
 
 	const handleSizeChange = (newSize) => {
 		if (newSize !== gridSize) {
 			setPendingSize(newSize);
-			setShowDifficultyConfirm(true);
+			setShowDifficultyConfirmDialog(true);
 		}
 	};
 
@@ -221,19 +219,19 @@ function App() {
 		}
 		setIsWon(false);
 		setShowWinDialog(false); // Close win dialog if open
-		setShowDifficultyConfirm(false);
+		setShowDifficultyConfirmDialog(false);
 	};
 
 	const handleDifficultyCancel = () => {
 		setPendingSize(null);
-		setShowDifficultyConfirm(false);
+		setShowDifficultyConfirmDialog(false);
 	};
 
-	const handleDarkModeChange = (newDarkMode) => {
-		setDarkMode(newDarkMode);
+	const handleDarkModeChange = (newHasDarkMode) => {
+		setHasDarkMode(newHasDarkMode);
 		// Persist to Firestore if user is signed in
 		if (user) {
-			updateUserPreferences(user.uid, { darkMode: newDarkMode }).catch(
+			updateUserPreferences(user.uid, { darkMode: newHasDarkMode }).catch(
 				(error) => {
 					console.error("Error saving dark mode preference:", error);
 				},
@@ -242,7 +240,7 @@ function App() {
 	};
 
 	const handleSoundEnabledChange = (newSoundEnabled) => {
-		setSoundEnabled(newSoundEnabled);
+		setHasSoundEnabled(newSoundEnabled);
 		// Persist to Firestore if user is signed in
 		if (user) {
 			updateUserPreferences(user.uid, {
@@ -254,22 +252,22 @@ function App() {
 	};
 
 	const handlePlay = () => {
-		setShowLanding(false);
+		setShowLandingPage(false);
 	};
 
-	if (showLanding) {
+	if (showLandingPage) {
 		return (
-			<div className={`app ${darkMode ? "dark-theme" : "light-theme"}`}>
+			<div className={`app ${hasDarkMode ? "dark-theme" : "light-theme"}`}>
 				<LandingPage onPlay={handlePlay} />
 			</div>
 		);
 	}
 
 	return (
-		<div className={`app ${darkMode ? "dark-theme" : "light-theme"}`}>
+		<div className={`app ${hasDarkMode ? "dark-theme" : "light-theme"}`}>
 			<Header
-				onSettingsClick={() => setShowSettings(true)}
-				onStatsClick={() => setShowStats(true)}
+				onSettingsClick={() => setShowSettingsDialog(true)}
+				onStatsClick={() => setShowStatsDialog(true)}
 				isWinCelebrating={false}
 			/>
 
@@ -282,10 +280,10 @@ function App() {
 				savedGame={
 					userData?.gameState?.[todaysPuzzleNumber]?.[gridSize]
 				}
-				highestEarnedDifficulty={highestEarnedDifficulty}
-				showNumbers={showNumbers}
+				highestCompletedDifficulty={highestCompletedDifficulty}
+				hasNumbersShown={hasNumbersShown}
 				isGameWon={isWon}
-				soundEnabled={soundEnabled}
+				hasSoundEnabled={hasSoundEnabled}
 				onWin={handleWin}
 				onShowWinDialog={handleShowWinDialog}
 				onSolveRef={solveRef}
@@ -293,24 +291,22 @@ function App() {
 			/>
 
 			<SettingsDialog
-				isOpen={showSettings}
-				onClose={() => setShowSettings(false)}
-				//
+				isOpen={showSettingsDialog}
+				onClose={() => setShowSettingsDialog(false)}
 				gridSize={gridSize}
-				darkMode={darkMode}
-				showNumbers={showNumbers}
-				soundEnabled={soundEnabled}
+				hasDarkMode={hasDarkMode}
+				hasNumbersShown={hasNumbersShown}
+				hasSoundEnabled={hasSoundEnabled}
 				onDarkModeChange={handleDarkModeChange}
-				onShowNumbersChange={setShowNumbers}
+				onShowNumbersChange={setHasNumbersShown}
 				onSoundEnabledChange={handleSoundEnabledChange}
 				onGridSizeChange={handleSizeChange}
 				onSolve={handleSolve}
 			/>
 
 			<StatsDialog
-				isOpen={showStats}
-				onClose={() => setShowStats(false)}
-				//
+				isOpen={showStatsDialog}
+				onClose={() => setShowStatsDialog(false)}
 				completedPuzzles={userData?.stats?.completedPuzzles}
 				numTotalPuzzles={todaysPuzzleNumber}
 			/>
@@ -318,16 +314,15 @@ function App() {
 			<WinDialog
 				isOpen={showWinDialog}
 				onClose={handleCloseWinDialog}
-				//
 				puzzleNumber={todaysPuzzleNumber}
-				earnedEmoji={dailyEmoji.emoji}
-				earnedEmojiName={dailyEmoji.name}
+				puzzleEmoji={dailyEmoji.emoji}
+				puzzleEmojiName={dailyEmoji.name}
 				gridSize={gridSize}
 				completedPuzzles={userData?.stats?.completedPuzzles}
 			/>
 
 			<ConfirmResetDialog
-				isOpen={showDifficultyConfirm}
+				isOpen={showDifficultyConfirmDialog}
 				onClose={handleDifficultyCancel}
 				//
 				onConfirm={handleDifficultyConfirm}

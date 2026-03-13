@@ -9,11 +9,11 @@ function SettingsDialog({
 	onClose,
 	gridSize,
 	onGridSizeChange,
-	darkMode,
+	hasDarkMode,
 	onDarkModeChange,
-	showNumbers,
+	hasNumbersShown,
 	onShowNumbersChange,
-	soundEnabled,
+	hasSoundEnabled,
 	onSoundEnabledChange,
 	onSolve,
 }) {
@@ -48,8 +48,8 @@ function SettingsDialog({
 				<div className={styles.settingsItem}>
 					<label className={styles.settingsLabel}>Show Numbers</label>
 					<Toggle
-						isOn={showNumbers}
-						onToggle={() => onShowNumbersChange(!showNumbers)}
+						isOn={hasNumbersShown}
+						onToggle={() => onShowNumbersChange(!hasNumbersShown)}
 					/>
 				</div>
 				<div className={styles.settingsItem}>
@@ -57,15 +57,15 @@ function SettingsDialog({
 						Sound Effects
 					</label>
 					<Toggle
-						isOn={soundEnabled}
-						onToggle={() => onSoundEnabledChange(!soundEnabled)}
+						isOn={hasSoundEnabled}
+						onToggle={() => onSoundEnabledChange(!hasSoundEnabled)}
 					/>
 				</div>
 				<div className={styles.settingsItem}>
 					<label className={styles.settingsLabel}>Dark Mode</label>
 					<Toggle
-						isOn={darkMode}
-						onToggle={() => onDarkModeChange(!darkMode)}
+						isOn={hasDarkMode}
+						onToggle={() => onDarkModeChange(!hasDarkMode)}
 					/>
 				</div>
 				<div className={styles.settingsDivider}></div>
@@ -83,8 +83,8 @@ function SettingsDialog({
 								`User Agent: ${navigator.userAgent}\n` +
 								`Screen Size: ${window.innerWidth}x${window.innerHeight}\n` +
 								`Grid Size: ${gridSize}\n` +
-								`Dark Mode: ${darkMode}\n` +
-								`Show Numbers: ${showNumbers}\n` +
+								`Dark Mode: ${hasDarkMode}\n` +
+								`Show Numbers: ${hasNumbersShown}\n` +
 								`Timestamp: ${new Date().toISOString()}`,
 						)}`}
 						className={`${styles.actionButton} ${styles.report}`}
