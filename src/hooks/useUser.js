@@ -1,0 +1,59 @@
+/**
+ * useUser - Custom hook for fetching user data from Firestore
+ *
+ * Wraps TanStack Query to provide user preferences, stats, and game state.
+ * Automatically caches and refetches when needed.
+ *
+ * @param {string|null} userId - User ID from Firebase Auth, or null if not signed in
+ * @param {Object} devConfig - Dev mode configuration (optional)
+ * @returns {Object} { userData, isLoading, error }
+ *
+ * Usage:
+ *   const { userData, isLoading } = useUser(user?.uid);
+ */
+
+import { useQuery } from "@tanstack/react-query";
+import { getUserData } from "../firebase/firestore";
+import { getMockUser } from "../dev/mockData";
+
+export function useUser(userId, devConfig = { enabled: false }) {
+	return useQuery({
+		// Unique cache key for this user's data
+		queryKey: ["user", userId, devConfig.userScenario],
+
+		// Fetch function
+		queryFn: async () => {
+			// DEV MODE: Return mock data instead of hitting Firestore
+			if (devConfig.enabled) {
+				const mockUser = getMockUser(devConfig.userScenario);
+				return mockUser;
+			}
+
+			// If no user, return empty object (anonymous play)
+			if (!userId) {
+				return {};
+			}
+
+			// Fetch from Firestore
+			try {
+				const data = await getUserData(userId);
+				return data;
+			} catch (error) {
+				console.error("[AUTH] Error loading user data:", error);
+				console.error("[AUTH] Error details:", {
+					message: error.message,
+					code: error.code,
+					stack: error.stack,
+				});
+				// Return empty object so board doesn't stay stuck on "Loading..."
+				return {};
+			}
+		},
+
+		// Always enabled (even for anonymous users, we return {})
+		enabled: true,
+
+		// Cache user data for 10 minutes (rarely changes)
+		staleTime: 10 * 60 * 1000,
+	});
+}

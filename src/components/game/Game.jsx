@@ -7,10 +7,10 @@ import ConfirmResetDialog from "../dialogs/ConfirmResetDialog";
 import { useAuth } from "../../hooks/useAuth";
 import { FontAwesomeIcon } from "../../utils/icons";
 import {
-	recordPuzzleStart,
-	saveGameState,
-	saveCompletion,
-} from "../../firebase/firestore";
+	useRecordPuzzleStart,
+	useSaveGameState,
+	useSaveCompletion,
+} from "../../hooks/useGameMutations";
 import {
 	convertBoardFromFirestore,
 	convertPuzzleFromFirestore,
@@ -46,6 +46,11 @@ function Game({
 	const solveRef = useRef(null);
 	const restartRef = useRef(null);
 
+	// React Query mutations for Firestore writes
+	const { mutate: startPuzzle } = useRecordPuzzleStart(user?.uid);
+	const { mutate: saveMove } = useSaveGameState(user?.uid);
+	const { mutate: saveWin } = useSaveCompletion(user?.uid);
+
 	// Convert puzzle from Firestore format (0 for gap) to client format (null for gap)
 	const puzzle = useMemo(() => {
 		return rawPuzzle ? convertPuzzleFromFirestore(rawPuzzle) : null;
@@ -67,31 +72,36 @@ function Game({
 		const boardKey = gridSize === 3 ? "initialBoard3x3" : "initialBoard4x4";
 		const initial = puzzle[boardKey];
 
-		if (savedGame) {
-			// RESUME MODE: User has a saved game, restore it
-			// Convert saved board from Firestore format (0 as gap) to client format (null as gap)
-			const convertedBoard = convertBoardFromFirestore(savedGame.board);
-			setSavedBoard(convertedBoard);
-			setInitialBoard(initial); // Keep initial for reference
-		} else if (initial) {
-			// NEW GAME MODE: Start fresh with initial board
-			setInitialBoard(initial);
-			setSavedBoard(null);
-
-			// Call recordPuzzleStart to:
-			// - Create gameState entry in Firestore
-			// - Update play streak (if daily puzzle)
-			// - Increment totalAttempted (if first time)
-			// Skip in dev mode when no real user is signed in
-			if (user) {
-				recordPuzzleStart(user.uid, puzzle.id, gridSize, initial).catch(
-					(error) => {
-						console.error("Error starting puzzle:", error);
-					},
+		// Defer state updates to avoid cascading renders warning
+		Promise.resolve().then(() => {
+			if (savedGame) {
+				// RESUME MODE: User has a saved game, restore it
+				// Convert saved board from Firestore format (0 as gap) to client format (null as gap)
+				const convertedBoard = convertBoardFromFirestore(
+					savedGame.board,
 				);
+				setSavedBoard(convertedBoard);
+				setInitialBoard(initial); // Keep initial for reference
+			} else if (initial) {
+				// NEW GAME MODE: Start fresh with initial board
+				setInitialBoard(initial);
+				setSavedBoard(null);
+
+				// Call recordPuzzleStart to:
+				// - Create gameState entry in Firestore
+				// - Update play streak (if daily puzzle)
+				// - Increment totalAttempted (if first time)
+				// Skip in dev mode when no real user is signed in
+				if (user) {
+					startPuzzle({
+						puzzleId: puzzle.id,
+						gridSize,
+						initialBoard: initial,
+					});
+				}
 			}
-		}
-	}, [puzzle, savedGame, gridSize, user]);
+		});
+	}, [puzzle, savedGame, gridSize, user, startPuzzle]);
 
 	// ===== Handle Move (called by Board after each tile movement) =====
 	const handleMove = (newBoard) => {
@@ -99,10 +109,10 @@ function Game({
 		// This ensures progress is never lost (even if user closes tab)
 		// In development mode (no user/puzzle), this is skipped
 		if (user && puzzle) {
-			saveGameState(user.uid, puzzle.id, gridSize, {
+			saveMove({
+				puzzleId: puzzle.id,
+				gridSize,
 				board: newBoard,
-			}).catch((error) => {
-				console.error("Error saving game state:", error);
 			});
 		}
 	};
@@ -118,11 +128,11 @@ function Game({
 		// - Clears game from gameState (puzzle is done!)
 		// In development mode (no user/puzzle), this is skipped
 		if (user && puzzle) {
-			saveCompletion(user.uid, puzzle.id, gridSize, {
+			saveWin({
+				puzzleId: puzzle.id,
+				gridSize,
 				emoji: puzzle.emoji,
 				emojiName: puzzle.emojiName,
-			}).catch((error) => {
-				console.error("Error saving completion:", error);
 			});
 		}
 	};
@@ -154,13 +164,10 @@ function Game({
 		// This creates a fresh gameState entry and updates play streak
 		// In development mode (no user), this is skipped - just local restart
 		if (user && initialBoard && puzzle) {
-			recordPuzzleStart(
-				user.uid,
-				puzzle.id,
+			startPuzzle({
+				puzzleId: puzzle.id,
 				gridSize,
 				initialBoard,
-			).catch((error) => {
-				console.error("Error restarting puzzle:", error);
 			});
 		}
 	};

@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import "./App.css";
 import LandingPage from "./components/landing/LandingPage";
 import Header from "./components/Header";
@@ -8,16 +9,17 @@ import StatsDialog from "./components/dialogs/StatsDialog";
 import WinDialog from "./components/dialogs/WinDialog";
 import ConfirmResetDialog from "./components/dialogs/ConfirmResetDialog";
 import { getTodaysPuzzleNumber } from "./utils/dateUtils";
-import { getPuzzleById } from "./utils/puzzleUtils";
-import { getUserData, updateUserPreferences } from "./firebase/firestore";
 import { useAuth } from "./hooks/useAuth";
+import { useUser } from "./hooks/useUser";
+import { usePuzzle } from "./hooks/usePuzzle";
+import { useUpdatePreferences } from "./hooks/useUpdatePreferences";
 import {
 	DEFAULT_GRID_SIZE,
 	DEFAULT_DARK_MODE,
 	DEFAULT_SHOW_NUMBERS,
 	DEFAULT_SOUND_ENABLED,
 } from "./constants";
-import { getMockPuzzle, getMockUser, getDevConfig } from "./dev/mockData";
+import { getDevConfig } from "./dev/mockData";
 import { addPuzzleSolution, getMaxGridSizeSolved } from "./utils/statsHelpers";
 
 function App() {
@@ -33,22 +35,41 @@ function App() {
 		useState(false);
 
 	// Settings
-	const [hasDarkMode, setHasDarkMode] = useState(DEFAULT_DARK_MODE);
 	const [hasNumbersShown, setHasNumbersShown] =
 		useState(DEFAULT_SHOW_NUMBERS);
-	const [hasSoundEnabled, setHasSoundEnabled] = useState(
-		DEFAULT_SOUND_ENABLED,
-	);
 
 	// Game State
 	const [gridSize, setGridSize] = useState(DEFAULT_GRID_SIZE);
 	const [isGameWon, setIsGameWon] = useState(false);
 	const [pendingGridSize, setPendingGridSize] = useState(null);
-	const [userData, setUserData] = useState(null);
-	const [puzzle, setPuzzle] = useState(null);
 
 	// Dev mode configuration
 	const devConfig = getDevConfig();
+
+	// Query client for manual cache updates
+	const queryClient = useQueryClient();
+
+	// ===== Fetch User Data with React Query =====
+	// Automatically fetches, caches, and refetches user data from Firestore
+	// Eliminates manual useEffect boilerplate and provides loading/error states
+	const { data: userData } = useUser(user?.uid, devConfig);
+
+	// ===== Fetch Puzzle Data with React Query =====
+	// Automatically fetches and caches puzzle data
+	// Puzzles are cached for 24 hours (they never change once published)
+	const { data: puzzle } = usePuzzle(todaysPuzzleNumber, devConfig);
+
+	// ===== Mutation for updating user preferences =====
+	// Provides optimistic updates and automatic cache synchronization
+	const { mutate: updatePreferences } = useUpdatePreferences(
+		user?.uid,
+		devConfig.userScenario,
+	);
+
+	// Derive preferences from userData (with optimistic updates, these update instantly!)
+	const hasDarkMode = userData?.preferences?.darkMode ?? DEFAULT_DARK_MODE;
+	const hasSoundEnabled =
+		userData?.preferences?.soundEnabled ?? DEFAULT_SOUND_ENABLED;
 
 	// Derive maxGridSizeSolved from userData (no separate state needed)
 	const maxGridSizeSolved = useMemo(
@@ -56,85 +77,18 @@ function App() {
 		[userData, todaysPuzzleNumber],
 	);
 
-	// ===== Load User Data on Sign-In =====
-	// When user signs in, fetch their Firestore document (preferences, stats, game state)
-	// This loads all their data in ONE read - efficient!
-	// In dev mode: uses mock data instead
-	useEffect(() => {
-		if (devConfig.enabled) {
-			// DEV MODE: Use mock user data
-			const mockUser = getMockUser(devConfig.userScenario);
-			setUserData(mockUser);
-			setHasDarkMode(mockUser.preferences?.darkMode ?? DEFAULT_DARK_MODE);
-			setHasSoundEnabled(
-				mockUser.preferences?.soundEnabled ?? DEFAULT_SOUND_ENABLED,
-			);
-			return;
-		}
-
-		if (user) {
-			// User just signed in - load their data from Firestore
-			getUserData(user.uid)
-				.then((data) => {
-					setUserData(data);
-					// Apply saved preferences (fallback to defaults for backward compatibility)
-					setHasDarkMode(
-						data?.preferences?.darkMode ?? DEFAULT_DARK_MODE,
-					);
-					setHasSoundEnabled(
-						data?.preferences?.soundEnabled ??
-							DEFAULT_SOUND_ENABLED,
-					);
-				})
-				.catch((error) => {
-					console.error("[AUTH] Error loading user data:", error);
-					console.error("[AUTH] Error details:", {
-						message: error.message,
-						code: error.code,
-						stack: error.stack,
-					});
-					// Set empty userData so board doesn't stay stuck on "Loading..."
-					setUserData({});
-				});
-		} else {
-			// Anonymous user - allow playing without saved progress
-			setUserData({});
-		}
-	}, [user, devConfig.enabled, devConfig.userScenario]); // Re-run when user changes (sign in/out) or dev scenario changes
-
-	// ===== Load Today's Puzzle Data from Firestore =====
-	// Fetches puzzle definition (emoji, initial boards for 3x3 and 4x4)
-	// All users get the same puzzle - ensures fair comparison!
-	// Note: Puzzle data is passed raw to Game component, which handles format conversion
-	// In dev mode: uses mock puzzle
-	useEffect(() => {
-		if (devConfig.enabled) {
-			// DEV MODE: Use mock puzzle
-			const mockPuzzle = getMockPuzzle(todaysPuzzleNumber);
-			setPuzzle(mockPuzzle);
-			return;
-		}
-
-		getPuzzleById(todaysPuzzleNumber)
-			.then((data) => {
-				// Pass raw puzzle data - Game component handles format conversion
-				setPuzzle(data);
-			})
-			.catch((error) => {
-				console.error("Error loading puzzle:", error);
-			});
-	}, [todaysPuzzleNumber, devConfig.enabled, gridSize]);
-
 	const handleWin = () => {
-		// Update local userData to add this solution immediately (for trophy case)
+		// Update React Query cache to add this solution immediately (for trophy case)
 		// This ensures the trophy shows up right away in the win dialog
 		// maxGridSizeSolved will auto-update via useMemo when userData changes
-		setUserData((prevData) =>
-			addPuzzleSolution(prevData, todaysPuzzleNumber, gridSize, {
-				completedAt: new Date(),
-				emoji: puzzle?.emoji,
-				emojiName: puzzle?.emojiName,
-			}),
+		queryClient.setQueryData(
+			["user", user?.uid, devConfig.userScenario],
+			(prevData) =>
+				addPuzzleSolution(prevData, todaysPuzzleNumber, gridSize, {
+					completedAt: new Date(),
+					emoji: puzzle?.emoji,
+					emojiName: puzzle?.emojiName,
+				}),
 		);
 
 		// Block all input during win celebration period
@@ -174,30 +128,6 @@ function App() {
 	const handleDifficultyCancel = () => {
 		setPendingGridSize(null);
 		setShowDifficultyConfirmDialog(false);
-	};
-
-	const handleDarkModeChange = (newHasDarkMode) => {
-		setHasDarkMode(newHasDarkMode);
-		// Persist to Firestore if user is signed in
-		if (user) {
-			updateUserPreferences(user.uid, { darkMode: newHasDarkMode }).catch(
-				(error) => {
-					console.error("Error saving dark mode preference:", error);
-				},
-			);
-		}
-	};
-
-	const handleSoundEnabledChange = (newSoundEnabled) => {
-		setHasSoundEnabled(newSoundEnabled);
-		// Persist to Firestore if user is signed in
-		if (user) {
-			updateUserPreferences(user.uid, {
-				soundEnabled: newSoundEnabled,
-			}).catch((error) => {
-				console.error("Error saving sound preference:", error);
-			});
-		}
 	};
 
 	if (showLandingPage) {
@@ -240,9 +170,13 @@ function App() {
 				hasDarkMode={hasDarkMode}
 				hasNumbersShown={hasNumbersShown}
 				hasSoundEnabled={hasSoundEnabled}
-				onDarkModeChange={handleDarkModeChange}
+				onDarkModeChange={(value) =>
+					user && updatePreferences({ darkMode: value })
+				}
 				onShowNumbersChange={setHasNumbersShown}
-				onSoundEnabledChange={handleSoundEnabledChange}
+				onSoundEnabledChange={(value) =>
+					user && updatePreferences({ soundEnabled: value })
+				}
 				onGridSizeChange={handleSizeChange}
 			/>
 
