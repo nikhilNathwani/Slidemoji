@@ -12,7 +12,6 @@ import { getTodaysPuzzleNumber } from "./utils/dateUtils";
 import { useAuth } from "./hooks/useAuth";
 import { useUser } from "./hooks/useUser";
 import { usePuzzle } from "./hooks/usePuzzle";
-import { useUpdatePreferences } from "./hooks/useUpdatePreferences";
 import {
 	DEFAULT_GRID_SIZE,
 	DEFAULT_DARK_MODE,
@@ -34,9 +33,13 @@ function App() {
 	const [showDifficultyConfirmDialog, setShowDifficultyConfirmDialog] =
 		useState(false);
 
-	// Settings
+	// Settings (local state only - no Firestore sync)
 	const [hasNumbersShown, setHasNumbersShown] =
 		useState(DEFAULT_SHOW_NUMBERS);
+	const [hasDarkMode, setHasDarkMode] = useState(DEFAULT_DARK_MODE);
+	const [hasSoundEnabled, setHasSoundEnabled] = useState(
+		DEFAULT_SOUND_ENABLED,
+	);
 
 	// Game State
 	const [gridSize, setGridSize] = useState(DEFAULT_GRID_SIZE);
@@ -58,18 +61,6 @@ function App() {
 	// Automatically fetches and caches puzzle data
 	// Puzzles are cached for 24 hours (they never change once published)
 	const { data: puzzle } = usePuzzle(todaysPuzzleNumber, devConfig);
-
-	// ===== Mutation for updating user preferences =====
-	// Provides optimistic updates and automatic cache synchronization
-	const { mutate: updatePreferences } = useUpdatePreferences(
-		user?.uid,
-		devConfig.userScenario,
-	);
-
-	// Derive preferences from userData (with optimistic updates, these update instantly!)
-	const hasDarkMode = userData?.preferences?.darkMode ?? DEFAULT_DARK_MODE;
-	const hasSoundEnabled =
-		userData?.preferences?.soundEnabled ?? DEFAULT_SOUND_ENABLED;
 
 	// Derive maxGridSizeSolved from userData (no separate state needed)
 	const maxGridSizeSolved = useMemo(
@@ -170,13 +161,9 @@ function App() {
 				hasDarkMode={hasDarkMode}
 				hasNumbersShown={hasNumbersShown}
 				hasSoundEnabled={hasSoundEnabled}
-				onDarkModeChange={(value) =>
-					user && updatePreferences({ darkMode: value })
-				}
 				onShowNumbersChange={setHasNumbersShown}
-				onSoundEnabledChange={(value) =>
-					user && updatePreferences({ soundEnabled: value })
-				}
+				onDarkModeChange={setHasDarkMode}
+				onSoundEnabledChange={setHasSoundEnabled}
 				onGridSizeChange={handleSizeChange}
 			/>
 
