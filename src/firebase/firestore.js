@@ -398,7 +398,7 @@ export async function saveCompletion(
 			// Check if this is their FIRST WIN today (not just first play)
 			// User might solve both 3x3 and 4x4 - only first counts for streak
 			const hasWonToday = Object.entries(stats.solvedPuzzles).some(
-			([_pId, difficulties]) =>
+			([, difficulties]) =>
 					Object.values(difficulties).some((comp) => {
 						// Filter to daily completions (not archive) from today
 						if (!comp.fromArchive && comp.completedAt) {
