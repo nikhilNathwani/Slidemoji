@@ -3,6 +3,7 @@ import styles from "./Game.module.css";
 import Board from "./Board";
 import PuzzleInfo from "./PuzzleInfo";
 import ConfirmRestartDialog from "../dialogs/ConfirmRestartDialog";
+import WinDialog from "../dialogs/WinDialog";
 import { useAuth } from "../../hooks/useAuth";
 import { FontAwesomeIcon } from "../../utils/icons";
 import {
@@ -31,18 +32,18 @@ function Game({
 	gridSize,
 	savedGame,
 	maxGridSizeSolved = 0,
+	solvedPuzzles,
 	hasNumbersShown,
 	isGameWon,
 	hasSoundEnabled,
 	onWin,
-	onShowWinDialog,
 	onShuffle,
 }) {
 	const { user } = useAuth();
 	const [showRestartConfirm, setShowRestartConfirm] = useState(false);
+	const [showWinDialog, setShowWinDialog] = useState(false);
 	const [initialBoard, setInitialBoard] = useState(null);
 	const [savedBoard, setSavedBoard] = useState(null);
-	const solveRef = useRef(null);
 	const restartRef = useRef(null);
 
 	// React Query mutations for Firestore writes
@@ -118,7 +119,10 @@ function Game({
 
 	// ===== Handle Win (called by Board when puzzle is solved) =====
 	const handleWin = () => {
-		onWin(); // Notify parent (App) to update trophy badge
+		onWin(); // Notify parent (App) to update trophy badge and cache
+
+		// Show win dialog immediately
+		setShowWinDialog(true);
 
 		// Save solution to Firestore (only if signed in and have puzzle):
 		// - Adds trophy to solvedPuzzles[puzzleId][difficulty]
@@ -133,12 +137,6 @@ function Game({
 				emoji: puzzle.emoji,
 				emojiName: puzzle.emojiName,
 			});
-		}
-	};
-
-	const handleSolve = () => {
-		if (solveRef.current) {
-			solveRef.current();
 		}
 	};
 
@@ -196,9 +194,7 @@ function Game({
 				<Board
 					size={gridSize}
 					onWin={handleWin}
-					onShowWinDialog={onShowWinDialog}
 					hasNumbersShown={hasNumbersShown && !isGameWon}
-					onSolveRef={solveRef}
 					onRestartRef={restartRef}
 					emoji={puzzle.emoji}
 					initialBoard={initialBoard}
@@ -216,14 +212,6 @@ function Game({
 						<FontAwesomeIcon icon="redo" />
 						Restart
 					</button>
-					<button
-						className={`${styles.restartButton} ${styles.visible}`}
-						onClick={handleSolve}
-						title="Solve Puzzle (Dev)"
-					>
-						<FontAwesomeIcon icon="magic" />
-						Solve
-					</button>
 				</div>
 			</main>
 
@@ -231,7 +219,15 @@ function Game({
 				isOpen={showRestartConfirm}
 				onClose={() => setShowRestartConfirm(false)}
 				onConfirm={handleRestartConfirm}
-			></ConfirmRestartDialog>
+			/>
+
+			<WinDialog
+				isOpen={showWinDialog}
+				onClose={() => setShowWinDialog(false)}
+				puzzle={puzzle}
+				gridSize={gridSize}
+				solvedPuzzles={solvedPuzzles}
+			/>
 		</>
 	);
 }

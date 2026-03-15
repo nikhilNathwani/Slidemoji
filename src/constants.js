@@ -7,7 +7,6 @@ export const DIFFICULTIES = [
 
 // Animation
 export const ANIMATION_DURATION_MS = 400;
-export const WIN_DIALOG_DELAY_MS = 2500; // Delay before showing win dialog to allow celebration
 
 // Responsive
 export const MOBILE_BREAKPOINT = 600;

@@ -11,7 +11,6 @@ import {
 	getTileIndexFromDirection,
 	calcBoardSizePx,
 } from "../../utils/boardHelpers";
-import { WIN_DIALOG_DELAY_MS } from "../../constants";
 import { createEmojiSvgUrl } from "../../utils/emoji";
 import { playTileMoveSound } from "../../utils/sound";
 import styles from "./Board.module.css";
@@ -19,9 +18,7 @@ import styles from "./Board.module.css";
 function Board({
 	size,
 	onWin,
-	onShowWinDialog,
 	hasNumbersShown,
-	onSolveRef,
 	onRestartRef,
 	emoji,
 	// Persistence props - from Game component
@@ -42,7 +39,6 @@ function Board({
 
 	// ===== Refs =====
 	const boardRef = useRef(null);
-	const hasShownWinDialog = useRef(false);
 
 	// ===== Memoized Values =====
 	// Create emoji SVG URL once and memoize it
@@ -66,28 +62,18 @@ function Board({
 		return () => window.removeEventListener("resize", handleResize);
 	}, [size, getResponsiveBoardSize]); // size for clarity, getResponsiveBoardSize for actual dependency
 
-	// Solve function
-	const handleSolve = useCallback(() => {
-		const solvedTiles = getSolvedState(size);
-		setTiles(solvedTiles);
-		setIsGameWon(true);
-		hasShownWinDialog.current = false;
-	}, [size]);
-
 	// Restart function - reset puzzle with the same initial board
 	const handleRestart = useCallback(() => {
 		// Use initialBoard if available (persistence mode), otherwise generate random
 		const newTiles = initialBoard || scramblePuzzle(size);
 		setTiles(newTiles);
 		setIsGameWon(false);
-		hasShownWinDialog.current = false;
 	}, [size, initialBoard]);
 
-	// Expose solve/restart functions to parent via refs (for Settings dialog buttons)
+	// Expose restart function to parent via ref
 	useEffect(() => {
-		onSolveRef.current = handleSolve;
 		onRestartRef.current = handleRestart;
-	}, [handleSolve, handleRestart, onSolveRef, onRestartRef]);
+	}, [handleRestart, onRestartRef]);
 
 	// Reset board when size, initialBoard, or savedBoard changes
 	useEffect(() => {
@@ -95,25 +81,9 @@ function Board({
 		Promise.resolve().then(() => {
 			setTiles(savedBoard || initialBoard || scramblePuzzle(size));
 			setIsGameWon(false);
-			hasShownWinDialog.current = false;
 			setIsInputBlocked(false);
 		});
 	}, [size, initialBoard, savedBoard]);
-
-	// Show win dialog after delay (allows trophy transformation and celebration)
-	useEffect(() => {
-		if (isGameWon && onShowWinDialog && !hasShownWinDialog.current) {
-			hasShownWinDialog.current = true;
-
-			// Trigger trophy transformation
-			onWin();
-
-			// Delay dialog to show trophy transformation and celebration
-			setTimeout(() => {
-				onShowWinDialog();
-			}, WIN_DIALOG_DELAY_MS);
-		}
-	}, [isGameWon, onWin, onShowWinDialog]);
 
 	// ===== Tile Movement Logic =====
 	const gapIndex = getGapIndex(tiles);
@@ -130,6 +100,8 @@ function Board({
 			// Check for win
 			if (checkWin(newTiles, getSolvedState(size))) {
 				setIsGameWon(true);
+				// Notify parent immediately that game is won
+				onWin();
 			}
 
 			// Play tile move sound
@@ -143,7 +115,7 @@ function Board({
 			// Block input during animation (unblocked by onLayoutAnimationComplete)
 			setIsInputBlocked(true);
 		},
-		[tiles, size, onMove, hasSoundEnabled],
+		[tiles, size, onMove, onWin, hasSoundEnabled],
 	);
 
 	// Validates tile selection and triggers movement if valid

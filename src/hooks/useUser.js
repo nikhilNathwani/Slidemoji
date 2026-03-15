@@ -5,7 +5,6 @@
  * Automatically caches and refetches when needed.
  *
  * @param {string|null} userId - User ID from Firebase Auth, or null if not signed in
- * @param {Object} devConfig - Dev mode configuration (optional)
  * @returns {Object} { userData, isLoading, error }
  *
  * Usage:
@@ -14,20 +13,14 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { getUserData } from "../firebase/firestore";
-import { getMockUser } from "../dev/mockData";
 
-export function useUser(userId, devConfig = { enabled: false }) {
+export function useUser(userId) {
 	return useQuery({
 		// Unique cache key for this user's data
-		queryKey: ["user", userId, devConfig.userScenario],
+		queryKey: ["user", userId],
 
 		// Fetch function
 		queryFn: async () => {
-			// DEV MODE: Return mock data instead of hitting Firestore
-			if (devConfig.enabled) {
-				const mockUser = getMockUser(devConfig.userScenario);
-				return mockUser;
-			}
 
 			// If no user, return empty object (anonymous play)
 			if (!userId) {

@@ -5,7 +5,6 @@
  * Automatically caches puzzles (same puzzle used by all users, so caching is great!).
  *
  * @param {number} puzzleId - Puzzle ID to fetch
- * @param {Object} devConfig - Dev mode configuration (optional)
  * @returns {Object} { puzzle, isLoading, error }
  *
  * Usage:
@@ -14,20 +13,14 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { getPuzzleById } from "../utils/puzzleUtils";
-import { getMockPuzzle } from "../dev/mockData";
 
-export function usePuzzle(puzzleId, devConfig = { enabled: false }) {
+export function usePuzzle(puzzleId) {
 	return useQuery({
 		// Unique cache key for this puzzle
 		queryKey: ["puzzle", puzzleId],
 
 		// Fetch function
 		queryFn: async () => {
-			// DEV MODE: Return mock puzzle instead of hitting Firestore
-			if (devConfig.enabled) {
-				const mockPuzzle = getMockPuzzle(puzzleId);
-				return mockPuzzle;
-			}
 
 			// Fetch from Firestore
 			try {
