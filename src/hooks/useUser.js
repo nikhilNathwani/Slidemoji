@@ -21,7 +21,6 @@ export function useUser(userId) {
 
 		// Fetch function
 		queryFn: async () => {
-
 			// If no user, return empty object (anonymous play)
 			if (!userId) {
 				return {};

@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect, useMemo } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import styles from "./Game.module.css";
 import Board from "./Board";
 import PuzzleInfo from "./PuzzleInfo";
 import ConfirmRestartDialog from "../dialogs/ConfirmRestartDialog";
 import WinDialog from "../dialogs/WinDialog";
 import { useAuth } from "../../hooks/useAuth";
+import { usePuzzle } from "../../hooks/usePuzzle";
 import { FontAwesomeIcon } from "../../utils/icons";
 import {
 	useRecordPuzzleStart,
@@ -15,20 +17,24 @@ import {
 	convertBoardFromFirestore,
 	convertPuzzleFromFirestore,
 } from "../../utils/puzzleUtils";
+import { addPuzzleSolution } from "../../utils/statsHelpers";
 
 /**
  * Game Component - Main puzzle game interface
  *
  * Props:
- * @param {Object} puzzle - Raw puzzle document from Firestore. Game handles format conversion.
- *   Expected structure: { id, date, emoji, emojiName, initialBoard3x3, initialBoard4x4 }
- *   Note: Firestore boards use 0 for gap, converted to null for client
+ * @param {number} puzzleId - Puzzle ID to fetch and play
  * @param {number} gridSize - Current difficulty/board size (3 for 3x3, 4 for 4x4)
  * @param {Object} savedGame - Saved game state from Firestore for resume (or null for new game)
  * @param {number} maxGridSizeSolved - Highest difficulty solved for this puzzle (0, 3, or 4)
+ * @param {Object} solvedPuzzles - User's solved puzzles for trophy display
+ * @param {boolean} hasNumbersShown - Whether to show numbers on tiles
+ * @param {boolean} isGameWon - Whether the game is won (from parent state)
+ * @param {boolean} hasSoundEnabled - Whether sound effects are enabled
+ * @param {Function} onWinStateChange - Callback to update parent's isGameWon state
  */
 function Game({
-	puzzle: rawPuzzle,
+	puzzleId,
 	gridSize,
 	savedGame,
 	maxGridSizeSolved = 0,
@@ -36,15 +42,19 @@ function Game({
 	hasNumbersShown,
 	isGameWon,
 	hasSoundEnabled,
-	onWin,
-	onShuffle,
+	onWinStateChange,
 }) {
 	const { user } = useAuth();
+	const queryClient = useQueryClient();
 	const [showRestartConfirm, setShowRestartConfirm] = useState(false);
 	const [showWinDialog, setShowWinDialog] = useState(false);
 	const [initialBoard, setInitialBoard] = useState(null);
 	const [savedBoard, setSavedBoard] = useState(null);
 	const restartRef = useRef(null);
+
+	// ===== Fetch Puzzle Data =====
+	// Game owns puzzle fetching since it's the primary consumer
+	const { data: rawPuzzle } = usePuzzle(puzzleId);
 
 	// React Query mutations for Firestore writes
 	const { mutate: startPuzzle } = useRecordPuzzleStart(user?.uid);
@@ -119,18 +129,22 @@ function Game({
 
 	// ===== Handle Win (called by Board when puzzle is solved) =====
 	const handleWin = () => {
-		onWin(); // Notify parent (App) to update trophy badge and cache
-
-		// Show win dialog immediately
-		setShowWinDialog(true);
-
-		// Save solution to Firestore (only if signed in and have puzzle):
-		// - Adds trophy to solvedPuzzles[puzzleId][difficulty]
-		// - Updates win streak (if daily puzzle)
-		// - Increments totalSolved
-		// - Clears game from gameState (puzzle is done!)
-		// In development mode (no user/puzzle), this is skipped
+		// Update React Query cache to add this solution immediately (for trophy case)
+		// This ensures the trophy shows up right away in the win dialog
 		if (user && puzzle) {
+			queryClient.setQueryData(["user", user.uid], (prevData) =>
+				addPuzzleSolution(prevData, puzzleId, gridSize, {
+					completedAt: new Date(),
+					emoji: puzzle.emoji,
+					emojiName: puzzle.emojiName,
+				}),
+			);
+
+			// Save solution to Firestore:
+			// - Adds trophy to solvedPuzzles[puzzleId][difficulty]
+			// - Updates win streak (if daily puzzle)
+			// - Increments totalSolved
+			// - Clears game from gameState (puzzle is done!)
 			saveWin({
 				puzzleId: puzzle.id,
 				gridSize,
@@ -138,6 +152,9 @@ function Game({
 				emojiName: puzzle.emojiName,
 			});
 		}
+
+		// Show win dialog immediately
+		setShowWinDialog(true);
 	};
 
 	const handleRestartClick = () => {
@@ -150,9 +167,11 @@ function Game({
 		// Clear saved board to force fresh start
 		setSavedBoard(null);
 
-		if (onShuffle) {
-			onShuffle(); // Reset isGameWon in parent (App)
+		// Reset win state in parent
+		if (onWinStateChange) {
+			onWinStateChange(false);
 		}
+
 		if (restartRef.current) {
 			restartRef.current(); // Trigger Board's shuffle function
 		}

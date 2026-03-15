@@ -21,7 +21,6 @@ export function usePuzzle(puzzleId) {
 
 		// Fetch function
 		queryFn: async () => {
-
 			// Fetch from Firestore
 			try {
 				const data = await getPuzzleById(puzzleId);

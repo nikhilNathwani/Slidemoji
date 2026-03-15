@@ -1,5 +1,4 @@
 import { useState, useMemo } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import "./App.css";
 import LandingPage from "./components/landing/LandingPage";
 import Header from "./components/Header";
@@ -9,14 +8,13 @@ import StatsDialog from "./components/dialogs/StatsDialog";
 import { getTodaysPuzzleNumber } from "./utils/dateUtils";
 import { useAuth } from "./hooks/useAuth";
 import { useUser } from "./hooks/useUser";
-import { usePuzzle } from "./hooks/usePuzzle";
 import {
 	DEFAULT_GRID_SIZE,
 	DEFAULT_DARK_MODE,
 	DEFAULT_SHOW_NUMBERS,
 	DEFAULT_SOUND_ENABLED,
 } from "./constants";
-import { addPuzzleSolution, getMaxGridSizeSolved } from "./utils/statsHelpers";
+import { getMaxGridSizeSolved } from "./utils/statsHelpers";
 
 function App() {
 	const { user } = useAuth();
@@ -39,39 +37,17 @@ function App() {
 	const [gridSize, setGridSize] = useState(DEFAULT_GRID_SIZE);
 	const [isGameWon, setIsGameWon] = useState(false);
 
-	// Query client for manual cache updates
-	const queryClient = useQueryClient();
-
 	// ===== Fetch User Data with React Query =====
 	// Automatically fetches, caches, and refetches user data from Firestore
 	// Eliminates manual useEffect boilerplate and provides loading/error states
 	const { data: userData } = useUser(user?.uid);
 
-	// ===== Fetch Puzzle Data with React Query =====
-	// Automatically fetches and caches puzzle data
-	// Puzzles are cached for 24 hours (they never change once published)
-	const { data: puzzle } = usePuzzle(todaysPuzzleNumber);
-
 	// Derive maxGridSizeSolved from userData (no separate state needed)
+	// Using useMemo to automatically recompute when dependencies change
 	const maxGridSizeSolved = useMemo(
 		() => getMaxGridSizeSolved(userData, todaysPuzzleNumber),
 		[userData, todaysPuzzleNumber],
 	);
-
-	const handleWin = () => {
-		// Update React Query cache to add this solution immediately (for trophy case)
-		// This ensures the trophy shows up right away in the win dialog
-		// maxGridSizeSolved will auto-update via useMemo when userData changes
-		queryClient.setQueryData(
-			["user", user?.uid],
-			(prevData) =>
-				addPuzzleSolution(prevData, todaysPuzzleNumber, gridSize, {
-					completedAt: new Date(),
-					emoji: puzzle?.emoji,
-					emojiName: puzzle?.emojiName,
-				}),
-		);
-	};
 
 	if (showLandingPage) {
 		return (
@@ -92,7 +68,7 @@ function App() {
 			/>
 
 			<Game
-				puzzle={puzzle}
+				puzzleId={todaysPuzzleNumber}
 				gridSize={gridSize}
 				savedGame={
 					userData?.gameState?.[todaysPuzzleNumber]?.[gridSize]
@@ -102,8 +78,7 @@ function App() {
 				hasNumbersShown={hasNumbersShown}
 				isGameWon={isGameWon}
 				hasSoundEnabled={hasSoundEnabled}
-				onWin={handleWin}
-				onShuffle={() => setIsGameWon(false)}
+				onWinStateChange={setIsGameWon}
 			/>
 
 			<SettingsDialog
