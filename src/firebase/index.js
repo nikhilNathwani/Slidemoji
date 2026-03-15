@@ -14,7 +14,7 @@ export {
 	getUserData,
 	createUserData,
 	updateUserPreferences,
-	recordPuzzleStart,
+	savePuzzleStart,
 	saveGameState,
 	saveCompletion,
 	cleanupOldGames,

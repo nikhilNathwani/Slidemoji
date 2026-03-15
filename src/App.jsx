@@ -83,7 +83,7 @@ function App() {
 				onShowNumbersChange={setHasNumbersShown}
 				onDarkModeChange={setHasDarkMode}
 				onSoundEnabledChange={setHasSoundEnabled}
-onGridSizeChange={setGridSize}
+				onGridSizeChange={setGridSize}
 			/>
 
 			<StatsDialog
