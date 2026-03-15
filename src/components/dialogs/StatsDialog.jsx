@@ -1,8 +1,16 @@
 import Dialog from "./Dialog";
 import StatsContent from "../stats/StatsContent";
 import TrophyCaseTitle from "../stats/TrophyCaseTitle";
+import { useAuth } from "../../hooks/useAuth";
+import { useUser } from "../../hooks/useUser";
+import { getTodaysPuzzleNumber } from "../../utils/dateUtils";
 
-function StatsDialog({ isOpen, onClose, solvedPuzzles, numTotalPuzzles = 1 }) {
+function StatsDialog({ isOpen, onClose }) {
+	const { user } = useAuth();
+	const { data: userData } = useUser(user?.uid);
+	const todaysPuzzleNumber = getTodaysPuzzleNumber();
+	const solvedPuzzles = userData?.stats?.solvedPuzzles;
+	const numTotalPuzzles = todaysPuzzleNumber;
 	const numEarnedTrophies = Object.keys(solvedPuzzles || {}).length;
 
 	return (
@@ -19,11 +27,7 @@ function StatsDialog({ isOpen, onClose, solvedPuzzles, numTotalPuzzles = 1 }) {
 				</>
 			}
 		>
-			<StatsContent
-				solvedPuzzles={solvedPuzzles}
-				numTotalPuzzles={numTotalPuzzles}
-				showTitle={false}
-			></StatsContent>
+			<StatsContent showTitle={false} />
 		</Dialog>
 	);
 }

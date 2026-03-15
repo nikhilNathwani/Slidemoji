@@ -2,18 +2,18 @@ import TrophyCase from "../stats/TrophyCase";
 import TrophyCaseTitle from "../stats/TrophyCaseTitle";
 import GoogleSignInButton from "../common/GoogleSignInButton";
 import { useAuth } from "../../hooks/useAuth";
+import { useUser } from "../../hooks/useUser";
+import { getTodaysPuzzleNumber } from "../../utils/dateUtils";
 import styles from "./StatsContent.module.css";
 import { FontAwesomeIcon } from "../../utils/icons";
 
-function StatsContent({
-	solvedPuzzles,
-	numTotalPuzzles = 1,
-	showTitle = false,
-}) {
+function StatsContent({ showTitle = false }) {
 	const { user } = useAuth();
-	// Calculate number of earned trophies
-	// solvedPuzzles is an object/map: { 1: { 3: {...}, 4: {...} }, 2: { 3: {...} } }
-	// Each key is a puzzle ID, so Object.keys().length gives us the count
+	const { data: userData } = useUser(user?.uid);
+	const todaysPuzzleNumber = getTodaysPuzzleNumber();
+
+	const solvedPuzzles = userData?.stats?.solvedPuzzles;
+	const numTotalPuzzles = todaysPuzzleNumber;
 	const numEarnedTrophies = Object.keys(solvedPuzzles || {}).length;
 
 	return (

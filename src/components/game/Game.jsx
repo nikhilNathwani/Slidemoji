@@ -27,22 +27,16 @@ import { addPuzzleSolution } from "../../utils/statsHelpers";
  * @param {number} gridSize - Current difficulty/board size (3 for 3x3, 4 for 4x4)
  * @param {Object} savedGame - Saved game state from Firestore for resume (or null for new game)
  * @param {number} maxGridSizeSolved - Highest difficulty solved for this puzzle (0, 3, or 4)
- * @param {Object} solvedPuzzles - User's solved puzzles for trophy display
  * @param {boolean} hasNumbersShown - Whether to show numbers on tiles
- * @param {boolean} isGameWon - Whether the game is won (from parent state)
  * @param {boolean} hasSoundEnabled - Whether sound effects are enabled
- * @param {Function} onWinStateChange - Callback to update parent's isGameWon state
  */
 function Game({
 	puzzleId,
 	gridSize,
 	savedGame,
 	maxGridSizeSolved = 0,
-	solvedPuzzles,
 	hasNumbersShown,
-	isGameWon,
 	hasSoundEnabled,
-	onWinStateChange,
 }) {
 	const { user } = useAuth();
 	const queryClient = useQueryClient();
@@ -50,6 +44,7 @@ function Game({
 	const [showWinDialog, setShowWinDialog] = useState(false);
 	const [initialBoard, setInitialBoard] = useState(null);
 	const [savedBoard, setSavedBoard] = useState(null);
+	const [isGameWon, setIsGameWon] = useState(false);
 
 	// ===== Fetch Puzzle Data =====
 	// Game owns puzzle fetching since it's the primary consumer
@@ -163,10 +158,8 @@ function Game({
 	const handleRestartConfirm = () => {
 		setShowRestartDialog(false);
 
-		// Reset win state in parent
-		if (onWinStateChange) {
-			onWinStateChange(false);
-		}
+		// Reset win state locally
+		setIsGameWon(false);
 
 		// Clear saved board to force fresh start
 		// Board's useEffect will see this change and reset to initialBoard
@@ -240,7 +233,6 @@ function Game({
 				onClose={() => setShowWinDialog(false)}
 				puzzle={puzzle}
 				gridSize={gridSize}
-				solvedPuzzles={solvedPuzzles}
 			/>
 		</>
 	);

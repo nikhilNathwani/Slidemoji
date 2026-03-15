@@ -4,7 +4,7 @@ import StatsContent from "../stats/StatsContent";
 import styles from "./WinDialog.module.css";
 import { FontAwesomeIcon } from "../../utils/icons";
 
-function WinDialog({ isOpen, onClose, puzzle, gridSize, solvedPuzzles }) {
+function WinDialog({ isOpen, onClose, puzzle, gridSize }) {
 	const handleShare = () => {
 		const shareText = `Slidemoji #001 
 
@@ -41,11 +41,7 @@ Play at slidemoji.com`;
 
 				<div className={styles.winDivider}></div>
 
-				<StatsContent
-					solvedPuzzles={solvedPuzzles}
-					numTotalPuzzles={puzzle?.id}
-					showTitle={true}
-				/>
+				<StatsContent showTitle={true} />
 			</div>
 		</Dialog>
 	);
