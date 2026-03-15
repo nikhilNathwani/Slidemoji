@@ -15,22 +15,22 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-	recordPuzzleStart,
+	savePuzzleStart,
 	saveGameState,
 	saveCompletion,
 } from "../firebase/firestore";
 
 /**
- * useRecordPuzzleStart - Mutation for starting a new puzzle
+ * useSavePuzzleStart - Mutation for starting a new puzzle
  * Creates gameState entry and updates play streak
  */
-export function useRecordPuzzleStart(userId) {
+export function useSavePuzzleStart(userId) {
 	const queryClient = useQueryClient();
 
 	return useMutation({
 		mutationFn: ({ puzzleId, gridSize, initialBoard }) => {
 			if (!userId) return Promise.resolve();
-			return recordPuzzleStart(userId, puzzleId, gridSize, initialBoard);
+			return savePuzzleStart(userId, puzzleId, gridSize, initialBoard);
 		},
 		onError: (error) => {
 			console.error("Error starting puzzle:", error);

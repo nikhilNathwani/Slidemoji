@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import Tile from "./Tile";
 import Gap from "./Gap";
 import { isAdjacent } from "../../utils/adjacency";
@@ -19,7 +19,6 @@ function Board({
 	size,
 	onWin,
 	hasNumbersShown,
-	onRestartRef,
 	emoji,
 	// Persistence props - from Game component
 	initialBoard, // The starting board from Firestore (for this puzzle+difficulty)
@@ -36,9 +35,6 @@ function Board({
 	const [isGameWon, setIsGameWon] = useState(false);
 	const [isInputBlocked, setIsInputBlocked] = useState(false);
 	const [boardSizePx, setBoardSizePx] = useState(() => calcBoardSizePx(size));
-
-	// ===== Refs =====
-	const boardRef = useRef(null);
 
 	// ===== Memoized Values =====
 	// Create emoji SVG URL once and memoize it
@@ -61,19 +57,6 @@ function Board({
 		window.addEventListener("resize", handleResize);
 		return () => window.removeEventListener("resize", handleResize);
 	}, [size, getResponsiveBoardSize]); // size for clarity, getResponsiveBoardSize for actual dependency
-
-	// Restart function - reset puzzle with the same initial board
-	const handleRestart = useCallback(() => {
-		// Use initialBoard if available (persistence mode), otherwise generate random
-		const newTiles = initialBoard || scramblePuzzle(size);
-		setTiles(newTiles);
-		setIsGameWon(false);
-	}, [size, initialBoard]);
-
-	// Expose restart function to parent via ref
-	useEffect(() => {
-		onRestartRef.current = handleRestart;
-	}, [handleRestart, onRestartRef]);
 
 	// Reset board when size, initialBoard, or savedBoard changes
 	useEffect(() => {
@@ -183,7 +166,6 @@ function Board({
 	// ===== Render =====
 	return (
 		<div
-			ref={boardRef}
 			className={`${styles.board}${isGameWon ? " " + styles.won : ""}`}
 			style={{
 				width: `${boardSizePx}px`,

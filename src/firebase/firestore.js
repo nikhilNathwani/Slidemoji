@@ -180,7 +180,7 @@ export async function updateUserPreferences(userId, preferences) {
 }
 
 /**
- * Record puzzle start - creates game state and updates play streak
+ * Save puzzle start - creates game state and updates play streak
  *
  * Called when user starts a new puzzle or switches difficulty.
  *
@@ -202,7 +202,7 @@ export async function updateUserPreferences(userId, preferences) {
  * @param {Array} initialBoard - Starting board configuration from Firestore
  * @returns {Promise<Object>} Updated gameState and stats
  */
-export async function recordPuzzleStart(
+export async function savePuzzleStart(
 	userId,
 	puzzleId,
 	difficulty,

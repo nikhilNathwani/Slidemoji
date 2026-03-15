@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import styles from "./Game.module.css";
 import Board from "./Board";
@@ -9,7 +9,7 @@ import { useAuth } from "../../hooks/useAuth";
 import { usePuzzle } from "../../hooks/usePuzzle";
 import { FontAwesomeIcon } from "../../utils/icons";
 import {
-	useRecordPuzzleStart,
+	useSavePuzzleStart,
 	useSaveGameState,
 	useSaveCompletion,
 } from "../../hooks/useGameMutations";
@@ -46,18 +46,17 @@ function Game({
 }) {
 	const { user } = useAuth();
 	const queryClient = useQueryClient();
-	const [showRestartConfirm, setShowRestartConfirm] = useState(false);
+	const [showRestartDialog, setShowRestartDialog] = useState(false);
 	const [showWinDialog, setShowWinDialog] = useState(false);
 	const [initialBoard, setInitialBoard] = useState(null);
 	const [savedBoard, setSavedBoard] = useState(null);
-	const restartRef = useRef(null);
 
 	// ===== Fetch Puzzle Data =====
 	// Game owns puzzle fetching since it's the primary consumer
 	const { data: rawPuzzle } = usePuzzle(puzzleId);
 
 	// React Query mutations for Firestore writes
-	const { mutate: startPuzzle } = useRecordPuzzleStart(user?.uid);
+	const { mutate: startPuzzle } = useSavePuzzleStart(user?.uid);
 	const { mutate: saveMove } = useSaveGameState(user?.uid);
 	const { mutate: saveWin } = useSaveCompletion(user?.uid);
 
@@ -158,23 +157,20 @@ function Game({
 	};
 
 	const handleRestartClick = () => {
-		setShowRestartConfirm(true); // Show confirmation dialog
+		setShowRestartDialog(true); // Show confirmation dialog
 	};
 
 	const handleRestartConfirm = () => {
-		setShowRestartConfirm(false);
-
-		// Clear saved board to force fresh start
-		setSavedBoard(null);
+		setShowRestartDialog(false);
 
 		// Reset win state in parent
 		if (onWinStateChange) {
 			onWinStateChange(false);
 		}
 
-		if (restartRef.current) {
-			restartRef.current(); // Trigger Board's shuffle function
-		}
+		// Clear saved board to force fresh start
+		// Board's useEffect will see this change and reset to initialBoard
+		setSavedBoard(null);
 
 		// Re-start puzzle in Firestore (only if user is signed in and has initialBoard)
 		// This creates a fresh gameState entry and updates play streak
@@ -214,7 +210,6 @@ function Game({
 					size={gridSize}
 					onWin={handleWin}
 					hasNumbersShown={hasNumbersShown && !isGameWon}
-					onRestartRef={restartRef}
 					emoji={puzzle.emoji}
 					initialBoard={initialBoard}
 					savedBoard={savedBoard}
@@ -235,8 +230,8 @@ function Game({
 			</main>
 
 			<ConfirmRestartDialog
-				isOpen={showRestartConfirm}
-				onClose={() => setShowRestartConfirm(false)}
+				isOpen={showRestartDialog}
+				onClose={() => setShowRestartDialog(false)}
 				onConfirm={handleRestartConfirm}
 			/>
 
