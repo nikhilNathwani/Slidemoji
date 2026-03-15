@@ -20,12 +20,10 @@ function Board({
 	onWin,
 	hasNumbersShown,
 	emoji,
-	// Persistence props - from Game component
-	initialBoard, // Starting scrambled board for this puzzle+difficulty (from puzzle data)
-	savedBoard, // User's saved progress (resume), or null for new game
-	onMove, // Callback to notify parent when board changes (for Firestore saves)
+	initialBoard,
+	savedBoard,
+	onMove,
 	hasSoundEnabled,
-	resetCounter, // Incremented to signal a restart (resets to initial board)
 }) {
 	// ===== State =====
 	// Initialize board state from savedBoard (resume) or initialBoard (new game)
@@ -59,21 +57,14 @@ function Board({
 		return () => window.removeEventListener("resize", handleResize);
 	}, [size, getResponsiveBoardSize]); // size for clarity, getResponsiveBoardSize for actual dependency
 
-	// Reset board when size, initialBoard, savedBoard, or resetCounter changes
+	// Reset board when size, initialBoard, or savedBoard changes
 	useEffect(() => {
-		// Defer state updates to avoid cascading renders warning
 		Promise.resolve().then(() => {
-			// When resetCounter changes, always use initialBoard (ignore savedBoard)
-			// Otherwise, prefer savedBoard over initialBoard
-			const boardToUse = resetCounter > 0 
-				? initialBoard 
-				: (savedBoard || initialBoard || scramblePuzzle(size));
-				
-			setTiles(boardToUse);
+			setTiles(savedBoard || initialBoard || scramblePuzzle(size));
 			setIsGameWon(false);
 			setIsInputBlocked(false);
 		});
-	}, [size, initialBoard, savedBoard, resetCounter]);
+	}, [size, initialBoard, savedBoard]);
 
 	// ===== Tile Movement Logic =====
 	const gapIndex = getGapIndex(tiles);

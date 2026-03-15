@@ -34,38 +34,49 @@ function Game({
 	const [showRestartDialog, setShowRestartDialog] = useState(false);
 	const [showWinDialog, setShowWinDialog] = useState(false);
 
+	// Board state
+	const [initialBoard, setInitialBoard] = useState(null);
+	const [savedBoard, setSavedBoard] = useState(null);
+
 	// Fetch and convert puzzle metadata (emoji, name, initial boards)
 	const { data: rawPuzzleData } = usePuzzle(puzzleId);
 	const puzzleData = useMemo(() => {
 		return rawPuzzleData ? convertPuzzleFromFirestore(rawPuzzleData) : null;
 	}, [rawPuzzleData]);
 
-	// Derive initial board from puzzle data (not state, just computed)
-	const initialBoard = puzzleData?.[gridSize] ?? null;
-
-	// Derive saved board from savedGame (convert Firestore format)
-	const savedBoard = useMemo(() => {
-		return savedGame ? convertBoardFromFirestore(savedGame.board) : null;
-	}, [savedGame]);
-
-	// Track restart - when toggled, Board will reset to initial state
-	const [resetCounter, setResetCounter] = useState(0);
-
 	// Firestore mutations
 	const { mutate: recordPuzzleStart } = useSavePuzzleStart(user?.uid);
 	const { mutate: saveMove } = useSaveGameState(user?.uid);
 	const { mutate: saveCompletion } = useSaveCompletion(user?.uid);
 
-	// Record puzzle start when beginning a fresh game (no savedGame)
+	// Initialize board when puzzle/savedGame/gridSize changes
 	useEffect(() => {
-		if (!puzzleData || !initialBoard || !user || savedGame) return;
+		if (!puzzleData) return;
 
-		recordPuzzleStart({
-			puzzleId: puzzleData.id,
-			gridSize,
-			initialBoard,
+		const initial = puzzleData[gridSize];
+		if (!initial) return;
+
+		Promise.resolve().then(() => {
+			if (savedGame) {
+				// Resume from saved progress
+				setSavedBoard(convertBoardFromFirestore(savedGame.board));
+				setInitialBoard(initial);
+			} else {
+				// Start fresh
+				setInitialBoard(initial);
+				setSavedBoard(null);
+
+				// Record game start in Firestore
+				if (user) {
+					recordPuzzleStart({
+						puzzleId: puzzleData.id,
+						gridSize,
+						initialBoard: initial,
+					});
+				}
+			}
 		});
-	}, [puzzleData, initialBoard, user, savedGame, gridSize, recordPuzzleStart]);
+	}, [puzzleData, savedGame, gridSize, user, recordPuzzleStart]);
 
 	// Auto-save after each move
 	const handleMove = (newBoard) => {
@@ -109,7 +120,7 @@ function Game({
 
 	const handleRestartConfirm = () => {
 		setShowRestartDialog(false);
-		setResetCounter((prev) => prev + 1); // Signal Board to reset
+		setSavedBoard(null); // Simple - Board will use initialBoard
 
 		// Record restart in Firestore
 		if (user && initialBoard && puzzleData) {
@@ -144,7 +155,6 @@ function Game({
 					/>
 				</div>
 				<Board
-					resetCounter={resetCounter}
 					size={gridSize}
 					onWin={handleWin}
 					hasNumbersShown={hasNumbersShown && !showWinDialog}
