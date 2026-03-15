@@ -7,7 +7,6 @@ import Game from "./components/game/Game";
 import SettingsDialog from "./components/dialogs/SettingsDialog";
 import StatsDialog from "./components/dialogs/StatsDialog";
 import WinDialog from "./components/dialogs/WinDialog";
-import ConfirmResetDialog from "./components/dialogs/ConfirmResetDialog";
 import { getTodaysPuzzleNumber } from "./utils/dateUtils";
 import { useAuth } from "./hooks/useAuth";
 import { useUser } from "./hooks/useUser";
@@ -30,8 +29,6 @@ function App() {
 	const [showSettingsDialog, setShowSettingsDialog] = useState(false);
 	const [showWinDialog, setShowWinDialog] = useState(false);
 	const [showStatsDialog, setShowStatsDialog] = useState(false);
-	const [showDifficultyConfirmDialog, setShowDifficultyConfirmDialog] =
-		useState(false);
 
 	// Settings (local state only - no Firestore sync)
 	const [hasNumbersShown, setHasNumbersShown] =
@@ -44,7 +41,6 @@ function App() {
 	// Game State
 	const [gridSize, setGridSize] = useState(DEFAULT_GRID_SIZE);
 	const [isGameWon, setIsGameWon] = useState(false);
-	const [pendingGridSize, setPendingGridSize] = useState(null);
 
 	// Dev mode configuration
 	const devConfig = getDevConfig();
@@ -89,38 +85,6 @@ function App() {
 		// Note: setIsWon and dialog opening happens in Board after celebration delay
 	};
 
-	const handleShowWinDialog = () => {
-		setIsGameWon(true);
-		setShowWinDialog(true);
-	};
-
-	const handleCloseWinDialog = () => {
-		setShowWinDialog(false);
-		// Keep puzzle in solved state, don't reset
-	};
-
-	const handleSizeChange = (newSize) => {
-		if (newSize !== gridSize) {
-			setPendingGridSize(newSize);
-			setShowDifficultyConfirmDialog(true);
-		}
-	};
-
-	const handleDifficultyConfirm = () => {
-		if (pendingGridSize !== null) {
-			setGridSize(pendingGridSize);
-			setPendingGridSize(null);
-		}
-		setIsGameWon(false);
-		setShowWinDialog(false); // Close win dialog if open
-		setShowDifficultyConfirmDialog(false);
-	};
-
-	const handleDifficultyCancel = () => {
-		setPendingGridSize(null);
-		setShowDifficultyConfirmDialog(false);
-	};
-
 	if (showLandingPage) {
 		return (
 			<div
@@ -150,7 +114,10 @@ function App() {
 				isGameWon={isGameWon}
 				hasSoundEnabled={hasSoundEnabled}
 				onWin={handleWin}
-				onShowWinDialog={handleShowWinDialog}
+				onShowWinDialog={() => {
+					setIsGameWon(true);
+					setShowWinDialog(true);
+				}}
 				onShuffle={() => setIsGameWon(false)}
 			/>
 
@@ -164,7 +131,10 @@ function App() {
 				onShowNumbersChange={setHasNumbersShown}
 				onDarkModeChange={setHasDarkMode}
 				onSoundEnabledChange={setHasSoundEnabled}
-				onGridSizeChange={handleSizeChange}
+				onGridSizeChange={(newSize) => {
+					setGridSize(newSize);
+					setIsGameWon(false);
+				}}
 			/>
 
 			<StatsDialog
@@ -176,20 +146,10 @@ function App() {
 
 			<WinDialog
 				isOpen={showWinDialog}
-				onClose={handleCloseWinDialog}
+				onClose={() => setShowWinDialog(false)}
 				puzzle={puzzle}
 				gridSize={gridSize}
 				solvedPuzzles={userData?.stats?.solvedPuzzles}
-			/>
-
-			<ConfirmResetDialog
-				isOpen={showDifficultyConfirmDialog}
-				onClose={handleDifficultyCancel}
-				//
-				onConfirm={handleDifficultyConfirm}
-				message={
-					"Changing difficulty will restart the puzzle. Continue?"
-				}
 			/>
 		</div>
 	);

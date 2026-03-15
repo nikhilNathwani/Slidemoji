@@ -1,9 +1,8 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import styles from "./Game.module.css";
 import Board from "./Board";
-import Trophy from "../common/Trophy";
 import PuzzleInfo from "./PuzzleInfo";
-import ConfirmResetDialog from "../dialogs/ConfirmResetDialog";
+import ConfirmRestartDialog from "../dialogs/ConfirmRestartDialog";
 import { useAuth } from "../../hooks/useAuth";
 import { FontAwesomeIcon } from "../../utils/icons";
 import {
@@ -228,12 +227,11 @@ function Game({
 				</div>
 			</main>
 
-			<ConfirmResetDialog
+			<ConfirmRestartDialog
 				isOpen={showRestartConfirm}
 				onClose={() => setShowRestartConfirm(false)}
 				onConfirm={handleRestartConfirm}
-				message="This will restart the puzzle and reset your current progress. Are you sure?"
-			></ConfirmResetDialog>
+			></ConfirmRestartDialog>
 		</>
 	);
 }

@@ -1,11 +1,14 @@
 import Dialog from "./Dialog";
-import styles from "./ConfirmResetDialog.module.css";
+import styles from "./ConfirmRestart.module.css";
 
-function ConfirmResetDialog({ isOpen, onClose, onConfirm, message }) {
+function ConfirmRestartDialog({ isOpen, onClose, onConfirm }) {
 	return (
-		<Dialog isOpen={isOpen} onClose={onClose} title="Change Difficulty?">
+		<Dialog isOpen={isOpen} onClose={onClose} title="Restart Puzzle?">
 			<div className={styles.confirmDialogContent}>
-				<p>{message}</p>
+				<p>
+					This will restart the puzzle and reset your current
+					progress. Are you sure?
+				</p>
 				<div className={styles.confirmButtons}>
 					<button
 						className={`${styles.confirmBtn} ${styles.cancel}`}
@@ -25,4 +28,4 @@ function ConfirmResetDialog({ isOpen, onClose, onConfirm, message }) {
 	);
 }
 
-export default ConfirmResetDialog;
+export default ConfirmRestartDialog;
