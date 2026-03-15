@@ -32,9 +32,8 @@ function StatsContent({ showTitle = false }) {
 					<p className={styles.privacyNote}>
 						<FontAwesomeIcon icon="shield-alt" />
 						<span>
-							We respect your privacy. Your data is never sold or
-							shared. We only use your email to save your
-							progress.
+							Your email is only used to save your progress. Your
+							data is never sold or shared.
 						</span>
 					</p>
 				</div>

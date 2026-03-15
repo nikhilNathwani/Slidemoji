@@ -19,17 +19,6 @@ import {
 } from "../../utils/puzzleUtils";
 import { addPuzzleSolution } from "../../utils/statsHelpers";
 
-/**
- * Game Component - Main puzzle game interface
- *
- * Props:
- * @param {number} puzzleId - Puzzle ID to fetch and play
- * @param {number} gridSize - Current difficulty/board size (3 for 3x3, 4 for 4x4)
- * @param {Object} savedGame - Saved game state from Firestore for resume (or null for new game)
- * @param {number} maxGridSizeSolved - Highest difficulty solved for this puzzle (0, 3, or 4)
- * @param {boolean} hasNumbersShown - Whether to show numbers on tiles
- * @param {boolean} hasSoundEnabled - Whether sound effects are enabled
- */
 function Game({
 	puzzleId,
 	gridSize,
@@ -40,78 +29,56 @@ function Game({
 }) {
 	const { user } = useAuth();
 	const queryClient = useQueryClient();
+
+	// Dialog state
 	const [showRestartDialog, setShowRestartDialog] = useState(false);
 	const [showWinDialog, setShowWinDialog] = useState(false);
+
+	// Board state
 	const [initialBoard, setInitialBoard] = useState(null);
 	const [savedBoard, setSavedBoard] = useState(null);
-	const [isGameWon, setIsGameWon] = useState(false);
 
-	// ===== Fetch Puzzle Data =====
-	// Game owns puzzle fetching since it's the primary consumer
+	// Fetch and convert puzzle data
 	const { data: rawPuzzle } = usePuzzle(puzzleId);
-
-	// React Query mutations for Firestore writes
-	const { mutate: startPuzzle } = useSavePuzzleStart(user?.uid);
-	const { mutate: saveMove } = useSaveGameState(user?.uid);
-	const { mutate: saveWin } = useSaveCompletion(user?.uid);
-
-	// Convert puzzle from Firestore format (0 for gap) to client format (null for gap)
 	const puzzle = useMemo(() => {
 		return rawPuzzle ? convertPuzzleFromFirestore(rawPuzzle) : null;
 	}, [rawPuzzle]);
 
-	// ===== Load Initial or Saved Board State =====
-	// This effect runs when:
-	// - Component mounts
-	// - Puzzle changes (new day, or switching puzzle in archive mode)
-	// - Difficulty changes (3x3 ↔ 4x4)
-	// - User data loads/updates
-	useEffect(() => {
-		// Wait for puzzle to load before initializing board
-		if (!puzzle) {
-			return;
-		}
+	// Firestore mutations
+	const { mutate: startPuzzle } = useSavePuzzleStart(user?.uid);
+	const { mutate: saveMove } = useSaveGameState(user?.uid);
+	const { mutate: saveWin } = useSaveCompletion(user?.uid);
 
-		// Get the correct initial board based on difficulty
+	// Initialize board state when puzzle/savedGame/gridSize changes
+	useEffect(() => {
+		if (!puzzle) return;
+
 		const boardKey = gridSize === 3 ? "initialBoard3x3" : "initialBoard4x4";
 		const initial = puzzle[boardKey];
 
-		// Defer state updates to avoid cascading renders warning
-		Promise.resolve().then(() => {
-			if (savedGame) {
-				// RESUME MODE: User has a saved game, restore it
-				// Convert saved board from Firestore format (0 as gap) to client format (null as gap)
-				const convertedBoard = convertBoardFromFirestore(
-					savedGame.board,
-				);
-				setSavedBoard(convertedBoard);
-				setInitialBoard(initial); // Keep initial for reference
-			} else if (initial) {
-				// NEW GAME MODE: Start fresh with initial board
-				setInitialBoard(initial);
-				setSavedBoard(null);
+		if (savedGame) {
+			// Resume saved game
+			const convertedBoard = convertBoardFromFirestore(savedGame.board);
+			setSavedBoard(convertedBoard);
+			setInitialBoard(initial);
+		} else if (initial) {
+			// Start new game
+			setInitialBoard(initial);
+			setSavedBoard(null);
 
-				// Call recordPuzzleStart to:
-				// - Create gameState entry in Firestore
-				// - Update play streak (if daily puzzle)
-				// - Increment totalAttempted (if first time)
-				// Skip in dev mode when no real user is signed in
-				if (user) {
-					startPuzzle({
-						puzzleId: puzzle.id,
-						gridSize,
-						initialBoard: initial,
-					});
-				}
+			// Record game start in Firestore
+			if (user) {
+				startPuzzle({
+					puzzleId: puzzle.id,
+					gridSize,
+					initialBoard: initial,
+				});
 			}
-		});
+		}
 	}, [puzzle, savedGame, gridSize, user, startPuzzle]);
 
-	// ===== Handle Move (called by Board after each tile movement) =====
+	// Auto-save after each move
 	const handleMove = (newBoard) => {
-		// Auto-save to Firestore after EVERY move (only if signed in and have puzzle)
-		// This ensures progress is never lost (even if user closes tab)
-		// In development mode (no user/puzzle), this is skipped
 		if (user && puzzle) {
 			saveMove({
 				puzzleId: puzzle.id,
@@ -121,11 +88,10 @@ function Game({
 		}
 	};
 
-	// ===== Handle Win (called by Board when puzzle is solved) =====
+	// Handle puzzle completion
 	const handleWin = () => {
-		// Update React Query cache to add this solution immediately (for trophy case)
-		// This ensures the trophy shows up right away in the win dialog
 		if (user && puzzle) {
+			// Update cache immediately for instant trophy display
 			queryClient.setQueryData(["user", user.uid], (prevData) =>
 				addPuzzleSolution(prevData, puzzleId, gridSize, {
 					completedAt: new Date(),
@@ -134,11 +100,7 @@ function Game({
 				}),
 			);
 
-			// Save solution to Firestore:
-			// - Adds trophy to solvedPuzzles[puzzleId][difficulty]
-			// - Updates win streak (if daily puzzle)
-			// - Increments totalSolved
-			// - Clears game from gameState (puzzle is done!)
+			// Save to Firestore
 			saveWin({
 				puzzleId: puzzle.id,
 				gridSize,
@@ -147,27 +109,19 @@ function Game({
 			});
 		}
 
-		// Show win dialog immediately
 		setShowWinDialog(true);
 	};
 
+	// Handle restart
 	const handleRestartClick = () => {
-		setShowRestartDialog(true); // Show confirmation dialog
+		setShowRestartDialog(true);
 	};
 
 	const handleRestartConfirm = () => {
 		setShowRestartDialog(false);
+		setSavedBoard(null); // Reset to initial board
 
-		// Reset win state locally
-		setIsGameWon(false);
-
-		// Clear saved board to force fresh start
-		// Board's useEffect will see this change and reset to initialBoard
-		setSavedBoard(null);
-
-		// Re-start puzzle in Firestore (only if user is signed in and has initialBoard)
-		// This creates a fresh gameState entry and updates play streak
-		// In development mode (no user), this is skipped - just local restart
+		// Record restart in Firestore
 		if (user && initialBoard && puzzle) {
 			startPuzzle({
 				puzzleId: puzzle.id,
@@ -177,7 +131,7 @@ function Game({
 		}
 	};
 
-	// Show loading state while puzzle or board is loading
+	// Wait for puzzle data and board initialization
 	if (!puzzle || !initialBoard) {
 		return (
 			<main className={styles.main}>
@@ -202,7 +156,7 @@ function Game({
 				<Board
 					size={gridSize}
 					onWin={handleWin}
-					hasNumbersShown={hasNumbersShown && !isGameWon}
+					hasNumbersShown={hasNumbersShown && !showWinDialog}
 					emoji={puzzle.emoji}
 					initialBoard={initialBoard}
 					savedBoard={savedBoard}

@@ -8,6 +8,7 @@ import StatsDialog from "./components/dialogs/StatsDialog";
 import { getTodaysPuzzleNumber } from "./utils/dateUtils";
 import { useAuth } from "./hooks/useAuth";
 import { useUser } from "./hooks/useUser";
+import { usePuzzle } from "./hooks/usePuzzle";
 import {
 	DEFAULT_GRID_SIZE,
 	DEFAULT_DARK_MODE,
@@ -19,6 +20,10 @@ import { getMaxGridSizeSolved } from "./utils/statsHelpers";
 function App() {
 	const { user } = useAuth();
 	const todaysPuzzleNumber = getTodaysPuzzleNumber();
+
+	// Preload today's puzzle while landing page is showing
+	// This ensures puzzle data is cached before user clicks "Play"
+	usePuzzle(todaysPuzzleNumber);
 
 	// Show Page / Dialog
 	const [showLandingPage, setShowLandingPage] = useState(true);
