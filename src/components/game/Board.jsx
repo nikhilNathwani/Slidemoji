@@ -7,7 +7,6 @@ import {
 	getGapIndex,
 	swapTiles,
 	checkWin,
-	scramblePuzzle,
 	getTileIndexFromDirection,
 	calcBoardSizePx,
 } from "../../utils/boardHelpers";
@@ -20,17 +19,12 @@ function Board({
 	onWin,
 	hasNumbersShown,
 	emoji,
-	initialBoard,
-	savedBoard,
+	board, // The board configuration to display
 	onMove,
 	hasSoundEnabled,
 }) {
 	// ===== State =====
-	// Initialize board state from savedBoard (resume) or initialBoard (new game)
-	// Falls back to scramblePuzzle if neither provided (shouldn't happen in production)
-	const [tiles, setTiles] = useState(() => {
-		return savedBoard || initialBoard || scramblePuzzle(size);
-	});
+	const [tiles, setTiles] = useState(board);
 	const [isGameWon, setIsGameWon] = useState(false);
 	const [isInputBlocked, setIsInputBlocked] = useState(false);
 	const [boardSizePx, setBoardSizePx] = useState(() => calcBoardSizePx(size));
@@ -57,14 +51,14 @@ function Board({
 		return () => window.removeEventListener("resize", handleResize);
 	}, [size, getResponsiveBoardSize]); // size for clarity, getResponsiveBoardSize for actual dependency
 
-	// Reset board when size, initialBoard, or savedBoard changes
+	// Reset board when size or board changes
 	useEffect(() => {
 		Promise.resolve().then(() => {
-			setTiles(savedBoard || initialBoard || scramblePuzzle(size));
+			setTiles(board);
 			setIsGameWon(false);
 			setIsInputBlocked(false);
 		});
-	}, [size, initialBoard, savedBoard]);
+	}, [size, board]);
 
 	// ===== Tile Movement Logic =====
 	const gapIndex = getGapIndex(tiles);

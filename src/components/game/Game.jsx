@@ -34,9 +34,9 @@ function Game({
 	const [showRestartDialog, setShowRestartDialog] = useState(false);
 	const [showWinDialog, setShowWinDialog] = useState(false);
 
-	// Board state
+	// Board state - Game decides what to show
 	const [initialBoard, setInitialBoard] = useState(null);
-	const [savedBoard, setSavedBoard] = useState(null);
+	const [currentBoard, setCurrentBoard] = useState(null); // null = show initial, otherwise show this
 
 	// Fetch and convert puzzle metadata (emoji, name, initial boards)
 	const { data: rawPuzzleData } = usePuzzle(puzzleId);
@@ -59,12 +59,12 @@ function Game({
 		Promise.resolve().then(() => {
 			if (savedGame) {
 				// Resume from saved progress
-				setSavedBoard(convertBoardFromFirestore(savedGame.board));
+				setCurrentBoard(convertBoardFromFirestore(savedGame.board));
 				setInitialBoard(initial);
 			} else {
 				// Start fresh
 				setInitialBoard(initial);
-				setSavedBoard(null);
+				setCurrentBoard(null); // null means "show initialBoard"
 
 				// Record game start in Firestore
 				if (user) {
@@ -120,7 +120,7 @@ function Game({
 
 	const handleRestartConfirm = () => {
 		setShowRestartDialog(false);
-		setSavedBoard(null); // Simple - Board will use initialBoard
+		setCurrentBoard(null); // Clear current board to show initial
 
 		// Record restart in Firestore
 		if (user && initialBoard && puzzleData) {
@@ -132,8 +132,11 @@ function Game({
 		}
 	};
 
+	// Game decides which board to show (smart logic here)
+	const boardToShow = currentBoard || initialBoard;
+
 	// Wait for puzzle data and board initialization
-	if (!puzzleData || !initialBoard) {
+	if (!puzzleData || !boardToShow) {
 		return (
 			<main className={styles.main}>
 				<div style={{ padding: "20px", textAlign: "center" }}>
@@ -159,8 +162,7 @@ function Game({
 					onWin={handleWin}
 					hasNumbersShown={hasNumbersShown && !showWinDialog}
 					emoji={puzzleData.emoji}
-					initialBoard={initialBoard}
-					savedBoard={savedBoard}
+					board={boardToShow}
 					onMove={handleMove}
 					hasSoundEnabled={hasSoundEnabled}
 				/>
