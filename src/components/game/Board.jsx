@@ -25,6 +25,7 @@ function Board({
 	savedBoard, // User's saved progress (resume), or null for new game
 	onMove, // Callback to notify parent when board changes (for Firestore saves)
 	hasSoundEnabled,
+	resetCounter, // Incremented to signal a restart (resets to initial board)
 }) {
 	// ===== State =====
 	// Initialize board state from savedBoard (resume) or initialBoard (new game)
@@ -58,15 +59,21 @@ function Board({
 		return () => window.removeEventListener("resize", handleResize);
 	}, [size, getResponsiveBoardSize]); // size for clarity, getResponsiveBoardSize for actual dependency
 
-	// Reset board when size, initialBoard, or savedBoard changes
+	// Reset board when size, initialBoard, savedBoard, or resetCounter changes
 	useEffect(() => {
-		// Update board state (deferred to avoid cascading renders warning)
+		// Defer state updates to avoid cascading renders warning
 		Promise.resolve().then(() => {
-			setTiles(savedBoard || initialBoard || scramblePuzzle(size));
+			// When resetCounter changes, always use initialBoard (ignore savedBoard)
+			// Otherwise, prefer savedBoard over initialBoard
+			const boardToUse = resetCounter > 0 
+				? initialBoard 
+				: (savedBoard || initialBoard || scramblePuzzle(size));
+				
+			setTiles(boardToUse);
 			setIsGameWon(false);
 			setIsInputBlocked(false);
 		});
-	}, [size, initialBoard, savedBoard]);
+	}, [size, initialBoard, savedBoard, resetCounter]);
 
 	// ===== Tile Movement Logic =====
 	const gapIndex = getGapIndex(tiles);

@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import styles from "./Game.module.css";
 import Board from "./Board";
-import PuzzleInfo from "./PuzzleInfo";
+import Trophy from "../common/Trophy";
 import ConfirmRestartDialog from "../dialogs/ConfirmRestartDialog";
 import WinDialog from "../dialogs/WinDialog";
 import { useAuth } from "../../hooks/useAuth";
@@ -44,11 +44,12 @@ function Game({
 	const initialBoard = puzzleData?.[gridSize] ?? null;
 
 	// Derive saved board from savedGame (convert Firestore format)
-	// Override with null if restart was requested (forces initial board)
-	const [restartKey, setRestartKey] = useState(0);
 	const savedBoard = useMemo(() => {
 		return savedGame ? convertBoardFromFirestore(savedGame.board) : null;
 	}, [savedGame]);
+
+	// Track restart - when toggled, Board will reset to initial state
+	const [resetCounter, setResetCounter] = useState(0);
 
 	// Firestore mutations
 	const { mutate: recordPuzzleStart } = useSavePuzzleStart(user?.uid);
@@ -108,7 +109,7 @@ function Game({
 
 	const handleRestartConfirm = () => {
 		setShowRestartDialog(false);
-		setRestartKey((prev) => prev + 1); // Force Board remount with initial state
+		setResetCounter((prev) => prev + 1); // Signal Board to reset
 
 		// Record restart in Firestore
 		if (user && initialBoard && puzzleData) {
@@ -135,15 +136,15 @@ function Game({
 		<>
 			<main className={styles.main}>
 				<div className={styles.trophyContainer}>
-					<PuzzleInfo
-						puzzleNumber={String(puzzleData.id).padStart(3, "0")}
-						emoji={puzzleData.emoji}
-						emojiName={puzzleData.emojiName}
+					<Trophy
+						trophyNum={String(puzzleData.id).padStart(3, "0")}
+						trophyEmoji={puzzleData.emoji}
+						trophyName={puzzleData.emojiName}
 						maxGridSizeSolved={maxGridSizeSolved}
 					/>
 				</div>
 				<Board
-					key={restartKey}
+					resetCounter={resetCounter}
 					size={gridSize}
 					onWin={handleWin}
 					hasNumbersShown={hasNumbersShown && !showWinDialog}
