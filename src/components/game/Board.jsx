@@ -21,8 +21,8 @@ function Board({
 	hasNumbersShown,
 	emoji,
 	// Persistence props - from Game component
-	initialBoard, // The starting board from Firestore (for this puzzle+difficulty)
-	savedBoard, // Previously saved board state (resume game), or null for new game
+	initialBoard, // Starting scrambled board for this puzzle+difficulty (from puzzle data)
+	savedBoard, // User's saved progress (resume), or null for new game
 	onMove, // Callback to notify parent when board changes (for Firestore saves)
 	hasSoundEnabled,
 }) {

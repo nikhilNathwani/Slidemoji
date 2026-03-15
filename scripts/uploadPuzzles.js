@@ -170,8 +170,8 @@ function generatePuzzle(puzzleId) {
 		date: dateString,
 		emoji: emoji,
 		emojiName: name,
-		initialBoard3x3: scramblePuzzle(3),
-		initialBoard4x4: scramblePuzzle(4),
+		3: scramblePuzzle(3),
+		4: scramblePuzzle(4),
 	};
 }
 

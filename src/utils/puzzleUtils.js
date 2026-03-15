@@ -23,15 +23,12 @@ export function convertPuzzleFromFirestore(puzzleData) {
 
 	const converted = { ...puzzleData };
 
-	if (converted.initialBoard3x3) {
-		converted.initialBoard3x3 = convertBoardFromFirestore(
-			converted.initialBoard3x3,
-		);
+	// Convert board arrays (keyed by difficulty: 3 and 4)
+	if (converted[3]) {
+		converted[3] = convertBoardFromFirestore(converted[3]);
 	}
-	if (converted.initialBoard4x4) {
-		converted.initialBoard4x4 = convertBoardFromFirestore(
-			converted.initialBoard4x4,
-		);
+	if (converted[4]) {
+		converted[4] = convertBoardFromFirestore(converted[4]);
 	}
 
 	return converted;
