@@ -40,6 +40,9 @@ function Game({
 	const [currentGrid, setCurrentGrid] = useState(null); // null = show initial, otherwise show this
 	const [isCompleted, setIsCompleted] = useState(false); // Track if puzzle is completed
 
+	// Track latest grid state in ref (for preserving signed-out progress on sign-in)
+	const latestGridRef = useRef(null);
+
 	// Fetch and convert puzzle metadata (emoji, name, initial grids)
 	const { data: rawPuzzleData } = usePuzzle(puzzleId);
 	const puzzleData = useMemo(() => {
@@ -88,27 +91,64 @@ function Game({
 		setIsCompleted(false);
 	}, [puzzleId, gridSize]);
 
-	// Save completion retroactively when user signs in after winning while signed out
+	// Handle sign-in and sign-out state transitions
 	const prevUserRef = useRef(user);
 	useEffect(() => {
 		const wasSignedOut = !prevUserRef.current;
 		const isNowSignedIn = !!user;
+		const wasSignedIn = !!prevUserRef.current;
+		const isNowSignedOut = !user;
 
-		// User just signed in while puzzle was completed - save the trophy
-		if (wasSignedOut && isNowSignedIn && isCompleted && puzzleData) {
-			// Don't update cache here - wait for Firestore save to complete
-			// and let the invalidation/refetch handle the cache update
-			// This avoids race conditions with the initial user data fetch
+		// ===== SCENARIO A: Signing in =====
+		if (wasSignedOut && isNowSignedIn && puzzleData) {
+			// A1: Puzzle completed while signed out - save the trophy
+			if (isCompleted) {
+				saveCompletion({
+					puzzleId: puzzleData.id,
+					gridSize,
+					emoji: puzzleData.emoji,
+					emojiName: puzzleData.emojiName,
+				});
+				console.log("[GAME] Saved completion after sign-in");
+			}
+			// A2: In-progress puzzle - preserve signed-out progress if no conflict
+			else if (latestGridRef.current && initialGrid) {
+				// Check if user already has saved progress for this puzzle
+				const currentUserData = queryClient.getQueryData([
+					"user",
+					user.uid,
+				]);
+				const existingSavedGame =
+					currentUserData?.gameState?.[puzzleData.id]?.[gridSize];
 
-			// Save completion to Firestore
-			saveCompletion({
-				puzzleId: puzzleData.id,
-				gridSize,
-				emoji: puzzleData.emoji,
-				emojiName: puzzleData.emojiName,
-			});
+				if (!existingSavedGame) {
+					// No existing progress - preserve signed-out work
+					recordPuzzleStart({
+						puzzleId: puzzleData.id,
+						gridSize,
+						initialGrid,
+					});
+					saveMove({
+						puzzleId: puzzleData.id,
+						gridSize,
+						grid: latestGridRef.current,
+					});
+					console.log("[GAME] Preserved signed-out progress on sign-in");
+				} else {
+					console.log(
+						"[GAME] Existing progress found, keeping signed-in state",
+					);
+				}
+			}
+		}
 
-			console.log("[GAME] Saved completion after sign-in");
+		// ===== SCENARIO B: Signing out =====
+		if (wasSignedIn && isNowSignedOut) {
+			// Reset to initial grid (teaches that signed-out is ephemeral)
+			setCurrentGrid(null);
+			setIsCompleted(false);
+			latestGridRef.current = null;
+			console.log("[GAME] Reset grid on sign-out");
 		}
 
 		// Update ref for next render
@@ -118,11 +158,18 @@ function Game({
 		isCompleted,
 		puzzleData,
 		gridSize,
+		initialGrid,
 		saveCompletion,
+		recordPuzzleStart,
+		saveMove,
+		queryClient,
 	]);
 
 	// Auto-save after each move
 	const handleMove = (newGrid) => {
+		// Track latest grid state (doesn't cause re-render)
+		latestGridRef.current = newGrid;
+
 		if (user && puzzleData) {
 			// Signed in: save to Firestore
 			saveMove({
