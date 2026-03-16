@@ -84,15 +84,17 @@ const db = getFirestore(app);
 /**
  * Scramble puzzle grid - creates a solvable random configuration
  * Ensures the gap always ends up in the bottom-right corner
+ * Grid uses 1-8 for tiles and 0 for gap (Firestore format)
  * (Same logic as src/utils/gridHelpers.js)
  */
 function scramblePuzzle(size) {
 	const totalTiles = size * size;
-	const grid = Array.from({ length: totalTiles }, (_, i) => i);
+	// Initialize with solved state: [1, 2, 3, 4, 5, 6, 7, 8, 0] for 3x3
+	const grid = Array.from({ length: totalTiles - 1 }, (_, i) => i + 1).concat(0);
 	const bottomRightIndex = totalTiles - 1;
 
 	// Perform 500 random valid moves to ensure solvability
-	let emptyIndex = totalTiles - 1;
+	let emptyIndex = totalTiles - 1; // Gap starts at bottom-right
 
 	for (let i = 0; i < 500; i++) {
 		const validMoves = [];

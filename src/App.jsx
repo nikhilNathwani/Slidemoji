@@ -39,7 +39,7 @@ function App() {
 	// ===== Fetch User Data with React Query =====
 	// Automatically fetches, caches, and refetches user data from Firestore
 	// Eliminates manual useEffect boilerplate and provides loading/error states
-	const { data: userData, isLoading: isLoadingUser } = useUser(user?.uid);
+	const { data: userData } = useUser(user?.uid);
 
 	if (showLandingPage) {
 		return (

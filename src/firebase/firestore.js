@@ -233,7 +233,7 @@ export async function savePuzzleStart(
 
 		// Initialize game state for this specific puzzle+difficulty combo
 		gameState[puzzleId][difficulty] = {
-			board: firestoreGrid,
+			grid: firestoreGrid,
 			fromArchive, // Track whether this is a daily or archive play
 		};
 
@@ -303,7 +303,7 @@ export async function saveGameState(userId, puzzleId, difficulty, gameData) {
 		// Use dot notation to update only this specific nested field
 		// This is more efficient than reading, modifying, and writing the entire document
 		await updateDoc(userDocRef, {
-			[`gameState.${puzzleId}.${difficulty}.board`]: firestoreGrid,
+			[`gameState.${puzzleId}.${difficulty}.grid`]: firestoreGrid,
 			updatedAt: serverTimestamp(),
 		});
 	} catch (error) {

@@ -62,7 +62,7 @@ export function useSaveGameState(userId) {
 	return useMutation({
 		mutationFn: ({ puzzleId, gridSize, grid }) => {
 			if (!userId) return Promise.resolve();
-			return saveGameState(userId, puzzleId, gridSize, { board: grid });
+			return saveGameState(userId, puzzleId, gridSize, { grid });
 		},
 		onError: (error) => {
 			console.error("Error saving game state:", error);

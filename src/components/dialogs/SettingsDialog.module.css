@@ -51,10 +51,6 @@
 	opacity: 1;
 }
 
-.difficultyBtn.active:hover {
-	/* No additional hover effect when active */
-}
-
 .difficultyLabel {
 	font-weight: 600;
 	font-size: var(--text-base);
@@ -85,8 +81,8 @@
 .actionButton {
 	padding: 14px 20px;
 	border-radius: 12px;
-	border: 2px solid var(--border-secondary);
-	background-color: var(--surface-secondary);
+	border: 1px solid var(--border-secondary);
+	background-color: var(--surface-primary);
 	color: var(--text-primary);
 	font-size: var(--text-base);
 	font-weight: 600;
@@ -100,7 +96,7 @@
 }
 
 .actionButton:hover {
-	background-color: var(--surface-primary);
+	background-color: var(--surface-secondary);
 	border-color: var(--border-primary);
 }
 
