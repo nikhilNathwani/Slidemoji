@@ -9,7 +9,7 @@ import {
 	checkWin,
 	getTileIndexFromDirection,
 	calcBoardSizePx,
-} from "../../utils/boardHelpers";
+} from "../../utils/gridHelpers";
 import { createEmojiSvgUrl } from "../../utils/emoji";
 import { playTileMoveSound } from "../../utils/sound";
 import styles from "./Grid.module.css";
@@ -158,7 +158,7 @@ function Grid({
 	// ===== Render =====
 	return (
 		<div
-			className={`${styles.board}${isGameWon ? " " + styles.won : ""}`}
+			className={`${styles.grid}${isGameWon ? " " + styles.won : ""}`}
 			style={{
 				width: `${gridSizePx}px`,
 				height: `${gridSizePx}px`,

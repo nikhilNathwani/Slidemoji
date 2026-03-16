@@ -9,6 +9,8 @@ import { getTodaysPuzzleNumber } from "./utils/dateUtils";
 import { useAuth } from "./hooks/useAuth";
 import { useUser } from "./hooks/useUser";
 import { usePuzzle } from "./hooks/usePuzzle";
+import { useSavePuzzleStart } from "./hooks/useGameMutations";
+import { convertPuzzleFromFirestore } from "./utils/puzzleUtils";
 import {
 	DEFAULT_GRID_SIZE,
 	DEFAULT_DARK_MODE,
@@ -23,7 +25,13 @@ function App() {
 
 	// Preload today's puzzle while landing page is showing
 	// This ensures puzzle data is cached before user clicks "Play"
-	usePuzzle(todaysPuzzleNumber);
+	const { data: rawPuzzleData } = usePuzzle(todaysPuzzleNumber);
+	const puzzleData = rawPuzzleData
+		? convertPuzzleFromFirestore(rawPuzzleData)
+		: null;
+
+	// Mutation for recording puzzle start
+	const { mutate: recordPuzzleStart } = useSavePuzzleStart(user?.uid);
 
 	// Show Page / Dialog
 	const [showSettingsDialog, setShowSettingsDialog] = useState(false);
@@ -39,25 +47,37 @@ function App() {
 
 	// Game State
 	const [gridSize, setGridSize] = useState(DEFAULT_GRID_SIZE);
-	const [showLandingPage, setShowLandingPage] = useState(true);
 
 	// ===== Fetch User Data with React Query =====
 	// Automatically fetches, caches, and refetches user data from Firestore
 	// Eliminates manual useEffect boilerplate and provides loading/error states
 	const { data: userData, isLoading: isLoadingUser } = useUser(user?.uid);
 
-	// Auto-resume game if one exists (but wait for userData to load to avoid flash)
+	// Show landing page only if no game exists for today
 	const hasGameInProgress = userData?.gameState?.[todaysPuzzleNumber];
-	if (!isLoadingUser && hasGameInProgress && showLandingPage) {
-		setShowLandingPage(false);
-	}
+	const showLandingPage = !isLoadingUser && !hasGameInProgress;
 
 	if (showLandingPage) {
 		return (
 			<div
 				className={`app ${hasDarkMode ? "dark-theme" : "light-theme"}`}
 			>
-				<LandingPage onPlay={() => setShowLandingPage(false)} />
+				<LandingPage
+					onPlay={() => {
+						// Initialize game state in Firestore when Play is clicked
+						// This ensures on refresh, we skip landing page
+						if (user && puzzleData) {
+							const initialGrid = puzzleData[gridSize];
+							if (initialGrid) {
+								recordPuzzleStart({
+									puzzleId: puzzleData.id,
+									gridSize,
+									initialGrid,
+								});
+							}
+						}
+					}}
+				/>
 			</div>
 		);
 	}

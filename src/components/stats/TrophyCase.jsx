@@ -3,7 +3,12 @@ import Trophy from "../common/Trophy";
 import styles from "./TrophyCase.module.css";
 import { useState, useEffect } from "react";
 
-function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true, todaysPuzzleNum }) {
+function TrophyCase({
+	totalPuzzles = 12,
+	solvedPuzzles,
+	showTitle = true,
+	todaysPuzzleNum,
+}) {
 	const TROPHIES_PER_PAGE = 12;
 	const totalPages = Math.ceil(totalPuzzles / TROPHIES_PER_PAGE);
 	const numEarnedTrophies = Object.keys(solvedPuzzles || {}).length;
@@ -16,9 +21,10 @@ function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true, todays
 	useEffect(() => {
 		const newPage = Math.ceil(totalPuzzles / TROPHIES_PER_PAGE);
 		if (newPage !== currentPage) {
-			queueMicrotask(() => setCurrentPage(newPage));
+			setCurrentPage(newPage);
 		}
-	}, [totalPuzzles, currentPage]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [totalPuzzles]);
 
 	// Calculate range for current page
 	const startIndex = (currentPage - 1) * TROPHIES_PER_PAGE + 1;

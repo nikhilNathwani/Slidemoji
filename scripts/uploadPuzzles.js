@@ -5,7 +5,7 @@
  * (Make sure you have .env.local with Firebase credentials)
  *
  * This creates one puzzle for each day from 2026-2028 (3 years including leap year),
- * using the emoji calendar and generating scrambled boards for both 3x3 and 4x4 difficulties.
+ * using the emoji calendar and generating scrambled grids for both 3x3 and 4x4 difficulties.
  */
 
 import { initializeApp } from "firebase/app";
@@ -82,13 +82,13 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 /**
- * Scramble puzzle board - creates a solvable random configuration
+ * Scramble puzzle grid - creates a solvable random configuration
  * Ensures the gap always ends up in the bottom-right corner
- * (Same logic as src/utils/boardHelpers.js)
+ * (Same logic as src/utils/gridHelpers.js)
  */
 function scramblePuzzle(size) {
 	const totalTiles = size * size;
-	const board = Array.from({ length: totalTiles }, (_, i) => i);
+	const grid = Array.from({ length: totalTiles }, (_, i) => i);
 	const bottomRightIndex = totalTiles - 1;
 
 	// Perform 500 random valid moves to ensure solvability
@@ -110,9 +110,9 @@ function scramblePuzzle(size) {
 			validMoves[Math.floor(Math.random() * validMoves.length)];
 
 		// Swap
-		[board[emptyIndex], board[randomMove]] = [
-			board[randomMove],
-			board[emptyIndex],
+		[grid[emptyIndex], grid[randomMove]] = [
+			grid[randomMove],
+			grid[emptyIndex],
 		];
 		emptyIndex = randomMove;
 	}
@@ -139,14 +139,14 @@ function scramblePuzzle(size) {
 		}
 
 		// Swap
-		[board[emptyIndex], board[nextIndex]] = [
-			board[nextIndex],
-			board[emptyIndex],
+		[grid[emptyIndex], grid[nextIndex]] = [
+			grid[nextIndex],
+			grid[emptyIndex],
 		];
 		emptyIndex = nextIndex;
 	}
 
-	return board;
+	return grid;
 }
 
 /**

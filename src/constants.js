@@ -10,9 +10,9 @@ export const ANIMATION_DURATION_MS = 400;
 
 // Responsive
 export const MOBILE_BREAKPOINT = 600;
-export const BOARD_VIEWPORT_PADDING = 40; // Padding on each side of viewport
-export const BOARD_RIDGE_BORDER = 16; // Ridge border width (8px each side)
-export const BOARD_MAX_SIZE = 420; // Max board content size in px (reduced for better vertical centering)
+export const GRID_VIEWPORT_PADDING = 40; // Padding on each side of viewport
+export const GRID_RIDGE_BORDER = 16; // Ridge border width (8px each side)
+export const GRID_MAX_SIZE = 420; // Max grid content size in px (reduced for better vertical centering)
 
 // Emoji SVG
 export const EMOJI_SVG_SIZE = 2048;

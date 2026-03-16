@@ -41,7 +41,6 @@
 .difficultyBtn:hover {
 	border-color: var(--text-primary);
 	background-color: var(--surface-primary);
-	transform: scale(1.02);
 }
 
 .difficultyBtn.active {
@@ -53,7 +52,7 @@
 }
 
 .difficultyBtn.active:hover {
-	transform: scale(1.02);
+	/* No additional hover effect when active */
 }
 
 .difficultyLabel {
@@ -103,9 +102,8 @@
 .actionButton:hover {
 	background-color: var(--surface-primary);
 	border-color: var(--border-primary);
-	transform: scale(1.02);
 }
 
 .actionButton:active {
-	transform: scale(0.95);
+	opacity: 0.7;
 }

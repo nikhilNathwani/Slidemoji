@@ -1,8 +1,8 @@
 import { getAdjacentIndices } from "./adjacency";
 import {
-	BOARD_VIEWPORT_PADDING,
-	BOARD_RIDGE_BORDER,
-	BOARD_MAX_SIZE,
+	GRID_VIEWPORT_PADDING,
+	GRID_RIDGE_BORDER,
+	GRID_MAX_SIZE,
 } from "../constants";
 
 /**
@@ -12,8 +12,8 @@ import {
  */
 export function calcBoardSizePx(gridSize) {
 	const maxContentSize = Math.min(
-		window.innerWidth - BOARD_VIEWPORT_PADDING - BOARD_RIDGE_BORDER,
-		BOARD_MAX_SIZE,
+		window.innerWidth - GRID_VIEWPORT_PADDING - GRID_RIDGE_BORDER,
+		GRID_MAX_SIZE,
 	);
 	// Ensure content area is divisible by grid size for perfect tile sizing
 	return Math.floor(maxContentSize / gridSize) * gridSize;

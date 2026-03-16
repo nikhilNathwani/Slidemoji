@@ -8,7 +8,7 @@
  */
 
 import { Timestamp } from "firebase/firestore";
-import { scramblePuzzle } from "../utils/boardHelpers";
+import { scramblePuzzle } from "../utils/gridHelpers";
 
 // Check if dev mode is enabled
 export const isDevMode = import.meta.env.VITE_DEV_MODE === "true";
