@@ -133,7 +133,9 @@ function Game({
 						gridSize,
 						grid: latestGridRef.current,
 					});
-					console.log("[GAME] Preserved signed-out progress on sign-in");
+					console.log(
+						"[GAME] Preserved signed-out progress on sign-in",
+					);
 				} else {
 					console.log(
 						"[GAME] Existing progress found, keeping signed-in state",

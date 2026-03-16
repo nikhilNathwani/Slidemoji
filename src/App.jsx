@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 import LandingPage from "./components/landing/LandingPage";
 import Header from "./components/Header";
@@ -77,6 +77,24 @@ function App() {
 			updatePreferences({ soundEnabled: newValue });
 		}
 	};
+
+	// Restore gridSize from saved game state when user data loads
+	// Prioritize higher difficulty if user has multiple in-progress games
+	useEffect(() => {
+		if (!userData?.gameState?.[todaysPuzzleNumber]) return;
+
+		const savedGames = userData.gameState[todaysPuzzleNumber];
+
+		// If user has difficulty-4 in progress, use that
+		if (savedGames[4]) {
+			setGridSize(4);
+		}
+		// Otherwise if user has difficulty-3 in progress, use that
+		else if (savedGames[3]) {
+			setGridSize(3);
+		}
+		// No saved game - default is already 3
+	}, [userData, todaysPuzzleNumber]);
 
 	if (showLandingPage) {
 		return (
