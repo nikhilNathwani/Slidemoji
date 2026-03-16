@@ -90,7 +90,9 @@ const db = getFirestore(app);
 function scramblePuzzle(size) {
 	const totalTiles = size * size;
 	// Initialize with solved state: [1, 2, 3, 4, 5, 6, 7, 8, 0] for 3x3
-	const grid = Array.from({ length: totalTiles - 1 }, (_, i) => i + 1).concat(0);
+	const grid = Array.from({ length: totalTiles - 1 }, (_, i) => i + 1).concat(
+		0,
+	);
 	const bottomRightIndex = totalTiles - 1;
 
 	// Perform 500 random valid moves to ensure solvability

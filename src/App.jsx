@@ -8,6 +8,8 @@ import StatsDialog from "./components/dialogs/StatsDialog";
 import { getTodaysPuzzleNumber } from "./utils/dateUtils";
 import { useAuth } from "./hooks/useAuth";
 import { useUser } from "./hooks/useUser";
+import { usePuzzle } from "./hooks/usePuzzle";
+import { useUpdatePreferences } from "./hooks/useUpdatePreferences";
 import {
 	DEFAULT_GRID_SIZE,
 	DEFAULT_DARK_MODE,
@@ -19,6 +21,10 @@ import { getMaxGridSizeSolved } from "./utils/statsHelpers";
 function App() {
 	const { user } = useAuth();
 	const todaysPuzzleNumber = getTodaysPuzzleNumber();
+
+	// Preload today's puzzle while landing page is showing
+	// This ensures puzzle data is cached before user clicks "Play"
+	usePuzzle(todaysPuzzleNumber);
 
 	// Show Page / Dialog
 	const [showLandingPage, setShowLandingPage] = useState(true);
@@ -41,10 +47,41 @@ function App() {
 	// Eliminates manual useEffect boilerplate and provides loading/error states
 	const { data: userData } = useUser(user?.uid);
 
+	// Mutation for updating preferences in Firestore
+	const { mutate: updatePreferences } = useUpdatePreferences(user?.uid);
+
+	// Derive preferences from userData or use defaults
+	// This avoids setState in useEffect and keeps preferences in sync
+	const userDarkMode = userData?.preferences?.darkMode;
+	const userSoundEnabled = userData?.preferences?.soundEnabled;
+
+	// Use user preferences if available, otherwise use local state
+	const effectiveDarkMode =
+		user && userDarkMode !== undefined ? userDarkMode : hasDarkMode;
+	const effectiveSoundEnabled =
+		user && userSoundEnabled !== undefined
+			? userSoundEnabled
+			: hasSoundEnabled;
+
+	// Handlers that update local state AND Firestore
+	const handleDarkModeChange = (newValue) => {
+		setHasDarkMode(newValue);
+		if (user) {
+			updatePreferences({ darkMode: newValue });
+		}
+	};
+
+	const handleSoundEnabledChange = (newValue) => {
+		setHasSoundEnabled(newValue);
+		if (user) {
+			updatePreferences({ soundEnabled: newValue });
+		}
+	};
+
 	if (showLandingPage) {
 		return (
 			<div
-				className={`app ${hasDarkMode ? "dark-theme" : "light-theme"}`}
+				className={`app ${effectiveDarkMode ? "dark-theme" : "light-theme"}`}
 			>
 				<LandingPage onPlay={() => setShowLandingPage(false)} />
 			</div>
@@ -52,7 +89,9 @@ function App() {
 	}
 
 	return (
-		<div className={`app ${hasDarkMode ? "dark-theme" : "light-theme"}`}>
+		<div
+			className={`app ${effectiveDarkMode ? "dark-theme" : "light-theme"}`}
+		>
 			<Header
 				onSettingsClick={() => setShowSettingsDialog(true)}
 				onStatsClick={() => setShowStatsDialog(true)}
@@ -70,19 +109,19 @@ function App() {
 					todaysPuzzleNumber,
 				)}
 				hasNumbersShown={hasNumbersShown}
-				hasSoundEnabled={hasSoundEnabled}
+				hasSoundEnabled={effectiveSoundEnabled}
 			/>
 
 			<SettingsDialog
 				isOpen={showSettingsDialog}
 				onClose={() => setShowSettingsDialog(false)}
 				gridSize={gridSize}
-				hasDarkMode={hasDarkMode}
+				hasDarkMode={effectiveDarkMode}
 				hasNumbersShown={hasNumbersShown}
-				hasSoundEnabled={hasSoundEnabled}
+				hasSoundEnabled={effectiveSoundEnabled}
 				onShowNumbersChange={setHasNumbersShown}
-				onDarkModeChange={setHasDarkMode}
-				onSoundEnabledChange={setHasSoundEnabled}
+				onDarkModeChange={handleDarkModeChange}
+				onSoundEnabledChange={handleSoundEnabledChange}
 				onGridSizeChange={setGridSize}
 			/>
 

@@ -140,20 +140,20 @@ function Grid({
 			// Prevent default behavior (scrolling the page)
 			event.preventDefault();
 			event.stopPropagation();
-			handleTileSelect(null, event.key);
+
+			// Only process if input is not blocked
+			if (!isInputBlocked && !isGameWon) {
+				handleTileSelect(null, event.key);
+			}
 		},
-		[handleTileSelect],
+		[handleTileSelect, isInputBlocked, isGameWon],
 	);
 
-	// Keyboard listener: Attach/detach based on game state
+	// Keyboard listener: Always attached to prevent scroll, but only processes when not blocked
 	useEffect(() => {
-		// Only attach listener when input is not blocked
-		if (!isInputBlocked && !isGameWon) {
-			window.addEventListener("keydown", handleArrowKeyPress);
-			return () =>
-				window.removeEventListener("keydown", handleArrowKeyPress);
-		}
-	}, [handleArrowKeyPress, isInputBlocked, isGameWon]);
+		window.addEventListener("keydown", handleArrowKeyPress);
+		return () => window.removeEventListener("keydown", handleArrowKeyPress);
+	}, [handleArrowKeyPress]);
 
 	// ===== Render =====
 	return (

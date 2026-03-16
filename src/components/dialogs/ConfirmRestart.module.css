@@ -5,7 +5,7 @@
 
 .confirmDialogContent p {
 	color: var(--text-primary);
-	font-size: var(--text-base);
+	font-size: var(--text-lg);
 	line-height: 1.5;
 	margin-bottom: 24px;
 }
