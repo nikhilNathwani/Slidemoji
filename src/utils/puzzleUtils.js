@@ -1,5 +1,5 @@
 import { doc, getDoc, setDoc, collection, getDocs } from "firebase/firestore";
-import { db } from "../firebase/config";
+import { db } from "../backend/config";
 
 /**
  * Convert grid array from Firestore format to client format

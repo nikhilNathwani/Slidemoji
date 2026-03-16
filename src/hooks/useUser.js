@@ -12,7 +12,7 @@
  */
 
 import { useQuery } from "@tanstack/react-query";
-import { getUserData } from "../firebase/firestore";
+import { getUserData } from "../backend/database";
 
 export function useUser(userId) {
 	return useQuery({

@@ -14,13 +14,13 @@
  */
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateUserPreferences } from "../firebase/firestore";
+import { updateUserPreferences } from "../backend/database";
 
 export function useUpdatePreferences(userId, userScenario) {
 	const queryClient = useQueryClient();
 
-	// Cache key must match useUser's queryKey: ['user', userId, devConfig.userScenario]
-	const cacheKey = ["user", userId, userScenario];
+	// Cache key must match useUser's queryKey: ['user', userId]
+	const cacheKey = ["user", userId];
 
 	return useMutation({
 		// Mutation function - what to call on Firestore

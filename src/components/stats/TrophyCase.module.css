@@ -44,7 +44,7 @@
 	.emojiGrid {
 		grid-template-columns: repeat(4, 60px);
 		gap: 8px 6px; /* 8px vertical, 6px horizontal */
-		padding: 10px 6px;
+		padding: 10px 2px; /* Reduced inline padding to free space for horizontal gaps */
 	}
 }
 

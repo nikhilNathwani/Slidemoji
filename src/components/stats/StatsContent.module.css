@@ -111,6 +111,7 @@
 .privacyNote i {
 	color: rgba(96, 165, 250, 0.6);
 	flex-shrink: 0;
+	transform: translateY(0.05em);
 }
 
 /* Archive Section */

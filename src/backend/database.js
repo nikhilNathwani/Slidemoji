@@ -1,5 +1,5 @@
 /**
- * Firestore Database Operations
+ * Database Operations
  *
  * This module handles all database operations for Slidemoji, including:
  * - User data management (preferences, stats, trophies)

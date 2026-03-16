@@ -9,7 +9,7 @@ export {
 	getCurrentUser,
 } from "./auth";
 
-// Firestore functions
+// Database functions
 export {
 	getUserData,
 	createUserData,
@@ -18,4 +18,4 @@ export {
 	saveGameState,
 	saveCompletion,
 	cleanupOldGames,
-} from "./firestore";
+} from "./database";

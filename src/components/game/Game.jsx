@@ -78,14 +78,66 @@ function Game({
 		});
 	}, [puzzleData, savedGame, gridSize, user, recordPuzzleStart]);
 
+	// Restore anonymous game state when user signs in
+	useEffect(() => {
+		if (!user || !puzzleData) return;
+
+		// Check if there's anonymous game state to restore
+		const gameStateKey = `anonymous_game_${puzzleData.id}_${gridSize}`;
+		const savedState = localStorage.getItem(gameStateKey);
+
+		if (savedState) {
+			try {
+				const gameState = JSON.parse(savedState);
+
+				// Save the anonymous progress to Firestore
+				// First, record the puzzle start with initial grid
+				recordPuzzleStart({
+					puzzleId: gameState.puzzleId,
+					gridSize: gameState.gridSize,
+					initialGrid: gameState.initialGrid,
+				});
+
+				// Then save current progress
+				saveMove({
+					puzzleId: gameState.puzzleId,
+					gridSize: gameState.gridSize,
+					grid: gameState.grid,
+				});
+
+				// Clear localStorage since it's now saved to Firestore
+				localStorage.removeItem(gameStateKey);
+
+				console.log("[GAME] Restored anonymous game state to Firestore");
+			} catch (error) {
+				console.error("[GAME] Error restoring anonymous game:", error);
+			}
+		}
+	}, [user, puzzleData, gridSize, recordPuzzleStart, saveMove]);
+
 	// Auto-save after each move
 	const handleMove = (newGrid) => {
 		if (user && puzzleData) {
+			// Signed in: save to Firestore
 			saveMove({
 				puzzleId: puzzleData.id,
 				gridSize,
 				grid: newGrid,
 			});
+		} else if (puzzleData) {
+			// Not signed in: save to localStorage as backup
+			// This allows preserving progress when user signs in later
+			const gameStateKey = `anonymous_game_${puzzleData.id}_${gridSize}`;
+			localStorage.setItem(
+				gameStateKey,
+				JSON.stringify({
+					puzzleId: puzzleData.id,
+					gridSize,
+					grid: newGrid,
+					initialGrid: initialGrid,
+					savedAt: new Date().toISOString(),
+				}),
+			);
 		}
 	};
 

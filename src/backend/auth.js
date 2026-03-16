@@ -1,9 +1,9 @@
 /**
- * Firebase Authentication Module
+ * Authentication Module
  *
  * Handles Google Sign-In and user session management.
  * When a user signs in for the first time, this module automatically
- * creates their Firestore user document with default preferences and stats.
+ * creates their user document with default preferences and stats.
  */
 
 import {
@@ -13,7 +13,7 @@ import {
 	onAuthStateChanged,
 } from "firebase/auth";
 import { auth } from "./config";
-import { getUserData, createUserData } from "./firestore";
+import { getUserData, createUserData } from "./database";
 
 // Google OAuth provider for Firebase Authentication
 const googleProvider = new GoogleAuthProvider();

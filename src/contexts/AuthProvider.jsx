@@ -18,7 +18,7 @@ import {
 	onAuthChange,
 	signInWithGoogle as firebaseSignIn,
 	signOut as firebaseSignOut,
-} from "../firebase";
+} from "../backend";
 import { AuthContext } from "./authContext";
 
 /**

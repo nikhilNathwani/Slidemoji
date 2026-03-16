@@ -80,9 +80,7 @@ function App() {
 
 	if (showLandingPage) {
 		return (
-			<div
-				className={`app ${effectiveDarkMode ? "dark-theme" : "light-theme"}`}
-			>
+			<div className="app light-theme">
 				<LandingPage onPlay={() => setShowLandingPage(false)} />
 			</div>
 		);

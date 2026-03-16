@@ -18,7 +18,7 @@ import {
 	savePuzzleStart,
 	saveGameState,
 	saveCompletion,
-} from "../firebase/firestore";
+} from "../backend/database";
 
 /**
  * useSavePuzzleStart - Mutation for starting a new puzzle
