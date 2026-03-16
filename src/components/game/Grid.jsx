@@ -12,9 +12,9 @@ import {
 } from "../../utils/boardHelpers";
 import { createEmojiSvgUrl } from "../../utils/emoji";
 import { playTileMoveSound } from "../../utils/sound";
-import styles from "./Board.module.css";
+import styles from "./Grid.module.css";
 
-function Board({
+function Grid({
 	size,
 	onWin,
 	hasNumbersShown,
@@ -196,4 +196,4 @@ function Board({
 	);
 }
 
-export default Board;
+export default Grid;

@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import styles from "./Game.module.css";
-import Board from "./Board";
+import Grid from "./Grid";
 import Trophy from "../common/Trophy";
 import ConfirmRestartDialog from "../dialogs/ConfirmRestartDialog";
 import WinDialog from "../dialogs/WinDialog";
@@ -34,7 +34,7 @@ function Game({
 	const [showRestartDialog, setShowRestartDialog] = useState(false);
 	const [showWinDialog, setShowWinDialog] = useState(false);
 
-	// Board state - Game decides what to show
+	// Grid state - Game decides what to show
 	const [initialBoard, setInitialBoard] = useState(null);
 	const [currentBoard, setCurrentBoard] = useState(null); // null = show initial, otherwise show this
 
@@ -135,7 +135,7 @@ function Game({
 	// Game decides which board to show (smart logic here)
 	const boardToShow = currentBoard || initialBoard;
 
-	// Wait for puzzle data and board initialization
+	// Wait for puzzle data and grid initialization
 	if (!puzzleData || !boardToShow) {
 		return (
 			<main className={styles.main}>
@@ -157,7 +157,7 @@ function Game({
 						maxGridSizeSolved={maxGridSizeSolved}
 					/>
 				</div>
-				<Board
+				<Grid
 					size={gridSize}
 					onWin={handleWin}
 					hasNumbersShown={hasNumbersShown && !showWinDialog}
