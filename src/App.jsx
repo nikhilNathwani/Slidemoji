@@ -79,19 +79,33 @@ function App() {
 	};
 
 	// Restore gridSize from saved game state when user data loads
-	// Prioritize higher difficulty if user has multiple in-progress games
+	// Use whichever difficulty was played most recently
 	useEffect(() => {
 		if (!userData?.gameState?.[todaysPuzzleNumber]) return;
 
 		const savedGames = userData.gameState[todaysPuzzleNumber];
 
-		// If user has difficulty-4 in progress, use that
-		if (savedGames[4]) {
+		// Get both saved games with their lastPlayed timestamps
+		const game3 = savedGames[3];
+		const game4 = savedGames[4];
+
+		// If only one difficulty has saved progress, use that
+		if (game4 && !game3) {
 			setGridSize(4);
-		}
-		// Otherwise if user has difficulty-3 in progress, use that
-		else if (savedGames[3]) {
+		} else if (game3 && !game4) {
 			setGridSize(3);
+		}
+		// If both exist, use the one most recently played
+		else if (game3 && game4) {
+			// Compare lastPlayed timestamps (Firestore Timestamp objects)
+			const lastPlayed3 = game3.lastPlayed?.toDate?.() || new Date(0);
+			const lastPlayed4 = game4.lastPlayed?.toDate?.() || new Date(0);
+
+			if (lastPlayed4 > lastPlayed3) {
+				setGridSize(4);
+			} else {
+				setGridSize(3);
+			}
 		}
 		// No saved game - default is already 3
 	}, [userData, todaysPuzzleNumber]);
