@@ -129,6 +129,7 @@ export async function createUserData(userId, userData = {}) {
 			updatedAt: serverTimestamp(),
 			preferences: {
 				darkMode: false, // Default to light mode
+				soundEnabled: true, // Default to sound on
 			},
 			stats: {
 				// High-level counters
@@ -169,10 +170,16 @@ export async function updateUserPreferences(userId, preferences) {
 
 	try {
 		const userDocRef = doc(db, "users", userId);
-		await updateDoc(userDocRef, {
-			preferences,
+		// Use dot notation to merge nested fields instead of replacing entire object
+		// This prevents wiping out other preference fields when updating just one
+		const updates = {
 			updatedAt: serverTimestamp(),
-		});
+		};
+		// Convert { darkMode: true } to { "preferences.darkMode": true }
+		for (const [key, value] of Object.entries(preferences)) {
+			updates[`preferences.${key}`] = value;
+		}
+		await updateDoc(userDocRef, updates);
 	} catch (error) {
 		console.error("Error updating user preferences:", error);
 		throw error;

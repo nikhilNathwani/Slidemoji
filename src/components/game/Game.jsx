@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import styles from "./Game.module.css";
 import Grid from "./Grid";
@@ -78,42 +78,35 @@ function Game({
 		});
 	}, [puzzleData, savedGame, gridSize, user, recordPuzzleStart]);
 
-	// Restore anonymous game state when user signs in
+	// Preserve anonymous game progress when user signs in
+	// Uses useRef to track previous user state and capture grid at exact moment of sign-in
+	const prevUserRef = useRef(user);
 	useEffect(() => {
-		if (!user || !puzzleData) return;
+		const wasSignedOut = !prevUserRef.current;
+		const isNowSignedIn = !!user;
 
-		// Check if there's anonymous game state to restore
-		const gameStateKey = `anonymous_game_${puzzleData.id}_${gridSize}`;
-		const savedState = localStorage.getItem(gameStateKey);
+		// User just signed in - save current grid state to Firestore
+		if (wasSignedOut && isNowSignedIn && currentGrid && initialGrid && puzzleData) {
+			// Record puzzle start with initial grid
+			recordPuzzleStart({
+				puzzleId: puzzleData.id,
+				gridSize,
+				initialGrid,
+			});
 
-		if (savedState) {
-			try {
-				const gameState = JSON.parse(savedState);
+			// Save current progress
+			saveMove({
+				puzzleId: puzzleData.id,
+				gridSize,
+				grid: currentGrid,
+			});
 
-				// Save the anonymous progress to Firestore
-				// First, record the puzzle start with initial grid
-				recordPuzzleStart({
-					puzzleId: gameState.puzzleId,
-					gridSize: gameState.gridSize,
-					initialGrid: gameState.initialGrid,
-				});
-
-				// Then save current progress
-				saveMove({
-					puzzleId: gameState.puzzleId,
-					gridSize: gameState.gridSize,
-					grid: gameState.grid,
-				});
-
-				// Clear localStorage since it's now saved to Firestore
-				localStorage.removeItem(gameStateKey);
-
-				console.log("[GAME] Restored anonymous game state to Firestore");
-			} catch (error) {
-				console.error("[GAME] Error restoring anonymous game:", error);
-			}
+			console.log("[GAME] Preserved anonymous progress to Firestore");
 		}
-	}, [user, puzzleData, gridSize, recordPuzzleStart, saveMove]);
+
+		// Update ref for next render
+		prevUserRef.current = user;
+	}, [user, currentGrid, initialGrid, puzzleData, gridSize, recordPuzzleStart, saveMove]);
 
 	// Auto-save after each move
 	const handleMove = (newGrid) => {
@@ -124,21 +117,10 @@ function Game({
 				gridSize,
 				grid: newGrid,
 			});
-		} else if (puzzleData) {
-			// Not signed in: save to localStorage as backup
-			// This allows preserving progress when user signs in later
-			const gameStateKey = `anonymous_game_${puzzleData.id}_${gridSize}`;
-			localStorage.setItem(
-				gameStateKey,
-				JSON.stringify({
-					puzzleId: puzzleData.id,
-					gridSize,
-					grid: newGrid,
-					initialGrid: initialGrid,
-					savedAt: new Date().toISOString(),
-				}),
-			);
 		}
+		// Not signed in: no persistence needed
+		// Grid state is preserved in React state (currentGrid)
+		// When user signs in, useEffect above will save it to Firestore
 	};
 
 	// Handle puzzle completion
