@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import styles from "./Game.module.css";
 import Grid from "./Grid";
@@ -18,6 +18,7 @@ import {
 	convertPuzzleFromFirestore,
 } from "../../utils/puzzleUtils";
 import { addPuzzleSolution } from "../../utils/statsHelpers";
+import { getSolvedState } from "../../utils/gridHelpers";
 
 function Game({
 	puzzleId,
@@ -87,6 +88,39 @@ function Game({
 		setIsCompleted(false);
 	}, [puzzleId, gridSize]);
 
+	// Save completion retroactively when user signs in after winning while signed out
+	const prevUserRef = useRef(user);
+	useEffect(() => {
+		const wasSignedOut = !prevUserRef.current;
+		const isNowSignedIn = !!user;
+
+		// User just signed in while puzzle was completed - save the trophy
+		if (wasSignedOut && isNowSignedIn && isCompleted && puzzleData) {
+			// Don't update cache here - wait for Firestore save to complete
+			// and let the invalidation/refetch handle the cache update
+			// This avoids race conditions with the initial user data fetch
+
+			// Save completion to Firestore
+			saveCompletion({
+				puzzleId: puzzleData.id,
+				gridSize,
+				emoji: puzzleData.emoji,
+				emojiName: puzzleData.emojiName,
+			});
+
+			console.log("[GAME] Saved completion after sign-in");
+		}
+
+		// Update ref for next render
+		prevUserRef.current = user;
+	}, [
+		user,
+		isCompleted,
+		puzzleData,
+		gridSize,
+		saveCompletion,
+	]);
+
 	// Auto-save after each move
 	const handleMove = (newGrid) => {
 		if (user && puzzleData) {
@@ -97,13 +131,14 @@ function Game({
 				grid: newGrid,
 			});
 		}
-		// Not signed in: no persistence needed
-		// Grid state is preserved in React state (currentGrid)
-		// When user signs in, useEffect above will save it to Firestore
 	};
 
 	// Handle puzzle completion
 	const handleWin = () => {
+		// Update currentGrid to solved state to preserve it when signing in
+		const solvedGrid = getSolvedState(gridSize);
+		setCurrentGrid(solvedGrid);
+
 		setIsCompleted(true); // Mark puzzle as completed to prevent grid reset
 
 		if (user && puzzleData) {
