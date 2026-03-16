@@ -22,33 +22,49 @@ function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true }) {
 	const startIndex = (currentPage - 1) * TROPHIES_PER_PAGE + 1;
 	const endIndex = Math.min(currentPage * TROPHIES_PER_PAGE, totalPuzzles);
 
-	// Generate trophy slots for current page only
+	// Generate trophy slots for current page - always show 12 slots
 	const trophySlots = [];
-	for (let i = startIndex; i <= endIndex; i++) {
-		// Check if puzzle is earned
-		const isEarned = solvedPuzzles?.[i];
-		// Get actual emoji from solvedPuzzles if available
-		let emoji = null;
-		let name = null;
-		let maxDifficulty = 0;
-		if (isEarned) {
-			// Get emoji from first solved difficulty for this puzzle
-			const difficulties = Object.keys(solvedPuzzles[i]);
-			if (difficulties.length > 0) {
-				const puzzleData = solvedPuzzles[i][difficulties[0]];
-				emoji = puzzleData?.emoji || null;
-				name = puzzleData?.emojiName || null;
-				maxDifficulty = Math.max(...difficulties.map(Number));
+	for (let i = 0; i < TROPHIES_PER_PAGE; i++) {
+		const puzzleNum = startIndex + i;
+		const isPlaceholder = puzzleNum > totalPuzzles;
+		
+		if (isPlaceholder) {
+			// Add invisible placeholder to maintain grid layout
+			trophySlots.push({
+				puzzleNum: `placeholder-${i}`,
+				isPlaceholder: true,
+				isEarned: false,
+				emoji: null,
+				name: null,
+				maxDifficulty: 0,
+			});
+		} else {
+			// Check if puzzle is earned
+			const isEarned = solvedPuzzles?.[puzzleNum];
+			// Get actual emoji from solvedPuzzles if available
+			let emoji = null;
+			let name = null;
+			let maxDifficulty = 0;
+			if (isEarned) {
+				// Get emoji from first solved difficulty for this puzzle
+				const difficulties = Object.keys(solvedPuzzles[puzzleNum]);
+				if (difficulties.length > 0) {
+					const puzzleData = solvedPuzzles[puzzleNum][difficulties[0]];
+					emoji = puzzleData?.emoji || null;
+					name = puzzleData?.emojiName || null;
+					maxDifficulty = Math.max(...difficulties.map(Number));
+				}
 			}
-		}
 
-		trophySlots.push({
-			puzzleNum: i,
-			isEarned,
-			emoji,
-			name,
-			maxDifficulty: maxDifficulty,
-		});
+			trophySlots.push({
+				puzzleNum,
+				isPlaceholder: false,
+				isEarned,
+				emoji,
+				name,
+				maxDifficulty: maxDifficulty,
+			});
+		}
 	}
 
 	const handlePrevPage = () => {
@@ -76,15 +92,21 @@ function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true }) {
 
 			<div className={styles.emojiGrid}>
 				{trophySlots.map((slot) => (
-					<Trophy
+					<div
 						key={slot.puzzleNum}
-						trophyNum={slot.puzzleNum}
-						trophyEmoji={slot.emoji}
-						trophyName={slot.name}
-						isLocked={!slot.isEarned}
-						maxGridSizeSolved={slot.maxDifficulty}
-						isMini={true}
-					/>
+						style={{
+							visibility: slot.isPlaceholder ? "hidden" : "visible",
+						}}
+					>
+						<Trophy
+							trophyNum={slot.puzzleNum}
+							trophyEmoji={slot.emoji}
+							trophyName={slot.name}
+							isLocked={!slot.isEarned}
+							maxGridSizeSolved={slot.maxDifficulty}
+							isMini={true}
+						/>
+					</div>
 				))}
 			</div>
 

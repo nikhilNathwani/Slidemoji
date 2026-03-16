@@ -26,7 +26,6 @@ function App() {
 	usePuzzle(todaysPuzzleNumber);
 
 	// Show Page / Dialog
-	const [showLandingPage, setShowLandingPage] = useState(true);
 	const [showSettingsDialog, setShowSettingsDialog] = useState(false);
 	const [showStatsDialog, setShowStatsDialog] = useState(false);
 
@@ -46,12 +45,16 @@ function App() {
 	// Eliminates manual useEffect boilerplate and provides loading/error states
 	const { data: userData } = useUser(user?.uid);
 
+	// Show landing page only if no saved game exists
+	const hasGameInProgress = userData?.gameState?.[todaysPuzzleNumber];
+	const showLandingPage = !hasGameInProgress;
+
 	if (showLandingPage) {
 		return (
 			<div
 				className={`app ${hasDarkMode ? "dark-theme" : "light-theme"}`}
 			>
-				<LandingPage onPlay={() => setShowLandingPage(false)} />
+				<LandingPage onPlay={() => {}} />
 			</div>
 		);
 	}

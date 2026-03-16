@@ -27,8 +27,8 @@
 
 .emojiGrid {
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(70px, 70px));
-	grid-auto-rows: auto;
+	grid-template-columns: repeat(4, minmax(70px, 1fr));
+	grid-template-rows: repeat(3, auto);
 	justify-content: center;
 	gap: 12px;
 	height: fit-content;
@@ -37,6 +37,15 @@
 	border-radius: 12px;
 	border: 1px solid var(--border-secondary);
 	position: relative;
+}
+
+/* Mobile: smaller trophies to fit 4 columns */
+@media (max-width: 480px) {
+	.emojiGrid {
+		grid-template-columns: repeat(4, minmax(60px, 1fr));
+		gap: 8px;
+		padding: 8px;
+	}
 }
 
 .pagination {
