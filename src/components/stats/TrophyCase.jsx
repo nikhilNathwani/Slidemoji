@@ -3,7 +3,7 @@ import Trophy from "../common/Trophy";
 import styles from "./TrophyCase.module.css";
 import { useState, useEffect } from "react";
 
-function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true }) {
+function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true, todaysPuzzleNum }) {
 	const TROPHIES_PER_PAGE = 12;
 	const totalPages = Math.ceil(totalPuzzles / TROPHIES_PER_PAGE);
 	const numEarnedTrophies = Object.keys(solvedPuzzles || {}).length;
@@ -15,19 +15,20 @@ function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true }) {
 	// Update current page when totalPuzzles changes
 	useEffect(() => {
 		const newPage = Math.ceil(totalPuzzles / TROPHIES_PER_PAGE);
-		setCurrentPage(newPage);
-	}, [totalPuzzles]);
+		if (newPage !== currentPage) {
+			queueMicrotask(() => setCurrentPage(newPage));
+		}
+	}, [totalPuzzles, currentPage]);
 
 	// Calculate range for current page
 	const startIndex = (currentPage - 1) * TROPHIES_PER_PAGE + 1;
-	const endIndex = Math.min(currentPage * TROPHIES_PER_PAGE, totalPuzzles);
 
 	// Generate trophy slots for current page - always show 12 slots
 	const trophySlots = [];
 	for (let i = 0; i < TROPHIES_PER_PAGE; i++) {
 		const puzzleNum = startIndex + i;
 		const isPlaceholder = puzzleNum > totalPuzzles;
-		
+
 		if (isPlaceholder) {
 			// Add invisible placeholder to maintain grid layout
 			trophySlots.push({
@@ -49,7 +50,8 @@ function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true }) {
 				// Get emoji from first solved difficulty for this puzzle
 				const difficulties = Object.keys(solvedPuzzles[puzzleNum]);
 				if (difficulties.length > 0) {
-					const puzzleData = solvedPuzzles[puzzleNum][difficulties[0]];
+					const puzzleData =
+						solvedPuzzles[puzzleNum][difficulties[0]];
 					emoji = puzzleData?.emoji || null;
 					name = puzzleData?.emojiName || null;
 					maxDifficulty = Math.max(...difficulties.map(Number));
@@ -60,6 +62,7 @@ function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true }) {
 				puzzleNum,
 				isPlaceholder: false,
 				isEarned,
+				isToday: puzzleNum === todaysPuzzleNum,
 				emoji,
 				name,
 				maxDifficulty: maxDifficulty,
@@ -95,7 +98,9 @@ function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true }) {
 					<div
 						key={slot.puzzleNum}
 						style={{
-							visibility: slot.isPlaceholder ? "hidden" : "visible",
+							visibility: slot.isPlaceholder
+								? "hidden"
+								: "visible",
 						}}
 					>
 						<Trophy
@@ -103,6 +108,7 @@ function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true }) {
 							trophyEmoji={slot.emoji}
 							trophyName={slot.name}
 							isLocked={!slot.isEarned}
+							isToday={slot.isToday && !slot.isEarned}
 							maxGridSizeSolved={slot.maxDifficulty}
 							isMini={true}
 						/>

@@ -14,7 +14,7 @@ import {
 	useSaveCompletion,
 } from "../../hooks/useGameMutations";
 import {
-	convertBoardFromFirestore,
+	convertGridFromFirestore,
 	convertPuzzleFromFirestore,
 } from "../../utils/puzzleUtils";
 import { addPuzzleSolution } from "../../utils/statsHelpers";
@@ -35,10 +35,10 @@ function Game({
 	const [showWinDialog, setShowWinDialog] = useState(false);
 
 	// Grid state - Game decides what to show
-	const [initialBoard, setInitialBoard] = useState(null);
-	const [currentBoard, setCurrentBoard] = useState(null); // null = show initial, otherwise show this
+	const [initialGrid, setInitialGrid] = useState(null);
+	const [currentGrid, setCurrentGrid] = useState(null); // null = show initial, otherwise show this
 
-	// Fetch and convert puzzle metadata (emoji, name, initial boards)
+	// Fetch and convert puzzle metadata (emoji, name, initial grids)
 	const { data: rawPuzzleData } = usePuzzle(puzzleId);
 	const puzzleData = useMemo(() => {
 		return rawPuzzleData ? convertPuzzleFromFirestore(rawPuzzleData) : null;
@@ -49,7 +49,7 @@ function Game({
 	const { mutate: saveMove } = useSaveGameState(user?.uid);
 	const { mutate: saveCompletion } = useSaveCompletion(user?.uid);
 
-	// Initialize board when puzzle/savedGame/gridSize changes
+	// Initialize grid when puzzle/savedGame/gridSize changes
 	useEffect(() => {
 		if (!puzzleData) return;
 
@@ -59,19 +59,19 @@ function Game({
 		Promise.resolve().then(() => {
 			if (savedGame) {
 				// Resume from saved progress
-				setCurrentBoard(convertBoardFromFirestore(savedGame.board));
-				setInitialBoard(initial);
+				setCurrentGrid(convertGridFromFirestore(savedGame.grid));
+				setInitialGrid(initial);
 			} else {
 				// Start fresh
-				setInitialBoard(initial);
-				setCurrentBoard(null); // null means "show initialBoard"
+				setInitialGrid(initial);
+				setCurrentGrid(null); // null means "show initialGrid"
 
 				// Record game start in Firestore
 				if (user) {
 					recordPuzzleStart({
 						puzzleId: puzzleData.id,
 						gridSize,
-						initialBoard: initial,
+						initialGrid: initial,
 					});
 				}
 			}
@@ -79,12 +79,12 @@ function Game({
 	}, [puzzleData, savedGame, gridSize, user, recordPuzzleStart]);
 
 	// Auto-save after each move
-	const handleMove = (newBoard) => {
+	const handleMove = (newGrid) => {
 		if (user && puzzleData) {
 			saveMove({
 				puzzleId: puzzleData.id,
 				gridSize,
-				board: newBoard,
+				grid: newGrid,
 			});
 		}
 	};
@@ -120,23 +120,23 @@ function Game({
 
 	const handleRestartConfirm = () => {
 		setShowRestartDialog(false);
-		setCurrentBoard(null); // Clear current board to show initial
+		setCurrentGrid(null); // Clear current grid to show initial
 
 		// Record restart in Firestore
-		if (user && initialBoard && puzzleData) {
+		if (user && initialGrid && puzzleData) {
 			recordPuzzleStart({
 				puzzleId: puzzleData.id,
 				gridSize,
-				initialBoard,
+				initialGrid,
 			});
 		}
 	};
 
-	// Game decides which board to show (smart logic here)
-	const boardToShow = currentBoard || initialBoard;
+	// Game decides which grid to show (smart logic here)
+	const gridToShow = currentGrid || initialGrid;
 
 	// Wait for puzzle data and grid initialization
-	if (!puzzleData || !boardToShow) {
+	if (!puzzleData || !gridToShow) {
 		return (
 			<main className={styles.main}>
 				<div style={{ padding: "20px", textAlign: "center" }}>
@@ -162,7 +162,7 @@ function Game({
 					onWin={handleWin}
 					hasNumbersShown={hasNumbersShown && !showWinDialog}
 					emoji={puzzleData.emoji}
-					board={boardToShow}
+					grid={gridToShow}
 					onMove={handleMove}
 					hasSoundEnabled={hasSoundEnabled}
 				/>

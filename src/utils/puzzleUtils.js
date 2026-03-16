@@ -2,33 +2,33 @@ import { doc, getDoc, setDoc, collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase/config";
 
 /**
- * Convert board array from Firestore format to client format
+ * Convert grid array from Firestore format to client format
  * Firestore uses 0 for gap, client uses null for gap
- * @param {Array} board - Board array from Firestore
- * @returns {Array} Board array with gaps as null
+ * @param {Array} grid - Grid array from Firestore
+ * @returns {Array} Grid array with gaps as null
  */
-export function convertBoardFromFirestore(board) {
-	if (!board) return null;
-	return board.map((v) => (v === 0 ? null : v));
+export function convertGridFromFirestore(grid) {
+	if (!grid) return null;
+	return grid.map((v) => (v === 0 ? null : v));
 }
 
 /**
  * Convert puzzle data from Firestore format to client format
  * Firestore uses 0 for gap, client uses null for gap
  * @param {Object} puzzleData - Puzzle data from Firestore
- * @returns {Object} Puzzle data with converted board arrays
+ * @returns {Object} Puzzle data with converted grid arrays
  */
 export function convertPuzzleFromFirestore(puzzleData) {
 	if (!puzzleData) return null;
 
 	const converted = { ...puzzleData };
 
-	// Convert board arrays (keyed by difficulty: 3 and 4)
+	// Convert grid arrays (keyed by difficulty: 3 and 4)
 	if (converted[3]) {
-		converted[3] = convertBoardFromFirestore(converted[3]);
+		converted[3] = convertGridFromFirestore(converted[3]);
 	}
 	if (converted[4]) {
-		converted[4] = convertBoardFromFirestore(converted[4]);
+		converted[4] = convertGridFromFirestore(converted[4]);
 	}
 
 	return converted;

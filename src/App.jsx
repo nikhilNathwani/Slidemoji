@@ -39,22 +39,25 @@ function App() {
 
 	// Game State
 	const [gridSize, setGridSize] = useState(DEFAULT_GRID_SIZE);
+	const [showLandingPage, setShowLandingPage] = useState(true);
 
 	// ===== Fetch User Data with React Query =====
 	// Automatically fetches, caches, and refetches user data from Firestore
 	// Eliminates manual useEffect boilerplate and provides loading/error states
-	const { data: userData } = useUser(user?.uid);
+	const { data: userData, isLoading: isLoadingUser } = useUser(user?.uid);
 
-	// Show landing page only if no saved game exists
+	// Auto-resume game if one exists (but wait for userData to load to avoid flash)
 	const hasGameInProgress = userData?.gameState?.[todaysPuzzleNumber];
-	const showLandingPage = !hasGameInProgress;
+	if (!isLoadingUser && hasGameInProgress && showLandingPage) {
+		setShowLandingPage(false);
+	}
 
 	if (showLandingPage) {
 		return (
 			<div
 				className={`app ${hasDarkMode ? "dark-theme" : "light-theme"}`}
 			>
-				<LandingPage onPlay={() => {}} />
+				<LandingPage onPlay={() => setShowLandingPage(false)} />
 			</div>
 		);
 	}

@@ -19,15 +19,15 @@ function Grid({
 	onWin,
 	hasNumbersShown,
 	emoji,
-	board, // The board configuration to display
+	grid, // The grid configuration to display
 	onMove,
 	hasSoundEnabled,
 }) {
 	// ===== State =====
-	const [tiles, setTiles] = useState(board);
+	const [tiles, setTiles] = useState(grid);
 	const [isGameWon, setIsGameWon] = useState(false);
 	const [isInputBlocked, setIsInputBlocked] = useState(false);
-	const [boardSizePx, setBoardSizePx] = useState(() => calcBoardSizePx(size));
+	const [gridSizePx, setGridSizePx] = useState(() => calcBoardSizePx(size));
 
 	// ===== Memoized Values =====
 	// Create emoji SVG URL once and memoize it
@@ -37,28 +37,28 @@ function Grid({
 	);
 
 	// ===== Callbacks =====
-	// Responsive board size calculation (memoized)
-	const getResponsiveBoardSize = useCallback(
+	// Responsive grid size calculation (memoized)
+	const getResponsiveGridSize = useCallback(
 		() => calcBoardSizePx(size),
 		[size],
 	);
 
 	// ===== Effects =====
-	// Update board size on window resize
+	// Update grid size on window resize
 	useEffect(() => {
-		const handleResize = () => setBoardSizePx(getResponsiveBoardSize());
+		const handleResize = () => setGridSizePx(getResponsiveGridSize());
 		window.addEventListener("resize", handleResize);
 		return () => window.removeEventListener("resize", handleResize);
-	}, [size, getResponsiveBoardSize]); // size for clarity, getResponsiveBoardSize for actual dependency
+	}, [size, getResponsiveGridSize]); // size for clarity, getResponsiveGridSize for actual dependency
 
-	// Reset board when size or board changes
+	// Reset grid when size or grid changes
 	useEffect(() => {
 		Promise.resolve().then(() => {
-			setTiles(board);
+			setTiles(grid);
 			setIsGameWon(false);
 			setIsInputBlocked(false);
 		});
-	}, [size, board]);
+	}, [size, grid]);
 
 	// ===== Tile Movement Logic =====
 	const gapIndex = getGapIndex(tiles);
@@ -160,8 +160,8 @@ function Grid({
 		<div
 			className={`${styles.board}${isGameWon ? " " + styles.won : ""}`}
 			style={{
-				width: `${boardSizePx}px`,
-				height: `${boardSizePx}px`,
+				width: `${gridSizePx}px`,
+				height: `${gridSizePx}px`,
 				gridTemplateColumns: `repeat(${size}, 1fr)`,
 				gridTemplateRows: `repeat(${size}, 1fr)`,
 			}}
@@ -184,7 +184,7 @@ function Grid({
 						isClickable={isClickable}
 						hasNumbersShown={hasNumbersShown}
 						emojiSvgUrl={emojiSvgUrl}
-						boardSize={size}
+						gridSize={size}
 						onTransitionEnd={() => setIsInputBlocked(false)}
 						{...(isClickable && {
 							onPointerDown: () => handleTileSelect(index, null),

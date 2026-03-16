@@ -54,6 +54,7 @@ function StatsContent({ showTitle = false }) {
 						totalPuzzles={numTotalPuzzles}
 						solvedPuzzles={solvedPuzzles}
 						showTitle={false}
+						todaysPuzzleNum={todaysPuzzleNumber}
 					/>
 
 					{/* Archive upsell (signed-in only) */}

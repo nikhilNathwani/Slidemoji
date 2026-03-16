@@ -4,19 +4,19 @@ import { motion } from "framer-motion";
 // ===== Helper Functions =====
 
 // Calculate full inline style object for tile
-function getTileStyle(tileNumber, boardSize, emojiSvgUrl) {
+function getTileStyle(tileNumber, gridSize, emojiSvgUrl) {
 	const style = {};
 
 	if (emojiSvgUrl && tileNumber) {
 		// Convert tile number to grid position (1-8 -> row/col)
 		const position = tileNumber - 1;
-		const row = Math.floor(position / boardSize);
-		const col = position % boardSize;
+		const row = Math.floor(position / gridSize);
+		const col = position % gridSize;
 
 		// Calculate background positioning percentages for pixel-perfect alignment
-		const bgSizePercent = boardSize * 100; // 300% for 3x3, 400% for 4x4
-		const bgPosXPercent = (col / (boardSize - 1)) * 100;
-		const bgPosYPercent = (row / (boardSize - 1)) * 100;
+		const bgSizePercent = gridSize * 100; // 300% for 3x3, 400% for 4x4
+		const bgPosXPercent = (col / (gridSize - 1)) * 100;
+		const bgPosYPercent = (row / (gridSize - 1)) * 100;
 
 		style.backgroundImage = `url('${emojiSvgUrl}')`;
 		style.backgroundSize = `${bgSizePercent}% ${bgSizePercent}%`;
@@ -31,7 +31,7 @@ function Tile({
 	onPointerDown,
 	hasNumbersShown,
 	emojiSvgUrl,
-	boardSize,
+	gridSize,
 	onTransitionEnd,
 }) {
 	const classNames = [styles.tile];
@@ -47,7 +47,7 @@ function Tile({
 			onLayoutAnimationComplete={onTransitionEnd}
 			className={classNames.join(" ")}
 			{...(isClickable && { onPointerDown })}
-			style={getTileStyle(tileNumber, boardSize, emojiSvgUrl)}
+			style={getTileStyle(tileNumber, gridSize, emojiSvgUrl)}
 			data-tile-number={tileNumber}
 		>
 			{hasNumbersShown && tileNumber ? tileNumber : ""}

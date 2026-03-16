@@ -60,7 +60,7 @@ import {
  *     [puzzleId]: {
  *       [difficulty]: {
  *         moves: number,
- *         board: array,
+ *         grid: array,
  *         startedAt: Timestamp,
  *         fromArchive: boolean,
  *       }
@@ -199,14 +199,14 @@ export async function updateUserPreferences(userId, preferences) {
  * @param {string} userId - Firebase Auth user ID
  * @param {number} puzzleId - Puzzle number (1-365)
  * @param {number} difficulty - Grid size (3 or 4)
- * @param {Array} initialBoard - Starting board configuration from Firestore
+ * @param {Array} initialGrid - Starting grid configuration from Firestore
  * @returns {Promise<Object>} Updated gameState and stats
  */
 export async function savePuzzleStart(
 	userId,
 	puzzleId,
 	difficulty,
-	initialBoard,
+	initialGrid,
 ) {
 	if (!userId) {
 		throw new Error("User ID is required");
@@ -229,11 +229,11 @@ export async function savePuzzleStart(
 		}
 
 		// Convert client format (null as gap) to Firestore format (0 as gap)
-		const firestoreBoard = initialBoard.map((v) => (v === null ? 0 : v));
+		const firestoreGrid = initialGrid.map((v) => (v === null ? 0 : v));
 
 		// Initialize game state for this specific puzzle+difficulty combo
 		gameState[puzzleId][difficulty] = {
-			board: firestoreBoard,
+			board: firestoreGrid,
 			fromArchive, // Track whether this is a daily or archive play
 		};
 
@@ -299,11 +299,11 @@ export async function saveGameState(userId, puzzleId, difficulty, gameData) {
 	try {
 		const userDocRef = doc(db, "users", userId);
 		// Convert client format (null as gap) to Firestore format (0 as gap)
-		const firestoreBoard = gameData.board.map((v) => (v === null ? 0 : v));
+		const firestoreGrid = gameData.grid.map((v) => (v === null ? 0 : v));
 		// Use dot notation to update only this specific nested field
 		// This is more efficient than reading, modifying, and writing the entire document
 		await updateDoc(userDocRef, {
-			[`gameState.${puzzleId}.${difficulty}.board`]: firestoreBoard,
+			[`gameState.${puzzleId}.${difficulty}.board`]: firestoreGrid,
 			updatedAt: serverTimestamp(),
 		});
 	} catch (error) {

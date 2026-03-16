@@ -7,6 +7,7 @@ function Trophy({
 	trophyName = null,
 	isMini = false,
 	isLocked = false,
+	isToday = false, // Today's puzzle (not yet solved)
 	maxGridSizeSolved = 0, // 3 for 3x3 (gold), 4 for 4x4 (teal)
 }) {
 	// Determine variant-specific class based on props
@@ -27,7 +28,7 @@ function Trophy({
 			</div>
 			{isLocked ? (
 				<div className={styles.lockIcon}>
-					<FontAwesomeIcon icon="lock" />
+					<FontAwesomeIcon icon={isToday ? "play-circle" : "lock"} />
 				</div>
 			) : (
 				<div className={styles.emoji}>{trophyEmoji}</div>
