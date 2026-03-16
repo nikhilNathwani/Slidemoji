@@ -289,7 +289,7 @@ export async function savePuzzleStart(
  * @param {string} userId - Firebase Auth user ID
  * @param {number} puzzleId - Puzzle number (1-365)
  * @param {number} difficulty - Grid size (3 or 4)
- * @param {Object} gameData - { board: Array }
+ * @param {Object} gameData - { grid: Array }
  */
 export async function saveGameState(userId, puzzleId, difficulty, gameData) {
 	if (!userId) {

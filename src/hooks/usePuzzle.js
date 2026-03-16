@@ -1,7 +1,7 @@
 /**
  * usePuzzle - Custom hook for fetching puzzle data from Firestore
  *
- * Wraps TanStack Query to provide puzzle definition (emoji, initial boards).
+ * Wraps TanStack Query to provide puzzle definition (emoji, initial grids).
  * Automatically caches puzzles (same puzzle used by all users, so caching is great!).
  *
  * @param {number} puzzleId - Puzzle ID to fetch

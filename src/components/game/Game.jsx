@@ -33,6 +33,7 @@ function Game({
 	// Dialog state
 	const [showRestartDialog, setShowRestartDialog] = useState(false);
 	const [showWinDialog, setShowWinDialog] = useState(false);
+	const [restartKey, setRestartKey] = useState(0);
 
 	// Grid state - Game decides what to show
 	const [initialGrid, setInitialGrid] = useState(null);
@@ -121,6 +122,7 @@ function Game({
 	const handleRestartConfirm = () => {
 		setShowRestartDialog(false);
 		setCurrentGrid(null); // Clear current grid to show initial
+		setRestartKey((prev) => prev + 1); // Force Grid component to remount
 
 		// Record restart in Firestore
 		if (user && initialGrid && puzzleData) {
@@ -158,6 +160,7 @@ function Game({
 					/>
 				</div>
 				<Grid
+					key={restartKey}
 					size={gridSize}
 					onWin={handleWin}
 					hasNumbersShown={hasNumbersShown && !showWinDialog}

@@ -15,7 +15,7 @@ export const isDevMode = import.meta.env.VITE_DEV_MODE === "true";
 
 /**
  * Mock puzzle data (matches Firestore schema)
- * Returns a puzzle with scrambled 3x3 and 4x4 boards
+ * Returns a puzzle with scrambled 3x3 and 4x4 grids
  */
 export function getMockPuzzle(puzzleId) {
 	return {
@@ -23,8 +23,8 @@ export function getMockPuzzle(puzzleId) {
 		date: "2026-03-03",
 		emoji: "🛝", // Playground slide (today's emoji)
 		emojiName: "Playground Slide",
-		initialBoard3x3: scramblePuzzle(3),
-		initialBoard4x4: scramblePuzzle(4),
+		initialGrid3x3: scramblePuzzle(3),
+		initialGrid4x4: scramblePuzzle(4),
 	};
 }
 

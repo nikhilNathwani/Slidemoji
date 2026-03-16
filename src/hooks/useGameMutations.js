@@ -28,9 +28,9 @@ export function useSavePuzzleStart(userId) {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: ({ puzzleId, gridSize, initialBoard }) => {
+		mutationFn: ({ puzzleId, gridSize, initialGrid }) => {
 			if (!userId) return Promise.resolve();
-			return savePuzzleStart(userId, puzzleId, gridSize, initialBoard);
+			return savePuzzleStart(userId, puzzleId, gridSize, initialGrid);
 		},
 		onError: (error) => {
 			console.error("Error starting puzzle:", error);
@@ -43,10 +43,10 @@ export function useSavePuzzleStart(userId) {
 }
 
 /**
- * useSaveGameState - Mutation for auto-saving board state after each move
+ * useSaveGameState - Mutation for auto-saving grid state after each move
  *
  * Important: No cache invalidation here!
- * - Board state lives in local component state (instant updates)
+ * - Grid state lives in local component state (instant updates)
  * - Cache is only used on initial load (resume saved game)
  * - During gameplay, cache is never consulted (all moves are local)
  * - On page refresh, browser clears cache → useUser fetches fresh from Firestore ✅
@@ -60,14 +60,14 @@ export function useSavePuzzleStart(userId) {
  */
 export function useSaveGameState(userId) {
 	return useMutation({
-		mutationFn: ({ puzzleId, gridSize, board }) => {
+		mutationFn: ({ puzzleId, gridSize, grid }) => {
 			if (!userId) return Promise.resolve();
-			return saveGameState(userId, puzzleId, gridSize, { board });
+			return saveGameState(userId, puzzleId, gridSize, { board: grid });
 		},
 		onError: (error) => {
 			console.error("Error saving game state:", error);
 		},
-		// No onSuccess/invalidation - board state is local only
+		// No onSuccess/invalidation - grid state is local only
 	});
 }
 

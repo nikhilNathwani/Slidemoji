@@ -143,10 +143,10 @@ html {
 	font-weight: 700;
 	background-color: #1a1a1a;
 	color: #ffffff;
-	border: 2px solid #1a1a1a;
+	border: 1px solid transparent;
 	border-radius: 50px;
 	cursor: pointer;
-	transition: all 0.3s ease;
+	transition: all 0.2s ease;
 	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 	display: flex;
 	align-items: center;
@@ -155,13 +155,12 @@ html {
 }
 
 .play-button:hover {
-	transform: translateY(-2px);
 	box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-	background-color: #2a2a2a;
+	opacity: 0.9;
 }
 
 .play-button:active {
-	transform: translateY(-1px);
+	opacity: 0.7;
 }
 
 .play-button i {

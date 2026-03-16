@@ -8,9 +8,6 @@ import StatsDialog from "./components/dialogs/StatsDialog";
 import { getTodaysPuzzleNumber } from "./utils/dateUtils";
 import { useAuth } from "./hooks/useAuth";
 import { useUser } from "./hooks/useUser";
-import { usePuzzle } from "./hooks/usePuzzle";
-import { useSavePuzzleStart } from "./hooks/useGameMutations";
-import { convertPuzzleFromFirestore } from "./utils/puzzleUtils";
 import {
 	DEFAULT_GRID_SIZE,
 	DEFAULT_DARK_MODE,
@@ -23,17 +20,8 @@ function App() {
 	const { user } = useAuth();
 	const todaysPuzzleNumber = getTodaysPuzzleNumber();
 
-	// Preload today's puzzle while landing page is showing
-	// This ensures puzzle data is cached before user clicks "Play"
-	const { data: rawPuzzleData } = usePuzzle(todaysPuzzleNumber);
-	const puzzleData = rawPuzzleData
-		? convertPuzzleFromFirestore(rawPuzzleData)
-		: null;
-
-	// Mutation for recording puzzle start
-	const { mutate: recordPuzzleStart } = useSavePuzzleStart(user?.uid);
-
 	// Show Page / Dialog
+	const [showLandingPage, setShowLandingPage] = useState(true);
 	const [showSettingsDialog, setShowSettingsDialog] = useState(false);
 	const [showStatsDialog, setShowStatsDialog] = useState(false);
 
@@ -53,31 +41,12 @@ function App() {
 	// Eliminates manual useEffect boilerplate and provides loading/error states
 	const { data: userData, isLoading: isLoadingUser } = useUser(user?.uid);
 
-	// Show landing page only if no game exists for today
-	const hasGameInProgress = userData?.gameState?.[todaysPuzzleNumber];
-	const showLandingPage = !isLoadingUser && !hasGameInProgress;
-
 	if (showLandingPage) {
 		return (
 			<div
 				className={`app ${hasDarkMode ? "dark-theme" : "light-theme"}`}
 			>
-				<LandingPage
-					onPlay={() => {
-						// Initialize game state in Firestore when Play is clicked
-						// This ensures on refresh, we skip landing page
-						if (user && puzzleData) {
-							const initialGrid = puzzleData[gridSize];
-							if (initialGrid) {
-								recordPuzzleStart({
-									puzzleId: puzzleData.id,
-									gridSize,
-									initialGrid,
-								});
-							}
-						}
-					}}
-				/>
+				<LandingPage onPlay={() => setShowLandingPage(false)} />
 			</div>
 		);
 	}

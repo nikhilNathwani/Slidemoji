@@ -37,7 +37,7 @@ export function useUser(userId) {
 					code: error.code,
 					stack: error.stack,
 				});
-				// Return empty object so board doesn't stay stuck on "Loading..."
+				// Return empty object so grid doesn't stay stuck on "Loading..."
 				return {};
 			}
 		},

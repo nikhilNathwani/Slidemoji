@@ -28,7 +28,7 @@ function Trophy({
 			</div>
 			{isLocked ? (
 				<div className={styles.lockIcon}>
-					<FontAwesomeIcon icon={isToday ? "play-circle" : "lock"} />
+					<FontAwesomeIcon icon={isToday ? "unlock" : "lock"} />
 				</div>
 			) : (
 				<div className={styles.emoji}>{trophyEmoji}</div>

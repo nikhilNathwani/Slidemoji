@@ -6,9 +6,9 @@ import {
 } from "../constants";
 
 /**
- * Calculate responsive board size based on viewport
- * @param {number} gridSize - Board size (3 or 4)
- * @returns {number} Board size in pixels
+ * Calculate responsive grid size based on viewport
+ * @param {number} gridSize - Grid size (3 or 4)
+ * @returns {number} Grid size in pixels
  */
 export function calcBoardSizePx(gridSize) {
 	const maxContentSize = Math.min(
@@ -20,8 +20,8 @@ export function calcBoardSizePx(gridSize) {
 }
 
 /**
- * Get the solved state for a board of given size
- * @param {number} size - Board size (3 or 4)
+ * Get the solved state for a grid of given size
+ * @param {number} size - Grid size (3 or 4)
  * @returns {Array} Array of tile values with null as last element
  */
 export function getSolvedState(size) {
@@ -51,10 +51,10 @@ export function swapTiles(tiles, index1, index2) {
 }
 
 /**
- * Check if the current board state is solved
+ * Check if the current grid state is solved
  * @param {Array} tiles - Array of tile values
  * @param {Array} solvedState - The solved state to compare against
- * @returns {boolean} True if board is solved
+ * @returns {boolean} True if grid is solved
  */
 export function checkWin(tiles, solvedState) {
 	return tiles.every((tile, index) => tile === solvedState[index]);
@@ -63,7 +63,7 @@ export function checkWin(tiles, solvedState) {
 /**
  * Generate a scrambled puzzle by making random valid moves
  * Always ensures the gap ends up in the bottom-right corner
- * @param {number} size - Board size (3 or 4)
+ * @param {number} size - Grid size (3 or 4)
  * @param {number} numMoves - Number of random moves to make (default 100)
  * @returns {Array} Scrambled tiles array with gap in bottom-right
  */
@@ -122,7 +122,7 @@ export function scramblePuzzle(size, numMoves = 100) {
  * Get tile index from arrow key direction for keyboard controls
  * @param {number} gapIndex - Current gap index
  * @param {string} direction - Arrow key direction
- * @param {number} size - Board size (3 or 4)
+ * @param {number} size - Grid size (3 or 4)
  * @returns {number|null} Tile index that should move, or null if invalid
  */
 export function getTileIndexFromDirection(gapIndex, direction, size) {

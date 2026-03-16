@@ -139,11 +139,11 @@
 
 .unlockArchiveButton {
 	margin-top: 8px;
-	padding: 12px 28px;
-	background-color: var(--text-primary);
-	color: var(--bg-gradient-start);
-	border: 1px solid var(--border-primary);
-	border-radius: 8px;
+	padding: 14px 32px;
+	background-color: #1a1a1a;
+	color: #ffffff;
+	border: 1px solid transparent;
+	border-radius: 10px;
 	font-size: var(--text-base);
 	font-weight: 600;
 	cursor: pointer;

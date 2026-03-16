@@ -18,14 +18,7 @@
 	justify-content: center;
 }
 
-/* Grid Container */
-.boardContainer {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	width: 100%;
-	gap: 25px;
-}
+/* Grid Container - Removed (unused) */
 
 /* Restart Button Container - matches trophy height, aligns to top */
 .restartContainer {
@@ -40,7 +33,7 @@
 .restartButton {
 	padding: 12px 20px;
 	border-radius: 10px;
-	border: 1px solid var(--border-primary);
+	border: 1px solid var(--border-secondary);
 	background-color: var(--surface-primary);
 	color: var(--text-primary);
 	font-size: 0.95rem;
@@ -66,7 +59,7 @@
 
 .restartButton:hover {
 	background-color: var(--surface-secondary);
-	border-color: var(--text-secondary);
+	border-color: var(--border-primary);
 }
 
 .restartButton:active {
