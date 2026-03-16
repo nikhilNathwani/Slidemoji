@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import styles from "./Game.module.css";
 import Grid from "./Grid";
@@ -37,6 +37,7 @@ function Game({
 	// Grid state - Game decides what to show
 	const [initialGrid, setInitialGrid] = useState(null);
 	const [currentGrid, setCurrentGrid] = useState(null); // null = show initial, otherwise show this
+	const [isCompleted, setIsCompleted] = useState(false); // Track if puzzle is completed
 
 	// Fetch and convert puzzle metadata (emoji, name, initial grids)
 	const { data: rawPuzzleData } = usePuzzle(puzzleId);
@@ -55,6 +56,9 @@ function Game({
 
 		const initial = puzzleData[gridSize];
 		if (!initial) return;
+
+		// Don't reset if puzzle is already completed (prevents scrambling after win)
+		if (isCompleted) return;
 
 		Promise.resolve().then(() => {
 			if (savedGame) {
@@ -76,37 +80,12 @@ function Game({
 				}
 			}
 		});
-	}, [puzzleData, savedGame, gridSize, user, recordPuzzleStart]);
+	}, [puzzleData, savedGame, gridSize, user, recordPuzzleStart, isCompleted]);
 
-	// Preserve anonymous game progress when user signs in
-	// Uses useRef to track previous user state and capture grid at exact moment of sign-in
-	const prevUserRef = useRef(user);
+	// Reset completion state when puzzle or grid size changes (new puzzle)
 	useEffect(() => {
-		const wasSignedOut = !prevUserRef.current;
-		const isNowSignedIn = !!user;
-
-		// User just signed in - save current grid state to Firestore
-		if (wasSignedOut && isNowSignedIn && currentGrid && initialGrid && puzzleData) {
-			// Record puzzle start with initial grid
-			recordPuzzleStart({
-				puzzleId: puzzleData.id,
-				gridSize,
-				initialGrid,
-			});
-
-			// Save current progress
-			saveMove({
-				puzzleId: puzzleData.id,
-				gridSize,
-				grid: currentGrid,
-			});
-
-			console.log("[GAME] Preserved anonymous progress to Firestore");
-		}
-
-		// Update ref for next render
-		prevUserRef.current = user;
-	}, [user, currentGrid, initialGrid, puzzleData, gridSize, recordPuzzleStart, saveMove]);
+		setIsCompleted(false);
+	}, [puzzleId, gridSize]);
 
 	// Auto-save after each move
 	const handleMove = (newGrid) => {
@@ -125,6 +104,8 @@ function Game({
 
 	// Handle puzzle completion
 	const handleWin = () => {
+		setIsCompleted(true); // Mark puzzle as completed to prevent grid reset
+
 		if (user && puzzleData) {
 			// Update cache immediately for instant trophy display
 			queryClient.setQueryData(["user", user.uid], (prevData) =>
@@ -155,6 +136,7 @@ function Game({
 	const handleRestartConfirm = () => {
 		setShowRestartDialog(false);
 		setCurrentGrid(null); // Clear current grid to show initial
+		setIsCompleted(false); // Reset completion state
 
 		// Record restart in Firestore
 		if (user && initialGrid && puzzleData) {
