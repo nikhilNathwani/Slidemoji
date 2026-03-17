@@ -35,7 +35,9 @@ import {
  *   updatedAt: Timestamp,
  *   preferences: {
  *     darkMode: boolean,
+ *     soundEnabled: boolean,
  *   },
+ *   lastPlayedDifficulty: number (3 or 4),
  *   stats: {
  *     totalAttempted: number,
  *     totalSolved: number,
@@ -242,7 +244,6 @@ export async function savePuzzleStart(
 		gameState[puzzleId][difficulty] = {
 			grid: firestoreGrid,
 			fromArchive, // Track whether this is a daily or archive play
-			lastPlayed: new Date(), // Track when this difficulty was last played
 		};
 
 		// Increment attempts counter (only if first time trying this puzzle+difficulty)
@@ -278,6 +279,7 @@ export async function savePuzzleStart(
 		await updateDoc(userDocRef, {
 			gameState,
 			stats,
+			lastPlayedDifficulty: difficulty,
 			updatedAt: serverTimestamp(),
 		});
 
@@ -312,8 +314,7 @@ export async function saveGameState(userId, puzzleId, difficulty, gameData) {
 		// This is more efficient than reading, modifying, and writing the entire document
 		await updateDoc(userDocRef, {
 			[`gameState.${puzzleId}.${difficulty}.grid`]: firestoreGrid,
-			[`gameState.${puzzleId}.${difficulty}.lastPlayed`]:
-				serverTimestamp(),
+			lastPlayedDifficulty: difficulty,
 			updatedAt: serverTimestamp(),
 		});
 	} catch (error) {

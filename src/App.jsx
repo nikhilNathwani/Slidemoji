@@ -34,10 +34,16 @@ function App() {
 	// Settings (local state only - no Firestore sync)
 	const [hasNumbersShown, setHasNumbersShown] =
 		useState(DEFAULT_SHOW_NUMBERS);
-	const [hasDarkMode, setHasDarkMode] = useState(DEFAULT_DARK_MODE);
-	const [hasSoundEnabled, setHasSoundEnabled] = useState(
-		DEFAULT_SOUND_ENABLED,
-	);
+
+	// Initialize dark mode and sound from localStorage (for signed-out users)
+	const [hasDarkMode, setHasDarkMode] = useState(() => {
+		const saved = localStorage.getItem("darkMode");
+		return saved !== null ? JSON.parse(saved) : DEFAULT_DARK_MODE;
+	});
+	const [hasSoundEnabled, setHasSoundEnabled] = useState(() => {
+		const saved = localStorage.getItem("soundEnabled");
+		return saved !== null ? JSON.parse(saved) : DEFAULT_SOUND_ENABLED;
+	});
 
 	// Game State
 	const [gridSize, setGridSize] = useState(DEFAULT_GRID_SIZE);
@@ -55,7 +61,7 @@ function App() {
 	const userDarkMode = userData?.preferences?.darkMode;
 	const userSoundEnabled = userData?.preferences?.soundEnabled;
 
-	// Use user preferences if available, otherwise use local state
+	// Use user preferences if available, otherwise use localStorage/local state
 	const effectiveDarkMode =
 		user && userDarkMode !== undefined ? userDarkMode : hasDarkMode;
 	const effectiveSoundEnabled =
@@ -63,9 +69,10 @@ function App() {
 			? userSoundEnabled
 			: hasSoundEnabled;
 
-	// Handlers that update local state AND Firestore
+	// Handlers that update local state, localStorage, AND Firestore
 	const handleDarkModeChange = (newValue) => {
 		setHasDarkMode(newValue);
+		localStorage.setItem("darkMode", JSON.stringify(newValue));
 		if (user) {
 			updatePreferences({ darkMode: newValue });
 		}
@@ -73,42 +80,27 @@ function App() {
 
 	const handleSoundEnabledChange = (newValue) => {
 		setHasSoundEnabled(newValue);
+		localStorage.setItem("soundEnabled", JSON.stringify(newValue));
 		if (user) {
 			updatePreferences({ soundEnabled: newValue });
 		}
 	};
 
 	// Restore gridSize from saved game state when user data loads
-	// Use whichever difficulty was played most recently
+	// Use the lastPlayedDifficulty from user document
 	useEffect(() => {
-		if (!userData?.gameState?.[todaysPuzzleNumber]) return;
+		if (!userData?.lastPlayedDifficulty) return;
 
-		const savedGames = userData.gameState[todaysPuzzleNumber];
+		// Restore to the difficulty they were last playing
+		setGridSize(userData.lastPlayedDifficulty);
+	}, [userData]);
 
-		// Get both saved games with their lastPlayed timestamps
-		const game3 = savedGames[3];
-		const game4 = savedGames[4];
-
-		// If only one difficulty has saved progress, use that
-		if (game4 && !game3) {
-			setGridSize(4);
-		} else if (game3 && !game4) {
-			setGridSize(3);
+	// Reset to default difficulty when signing out
+	useEffect(() => {
+		if (!user) {
+			setGridSize(DEFAULT_GRID_SIZE);
 		}
-		// If both exist, use the one most recently played
-		else if (game3 && game4) {
-			// Compare lastPlayed timestamps (Firestore Timestamp objects)
-			const lastPlayed3 = game3.lastPlayed?.toDate?.() || new Date(0);
-			const lastPlayed4 = game4.lastPlayed?.toDate?.() || new Date(0);
-
-			if (lastPlayed4 > lastPlayed3) {
-				setGridSize(4);
-			} else {
-				setGridSize(3);
-			}
-		}
-		// No saved game - default is already 3
-	}, [userData, todaysPuzzleNumber]);
+	}, [user]);
 
 	if (showLandingPage) {
 		return (
@@ -140,6 +132,8 @@ function App() {
 				)}
 				hasNumbersShown={hasNumbersShown}
 				hasSoundEnabled={effectiveSoundEnabled}
+				onOpenStats={() => setShowStatsDialog(true)}
+				onGridSizeChange={setGridSize}
 			/>
 
 			<SettingsDialog

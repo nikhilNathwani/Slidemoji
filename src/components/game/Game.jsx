@@ -27,8 +27,10 @@ function Game({
 	maxGridSizeSolved = 0,
 	hasNumbersShown,
 	hasSoundEnabled,
+	onOpenStats, // For "View Trophies" button
+	onGridSizeChange, // For "Try Hard mode?" button
 }) {
-	const { user } = useAuth();
+	const { user, signIn } = useAuth();
 	const queryClient = useQueryClient();
 
 	// Dialog state
@@ -268,14 +270,58 @@ function Game({
 				/>
 
 				<div className={styles.restartContainer}>
-					<button
-						className={`${styles.restartButton} ${styles.visible}`}
-						onClick={handleRestartClick}
-						title="Restart Puzzle"
-					>
-						<FontAwesomeIcon icon="redo" />
-						Restart
-					</button>
+					{/* Dynamic button based on win state */}
+					{isCompleted && !user ? (
+						// Signed out and won - show sign-in upsell
+						<button
+							className={`${styles.restartButton} ${styles.visible}`}
+							onClick={signIn}
+							title="Sign in to save your trophy"
+						>
+							<FontAwesomeIcon icon="user" />
+							Sign in to save
+						</button>
+					) : isCompleted && gridSize === 4 ? (
+						// Won 4x4 - show View Trophies
+						<button
+							className={`${styles.restartButton} ${styles.visible}`}
+							onClick={onOpenStats}
+							title="View your trophy collection"
+						>
+							<FontAwesomeIcon icon="trophy" />
+							View Trophies
+						</button>
+					) : isCompleted && gridSize === 3 && maxGridSizeSolved < 4 ? (
+						// Won 3x3 but not 4x4 - show Try Hard mode
+						<button
+							className={`${styles.restartButton} ${styles.visible}`}
+							onClick={() => onGridSizeChange(4)}
+							title="Try the harder 4x4 puzzle"
+						>
+							<FontAwesomeIcon icon="arrow-up" />
+							Try Hard mode?
+						</button>
+					) : isCompleted && gridSize === 3 && maxGridSizeSolved >= 4 ? (
+						// Won both 3x3 and 4x4 - show View Trophies
+						<button
+							className={`${styles.restartButton} ${styles.visible}`}
+							onClick={onOpenStats}
+							title="View your trophy collection"
+						>
+							<FontAwesomeIcon icon="trophy" />
+							View Trophies
+						</button>
+					) : (
+						// Not won yet - show Restart
+						<button
+							className={`${styles.restartButton} ${styles.visible}`}
+							onClick={handleRestartClick}
+							title="Restart Puzzle"
+						>
+							<FontAwesomeIcon icon="redo" />
+							Restart
+						</button>
+					)}
 				</div>
 			</main>
 
