@@ -10,6 +10,7 @@ import { useAuth } from "./hooks/useAuth";
 import { useUser } from "./hooks/useUser";
 import { usePuzzle } from "./hooks/usePuzzle";
 import { useUpdatePreferences } from "./hooks/useUpdatePreferences";
+import { useUpdateLastPlayedDifficulty } from "./hooks/useUpdateLastPlayedDifficulty";
 import {
 	DEFAULT_GRID_SIZE,
 	DEFAULT_DARK_MODE,
@@ -31,11 +32,11 @@ function App() {
 	const [showSettingsDialog, setShowSettingsDialog] = useState(false);
 	const [showStatsDialog, setShowStatsDialog] = useState(false);
 
-	// Settings (local state only - no Firestore sync)
-	const [hasNumbersShown, setHasNumbersShown] =
-		useState(DEFAULT_SHOW_NUMBERS);
-
-	// Initialize dark mode and sound from localStorage (for signed-out users)
+	// Initialize preferences from localStorage (for signed-out users)
+	const [hasNumbersShown, setHasNumbersShown] = useState(() => {
+		const saved = localStorage.getItem("showNumbers");
+		return saved !== null ? JSON.parse(saved) : DEFAULT_SHOW_NUMBERS;
+	});
 	const [hasDarkMode, setHasDarkMode] = useState(() => {
 		const saved = localStorage.getItem("darkMode");
 		return saved !== null ? JSON.parse(saved) : DEFAULT_DARK_MODE;
@@ -53,13 +54,16 @@ function App() {
 	// Eliminates manual useEffect boilerplate and provides loading/error states
 	const { data: userData } = useUser(user?.uid);
 
-	// Mutation for updating preferences in Firestore
+	// Mutations for updating user data in Firestore
 	const { mutate: updatePreferences } = useUpdatePreferences(user?.uid);
+	const { mutate: updateLastPlayedDifficulty } =
+		useUpdateLastPlayedDifficulty(user?.uid);
 
 	// Derive preferences from userData or use defaults
 	// This avoids setState in useEffect and keeps preferences in sync
 	const userDarkMode = userData?.preferences?.darkMode;
 	const userSoundEnabled = userData?.preferences?.soundEnabled;
+	const userShowNumbers = userData?.preferences?.showNumbers;
 
 	// Use user preferences if available, otherwise use localStorage/local state
 	const effectiveDarkMode =
@@ -68,6 +72,10 @@ function App() {
 		user && userSoundEnabled !== undefined
 			? userSoundEnabled
 			: hasSoundEnabled;
+	const effectiveShowNumbers =
+		user && userShowNumbers !== undefined
+			? userShowNumbers
+			: hasNumbersShown;
 
 	// Handlers that update local state, localStorage, AND Firestore
 	const handleDarkModeChange = (newValue) => {
@@ -83,6 +91,21 @@ function App() {
 		localStorage.setItem("soundEnabled", JSON.stringify(newValue));
 		if (user) {
 			updatePreferences({ soundEnabled: newValue });
+		}
+	};
+
+	const handleShowNumbersChange = (newValue) => {
+		setHasNumbersShown(newValue);
+		localStorage.setItem("showNumbers", JSON.stringify(newValue));
+		if (user) {
+			updatePreferences({ showNumbers: newValue });
+		}
+	};
+
+	const handleGridSizeChange = (newSize) => {
+		setGridSize(newSize);
+		if (user) {
+			updateLastPlayedDifficulty(newSize);
 		}
 	};
 
@@ -130,10 +153,10 @@ function App() {
 					userData,
 					todaysPuzzleNumber,
 				)}
-				hasNumbersShown={hasNumbersShown}
+				hasNumbersShown={effectiveShowNumbers}
 				hasSoundEnabled={effectiveSoundEnabled}
 				onOpenStats={() => setShowStatsDialog(true)}
-				onGridSizeChange={setGridSize}
+				onGridSizeChange={handleGridSizeChange}
 			/>
 
 			<SettingsDialog
@@ -141,12 +164,12 @@ function App() {
 				onClose={() => setShowSettingsDialog(false)}
 				gridSize={gridSize}
 				hasDarkMode={effectiveDarkMode}
-				hasNumbersShown={hasNumbersShown}
+				hasNumbersShown={effectiveShowNumbers}
 				hasSoundEnabled={effectiveSoundEnabled}
-				onShowNumbersChange={setHasNumbersShown}
+				onShowNumbersChange={handleShowNumbersChange}
 				onDarkModeChange={handleDarkModeChange}
 				onSoundEnabledChange={handleSoundEnabledChange}
-				onGridSizeChange={setGridSize}
+				onGridSizeChange={handleGridSizeChange}
 			/>
 
 			<StatsDialog

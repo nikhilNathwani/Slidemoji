@@ -291,7 +291,9 @@ function Game({
 							<FontAwesomeIcon icon="trophy" />
 							View Trophies
 						</button>
-					) : isCompleted && gridSize === 3 && maxGridSizeSolved < 4 ? (
+					) : isCompleted &&
+					  gridSize === 3 &&
+					  maxGridSizeSolved < 4 ? (
 						// Won 3x3 but not 4x4 - show Try Hard mode
 						<button
 							className={`${styles.restartButton} ${styles.visible}`}
@@ -301,7 +303,9 @@ function Game({
 							<FontAwesomeIcon icon="arrow-up" />
 							Try Hard mode?
 						</button>
-					) : isCompleted && gridSize === 3 && maxGridSizeSolved >= 4 ? (
+					) : isCompleted &&
+					  gridSize === 3 &&
+					  maxGridSizeSolved >= 4 ? (
 						// Won both 3x3 and 4x4 - show View Trophies
 						<button
 							className={`${styles.restartButton} ${styles.visible}`}

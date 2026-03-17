@@ -36,6 +36,7 @@ import {
  *   preferences: {
  *     darkMode: boolean,
  *     soundEnabled: boolean,
+ *     showNumbers: boolean,
  *   },
  *   lastPlayedDifficulty: number (3 or 4),
  *   stats: {
@@ -184,6 +185,32 @@ export async function updateUserPreferences(userId, preferences) {
 		await updateDoc(userDocRef, updates);
 	} catch (error) {
 		console.error("Error updating user preferences:", error);
+		throw error;
+	}
+}
+
+/**
+ * Update last played difficulty - tracks which difficulty user last played
+ *
+ * Called when user manually changes difficulty in settings dialog.
+ * Also updated automatically on every move in saveGameState.
+ *
+ * @param {string} userId - User ID from Firebase Auth
+ * @param {number} difficulty - Grid size (3 or 4)
+ */
+export async function updateLastPlayedDifficulty(userId, difficulty) {
+	if (!userId) {
+		throw new Error("User ID is required");
+	}
+
+	try {
+		const userDocRef = doc(db, "users", userId);
+		await updateDoc(userDocRef, {
+			lastPlayedDifficulty: difficulty,
+			updatedAt: serverTimestamp(),
+		});
+	} catch (error) {
+		console.error("Error updating last played difficulty:", error);
 		throw error;
 	}
 }

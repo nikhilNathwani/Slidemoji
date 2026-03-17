@@ -53,8 +53,12 @@ Each authenticated user gets ONE document:
   // User Preferences
   preferences: {
     darkMode: true,
-    // showNumbers is NOT persisted - always starts ON
+    soundEnabled: true,
+    showNumbers: true,
   },
+
+  // Last played difficulty (3 or 4) - for restoring grid size on return
+  lastPlayedDifficulty: 3,
 
   // Statistics & Progress
   stats: {
