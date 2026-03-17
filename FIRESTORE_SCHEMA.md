@@ -55,10 +55,8 @@ Each authenticated user gets ONE document:
     darkMode: true,
     soundEnabled: true,
     showNumbers: true,
+    gridSize: 3,                      // Last played difficulty (3x3 or 4x4)
   },
-
-  // Last played difficulty (3 or 4) - for restoring grid size on return
-  lastPlayedDifficulty: 3,
 
   // Statistics & Progress
   stats: {

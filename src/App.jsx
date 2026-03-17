@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import "./App.css";
 import LandingPage from "./components/landing/LandingPage";
 import Header from "./components/Header";
@@ -9,8 +9,7 @@ import { getTodaysPuzzleNumber } from "./utils/dateUtils";
 import { useAuth } from "./hooks/useAuth";
 import { useUser } from "./hooks/useUser";
 import { usePuzzle } from "./hooks/usePuzzle";
-import { useUpdatePreferences } from "./hooks/useUpdatePreferences";
-import { useUpdateLastPlayedDifficulty } from "./hooks/useUpdateLastPlayedDifficulty";
+import { useSyncedPreference } from "./hooks/useSyncedPreference";
 import {
 	DEFAULT_GRID_SIZE,
 	DEFAULT_DARK_MODE,
@@ -32,98 +31,30 @@ function App() {
 	const [showSettingsDialog, setShowSettingsDialog] = useState(false);
 	const [showStatsDialog, setShowStatsDialog] = useState(false);
 
-	// Initialize preferences from localStorage (for signed-out users)
-	const [hasNumbersShown, setHasNumbersShown] = useState(() => {
-		const saved = localStorage.getItem("showNumbers");
-		return saved !== null ? JSON.parse(saved) : DEFAULT_SHOW_NUMBERS;
-	});
-	const [hasDarkMode, setHasDarkMode] = useState(() => {
-		const saved = localStorage.getItem("darkMode");
-		return saved !== null ? JSON.parse(saved) : DEFAULT_DARK_MODE;
-	});
-	const [hasSoundEnabled, setHasSoundEnabled] = useState(() => {
-		const saved = localStorage.getItem("soundEnabled");
-		return saved !== null ? JSON.parse(saved) : DEFAULT_SOUND_ENABLED;
-	});
-
-	// Game State
-	const [gridSize, setGridSize] = useState(DEFAULT_GRID_SIZE);
+	// Synced preferences (localStorage for signed-out, Firestore for signed-in)
+	const [darkMode, setDarkMode] = useSyncedPreference(
+		"darkMode",
+		DEFAULT_DARK_MODE,
+	);
+	const [soundEnabled, setSoundEnabled] = useSyncedPreference(
+		"soundEnabled",
+		DEFAULT_SOUND_ENABLED,
+	);
+	const [showNumbers, setShowNumbers] = useSyncedPreference(
+		"showNumbers",
+		DEFAULT_SHOW_NUMBERS,
+	);
+	// Grid size: Persists to localStorage (for Firestore fallback) but signed-out users always see default
+	const [gridSize, setGridSize] = useSyncedPreference(
+		"gridSize",
+		DEFAULT_GRID_SIZE,
+		{ persistForSignedOut: false },
+	);
 
 	// ===== Fetch User Data with React Query =====
 	// Automatically fetches, caches, and refetches user data from Firestore
 	// Eliminates manual useEffect boilerplate and provides loading/error states
 	const { data: userData } = useUser(user?.uid);
-
-	// Mutations for updating user data in Firestore
-	const { mutate: updatePreferences } = useUpdatePreferences(user?.uid);
-	const { mutate: updateLastPlayedDifficulty } =
-		useUpdateLastPlayedDifficulty(user?.uid);
-
-	// Derive preferences from userData or use defaults
-	// This avoids setState in useEffect and keeps preferences in sync
-	const userDarkMode = userData?.preferences?.darkMode;
-	const userSoundEnabled = userData?.preferences?.soundEnabled;
-	const userShowNumbers = userData?.preferences?.showNumbers;
-
-	// Use user preferences if available, otherwise use localStorage/local state
-	const effectiveDarkMode =
-		user && userDarkMode !== undefined ? userDarkMode : hasDarkMode;
-	const effectiveSoundEnabled =
-		user && userSoundEnabled !== undefined
-			? userSoundEnabled
-			: hasSoundEnabled;
-	const effectiveShowNumbers =
-		user && userShowNumbers !== undefined
-			? userShowNumbers
-			: hasNumbersShown;
-
-	// Handlers that update local state, localStorage, AND Firestore
-	const handleDarkModeChange = (newValue) => {
-		setHasDarkMode(newValue);
-		localStorage.setItem("darkMode", JSON.stringify(newValue));
-		if (user) {
-			updatePreferences({ darkMode: newValue });
-		}
-	};
-
-	const handleSoundEnabledChange = (newValue) => {
-		setHasSoundEnabled(newValue);
-		localStorage.setItem("soundEnabled", JSON.stringify(newValue));
-		if (user) {
-			updatePreferences({ soundEnabled: newValue });
-		}
-	};
-
-	const handleShowNumbersChange = (newValue) => {
-		setHasNumbersShown(newValue);
-		localStorage.setItem("showNumbers", JSON.stringify(newValue));
-		if (user) {
-			updatePreferences({ showNumbers: newValue });
-		}
-	};
-
-	const handleGridSizeChange = (newSize) => {
-		setGridSize(newSize);
-		if (user) {
-			updateLastPlayedDifficulty(newSize);
-		}
-	};
-
-	// Restore gridSize from saved game state when user data loads
-	// Use the lastPlayedDifficulty from user document
-	useEffect(() => {
-		if (!userData?.lastPlayedDifficulty) return;
-
-		// Restore to the difficulty they were last playing
-		setGridSize(userData.lastPlayedDifficulty);
-	}, [userData]);
-
-	// Reset to default difficulty when signing out
-	useEffect(() => {
-		if (!user) {
-			setGridSize(DEFAULT_GRID_SIZE);
-		}
-	}, [user]);
 
 	if (showLandingPage) {
 		return (
@@ -134,9 +65,7 @@ function App() {
 	}
 
 	return (
-		<div
-			className={`app ${effectiveDarkMode ? "dark-theme" : "light-theme"}`}
-		>
+		<div className={`app ${darkMode ? "dark-theme" : "light-theme"}`}>
 			<Header
 				onSettingsClick={() => setShowSettingsDialog(true)}
 				onStatsClick={() => setShowStatsDialog(true)}
@@ -153,28 +82,28 @@ function App() {
 					userData,
 					todaysPuzzleNumber,
 				)}
-				hasNumbersShown={effectiveShowNumbers}
-				hasSoundEnabled={effectiveSoundEnabled}
+				hasNumbersShown={showNumbers}
+				hasSoundEnabled={soundEnabled}
 				onOpenStats={() => setShowStatsDialog(true)}
-				onGridSizeChange={handleGridSizeChange}
+				onGridSizeChange={setGridSize}
 			/>
 
 			<SettingsDialog
 				isOpen={showSettingsDialog}
 				onClose={() => setShowSettingsDialog(false)}
 				gridSize={gridSize}
-				hasDarkMode={effectiveDarkMode}
-				hasNumbersShown={effectiveShowNumbers}
-				hasSoundEnabled={effectiveSoundEnabled}
-				onShowNumbersChange={handleShowNumbersChange}
-				onDarkModeChange={handleDarkModeChange}
-				onSoundEnabledChange={handleSoundEnabledChange}
-				onGridSizeChange={handleGridSizeChange}
+				hasDarkMode={darkMode}
+				hasNumbersShown={showNumbers}
+				hasSoundEnabled={soundEnabled}
+				onShowNumbersChange={setShowNumbers}
+				onDarkModeChange={setDarkMode}
+				onSoundEnabledChange={setSoundEnabled}
+				onGridSizeChange={setGridSize}
 			/>
 
 			<StatsDialog
 				isOpen={showStatsDialog}
-				onClose={() => setShowStatsDialog(false)}
+				OnClose={() => setShowStatsDialog(false)}
 			/>
 		</div>
 	);

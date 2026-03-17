@@ -37,8 +37,8 @@ import {
  *     darkMode: boolean,
  *     soundEnabled: boolean,
  *     showNumbers: boolean,
+ *     gridSize: number (3 or 4),
  *   },
- *   lastPlayedDifficulty: number (3 or 4),
  *   stats: {
  *     totalAttempted: number,
  *     totalSolved: number,
@@ -190,32 +190,6 @@ export async function updateUserPreferences(userId, preferences) {
 }
 
 /**
- * Update last played difficulty - tracks which difficulty user last played
- *
- * Called when user manually changes difficulty in settings dialog.
- * Also updated automatically on every move in saveGameState.
- *
- * @param {string} userId - User ID from Firebase Auth
- * @param {number} difficulty - Grid size (3 or 4)
- */
-export async function updateLastPlayedDifficulty(userId, difficulty) {
-	if (!userId) {
-		throw new Error("User ID is required");
-	}
-
-	try {
-		const userDocRef = doc(db, "users", userId);
-		await updateDoc(userDocRef, {
-			lastPlayedDifficulty: difficulty,
-			updatedAt: serverTimestamp(),
-		});
-	} catch (error) {
-		console.error("Error updating last played difficulty:", error);
-		throw error;
-	}
-}
-
-/**
  * Save puzzle start - creates game state and updates play streak
  *
  * Called when user starts a new puzzle or switches difficulty.
@@ -306,7 +280,6 @@ export async function savePuzzleStart(
 		await updateDoc(userDocRef, {
 			gameState,
 			stats,
-			lastPlayedDifficulty: difficulty,
 			updatedAt: serverTimestamp(),
 		});
 
@@ -341,7 +314,7 @@ export async function saveGameState(userId, puzzleId, difficulty, gameData) {
 		// This is more efficient than reading, modifying, and writing the entire document
 		await updateDoc(userDocRef, {
 			[`gameState.${puzzleId}.${difficulty}.grid`]: firestoreGrid,
-			lastPlayedDifficulty: difficulty,
+
 			updatedAt: serverTimestamp(),
 		});
 	} catch (error) {
