@@ -60,7 +60,8 @@ function Game({
 	const { mutate: saveMove } = useSaveGameState(user?.uid);
 	const { mutate: saveCompletion } = useSaveCompletion(user?.uid);
 
-	// Initialize grid when puzzle/savedGame/gridSize changes
+	// Initialize grid when puzzle/savedGame loads or changes
+	// Note: gridSize not in deps because component remounts when gridSize changes (via key prop)
 	useEffect(() => {
 		if (!puzzleData) return;
 
@@ -90,7 +91,8 @@ function Game({
 				}
 			}
 		});
-	}, [puzzleData, savedGame, gridSize, user, savePuzzleStart, isCompleted]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [puzzleData, savedGame, user, savePuzzleStart, isCompleted]);
 
 	// Handle sign-in and sign-out state transitions
 	const prevUserRef = useRef(user);
