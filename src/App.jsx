@@ -72,14 +72,14 @@ function App() {
 			/>
 
 			<Game
-			key={`${puzzleId}-${gridSize}`}
-			puzzleId={puzzleId}
-			gridSize={gridSize}
-			savedGame={userData?.gameState?.[puzzleId]?.[gridSize]}
-			maxGridSizeSolved={getMaxGridSizeSolved(userData, puzzleId)}
-			hasNumbersShown={showNumbers}
-			hasSoundEnabled={soundEnabled}
-			onOpenStats={() => setShowStatsDialog(true)}
+				key={`${puzzleId}-${gridSize}`}
+				puzzleId={puzzleId}
+				gridSize={gridSize}
+				savedGame={userData?.gameState?.[puzzleId]?.[gridSize]}
+				maxGridSizeSolved={getMaxGridSizeSolved(userData, puzzleId)}
+				hasNumbersShown={showNumbers}
+				hasSoundEnabled={soundEnabled}
+				onOpenStats={() => setShowStatsDialog(true)}
 			/>
 
 			<SettingsDialog

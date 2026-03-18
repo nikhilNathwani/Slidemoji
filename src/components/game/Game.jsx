@@ -39,8 +39,7 @@ function Game({
 	const [showWinDialog, setShowWinDialog] = useState(false);
 
 	// Grid state - Game decides what to show
-	const [initialGrid, setInitialGrid] = useState(null); // Stored in state for restart button & gridToShow
-	const [currentGrid, setCurrentGrid] = useState(null); // null = show initial, otherwise show this
+	const [currentGrid, setCurrentGrid] = useState(null); // null = show initial grid from puzzleData, otherwise show this
 	const [isCompleted, setIsCompleted] = useState(false); // Track if puzzle is completed
 
 	// Track max grid size solved in this session (for signed-out users)
@@ -72,9 +71,6 @@ function Game({
 		if (isCompleted) return;
 
 		Promise.resolve().then(() => {
-			// Store initial grid for restart functionality
-			setInitialGrid(puzzleInitialGrid);
-
 			if (savedGame) {
 				// Resume from saved progress
 				setCurrentGrid(convertGridFromFirestore(savedGame.grid));
@@ -115,11 +111,11 @@ function Game({
 				console.log("[GAME] Saved completion after sign-in");
 			}
 			// Preserve in-progress work if no cloud save
-			else if (currentGrid && initialGrid && !savedGame) {
+			else if (currentGrid && !savedGame) {
 				savePuzzleStart({
 					puzzleId: puzzleData.id,
 					gridSize,
-					initialGrid,
+					initialGrid: puzzleData[gridSize],
 				});
 				saveMove({
 					puzzleId: puzzleData.id,
@@ -143,7 +139,6 @@ function Game({
 		user,
 		isCompleted,
 		currentGrid,
-		initialGrid,
 		savedGame,
 		puzzleData,
 		gridSize,
@@ -208,17 +203,17 @@ function Game({
 		setIsCompleted(false); // Reset completion state
 
 		// Save restart to Firestore
-		if (user && initialGrid && puzzleData) {
+		if (user && puzzleData) {
 			savePuzzleStart({
 				puzzleId: puzzleData.id,
 				gridSize,
-				initialGrid,
+				initialGrid: puzzleData[gridSize],
 			});
 		}
 	};
 
 	// Game decides which grid to show (smart logic here)
-	const gridToShow = currentGrid || initialGrid;
+	const gridToShow = currentGrid || puzzleData?.[gridSize];
 
 	// Wait for puzzle data and grid initialization
 	if (!puzzleData || !gridToShow) {
