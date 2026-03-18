@@ -2,18 +2,15 @@ import TrophyCase from "../stats/TrophyCase";
 import TrophyCaseTitle from "../stats/TrophyCaseTitle";
 import GoogleSignInButton from "../common/GoogleSignInButton";
 import { useAuth } from "../../hooks/useAuth";
-import { useUser } from "../../hooks/useUser";
-import { getCurrentPuzzleId } from "../../utils/dateUtils";
+import { getLatestPuzzleId } from "../../utils/dateUtils";
 import styles from "./StatsContent.module.css";
 import { FontAwesomeIcon } from "../../utils/icons";
 
-function StatsContent({ showTitle = false }) {
+function StatsContent({ showTitle = false, userData }) {
 	const { user } = useAuth();
-	const { data: userData } = useUser(user?.uid);
-	const puzzleId = getCurrentPuzzleId();
 
 	const solvedPuzzles = userData?.stats?.solvedPuzzles;
-	const numTotalPuzzles = puzzleId;
+	const numTotalPuzzles = getLatestPuzzleId();
 	const numEarnedTrophies = Object.keys(solvedPuzzles || {}).length;
 
 	return (
@@ -54,7 +51,7 @@ function StatsContent({ showTitle = false }) {
 						totalPuzzles={numTotalPuzzles}
 						solvedPuzzles={solvedPuzzles}
 						showTitle={false}
-						puzzleId={puzzleId}
+						puzzleId={getLatestPuzzleId()}
 					/>
 
 					{/* Archive upsell (signed-in only) */}

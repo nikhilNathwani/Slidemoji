@@ -22,7 +22,7 @@ import { db } from "./config";
 import {
 	getTodaysDate,
 	getYesterdaysDate,
-	getCurrentPuzzleId,
+	getLatestPuzzleId,
 } from "../utils/dateUtils";
 
 /**
@@ -229,7 +229,7 @@ export async function savePuzzleStart(
 		}
 
 		// Is this an archive puzzle (old puzzle) or today's daily?
-		const fromArchive = puzzleId !== getCurrentPuzzleId();
+		const fromArchive = puzzleId !== getLatestPuzzleId();
 		let gameState = userData.gameState || {};
 		let stats = { ...userData.stats };
 
@@ -488,7 +488,7 @@ export async function cleanupOldGames(userId) {
 		}
 
 		const gameState = { ...userData.gameState };
-		const cutoffPuzzleId = getCurrentPuzzleId() - 7;
+		const cutoffPuzzleId = getLatestPuzzleId() - 7;
 
 		Object.keys(gameState).forEach((puzzleId) => {
 			if (parseInt(puzzleId) < cutoffPuzzleId) {

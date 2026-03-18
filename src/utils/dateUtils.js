@@ -22,11 +22,11 @@ export function getYesterdaysDate() {
 }
 
 /**
- * Get the current puzzle ID (today's puzzle number) based on start date
+ * Get the latest puzzle ID (today's puzzle number) based on start date
  * Cycles back to 1 after 365 puzzles
  * @returns {number} Puzzle ID (1-365)
  */
-export function getCurrentPuzzleId() {
+export function getLatestPuzzleId() {
 	const startDate = new Date("2026-01-01"); // First puzzle date
 	const today = new Date();
 	const daysSinceStart = Math.floor(

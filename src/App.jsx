@@ -5,7 +5,7 @@ import Header from "./components/Header";
 import Game from "./components/game/Game";
 import SettingsDialog from "./components/dialogs/SettingsDialog";
 import StatsDialog from "./components/dialogs/StatsDialog";
-import { getCurrentPuzzleId } from "./utils/dateUtils";
+import { getLatestPuzzleId } from "./utils/dateUtils";
 import { useAuth } from "./hooks/useAuth";
 import { useUser } from "./hooks/useUser";
 import { usePuzzle } from "./hooks/usePuzzle";
@@ -20,7 +20,7 @@ import { getMaxGridSizeSolved } from "./utils/statsHelpers";
 
 function App() {
 	const { user } = useAuth();
-	const puzzleId = getCurrentPuzzleId();
+	const puzzleId = getLatestPuzzleId();
 
 	// Preload today's puzzle while landing page is showing
 	usePuzzle(puzzleId);
@@ -70,15 +70,11 @@ function App() {
 			/>
 
 			<Game
-			puzzleId={puzzleId}
-			gridSize={gridSize}
-			savedGame={
-				userData?.gameState?.[puzzleId]?.[gridSize]
-			}
-			maxGridSizeSolved={getMaxGridSizeSolved(
-				userData,
-				puzzleId,
-			)}
+				puzzleId={puzzleId}
+				gridSize={gridSize}
+				savedGame={userData?.gameState?.[puzzleId]?.[gridSize]}
+				maxGridSizeSolved={getMaxGridSizeSolved(userData, puzzleId)}
+				hasNumbersShown={showNumbers}
 				hasSoundEnabled={soundEnabled}
 				onOpenStats={() => setShowStatsDialog(true)}
 				onGridSizeChange={setGridSize}
@@ -99,7 +95,8 @@ function App() {
 
 			<StatsDialog
 				isOpen={showStatsDialog}
-				OnClose={() => setShowStatsDialog(false)}
+				onClose={() => setShowStatsDialog(false)}
+				userData={userData}
 			/>
 		</div>
 	);
