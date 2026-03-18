@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import styles from "./Game.module.css";
 import Grid from "./Grid";
@@ -45,6 +45,9 @@ function Game({
 	// Track max grid size solved in this session (for signed-out users)
 	const [localMaxGridSizeSolved, setLocalMaxGridSizeSolved] = useState(0);
 
+	// Track if initialization has run (should only run once per mount)
+	const hasInitialized = useRef(false);
+
 	// Fetch and convert puzzle metadata (emoji, name, initial grids)
 	const { data: rawPuzzleData } = usePuzzle(puzzleId);
 	const puzzleData = useMemo(() => {
@@ -56,10 +59,12 @@ function Game({
 	const { mutate: saveMove } = useSaveGameState(user?.uid);
 	const { mutate: saveCompletion } = useSaveCompletion(user?.uid);
 
-	// Initialize grid on mount
+	// Initialize grid on mount (runs once when data is available)
 	// Note: Component remounts when user/puzzleId/gridSize changes (via key prop on parent div)
 	useEffect(() => {
-		if (!puzzleData?.[gridSize]) return;
+		// Only initialize once per mount, and only when data is ready
+		if (hasInitialized.current || !puzzleData?.[gridSize]) return;
+		hasInitialized.current = true;
 
 		Promise.resolve().then(() => {
 			const localStorageKey = `signedOutProgress_${puzzleId}_${gridSize}`;
@@ -72,7 +77,9 @@ function Game({
 				return JSON.stringify(grid) === JSON.stringify(initial);
 			};
 
-			const hasFirestoreProgress = savedGame && !isInitialGrid(convertGridFromFirestore(savedGame.grid));
+			const hasFirestoreProgress =
+				savedGame &&
+				!isInitialGrid(convertGridFromFirestore(savedGame.grid));
 
 			// Priority 1: Firestore saved game with actual progress (when signed in)
 			if (hasFirestoreProgress) {
@@ -151,15 +158,9 @@ function Game({
 				}
 			}
 		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [
-		puzzleData,
-		savedGame,
-		user,
-		savePuzzleStart,
-		saveMove,
-		saveCompletion,
-	]);
+	// Only depend on async data that loads after mount
+	// When user/puzzleId/gridSize change, component remounts (via key prop), resetting hasInitialized
+	}, [puzzleData, savedGame, gridSize]);
 
 	// Auto-save after each move
 	const handleMove = (newGrid) => {
