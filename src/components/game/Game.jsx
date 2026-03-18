@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import styles from "./Game.module.css";
 import Grid from "./Grid";
@@ -45,9 +45,6 @@ function Game({
 	// Track max grid size solved in this session (for signed-out users)
 	const [localMaxGridSizeSolved, setLocalMaxGridSizeSolved] = useState(0);
 
-	// Track previous user for sign-in/sign-out detection
-	const prevUserRef = useRef(user);
-
 	// Fetch and convert puzzle metadata (emoji, name, initial grids)
 	const { data: rawPuzzleData } = usePuzzle(puzzleId);
 	const puzzleData = useMemo(() => {
@@ -64,8 +61,7 @@ function Game({
 	useEffect(() => {
 		if (!puzzleData) return;
 
-		const puzzleInitialGrid = puzzleData[gridSize];
-		if (!puzzleInitialGrid) return;
+		if (!puzzleData[gridSize]) return;
 
 		// Don't reset if puzzle is already completed (prevents scrambling after win)
 		if (isCompleted) return;
@@ -83,7 +79,7 @@ function Game({
 					savePuzzleStart({
 						puzzleId: puzzleData.id,
 						gridSize,
-						initialGrid: puzzleInitialGrid,
+						initialGrid: puzzleData[gridSize],
 					});
 				}
 			}
@@ -91,64 +87,51 @@ function Game({
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [puzzleData, savedGame, user, savePuzzleStart, isCompleted]);
 
-	// Handle sign-in and sign-out transitions
+	// Migrate localStorage data to Firestore on mount (for users who completed/progressed while signed out)
 	useEffect(() => {
-		const wasSignedOut = !prevUserRef.current;
-		const isNowSignedIn = !!user;
-		const wasSignedIn = !!prevUserRef.current;
-		const isNowSignedOut = !user;
+		if (!user || !puzzleData) return;
 
-		// ===== SIGN IN: Preserve trophies and progress =====
-		if (wasSignedOut && isNowSignedIn && puzzleData) {
-			// Save trophy if puzzle was completed while signed out
-			if (isCompleted) {
+		const localStorageKey = `signedOutProgress_${puzzleId}_${gridSize}`;
+		const savedData = localStorage.getItem(localStorageKey);
+
+		if (savedData) {
+			const { isCompleted: wasCompleted, grid, initialGrid } =
+				JSON.parse(savedData);
+
+			// Upload trophy if puzzle was completed
+			if (wasCompleted) {
 				saveCompletion({
 					puzzleId: puzzleData.id,
 					gridSize,
 					emoji: puzzleData.emoji,
 					emojiName: puzzleData.emojiName,
 				});
-				console.log("[GAME] Saved completion after sign-in");
+				console.log("[GAME] Migrated completion from localStorage");
 			}
-			// Preserve in-progress work if no cloud save
-			else if (currentGrid && !savedGame) {
+			// Upload in-progress work if no cloud save exists
+			else if (grid && initialGrid && !savedGame) {
 				savePuzzleStart({
 					puzzleId: puzzleData.id,
 					gridSize,
-					initialGrid: puzzleData[gridSize],
+					initialGrid,
 				});
 				saveMove({
 					puzzleId: puzzleData.id,
 					gridSize,
-					grid: currentGrid,
+					grid,
 				});
-				console.log("[GAME] Preserved progress after sign-in");
+				console.log("[GAME] Migrated progress from localStorage");
 			}
-		}
 
-		// ===== SIGN OUT: Reset to fresh state =====
-		if (wasSignedIn && isNowSignedOut) {
-			setCurrentGrid(null);
-			setIsCompleted(false);
-			setLocalMaxGridSizeSolved(0);
-			console.log("[GAME] Reset state after sign-out");
+			// Clear localStorage after migration
+			localStorage.removeItem(localStorageKey);
 		}
-
-		prevUserRef.current = user;
-	}, [
-		user,
-		isCompleted,
-		currentGrid,
-		savedGame,
-		puzzleData,
-		gridSize,
-		saveCompletion,
-		savePuzzleStart,
-		saveMove,
-	]);
+	}, [user, puzzleData, puzzleId, gridSize, savedGame, saveCompletion, savePuzzleStart, saveMove]);
 
 	// Auto-save after each move
 	const handleMove = (newGrid) => {
+		setCurrentGrid(newGrid);
+
 		if (user && puzzleData) {
 			// Signed in: save to Firestore
 			saveMove({
@@ -156,6 +139,17 @@ function Game({
 				gridSize,
 				grid: newGrid,
 			});
+		} else if (puzzleData) {
+			// Signed out: save to localStorage
+			const localStorageKey = `signedOutProgress_${puzzleId}_${gridSize}`;
+			localStorage.setItem(
+				localStorageKey,
+				JSON.stringify({
+					isCompleted: false,
+					grid: newGrid,
+					initialGrid: puzzleData[gridSize],
+				}),
+			);
 		}
 	};
 
@@ -171,6 +165,7 @@ function Game({
 		setLocalMaxGridSizeSolved((prev) => Math.max(prev, gridSize));
 
 		if (user && puzzleData) {
+			// Signed in: save to Firestore
 			// Update cache immediately for instant trophy display
 			queryClient.setQueryData(["user", user.uid], (prevData) =>
 				addPuzzleSolution(prevData, puzzleId, gridSize, {
@@ -187,6 +182,17 @@ function Game({
 				emoji: puzzleData.emoji,
 				emojiName: puzzleData.emojiName,
 			});
+		} else if (puzzleData) {
+			// Signed out: save completion to localStorage
+			const localStorageKey = `signedOutProgress_${puzzleId}_${gridSize}`;
+			localStorage.setItem(
+				localStorageKey,
+				JSON.stringify({
+					isCompleted: true,
+					grid: solvedGrid,
+					initialGrid: puzzleData[gridSize],
+				}),
+			);
 		}
 
 		setShowWinDialog(true);

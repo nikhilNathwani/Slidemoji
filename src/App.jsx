@@ -65,14 +65,16 @@ function App() {
 	}
 
 	return (
-		<div className={`app ${darkMode ? "dark-theme" : "light-theme"}`}>
+		<div
+			key={`${user?.uid || "anonymous"}-${puzzleId}-${gridSize}`}
+			className={`app ${darkMode ? "dark-theme" : "light-theme"}`}
+		>
 			<Header
 				onSettingsClick={() => setShowSettingsDialog(true)}
 				onStatsClick={() => setShowStatsDialog(true)}
 			/>
 
 			<Game
-				key={`${puzzleId}-${gridSize}`}
 				puzzleId={puzzleId}
 				gridSize={gridSize}
 				savedGame={userData?.gameState?.[puzzleId]?.[gridSize]}
