@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import styles from "./Game.module.css";
 import Grid from "./Grid";
@@ -46,9 +46,6 @@ function Game({
 	// Track max grid size solved in this session (for signed-out users)
 	const [localMaxGridSizeSolved, setLocalMaxGridSizeSolved] = useState(0);
 
-	// Track latest grid state in ref (for preserving signed-out progress on sign-in)
-	const latestGridRef = useRef(null);
-
 	// Fetch and convert puzzle metadata (emoji, name, initial grids)
 	const { data: rawPuzzleData } = usePuzzle(puzzleId);
 	const puzzleData = useMemo(() => {
@@ -61,7 +58,7 @@ function Game({
 	const { mutate: saveCompletion } = useSaveCompletion(user?.uid);
 
 	// Initialize grid when puzzle/savedGame loads or changes
-	// Note: gridSize not in deps because component remounts when gridSize changes (via key prop)
+	// Note: gridSize and user not in deps because component remounts when they change (via key prop)
 	useEffect(() => {
 		if (!puzzleData) return;
 
@@ -72,14 +69,15 @@ function Game({
 		if (isCompleted) return;
 
 		Promise.resolve().then(() => {
+			// Always set the initial grid reference
+			setInitialGrid(initial);
+
 			if (savedGame) {
 				// Resume from saved progress
 				setCurrentGrid(convertGridFromFirestore(savedGame.grid));
-				setInitialGrid(initial);
 			} else {
-				// Start fresh
-				setInitialGrid(initial);
-				setCurrentGrid(null); // null means "show initialGrid"
+				// Start fresh - null means "show initialGrid"
+				setCurrentGrid(null);
 
 				// Save game start to Firestore
 				if (user) {
@@ -92,89 +90,10 @@ function Game({
 			}
 		});
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [puzzleData, savedGame, user, savePuzzleStart, isCompleted]);
-
-	// Handle sign-in and sign-out state transitions
-	const prevUserRef = useRef(user);
-	useEffect(() => {
-		const wasSignedOut = !prevUserRef.current;
-		const isNowSignedIn = !!user;
-		const wasSignedIn = !!prevUserRef.current;
-		const isNowSignedOut = !user;
-
-		// ===== SCENARIO A: Signing in =====
-		if (wasSignedOut && isNowSignedIn && puzzleData) {
-			// A1: Puzzle completed while signed out - save the trophy
-			if (isCompleted) {
-				saveCompletion({
-					puzzleId: puzzleData.id,
-					gridSize,
-					emoji: puzzleData.emoji,
-					emojiName: puzzleData.emojiName,
-				});
-				console.log("[GAME] Saved completion after sign-in");
-			}
-			// A2: In-progress puzzle - preserve signed-out progress if no conflict
-			else if (latestGridRef.current && initialGrid) {
-				// Check if user already has saved progress for this puzzle
-				const currentUserData = queryClient.getQueryData([
-					"user",
-					user.uid,
-				]);
-				const existingSavedGame =
-					currentUserData?.gameState?.[puzzleData.id]?.[gridSize];
-
-				if (!existingSavedGame) {
-					// No existing progress - preserve signed-out work
-					savePuzzleStart({
-						puzzleId: puzzleData.id,
-						gridSize,
-						initialGrid,
-					});
-					saveMove({
-						puzzleId: puzzleData.id,
-						gridSize,
-						grid: latestGridRef.current,
-					});
-					console.log(
-						"[GAME] Preserved signed-out progress on sign-in",
-					);
-				} else {
-					console.log(
-						"[GAME] Existing progress found, keeping signed-in state",
-					);
-				}
-			}
-		}
-
-		// ===== SCENARIO B: Signing out =====
-		if (wasSignedIn && isNowSignedOut) {
-			// Reset to initial grid (teaches that signed-out is ephemeral)
-			setCurrentGrid(null);
-			setIsCompleted(false);
-			latestGridRef.current = null;
-			console.log("[GAME] Reset grid on sign-out");
-		}
-
-		// Update ref for next render
-		prevUserRef.current = user;
-	}, [
-		user,
-		isCompleted,
-		puzzleData,
-		gridSize,
-		initialGrid,
-		saveCompletion,
-		savePuzzleStart,
-		saveMove,
-		queryClient,
-	]);
+	}, [puzzleData, savedGame, savePuzzleStart, isCompleted]);
 
 	// Auto-save after each move
 	const handleMove = (newGrid) => {
-		// Track latest grid state (doesn't cause re-render)
-		latestGridRef.current = newGrid;
-
 		if (user && puzzleData) {
 			// Signed in: save to Firestore
 			saveMove({

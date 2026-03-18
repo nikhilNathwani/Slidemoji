@@ -69,7 +69,7 @@ export function useSyncedPreference(
 	const setValue = (newValue) => {
 		setLocalValue(newValue);
 		localStorage.setItem(storageKey, JSON.stringify(newValue));
-		
+
 		if (user) {
 			updatePreferences({ [key]: newValue });
 		}
