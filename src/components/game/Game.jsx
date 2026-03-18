@@ -58,10 +58,9 @@ function Game({
 
 	// Initialize grid when puzzle/savedGame loads or changes
 	// Note: gridSize not in deps because component remounts when it changes (via key prop)
+	// Note: We intentionally do NOT load from localStorage here - signed-out users get ephemeral experience
 	useEffect(() => {
-		if (!puzzleData) return;
-
-		if (!puzzleData[gridSize]) return;
+		if (!puzzleData?.[gridSize]) return;
 
 		// Don't reset if puzzle is already completed (prevents scrambling after win)
 		if (isCompleted) return;
