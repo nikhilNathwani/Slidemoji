@@ -17,7 +17,10 @@ import {
 	DEFAULT_SOUND_ENABLED,
 } from "./constants";
 import { getMaxGridSizeSolved } from "./utils/statsHelpers";
-import { convertPuzzleFromFirestore } from "./utils/puzzleUtils";
+import {
+	convertPuzzleFromFirestore,
+	convertGridFromFirestore,
+} from "./utils/puzzleUtils";
 
 function App() {
 	const { user } = useAuth();
@@ -61,6 +64,12 @@ function App() {
 	// Fetch User Data with React Query
 	const { data: userData, isLoading: isLoadingUser } = useUser(user?.uid);
 
+	// Convert savedGame grid from Firestore format if it exists
+	const savedGame = userData?.gameState?.[puzzleId]?.[gridSize];
+	const convertedSavedGame = savedGame
+		? { ...savedGame, grid: convertGridFromFirestore(savedGame.grid) }
+		: undefined;
+
 	if (showLandingPage) {
 		return (
 			<div className="app light-theme">
@@ -75,9 +84,7 @@ function App() {
 	const isLoading = isLoadingPuzzle || (user && isLoadingUser);
 	if (isLoading || !puzzleData) {
 		return (
-			<div
-				className={`app ${darkMode ? "dark-theme" : "light-theme"}`}
-			>
+			<div className={`app ${darkMode ? "dark-theme" : "light-theme"}`}>
 				<Header
 					onSettingsClick={() => setShowSettingsDialog(true)}
 					onStatsClick={() => setShowStatsDialog(true)}
@@ -103,7 +110,7 @@ function App() {
 				puzzleId={puzzleId}
 				puzzleData={puzzleData}
 				gridSize={gridSize}
-				savedGame={userData?.gameState?.[puzzleId]?.[gridSize]}
+				savedGame={convertedSavedGame}
 				maxGridSizeSolved={getMaxGridSizeSolved(userData, puzzleId)}
 				hasNumbersShown={showNumbers}
 				hasSoundEnabled={soundEnabled}

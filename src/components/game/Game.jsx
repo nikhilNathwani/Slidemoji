@@ -13,7 +13,7 @@ import {
 	useSaveGameState,
 	useSaveCompletion,
 } from "../../hooks/useGameMutations";
-import { convertGridFromFirestore } from "../../utils/puzzleUtils";
+
 import { addPuzzleSolution } from "../../utils/statsHelpers";
 import { getSolvedState } from "../../utils/gridHelpers";
 
@@ -52,9 +52,23 @@ function Game({
 	// We need useEffect because we're performing side effects (localStorage, Firestore mutations)
 	// App ensures all data (puzzleData, savedGame) is ready before mounting Game
 	useEffect(() => {
+		// Helper: Get localStorage key for signed-out progress
+		const getLocalStorageKey = () =>
+			`signedOutProgress_${puzzleId}_${gridSize}`;
 
-		const localStorageKey = `signedOutProgress_${puzzleId}_${gridSize}`;
-		const savedData = localStorage.getItem(localStorageKey);
+		// Helper: Read signed-out progress from localStorage
+		const getLocalProgress = () => {
+			const key = getLocalStorageKey();
+			const data = localStorage.getItem(key);
+			return data ? JSON.parse(data) : null;
+		};
+
+		// Helper: Clear localStorage after migration
+		const clearLocalProgress = () => {
+			localStorage.removeItem(getLocalStorageKey());
+		};
+
+		const savedData = getLocalProgress();
 
 		// Helper: Check if savedGame is just the initial grid (no real progress)
 		const isInitialGrid = (grid) => {
@@ -64,12 +78,11 @@ function Game({
 		};
 
 		const hasFirestoreProgress =
-			savedGame &&
-			!isInitialGrid(convertGridFromFirestore(savedGame.grid));
+			savedGame && !isInitialGrid(savedGame.grid);
 
 		// Priority 1: Firestore saved game with actual progress (when signed in)
 		if (hasFirestoreProgress) {
-			setCurrentGrid(convertGridFromFirestore(savedGame.grid));
+			setCurrentGrid(savedGame.grid);
 
 			// If there's also localStorage data from being signed out, migrate completions only
 			if (savedData && user) {
@@ -88,16 +101,12 @@ function Game({
 				}
 				// Note: In-progress localStorage data is discarded (Firestore state takes precedence)
 
-				localStorage.removeItem(localStorageKey);
+				clearLocalProgress();
 			}
 		}
 		// Priority 2: localStorage data (signed out progress, or signed in with no real Firestore progress)
 		else if (savedData && user) {
-			const {
-				isCompleted: wasCompleted,
-				grid,
-				initialGrid,
-			} = JSON.parse(savedData);
+			const { isCompleted: wasCompleted, grid, initialGrid } = savedData;
 
 			if (wasCompleted) {
 				// Migrate completion
@@ -126,7 +135,7 @@ function Game({
 				console.log("[GAME] Migrated progress from localStorage");
 			}
 
-			localStorage.removeItem(localStorageKey);
+			clearLocalProgress();
 		}
 		// Priority 3: Start fresh
 		else {
@@ -158,9 +167,8 @@ function Game({
 			});
 		} else if (puzzleData) {
 			// Signed out: save to localStorage
-			const localStorageKey = `signedOutProgress_${puzzleId}_${gridSize}`;
 			localStorage.setItem(
-				localStorageKey,
+				`signedOutProgress_${puzzleId}_${gridSize}`,
 				JSON.stringify({
 					isCompleted: false,
 					grid: newGrid,
@@ -201,9 +209,8 @@ function Game({
 			});
 		} else if (puzzleData) {
 			// Signed out: save completion to localStorage
-			const localStorageKey = `signedOutProgress_${puzzleId}_${gridSize}`;
 			localStorage.setItem(
-				localStorageKey,
+				`signedOutProgress_${puzzleId}_${gridSize}`,
 				JSON.stringify({
 					isCompleted: true,
 					grid: solvedGrid,
