@@ -61,21 +61,27 @@ function Game({
 	useEffect(() => {
 		if (!puzzleData?.[gridSize]) return;
 
-		// Don't reset if puzzle is already completed (prevents scrambling after win)
-		if (isCompleted) return;
-
 		Promise.resolve().then(() => {
 			const localStorageKey = `signedOutProgress_${puzzleId}_${gridSize}`;
 			const savedData = localStorage.getItem(localStorageKey);
 
-			// Priority 1: Firestore saved game (when signed in)
-			if (savedGame) {
+			// Helper: Check if savedGame is just the initial grid (no real progress)
+			const isInitialGrid = (grid) => {
+				if (!grid) return false;
+				const initial = puzzleData[gridSize];
+				return JSON.stringify(grid) === JSON.stringify(initial);
+			};
+
+			const hasFirestoreProgress = savedGame && !isInitialGrid(convertGridFromFirestore(savedGame.grid));
+
+			// Priority 1: Firestore saved game with actual progress (when signed in)
+			if (hasFirestoreProgress) {
 				setCurrentGrid(convertGridFromFirestore(savedGame.grid));
-				
-				// If there's also localStorage data from being signed out, migrate it
+
+				// If there's also localStorage data from being signed out, migrate completions only
 				if (savedData && user) {
 					const { isCompleted: wasCompleted } = JSON.parse(savedData);
-					
+
 					// Migrate completed puzzles (signing in should never lose a trophy)
 					if (wasCompleted) {
 						saveCompletion({
@@ -84,17 +90,24 @@ function Game({
 							emoji: puzzleData.emoji,
 							emojiName: puzzleData.emojiName,
 						});
-						console.log("[GAME] Migrated completion from localStorage");
+						setIsCompleted(true); // Mark as completed
+						console.log(
+							"[GAME] Migrated completion from localStorage",
+						);
 					}
 					// Note: In-progress localStorage data is discarded (Firestore state takes precedence)
-					
+
 					localStorage.removeItem(localStorageKey);
 				}
 			}
-			// Priority 2: localStorage data (when signed in with no Firestore save, but had signed-out progress)
+			// Priority 2: localStorage data (signed out progress, or signed in with no real Firestore progress)
 			else if (savedData && user) {
-				const { isCompleted: wasCompleted, grid, initialGrid } = JSON.parse(savedData);
-				
+				const {
+					isCompleted: wasCompleted,
+					grid,
+					initialGrid,
+				} = JSON.parse(savedData);
+
 				if (wasCompleted) {
 					// Migrate completion
 					saveCompletion({
@@ -104,9 +117,10 @@ function Game({
 						emojiName: puzzleData.emojiName,
 					});
 					setCurrentGrid(grid); // Show solved grid
+					setIsCompleted(true); // Mark as completed
 					console.log("[GAME] Migrated completion from localStorage");
 				} else if (grid && initialGrid) {
-					// Migrate in-progress work
+					// Migrate in-progress work (better than initial Firestore state or no state)
 					savePuzzleStart({
 						puzzleId: puzzleData.id,
 						gridSize,
@@ -120,7 +134,7 @@ function Game({
 					setCurrentGrid(grid); // Resume from saved progress
 					console.log("[GAME] Migrated progress from localStorage");
 				}
-				
+
 				localStorage.removeItem(localStorageKey);
 			}
 			// Priority 3: Start fresh
@@ -138,7 +152,14 @@ function Game({
 			}
 		});
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [puzzleData, savedGame, user, savePuzzleStart, saveMove, saveCompletion, isCompleted]);
+	}, [
+		puzzleData,
+		savedGame,
+		user,
+		savePuzzleStart,
+		saveMove,
+		saveCompletion,
+	]);
 
 	// Auto-save after each move
 	const handleMove = (newGrid) => {
