@@ -5,7 +5,7 @@ import Header from "./components/Header";
 import Game from "./components/game/Game";
 import SettingsDialog from "./components/dialogs/SettingsDialog";
 import StatsDialog from "./components/dialogs/StatsDialog";
-import { getTodaysPuzzleNumber } from "./utils/dateUtils";
+import { getCurrentPuzzleId } from "./utils/dateUtils";
 import { useAuth } from "./hooks/useAuth";
 import { useUser } from "./hooks/useUser";
 import { usePuzzle } from "./hooks/usePuzzle";
@@ -20,11 +20,10 @@ import { getMaxGridSizeSolved } from "./utils/statsHelpers";
 
 function App() {
 	const { user } = useAuth();
-	const todaysPuzzleNumber = getTodaysPuzzleNumber();
+	const puzzleId = getCurrentPuzzleId();
 
 	// Preload today's puzzle while landing page is showing
-	// This ensures puzzle data is cached before user clicks "Play"
-	usePuzzle(todaysPuzzleNumber);
+	usePuzzle(puzzleId);
 
 	// Show Page / Dialog
 	const [showLandingPage, setShowLandingPage] = useState(true);
@@ -44,16 +43,15 @@ function App() {
 		"showNumbers",
 		DEFAULT_SHOW_NUMBERS,
 	);
-	// Grid size: Persists to localStorage (for Firestore fallback) but signed-out users always see default
 	const [gridSize, setGridSize] = useSyncedPreference(
 		"gridSize",
 		DEFAULT_GRID_SIZE,
 		{ persistForSignedOut: false },
+		// Signed-out users always get default 3x3 grid size, to
+		// reinforce that you should sign in to retain progress
 	);
 
-	// ===== Fetch User Data with React Query =====
-	// Automatically fetches, caches, and refetches user data from Firestore
-	// Eliminates manual useEffect boilerplate and provides loading/error states
+	// Fetch User Data with React Query
 	const { data: userData } = useUser(user?.uid);
 
 	if (showLandingPage) {
@@ -69,20 +67,18 @@ function App() {
 			<Header
 				onSettingsClick={() => setShowSettingsDialog(true)}
 				onStatsClick={() => setShowStatsDialog(true)}
-				isWinCelebrating={false}
 			/>
 
 			<Game
-				puzzleId={todaysPuzzleNumber}
-				gridSize={gridSize}
-				savedGame={
-					userData?.gameState?.[todaysPuzzleNumber]?.[gridSize]
-				}
-				maxGridSizeSolved={getMaxGridSizeSolved(
-					userData,
-					todaysPuzzleNumber,
-				)}
-				hasNumbersShown={showNumbers}
+			puzzleId={puzzleId}
+			gridSize={gridSize}
+			savedGame={
+				userData?.gameState?.[puzzleId]?.[gridSize]
+			}
+			maxGridSizeSolved={getMaxGridSizeSolved(
+				userData,
+				puzzleId,
+			)}
 				hasSoundEnabled={soundEnabled}
 				onOpenStats={() => setShowStatsDialog(true)}
 				onGridSizeChange={setGridSize}

@@ -8,7 +8,7 @@
  * @returns {Object} { puzzle, isLoading, error }
  *
  * Usage:
- *   const { puzzle, isLoading } = usePuzzle(todaysPuzzleNumber);
+ *   const { puzzle, isLoading } = usePuzzle(puzzleId);
  */
 
 import { useQuery } from "@tanstack/react-query";

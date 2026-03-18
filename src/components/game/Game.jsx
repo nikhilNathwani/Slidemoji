@@ -42,6 +42,9 @@ function Game({
 	const [currentGrid, setCurrentGrid] = useState(null); // null = show initial, otherwise show this
 	const [isCompleted, setIsCompleted] = useState(false); // Track if puzzle is completed
 
+	// Track max grid size solved in this session (for signed-out users)
+	const [localMaxGridSizeSolved, setLocalMaxGridSizeSolved] = useState(0);
+
 	// Track latest grid state in ref (for preserving signed-out progress on sign-in)
 	const latestGridRef = useRef(null);
 
@@ -92,6 +95,11 @@ function Game({
 	useEffect(() => {
 		setIsCompleted(false);
 	}, [puzzleId, gridSize]);
+
+	// Reset local max grid size when puzzle changes (but not when just grid size changes)
+	useEffect(() => {
+		setLocalMaxGridSizeSolved(0);
+	}, [puzzleId]);
 
 	// Handle sign-in and sign-out state transitions
 	const prevUserRef = useRef(user);
@@ -192,6 +200,9 @@ function Game({
 
 		setIsCompleted(true); // Mark puzzle as completed to prevent grid reset
 
+		// Update local max grid size (for signed-out trophy color)
+		setLocalMaxGridSizeSolved((prev) => Math.max(prev, gridSize));
+
 		if (user && puzzleData) {
 			// Update cache immediately for instant trophy display
 			queryClient.setQueryData(["user", user.uid], (prevData) =>
@@ -256,7 +267,11 @@ function Game({
 						trophyNum={String(puzzleData.id).padStart(3, "0")}
 						trophyEmoji={puzzleData.emoji}
 						trophyName={puzzleData.emojiName}
-						maxGridSizeSolved={maxGridSizeSolved}
+					maxGridSizeSolved={Math.max(
+						maxGridSizeSolved,
+						localMaxGridSizeSolved,
+					)}
+				/>
 					/>
 				</div>
 				<Grid

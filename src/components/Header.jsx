@@ -4,7 +4,7 @@ import GoogleSignInButton from "./common/GoogleSignInButton";
 import { useAuth } from "../hooks/useAuth";
 import { FontAwesomeIcon } from "../utils/icons";
 
-function Header({ onSettingsClick, onStatsClick, isWinCelebrating }) {
+function Header({ onSettingsClick, onStatsClick }) {
 	const { user, signOut } = useAuth();
 	const [showAccountMenu, setShowAccountMenu] = useState(false);
 	const menuRef = useRef(null);
@@ -38,7 +38,6 @@ function Header({ onSettingsClick, onStatsClick, isWinCelebrating }) {
 					onClick={onSettingsClick}
 					aria-label="Settings"
 					title="Settings"
-					disabled={isWinCelebrating}
 				>
 					<FontAwesomeIcon icon="cog" />
 				</button>
@@ -47,7 +46,6 @@ function Header({ onSettingsClick, onStatsClick, isWinCelebrating }) {
 					onClick={onStatsClick}
 					aria-label="Stats"
 					title="Stats"
-					disabled={isWinCelebrating}
 				>
 					<FontAwesomeIcon icon="trophy" />
 				</button>
@@ -58,7 +56,6 @@ function Header({ onSettingsClick, onStatsClick, isWinCelebrating }) {
 							onClick={() => setShowAccountMenu(!showAccountMenu)}
 							aria-label="Account"
 							title={user.displayName || user.email}
-							disabled={isWinCelebrating}
 						>
 							{user.photoURL ? (
 								<img

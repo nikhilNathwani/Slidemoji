@@ -7,7 +7,7 @@ function TrophyCase({
 	totalPuzzles = 12,
 	solvedPuzzles,
 	showTitle = true,
-	todaysPuzzleNum,
+	puzzleId,
 }) {
 	const TROPHIES_PER_PAGE = 12;
 	const totalPages = Math.ceil(totalPuzzles / TROPHIES_PER_PAGE);
@@ -68,7 +68,7 @@ function TrophyCase({
 				puzzleNum,
 				isPlaceholder: false,
 				isEarned,
-				isToday: puzzleNum === todaysPuzzleNum,
+				isToday: puzzleNum === puzzleId,
 				emoji,
 				name,
 				maxDifficulty: maxDifficulty,
