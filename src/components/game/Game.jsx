@@ -56,9 +56,8 @@ function Game({
 	const { mutate: saveMove } = useSaveGameState(user?.uid);
 	const { mutate: saveCompletion } = useSaveCompletion(user?.uid);
 
-	// Initialize grid when puzzle/savedGame loads or changes
-	// Note: gridSize not in deps because component remounts when it changes (via key prop)
-	// Note: We intentionally do NOT load from localStorage here - signed-out users get ephemeral experience
+	// Initialize grid on mount
+	// Note: Component remounts when user/puzzleId/gridSize changes (via key prop on parent div)
 	useEffect(() => {
 		if (!puzzleData?.[gridSize]) return;
 
@@ -66,14 +65,69 @@ function Game({
 		if (isCompleted) return;
 
 		Promise.resolve().then(() => {
-			if (savedGame) {
-				// Resume from saved progress
-				setCurrentGrid(convertGridFromFirestore(savedGame.grid));
-			} else {
-				// Start fresh - null means "show initialGrid"
-				setCurrentGrid(null);
+			const localStorageKey = `signedOutProgress_${puzzleId}_${gridSize}`;
+			const savedData = localStorage.getItem(localStorageKey);
 
-				// Save game start to Firestore
+			// Priority 1: Firestore saved game (when signed in)
+			if (savedGame) {
+				setCurrentGrid(convertGridFromFirestore(savedGame.grid));
+				
+				// If there's also localStorage data from being signed out, migrate it
+				if (savedData && user) {
+					const { isCompleted: wasCompleted } = JSON.parse(savedData);
+					
+					// Migrate completed puzzles (signing in should never lose a trophy)
+					if (wasCompleted) {
+						saveCompletion({
+							puzzleId: puzzleData.id,
+							gridSize,
+							emoji: puzzleData.emoji,
+							emojiName: puzzleData.emojiName,
+						});
+						console.log("[GAME] Migrated completion from localStorage");
+					}
+					// Note: In-progress localStorage data is discarded (Firestore state takes precedence)
+					
+					localStorage.removeItem(localStorageKey);
+				}
+			}
+			// Priority 2: localStorage data (when signed in with no Firestore save, but had signed-out progress)
+			else if (savedData && user) {
+				const { isCompleted: wasCompleted, grid, initialGrid } = JSON.parse(savedData);
+				
+				if (wasCompleted) {
+					// Migrate completion
+					saveCompletion({
+						puzzleId: puzzleData.id,
+						gridSize,
+						emoji: puzzleData.emoji,
+						emojiName: puzzleData.emojiName,
+					});
+					setCurrentGrid(grid); // Show solved grid
+					console.log("[GAME] Migrated completion from localStorage");
+				} else if (grid && initialGrid) {
+					// Migrate in-progress work
+					savePuzzleStart({
+						puzzleId: puzzleData.id,
+						gridSize,
+						initialGrid,
+					});
+					saveMove({
+						puzzleId: puzzleData.id,
+						gridSize,
+						grid,
+					});
+					setCurrentGrid(grid); // Resume from saved progress
+					console.log("[GAME] Migrated progress from localStorage");
+				}
+				
+				localStorage.removeItem(localStorageKey);
+			}
+			// Priority 3: Start fresh
+			else {
+				setCurrentGrid(null); // null means "show initialGrid"
+
+				// Save game start to Firestore (when signed in)
 				if (user) {
 					savePuzzleStart({
 						puzzleId: puzzleData.id,
@@ -84,48 +138,7 @@ function Game({
 			}
 		});
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [puzzleData, savedGame, user, savePuzzleStart, isCompleted]);
-
-	// Migrate localStorage data to Firestore on mount (for users who completed/progressed while signed out)
-	useEffect(() => {
-		if (!user || !puzzleData) return;
-
-		const localStorageKey = `signedOutProgress_${puzzleId}_${gridSize}`;
-		const savedData = localStorage.getItem(localStorageKey);
-
-		if (savedData) {
-			const { isCompleted: wasCompleted, grid, initialGrid } =
-				JSON.parse(savedData);
-
-			// Upload trophy if puzzle was completed
-			if (wasCompleted) {
-				saveCompletion({
-					puzzleId: puzzleData.id,
-					gridSize,
-					emoji: puzzleData.emoji,
-					emojiName: puzzleData.emojiName,
-				});
-				console.log("[GAME] Migrated completion from localStorage");
-			}
-			// Upload in-progress work if no cloud save exists
-			else if (grid && initialGrid && !savedGame) {
-				savePuzzleStart({
-					puzzleId: puzzleData.id,
-					gridSize,
-					initialGrid,
-				});
-				saveMove({
-					puzzleId: puzzleData.id,
-					gridSize,
-					grid,
-				});
-				console.log("[GAME] Migrated progress from localStorage");
-			}
-
-			// Clear localStorage after migration
-			localStorage.removeItem(localStorageKey);
-		}
-	}, [user, puzzleData, puzzleId, gridSize, savedGame, saveCompletion, savePuzzleStart, saveMove]);
+	}, [puzzleData, savedGame, user, savePuzzleStart, saveMove, saveCompletion, isCompleted]);
 
 	// Auto-save after each move
 	const handleMove = (newGrid) => {
