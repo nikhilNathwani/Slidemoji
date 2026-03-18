@@ -42,6 +42,8 @@ function App() {
 	const [showNumbers, setShowNumbers] = useSyncedPreference(
 		"showNumbers",
 		DEFAULT_SHOW_NUMBERS,
+		{ dailyDefault: true },
+		// Resets to ON each day, but manual changes persist within the day
 	);
 	const [gridSize, setGridSize] = useSyncedPreference(
 		"gridSize",
@@ -70,6 +72,7 @@ function App() {
 			/>
 
 			<Game
+				key={`${puzzleId}-${gridSize}`}
 				puzzleId={puzzleId}
 				gridSize={gridSize}
 				savedGame={userData?.gameState?.[puzzleId]?.[gridSize]}

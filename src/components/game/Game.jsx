@@ -92,16 +92,6 @@ function Game({
 		});
 	}, [puzzleData, savedGame, gridSize, user, savePuzzleStart, isCompleted]);
 
-	// Reset completion state when puzzle or grid size changes (new puzzle)
-	useEffect(() => {
-		setIsCompleted(false);
-	}, [puzzleId, gridSize]);
-
-	// Reset local max grid size when puzzle changes (but not when just grid size changes)
-	useEffect(() => {
-		setLocalMaxGridSizeSolved(0);
-	}, [puzzleId]);
-
 	// Handle sign-in and sign-out state transitions
 	const prevUserRef = useRef(user);
 	useEffect(() => {
