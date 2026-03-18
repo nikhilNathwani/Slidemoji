@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "../../utils/icons";
 import Trophy from "../common/Trophy";
 import styles from "./TrophyCase.module.css";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 function TrophyCase({
 	totalPuzzles = 12,
@@ -16,15 +16,6 @@ function TrophyCase({
 	// Calculate initial page based on today's puzzle
 	const initialPage = Math.ceil(totalPuzzles / TROPHIES_PER_PAGE);
 	const [currentPage, setCurrentPage] = useState(initialPage);
-
-	// Update current page when totalPuzzles changes
-	useEffect(() => {
-		const newPage = Math.ceil(totalPuzzles / TROPHIES_PER_PAGE);
-		if (newPage !== currentPage) {
-			setCurrentPage(newPage);
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [totalPuzzles]);
 
 	// Calculate range for current page
 	const startIndex = (currentPage - 1) * TROPHIES_PER_PAGE + 1;

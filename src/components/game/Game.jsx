@@ -258,11 +258,11 @@ function Game({
 						trophyNum={String(puzzleData.id).padStart(3, "0")}
 						trophyEmoji={puzzleData.emoji}
 						trophyName={puzzleData.emojiName}
-					maxGridSizeSolved={Math.max(
-						maxGridSizeSolved,
-						localMaxGridSizeSolved,
-					)}
-				/>
+						maxGridSizeSolved={Math.max(
+							maxGridSizeSolved,
+							localMaxGridSizeSolved,
+						)}
+					/>
 				</div>
 				<Grid
 					size={gridSize}

@@ -42,8 +42,8 @@ function App() {
 	const [showNumbers, setShowNumbers] = useSyncedPreference(
 		"showNumbers",
 		DEFAULT_SHOW_NUMBERS,
-		{ dailyDefault: true },
-		// Resets to ON each day, but manual changes persist within the day
+		{ contextKey: puzzleId },
+		// Resets to ON for each new puzzle (new puzzleId), but respects manual changes within the puzzle
 	);
 	const [gridSize, setGridSize] = useSyncedPreference(
 		"gridSize",
