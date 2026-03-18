@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import styles from "./Game.module.css";
 import Grid from "./Grid";
@@ -39,12 +39,15 @@ function Game({
 	const [showWinDialog, setShowWinDialog] = useState(false);
 
 	// Grid state - Game decides what to show
-	const [initialGrid, setInitialGrid] = useState(null);
+	const [initialGrid, setInitialGrid] = useState(null); // Stored in state for restart button & gridToShow
 	const [currentGrid, setCurrentGrid] = useState(null); // null = show initial, otherwise show this
 	const [isCompleted, setIsCompleted] = useState(false); // Track if puzzle is completed
 
 	// Track max grid size solved in this session (for signed-out users)
 	const [localMaxGridSizeSolved, setLocalMaxGridSizeSolved] = useState(0);
+
+	// Track previous user for sign-in/sign-out detection
+	const prevUserRef = useRef(user);
 
 	// Fetch and convert puzzle metadata (emoji, name, initial grids)
 	const { data: rawPuzzleData } = usePuzzle(puzzleId);
@@ -58,19 +61,19 @@ function Game({
 	const { mutate: saveCompletion } = useSaveCompletion(user?.uid);
 
 	// Initialize grid when puzzle/savedGame loads or changes
-	// Note: gridSize and user not in deps because component remounts when they change (via key prop)
+	// Note: gridSize not in deps because component remounts when it changes (via key prop)
 	useEffect(() => {
 		if (!puzzleData) return;
 
-		const initial = puzzleData[gridSize];
-		if (!initial) return;
+		const puzzleInitialGrid = puzzleData[gridSize];
+		if (!puzzleInitialGrid) return;
 
 		// Don't reset if puzzle is already completed (prevents scrambling after win)
 		if (isCompleted) return;
 
 		Promise.resolve().then(() => {
-			// Always set the initial grid reference
-			setInitialGrid(initial);
+			// Store initial grid for restart functionality
+			setInitialGrid(puzzleInitialGrid);
 
 			if (savedGame) {
 				// Resume from saved progress
@@ -84,13 +87,70 @@ function Game({
 					savePuzzleStart({
 						puzzleId: puzzleData.id,
 						gridSize,
-						initialGrid: initial,
+						initialGrid: puzzleInitialGrid,
 					});
 				}
 			}
 		});
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [puzzleData, savedGame, savePuzzleStart, isCompleted]);
+	}, [puzzleData, savedGame, user, savePuzzleStart, isCompleted]);
+
+	// Handle sign-in and sign-out transitions
+	useEffect(() => {
+		const wasSignedOut = !prevUserRef.current;
+		const isNowSignedIn = !!user;
+		const wasSignedIn = !!prevUserRef.current;
+		const isNowSignedOut = !user;
+
+		// ===== SIGN IN: Preserve trophies and progress =====
+		if (wasSignedOut && isNowSignedIn && puzzleData) {
+			// Save trophy if puzzle was completed while signed out
+			if (isCompleted) {
+				saveCompletion({
+					puzzleId: puzzleData.id,
+					gridSize,
+					emoji: puzzleData.emoji,
+					emojiName: puzzleData.emojiName,
+				});
+				console.log("[GAME] Saved completion after sign-in");
+			}
+			// Preserve in-progress work if no cloud save
+			else if (currentGrid && initialGrid && !savedGame) {
+				savePuzzleStart({
+					puzzleId: puzzleData.id,
+					gridSize,
+					initialGrid,
+				});
+				saveMove({
+					puzzleId: puzzleData.id,
+					gridSize,
+					grid: currentGrid,
+				});
+				console.log("[GAME] Preserved progress after sign-in");
+			}
+		}
+
+		// ===== SIGN OUT: Reset to fresh state =====
+		if (wasSignedIn && isNowSignedOut) {
+			setCurrentGrid(null);
+			setIsCompleted(false);
+			setLocalMaxGridSizeSolved(0);
+			console.log("[GAME] Reset state after sign-out");
+		}
+
+		prevUserRef.current = user;
+	}, [
+		user,
+		isCompleted,
+		currentGrid,
+		initialGrid,
+		savedGame,
+		puzzleData,
+		gridSize,
+		saveCompletion,
+		savePuzzleStart,
+		saveMove,
+	]);
 
 	// Auto-save after each move
 	const handleMove = (newGrid) => {
