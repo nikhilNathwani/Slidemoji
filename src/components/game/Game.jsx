@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import styles from "./Game.module.css";
 import Grid from "./Grid";
@@ -7,22 +7,19 @@ import ConfirmRestartDialog from "../dialogs/ConfirmRestartDialog";
 import WinDialog from "../dialogs/WinDialog";
 import GameActionButton from "./GameActionButton";
 import { useAuth } from "../../hooks/useAuth";
-import { usePuzzle } from "../../hooks/usePuzzle";
 import { FontAwesomeIcon } from "../../utils/icons";
 import {
 	useSavePuzzleStart,
 	useSaveGameState,
 	useSaveCompletion,
 } from "../../hooks/useGameMutations";
-import {
-	convertGridFromFirestore,
-	convertPuzzleFromFirestore,
-} from "../../utils/puzzleUtils";
+import { convertGridFromFirestore } from "../../utils/puzzleUtils";
 import { addPuzzleSolution } from "../../utils/statsHelpers";
 import { getSolvedState } from "../../utils/gridHelpers";
 
 function Game({
 	puzzleId,
+	puzzleData,
 	gridSize,
 	savedGame,
 	maxGridSizeSolved = 0,
@@ -45,27 +42,16 @@ function Game({
 	// Track max grid size solved in this session (for signed-out users)
 	const [localMaxGridSizeSolved, setLocalMaxGridSizeSolved] = useState(0);
 
-	// Track if initialization has run (should only run once per mount)
-	const hasInitialized = useRef(false);
-
-	// Fetch and convert puzzle metadata (emoji, name, initial grids)
-	const { data: rawPuzzleData } = usePuzzle(puzzleId);
-	const puzzleData = useMemo(() => {
-		return rawPuzzleData ? convertPuzzleFromFirestore(rawPuzzleData) : null;
-	}, [rawPuzzleData]);
-
 	// Firestore mutations
 	const { mutate: savePuzzleStart } = useSavePuzzleStart(user?.uid);
 	const { mutate: saveMove } = useSaveGameState(user?.uid);
 	const { mutate: saveCompletion } = useSaveCompletion(user?.uid);
 
-	// Initialize grid on mount (runs once when data is available)
+	// Initialize grid on mount
 	// Note: Component remounts when user/puzzleId/gridSize changes (via key prop on parent div)
 	// We need useEffect because we're performing side effects (localStorage, Firestore mutations)
+	// App ensures all data (puzzleData, savedGame) is ready before mounting Game
 	useEffect(() => {
-		// Only initialize once per mount, and only when data is ready
-		if (hasInitialized.current || !puzzleData?.[gridSize]) return;
-		hasInitialized.current = true;
 
 		const localStorageKey = `signedOutProgress_${puzzleId}_${gridSize}`;
 		const savedData = localStorage.getItem(localStorageKey);
@@ -98,9 +84,7 @@ function Game({
 						emojiName: puzzleData.emojiName,
 					});
 					setIsCompleted(true); // Mark as completed
-					console.log(
-						"[GAME] Migrated completion from localStorage",
-					);
+					console.log("[GAME] Migrated completion from localStorage");
 				}
 				// Note: In-progress localStorage data is discarded (Firestore state takes precedence)
 
@@ -157,9 +141,9 @@ function Game({
 				});
 			}
 		}
-	// Effect needs to run when puzzleData or savedGame load (initially null/undefined)
-	// The ref ensures we only initialize once even if these update later
-	}, [puzzleData, savedGame]);
+		// Empty deps: runs once on mount, all data is ready via props
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	// Auto-save after each move
 	const handleMove = (newGrid) => {
@@ -252,18 +236,7 @@ function Game({
 	};
 
 	// Game decides which grid to show (smart logic here)
-	const gridToShow = currentGrid || puzzleData?.[gridSize];
-
-	// Wait for puzzle data and grid initialization
-	if (!puzzleData || !gridToShow) {
-		return (
-			<main className={styles.main}>
-				<div style={{ padding: "20px", textAlign: "center" }}>
-					Loading puzzle...
-				</div>
-			</main>
-		);
-	}
+	const gridToShow = currentGrid || puzzleData[gridSize];
 
 	return (
 		<>

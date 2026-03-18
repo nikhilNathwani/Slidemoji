@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import "./App.css";
 import LandingPage from "./components/landing/LandingPage";
 import Header from "./components/Header";
@@ -17,13 +17,18 @@ import {
 	DEFAULT_SOUND_ENABLED,
 } from "./constants";
 import { getMaxGridSizeSolved } from "./utils/statsHelpers";
+import { convertPuzzleFromFirestore } from "./utils/puzzleUtils";
 
 function App() {
 	const { user } = useAuth();
 	const puzzleId = getLatestPuzzleId();
 
-	// Preload today's puzzle while landing page is showing
-	usePuzzle(puzzleId);
+	// Fetch puzzle data with loading state
+	const { data: rawPuzzleData, isLoading: isLoadingPuzzle } =
+		usePuzzle(puzzleId);
+	const puzzleData = useMemo(() => {
+		return rawPuzzleData ? convertPuzzleFromFirestore(rawPuzzleData) : null;
+	}, [rawPuzzleData]);
 
 	// Show Page / Dialog
 	const [showLandingPage, setShowLandingPage] = useState(true);
@@ -54,12 +59,32 @@ function App() {
 	);
 
 	// Fetch User Data with React Query
-	const { data: userData } = useUser(user?.uid);
+	const { data: userData, isLoading: isLoadingUser } = useUser(user?.uid);
 
 	if (showLandingPage) {
 		return (
 			<div className="app light-theme">
 				<LandingPage onPlay={() => setShowLandingPage(false)} />
+			</div>
+		);
+	}
+
+	// Wait for data to load before rendering Game
+	// For signed-in users, wait for both puzzle and user data
+	// For signed-out users, only wait for puzzle data
+	const isLoading = isLoadingPuzzle || (user && isLoadingUser);
+	if (isLoading || !puzzleData) {
+		return (
+			<div
+				className={`app ${darkMode ? "dark-theme" : "light-theme"}`}
+			>
+				<Header
+					onSettingsClick={() => setShowSettingsDialog(true)}
+					onStatsClick={() => setShowStatsDialog(true)}
+				/>
+				<main style={{ padding: "20px", textAlign: "center" }}>
+					Loading puzzle...
+				</main>
 			</div>
 		);
 	}
@@ -76,12 +101,14 @@ function App() {
 
 			<Game
 				puzzleId={puzzleId}
+				puzzleData={puzzleData}
 				gridSize={gridSize}
 				savedGame={userData?.gameState?.[puzzleId]?.[gridSize]}
 				maxGridSizeSolved={getMaxGridSizeSolved(userData, puzzleId)}
 				hasNumbersShown={showNumbers}
 				hasSoundEnabled={soundEnabled}
 				onOpenStats={() => setShowStatsDialog(true)}
+				onGridSizeChange={setGridSize}
 			/>
 
 			<SettingsDialog
