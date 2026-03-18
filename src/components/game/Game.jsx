@@ -5,6 +5,7 @@ import Grid from "./Grid";
 import Trophy from "../common/Trophy";
 import ConfirmRestartDialog from "../dialogs/ConfirmRestartDialog";
 import WinDialog from "../dialogs/WinDialog";
+import GameActionButton from "./GameActionButton";
 import { useAuth } from "../../hooks/useAuth";
 import { usePuzzle } from "../../hooks/usePuzzle";
 import { FontAwesomeIcon } from "../../utils/icons";
@@ -55,7 +56,7 @@ function Game({
 	}, [rawPuzzleData]);
 
 	// Firestore mutations
-	const { mutate: recordPuzzleStart } = useSavePuzzleStart(user?.uid);
+	const { mutate: savePuzzleStart } = useSavePuzzleStart(user?.uid);
 	const { mutate: saveMove } = useSaveGameState(user?.uid);
 	const { mutate: saveCompletion } = useSaveCompletion(user?.uid);
 
@@ -79,9 +80,9 @@ function Game({
 				setInitialGrid(initial);
 				setCurrentGrid(null); // null means "show initialGrid"
 
-				// Record game start in Firestore
+				// Save game start to Firestore
 				if (user) {
-					recordPuzzleStart({
+					savePuzzleStart({
 						puzzleId: puzzleData.id,
 						gridSize,
 						initialGrid: initial,
@@ -89,7 +90,7 @@ function Game({
 				}
 			}
 		});
-	}, [puzzleData, savedGame, gridSize, user, recordPuzzleStart, isCompleted]);
+	}, [puzzleData, savedGame, gridSize, user, savePuzzleStart, isCompleted]);
 
 	// Reset completion state when puzzle or grid size changes (new puzzle)
 	useEffect(() => {
@@ -133,7 +134,7 @@ function Game({
 
 				if (!existingSavedGame) {
 					// No existing progress - preserve signed-out work
-					recordPuzzleStart({
+					savePuzzleStart({
 						puzzleId: puzzleData.id,
 						gridSize,
 						initialGrid,
@@ -172,7 +173,7 @@ function Game({
 		gridSize,
 		initialGrid,
 		saveCompletion,
-		recordPuzzleStart,
+		savePuzzleStart,
 		saveMove,
 		queryClient,
 	]);
@@ -235,9 +236,9 @@ function Game({
 		setCurrentGrid(null); // Clear current grid to show initial
 		setIsCompleted(false); // Reset completion state
 
-		// Record restart in Firestore
+		// Save restart to Firestore
 		if (user && initialGrid && puzzleData) {
-			recordPuzzleStart({
+			savePuzzleStart({
 				puzzleId: puzzleData.id,
 				gridSize,
 				initialGrid,
@@ -272,7 +273,6 @@ function Game({
 						localMaxGridSizeSolved,
 					)}
 				/>
-					/>
 				</div>
 				<Grid
 					size={gridSize}
@@ -285,62 +285,16 @@ function Game({
 				/>
 
 				<div className={styles.restartContainer}>
-					{/* Dynamic button based on win state */}
-					{isCompleted && !user ? (
-						// Signed out and won - show sign-in upsell
-						<button
-							className={`${styles.restartButton} ${styles.visible}`}
-							onClick={signIn}
-							title="Sign in to save your trophy"
-						>
-							<FontAwesomeIcon icon="user" />
-							Sign in to save
-						</button>
-					) : isCompleted && gridSize === 4 ? (
-						// Won 4x4 - show View Trophies
-						<button
-							className={`${styles.restartButton} ${styles.visible}`}
-							onClick={onOpenStats}
-							title="View your trophy collection"
-						>
-							<FontAwesomeIcon icon="trophy" />
-							View Trophies
-						</button>
-					) : isCompleted &&
-					  gridSize === 3 &&
-					  maxGridSizeSolved < 4 ? (
-						// Won 3x3 but not 4x4 - show Try Hard mode
-						<button
-							className={`${styles.restartButton} ${styles.visible}`}
-							onClick={() => onGridSizeChange(4)}
-							title="Try the harder 4x4 puzzle"
-						>
-							<FontAwesomeIcon icon="arrow-up" />
-							Try Hard mode?
-						</button>
-					) : isCompleted &&
-					  gridSize === 3 &&
-					  maxGridSizeSolved >= 4 ? (
-						// Won both 3x3 and 4x4 - show View Trophies
-						<button
-							className={`${styles.restartButton} ${styles.visible}`}
-							onClick={onOpenStats}
-							title="View your trophy collection"
-						>
-							<FontAwesomeIcon icon="trophy" />
-							View Trophies
-						</button>
-					) : (
-						// Not won yet - show Restart
-						<button
-							className={`${styles.restartButton} ${styles.visible}`}
-							onClick={handleRestartClick}
-							title="Restart Puzzle"
-						>
-							<FontAwesomeIcon icon="redo" />
-							Restart
-						</button>
-					)}
+					<GameActionButton
+						isCompleted={isCompleted}
+						user={user}
+						gridSize={gridSize}
+						maxGridSizeSolved={maxGridSizeSolved}
+						onSignIn={signIn}
+						onOpenStats={onOpenStats}
+						onGridSizeChange={onGridSizeChange}
+						onRestart={handleRestartClick}
+					/>
 				</div>
 			</main>
 
