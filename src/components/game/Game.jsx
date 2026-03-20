@@ -8,20 +8,9 @@ import WinDialog from "../dialogs/WinDialog";
 import GameActionButton from "./GameActionButton";
 import { useAuth } from "../../hooks/useAuth";
 import { useGameInitialization } from "../../hooks/useGameInitialization";
-import { FontAwesomeIcon } from "../../utils/icons";
-import {
-	useSavePuzzleStart,
-	useSaveGameState,
-	useSaveCompletion,
-} from "../../hooks/useGameMutations";
-
+import { useGameSaving } from "../../hooks/useGameSaving";
 import { addPuzzleSolution } from "../../utils/statsHelpers";
 import { getSolvedState } from "../../utils/gridHelpers";
-import {
-	saveGameProgress,
-	saveGameCompletion,
-	saveGameRestart,
-} from "../../utils/gameState";
 
 function Game({
 	puzzleId,
@@ -46,6 +35,9 @@ function Game({
 		savedGame,
 	});
 
+	// Game state persistence - handles Firestore (signed in) and localStorage (signed out)
+	const { saveProgress, saveCompletion, saveRestart } = useGameSaving();
+
 	// Dialog state
 	const [showRestartDialog, setShowRestartDialog] = useState(false);
 	const [showWinDialog, setShowWinDialog] = useState(false);
@@ -59,22 +51,15 @@ function Game({
 	// Signed-in users use maxGridSizeSolved prop from Firestore (persisted)
 	const [signedOutMaxSolved, setSignedOutMaxSolved] = useState(0);
 
-	// Firestore mutations
-	const { mutate: savePuzzleStart } = useSavePuzzleStart(user?.uid);
-	const { mutate: saveMove } = useSaveGameState(user?.uid);
-	const { mutate: saveCompletion } = useSaveCompletion(user?.uid);
-
 	// Auto-save after each move
 	const handleMove = (newGrid) => {
 		setCurrentGrid(newGrid);
 
-		saveGameProgress({
+		saveProgress({
 			puzzleId,
 			gridSize,
 			grid: newGrid,
 			puzzleData,
-			user,
-			saveMove,
 		});
 	};
 
@@ -86,13 +71,11 @@ function Game({
 
 		setIsCompleted(true);
 
-		saveGameCompletion({
+		saveCompletion({
 			puzzleId,
 			gridSize,
 			grid: solvedGrid,
 			puzzleData,
-			user,
-			saveCompletion,
 			updateCacheImmediately: () => {
 				// Update cache immediately for instant trophy display
 				queryClient.setQueryData(["user", user.uid], (prevData) =>
@@ -123,11 +106,9 @@ function Game({
 		setCurrentGrid(null); // Clear current grid to show initial
 		setIsCompleted(false); // Reset completion state
 
-		saveGameRestart({
+		saveRestart({
 			gridSize,
 			puzzleData,
-			user,
-			savePuzzleStart,
 		});
 	};
 
