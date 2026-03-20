@@ -27,7 +27,10 @@ function StatsContent({ showTitle = false, userData }) {
 					</p>
 					<GoogleSignInButton />
 					<p className={styles.privacyNote}>
-						<FontAwesomeIcon icon="shield-alt" style={{ position: 'relative', top: '0.12em' }} />
+						<FontAwesomeIcon
+							icon="shield-alt"
+							style={{ position: "relative", top: "0.12em" }}
+						/>
 						<span>
 							Your email is only used to save your progress. Your
 							data is never sold or shared.

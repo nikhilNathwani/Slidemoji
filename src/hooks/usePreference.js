@@ -28,14 +28,10 @@ import { useAuth } from "./useAuth";
 import { useUser } from "./useUser";
 import { updateUserPreferences } from "../backend/database";
 
-export function usePreference(
-	key,
-	defaultValue,
-	options = {},
-) {
+export function usePreference(key, defaultValue, options = {}) {
 	// Merge with defaults
 	const { persistForSignedOut = true, contextKey = null } = options;
-	
+
 	const { user } = useAuth();
 	const { data: userData } = useUser(user?.uid);
 	const queryClient = useQueryClient();
@@ -86,9 +82,7 @@ export function usePreference(
 	});
 
 	// If contextKey is provided, scope the storage key (e.g., showNumbers_123 for puzzle 123)
-	const storageKey = contextKey
-		? `${key}_${contextKey}`
-		: key;
+	const storageKey = contextKey ? `${key}_${contextKey}` : key;
 
 	// Initialize from localStorage
 	const [localValue, setLocalValue] = useState(() => {
