@@ -7,7 +7,9 @@
  * - Determining initial grid state
  * - Starting fresh games
  *
- * Returns: { initialGrid, wasCompleted }
+ * Returns: { loadedGrid, wasSolved }
+ * - loadedGrid: Grid state to render (null = show fresh puzzle, array = resume/solved state)
+ * - wasSolved: Whether this puzzle was already completed
  */
 
 import { useState, useEffect } from "react";
@@ -50,8 +52,8 @@ export function useLoadGame({ puzzleId, gridSize, puzzleData, savedGame }) {
 			}
 
 			setInitResult({
-				initialGrid: savedGame.grid,
-				wasCompleted: false,
+				loadedGrid: savedGame.grid,
+				wasSolved: false,
 			});
 			return;
 		}
@@ -71,8 +73,8 @@ export function useLoadGame({ puzzleId, gridSize, puzzleData, savedGame }) {
 
 				// Show solved grid with trophy
 				setInitResult({
-					initialGrid: getSolvedState(gridSize),
-					wasCompleted: true,
+					loadedGrid: getSolvedState(gridSize),
+					wasSolved: true,
 				});
 				return;
 			}
@@ -88,8 +90,8 @@ export function useLoadGame({ puzzleId, gridSize, puzzleData, savedGame }) {
 		// Priority 3: Start fresh (signed-in with no save, or signed-out users always)
 		// Signed-out users NEVER load saved progress (incentive to sign in)
 		setInitResult({
-			initialGrid: null, // null means "show initialGrid from puzzleData"
-			wasCompleted: false,
+			loadedGrid: null, // null means "show fresh puzzle from puzzleData"
+			wasSolved: false,
 		});
 
 		// Empty deps: runs once on mount, all data is ready via props
@@ -97,5 +99,5 @@ export function useLoadGame({ puzzleId, gridSize, puzzleData, savedGame }) {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
-	return initResult || { initialGrid: null, wasCompleted: false };
+	return initResult || { loadedGrid: null, wasSolved: false };
 }

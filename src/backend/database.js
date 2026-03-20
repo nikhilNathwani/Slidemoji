@@ -22,25 +22,6 @@ import { db } from "./firebaseConfig";
 import { getLatestPuzzleId } from "../utils/puzzleUtils";
 
 /**
- * Get today's date as YYYY-MM-DD string
- * @returns {string} Date in YYYY-MM-DD format
- */
-function getTodaysDate() {
-	const now = new Date();
-	return now.toISOString().split("T")[0];
-}
-
-/**
- * Get yesterday's date as YYYY-MM-DD string
- * @returns {string} Date in YYYY-MM-DD format
- */
-function getYesterdaysDate() {
-	const yesterday = new Date();
-	yesterday.setDate(yesterday.getDate() - 1);
-	return yesterday.toISOString().split("T")[0];
-}
-
-/**
  * User data structure (see FIRESTORE_SCHEMA.md for full documentation):
  * {
  *   uid: string,
@@ -57,11 +38,6 @@ function getYesterdaysDate() {
  *   stats: {
  *     totalAttempted: number,
  *     totalSolved: number,
- *     currentPlayStreak: number,
- *     maxPlayStreak: number,
- *     currentWinStreak: number,
- *     maxWinStreak: number,
- *     lastPlayedDate: string (YYYY-MM-DD),
  *     solvedPuzzles: {
  *       [puzzleId]: {
  *         [difficulty]: {
@@ -153,13 +129,6 @@ export async function createUserData(userId, userData = {}) {
 				// High-level counters
 				totalAttempted: 0,
 				totalSolved: 0,
-				// Play streak: consecutive days played (any attempt)
-				currentPlayStreak: 0,
-				maxPlayStreak: 0,
-				// Win streak: consecutive days with at least one completion
-				currentWinStreak: 0,
-				maxWinStreak: 0,
-				lastPlayedDate: null, // YYYY-MM-DD format
 				// Trophy collection: nested by puzzle ID → difficulty
 				solvedPuzzles: {},
 			},
@@ -205,7 +174,7 @@ export async function updateUserPreferences(userId, preferences) {
 }
 
 /**
- * Save puzzle start - creates game state and updates play streak
+ * Save puzzle start - creates game state
  *
  * Called when user starts a new puzzle or switches difficulty.
  *
@@ -213,13 +182,6 @@ export async function updateUserPreferences(userId, preferences) {
  * 1. Creates nested gameState entry: gameState[puzzleId][difficulty]
  * 2. Determines if this is a daily puzzle or archive play
  * 3. Increments totalAttempted (only first time trying this puzzle+difficulty)
- * 4. Updates play streak (Wordle-style, daily puzzles only)
- *
- * Play Streak Logic:
- * - If played yesterday → continue streak
- * - If first play today (but not yesterday) → reset to 1
- * - If already played today → no change
- * - Archive plays DON'T update streaks
  *
  * @param {string} userId - Firebase Auth user ID
  * @param {number} puzzleId - Puzzle number (1-365)
@@ -261,28 +223,6 @@ export async function saveGameStart(userId, puzzleId, difficulty, initialGrid) {
 		// If user already solved this combo, we still allow retry but don't re-count it
 		if (!stats.solvedPuzzles?.[puzzleId]?.[difficulty]) {
 			stats.totalAttempted++;
-		}
-
-		// Update play streak - ONLY for daily puzzles, not archive
-		// This encourages daily engagement without penalizing casual archive play
-		if (!fromArchive) {
-			const today = getTodaysDate(); // e.g., "2026-03-03"
-			const yesterday = getYesterdaysDate(); // e.g., "2026-03-02"
-
-			if (stats.lastPlayedDate === yesterday) {
-				// Continuing streak - played yesterday and now playing today
-				stats.currentPlayStreak++;
-				stats.maxPlayStreak = Math.max(
-					stats.maxPlayStreak,
-					stats.currentPlayStreak,
-				);
-			} else if (stats.lastPlayedDate !== today) {
-				// First play today, but didn't play yesterday - streak broken, reset to 1
-				stats.currentPlayStreak = 1;
-			}
-			// If lastPlayedDate === today, user already played today, don't update
-
-			stats.lastPlayedDate = today;
 		}
 
 		// Save to Firestore
@@ -334,21 +274,14 @@ export async function saveGameMove(userId, puzzleId, difficulty, gameData) {
 }
 
 /**
- * Save completion when puzzle is won (trophy + win streak logic)
+ * Save completion when puzzle is won (trophy tracking)
  *
- * Called when user solves a puzzle. This is the most complex persistence function!
+ * Called when user solves a puzzle.
  *
  * What it does:
  * 1. Saves trophy to solvedPuzzles[puzzleId][difficulty] with emoji data
  * 2. Increments totalSolved counter
- * 3. Updates win streak (daily puzzles only, first win of the day)
- * 4. Clears the game from gameState (puzzle is done)
- *
- * Win Streak Logic:
- * - Only daily puzzles update win streak (archive plays tracked but don't affect streaks)
- * - Only counts first WIN of the day (can play multiple difficulties, only first counts)
- * - If won yesterday or today → continue streak
- * - If won today but not yesterday → reset to 1
+ * 3. Clears the game from gameState (puzzle is done)
  *
  * Trophy System:
  * - User can solve same puzzle on multiple difficulties
@@ -409,50 +342,6 @@ export async function saveGameCompletion(
 
 		// Update totals (both daily and archive count here)
 		stats.totalSolved++;
-
-		// Update win streak - ONLY for daily puzzles, not archive
-		// Win streak = consecutive days with at least ONE win
-		if (!fromArchive) {
-			const today = getTodaysDate();
-			const yesterday = getYesterdaysDate();
-
-			// Check if this is their FIRST WIN today (not just first play)
-			// User might solve both 3x3 and 4x4 - only first counts for streak
-			const hasWonToday = Object.entries(stats.solvedPuzzles).some(
-				([, difficulties]) =>
-					Object.values(difficulties).some((comp) => {
-						// Filter to daily completions (not archive) from today
-						if (!comp.fromArchive && comp.completedAt) {
-							const compDate = comp.completedAt.toDate();
-							return (
-								compDate.toDateString() ===
-								new Date().toDateString()
-							);
-						}
-						return false;
-					}),
-			);
-
-			if (!hasWonToday) {
-				// This is their first win today!
-				if (
-					stats.lastPlayedDate === yesterday ||
-					stats.lastPlayedDate === today
-				) {
-					// Continuing win streak (won yesterday or today)
-					stats.currentWinStreak++;
-					stats.maxWinStreak = Math.max(
-						stats.maxWinStreak,
-						stats.currentWinStreak,
-					);
-				} else {
-					// Won today but didn't win yesterday - streak broken, reset to 1
-					stats.currentWinStreak = 1;
-				}
-			}
-			// If hasWonToday is true, this is a second win today (e.g., switching difficulty)
-			// Don't update streak again
-		}
 
 		// Clear this game from gameState (puzzle is complete!)
 		// But keep other in-progress games (user might be playing multiple puzzles)

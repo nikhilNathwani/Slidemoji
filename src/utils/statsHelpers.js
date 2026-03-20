@@ -1,3 +1,5 @@
+import { getSignedOutMaxSolved } from "./localStorage";
+
 /**
  * Add a puzzle solution to the user's solved puzzles
  * Safely handles nested object creation
@@ -28,15 +30,22 @@ export function addPuzzleSolution(userData, puzzleId, gridSize, solutionData) {
 
 /**
  * Get the highest grid size solved for a specific puzzle
+ * Handles both signed-in users (Firestore) and signed-out users (localStorage)
  *
- * @param {Object} userData - User data object
+ * @param {Object} userData - User data object (null/undefined for signed-out users)
  * @param {number} puzzleId - Puzzle ID
  * @returns {number} Highest grid size solved (0, 3, or 4)
  */
 export function getMaxGridSizeSolved(userData, puzzleId) {
-	const solutions = userData?.stats?.solvedPuzzles?.[puzzleId];
-	if (!solutions) return 0;
+	// Signed-in user: check Firestore data
+	if (userData?.stats?.solvedPuzzles) {
+		const solutions = userData.stats.solvedPuzzles[puzzleId];
+		if (solutions) {
+			const difficulties = Object.keys(solutions).map(Number);
+			return Math.max(...difficulties, 0);
+		}
+	}
 
-	const difficulties = Object.keys(solutions).map(Number);
-	return Math.max(...difficulties, 0);
+	// Signed-out user: check localStorage
+	return getSignedOutMaxSolved(puzzleId);
 }

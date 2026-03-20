@@ -6,10 +6,9 @@ import { getLatestPuzzleId } from "../../utils/puzzleUtils";
 import styles from "./StatsContent.module.css";
 import { FontAwesomeIcon } from "../../utils/icons";
 
-function StatsContent({ showTitle = false, userData }) {
+function StatsContent({ showTitle = false, solvedPuzzles }) {
 	const { user } = useAuth();
 
-	const solvedPuzzles = userData?.stats?.solvedPuzzles;
 	const numTotalPuzzles = getLatestPuzzleId();
 	const numEarnedTrophies = Object.keys(solvedPuzzles || {}).length;
 

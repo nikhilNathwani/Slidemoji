@@ -9,7 +9,6 @@ import { useAuth } from "../../hooks/useAuth";
 import { useLoadGame } from "../../hooks/useLoadGame";
 import { useSaveGame } from "../../hooks/useSaveGame";
 import { getSolvedState } from "../../utils/gridHelpers";
-import { getSignedOutMaxSolved } from "../../utils/localStorage";
 
 function Game({
 	puzzleId,
@@ -24,25 +23,25 @@ function Game({
 }) {
 	const { user, signIn } = useAuth();
 
-	// Initialize grid on mount - handles loading saved games and localStorage migration
+	// Load game state on mount - handles resuming or starting fresh
 	// Component remounts when user/puzzleId/gridSize changes (via key prop in App)
-	const { initialGrid, wasCompleted } = useLoadGame({
+	const { loadedGrid, wasSolved } = useLoadGame({
 		puzzleId,
 		gridSize,
 		puzzleData,
 		savedGame,
 	});
 
+	// Grid state - Game manages current gameplay state
+	const [currentGrid, setCurrentGrid] = useState(loadedGrid);
+	const [isSolved, setIsSolved] = useState(wasSolved);
+
 	// Game state persistence - handles Firestore (signed in) and localStorage (signed out)
-	const { saveMove, saveCompletion, saveRestart } = useSaveGame();
+	const { saveMove, saveSolution, saveRestart } = useSaveGame();
 
 	// Dialog state
 	const [showRestartDialog, setShowRestartDialog] = useState(false);
 	const [showWinDialog, setShowWinDialog] = useState(false);
-
-	// Grid state - Game manages current gameplay state
-	const [currentGrid, setCurrentGrid] = useState(initialGrid);
-	const [isCompleted, setIsCompleted] = useState(wasCompleted);
 
 	// Auto-save after each move
 	const handleMove = (newGrid) => {
@@ -56,15 +55,15 @@ function Game({
 		});
 	};
 
-	// Handle puzzle completion
-	const handleWin = () => {
+	// Handle puzzle solution
+	const handleSolve = () => {
 		// Update currentGrid to solved state to preserve it when signing in
 		const solvedGrid = getSolvedState(gridSize);
 		setCurrentGrid(solvedGrid);
 
-		setIsCompleted(true);
+		setIsSolved(true);
 
-		saveCompletion({
+		saveSolution({
 			puzzleId,
 			gridSize,
 			puzzleData,
@@ -81,7 +80,7 @@ function Game({
 	const handleRestartConfirm = () => {
 		setShowRestartDialog(false);
 		setCurrentGrid(null); // Clear current grid to show initial
-		setIsCompleted(false); // Reset completion state
+		setIsSolved(false); // Reset solved state
 
 		saveRestart({
 			gridSize,
@@ -89,7 +88,7 @@ function Game({
 		});
 	};
 
-	// Game decides which grid to show (smart logic here)
+	// Game decides which grid to show
 	const gridToShow = currentGrid || puzzleData[gridSize];
 
 	return (
@@ -100,16 +99,12 @@ function Game({
 						trophyNum={String(puzzleData.id).padStart(3, "0")}
 						trophyEmoji={puzzleData.emoji}
 						trophyName={puzzleData.emojiName}
-						maxGridSizeSolved={
-							user
-								? maxGridSizeSolved
-								: getSignedOutMaxSolved(puzzleId)
-						}
+						maxGridSizeSolved={maxGridSizeSolved}
 					/>
 				</div>
 				<Grid
 					size={gridSize}
-					onWin={handleWin}
+					onWin={handleSolve}
 					hasNumbersShown={hasNumbersShown && !showWinDialog}
 					emoji={puzzleData.emoji}
 					grid={gridToShow}
@@ -119,7 +114,7 @@ function Game({
 
 				<div className={styles.restartContainer}>
 					<GameActionButton
-						isCompleted={isCompleted}
+						isSolved={isSolved}
 						user={user}
 						gridSize={gridSize}
 						maxGridSizeSolved={maxGridSizeSolved}

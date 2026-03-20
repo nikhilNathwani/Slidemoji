@@ -56,7 +56,6 @@ function App() {
 	// Fetch user data (needs gridSize to be defined)
 	const { data: userData, isLoading: isLoadingUser } = useUser(user?.uid);
 	const isLoading = isLoadingPuzzle || (user && isLoadingUser);
-	const savedGame = userData?.gameState?.[puzzleId]?.[gridSize];
 
 	if (showLandingPage) {
 		return (
@@ -97,7 +96,7 @@ function App() {
 				puzzleId={puzzleId}
 				puzzleData={puzzleData}
 				gridSize={gridSize}
-				savedGame={savedGame}
+				savedGame={userData?.gameState?.[puzzleId]?.[gridSize]}
 				maxGridSizeSolved={getMaxGridSizeSolved(userData, puzzleId)}
 				hasNumbersShown={showNumbers}
 				hasSoundEnabled={soundEnabled}
@@ -121,7 +120,7 @@ function App() {
 			<StatsDialog
 				isOpen={showStatsDialog}
 				onClose={() => setShowStatsDialog(false)}
-				userData={userData}
+				solvedPuzzles={userData?.stats?.solvedPuzzles}
 			/>
 		</div>
 	);
