@@ -89,7 +89,7 @@ export function useLoadGame({ puzzleId, gridSize, puzzleData, savedGame }) {
 
 		// Priority 3: Check localStorage for signed-out user completions
 		// (Trophies persist even when signed out, but not in-progress games)
-		if (localCompletion?.isCompleted) {
+		if (!user && localCompletion?.isCompleted) {
 			setInitResult({
 				loadedGrid: getSolvedState(gridSize),
 				wasSolved: true,

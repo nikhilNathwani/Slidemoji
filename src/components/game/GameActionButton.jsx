@@ -24,6 +24,14 @@ function GameActionButton({
 	if (isSolved && !user) {
 		return (
 			<div className={`${styles.restartContainer} ${styles.visible}`}>
+				<div style={{ textAlign: 'center', marginBottom: '12px' }}>
+					<h3 style={{ fontSize: 'var(--text-lg)', color: 'var(--text-primary)', marginBottom: '8px' }}>
+						Save Your Trophies
+					</h3>
+					<p style={{ fontSize: 'var(--text-base)', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>
+						Sign in to save your trophies across devices and track your progress over time.
+					</p>
+				</div>
 				<GoogleSignInButton />
 			</div>
 		);

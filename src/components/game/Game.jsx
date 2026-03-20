@@ -105,7 +105,7 @@ function Game({
 				<Grid
 					size={gridSize}
 					onWin={handleSolve}
-					hasNumbersShown={hasNumbersShown && !showWinDialog && !isSolved}
+					hasNumbersShown={hasNumbersShown && !isSolved}
 					emoji={puzzleData.emoji}
 					grid={gridToShow}
 					onMove={handleMove}
