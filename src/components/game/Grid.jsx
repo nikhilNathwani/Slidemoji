@@ -87,11 +87,8 @@ function Grid({
 			// Notify parent for Firestore save
 			onMove(newTiles);
 
-			// Block input during animation (300ms to match Tile animation)
+			// Block input during animation (unblocked by onLayoutAnimationComplete)
 			setIsInputBlocked(true);
-			setTimeout(() => {
-				setIsInputBlocked(false);
-			}, 300);
 		},
 		[tiles, size, onMove, onWin, hasSoundEnabled],
 	);
@@ -188,6 +185,7 @@ function Grid({
 						hasNumbersShown={hasNumbersShown}
 						emojiSvgUrl={emojiSvgUrl}
 						gridSize={size}
+						onTransitionEnd={() => setIsInputBlocked(false)}
 						{...(isClickable && {
 							onPointerDown: () => handleTileSelect(index, null),
 						})}

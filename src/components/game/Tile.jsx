@@ -44,7 +44,8 @@ function Tile({
 			transition={{
 				layout: { duration: 0.3, ease: "easeOut" },
 			}}
-			className={classNames.join(" ")}
+			onLayoutAnimationComplete={onTransitionEnd}
+			className={classNames.join(" ")}}
 			{...(isClickable && { onPointerDown })}
 			style={getTileStyle(tileNumber, gridSize, emojiSvgUrl)}
 			data-tile-number={tileNumber}
