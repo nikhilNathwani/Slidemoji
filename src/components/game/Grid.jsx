@@ -66,6 +66,11 @@ function Grid({
 	// Move tile - smooth animation via CSS transitions
 	const moveTile = useCallback(
 		(tileIndex) => {
+			// Double-check input isn't blocked (race condition protection)
+			if (isInputBlocked) {
+				return;
+			}
+
 			const currentGapIndex = getGapIndex(tiles);
 			const newTiles = swapTiles(tiles, tileIndex, currentGapIndex);
 

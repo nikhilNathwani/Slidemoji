@@ -7,8 +7,8 @@
  * @param {string} key - The preference key (e.g., 'darkMode', 'soundEnabled', 'gridSize')
  * @param {*} defaultValue - The default value if no saved preference exists
  * @param {Object} options - Optional configuration
- * @param {boolean} options.persistForSignedOut - Whether signed-out users should see their localStorage value (default: true)
- * @param {string} options.contextKey - Optional key to scope this preference (e.g., puzzleId for daily reset)
+ * @param {boolean} [options.persistForSignedOut=true] - Whether signed-out users should see their localStorage value
+ * @param {string} [options.contextKey=null] - Optional key to scope this preference (e.g., puzzleId for daily reset)
  * @returns {[any, Function]} - [currentValue, setValue] tuple (like useState)
  *
  * Usage:
@@ -31,8 +31,11 @@ import { updateUserPreferences } from "../backend/database";
 export function usePreference(
 	key,
 	defaultValue,
-	options = { persistForSignedOut: true, contextKey: null },
+	options = {},
 ) {
+	// Merge with defaults
+	const { persistForSignedOut = true, contextKey = null } = options;
+	
 	const { user } = useAuth();
 	const { data: userData } = useUser(user?.uid);
 	const queryClient = useQueryClient();
@@ -83,8 +86,8 @@ export function usePreference(
 	});
 
 	// If contextKey is provided, scope the storage key (e.g., showNumbers_123 for puzzle 123)
-	const storageKey = options.contextKey
-		? `${key}_${options.contextKey}`
+	const storageKey = contextKey
+		? `${key}_${contextKey}`
 		: key;
 
 	// Initialize from localStorage
@@ -104,7 +107,7 @@ export function usePreference(
 		}
 
 		// Signed-out: Check persistForSignedOut flag
-		if (options.persistForSignedOut) {
+		if (persistForSignedOut) {
 			return localValue; // Normal: remember localStorage value
 		} else {
 			return defaultValue; // Ephemeral: always show default
