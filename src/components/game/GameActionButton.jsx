@@ -23,8 +23,11 @@ function GameActionButton({
 	// Signed out and solved - show sign-in upsell
 	if (isSolved && !user) {
 		return (
-			<div className={`${styles.restartContainer} ${styles.visible}`}>
-				<div style={{ textAlign: "center", marginBottom: "12px" }}>
+			<div
+				className={`${styles.restartContainer} ${styles.visible}`}
+				style={{ flexDirection: "column", gap: "16px" }}
+			>
+				<div style={{ textAlign: "center" }}>
 					<h3
 						style={{
 							fontSize: "var(--text-lg)",
