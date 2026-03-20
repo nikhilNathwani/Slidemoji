@@ -9,7 +9,7 @@ import { getLatestPuzzleId } from "./utils/dateUtils";
 import { useAuth } from "./hooks/useAuth";
 import { useUser } from "./hooks/useUser";
 import { usePuzzle } from "./hooks/usePuzzle";
-import { useSyncedPreference } from "./hooks/useSyncedPreference";
+import { usePreference } from "./hooks/usePreference";
 import {
 	DEFAULT_GRID_SIZE,
 	DEFAULT_DARK_MODE,
@@ -35,21 +35,21 @@ function App() {
 	const [showStatsDialog, setShowStatsDialog] = useState(false);
 
 	// Synced preferences (localStorage for signed-out, Firestore for signed-in)
-	const [darkMode, setDarkMode] = useSyncedPreference(
+	const [darkMode, setDarkMode] = usePreference(
 		"darkMode",
 		DEFAULT_DARK_MODE,
 	);
-	const [soundEnabled, setSoundEnabled] = useSyncedPreference(
+	const [soundEnabled, setSoundEnabled] = usePreference(
 		"soundEnabled",
 		DEFAULT_SOUND_ENABLED,
 	);
-	const [showNumbers, setShowNumbers] = useSyncedPreference(
+	const [showNumbers, setShowNumbers] = usePreference(
 		"showNumbers",
 		DEFAULT_SHOW_NUMBERS,
 		{ contextKey: puzzleId },
 		// Resets to ON for each new puzzle (new puzzleId), but respects manual changes within the puzzle
 	);
-	const [gridSize, setGridSize] = useSyncedPreference(
+	const [gridSize, setGridSize] = usePreference(
 		"gridSize",
 		DEFAULT_GRID_SIZE,
 		{ persistForSignedOut: false },

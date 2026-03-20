@@ -1,5 +1,5 @@
 /**
- * useSyncedPreference - Manage preferences that sync between localStorage and Firestore
+ * usePreference - Manage preferences that sync between localStorage and Firestore
  *
  * This hook abstracts the pattern of storing preferences in localStorage for signed-out users
  * and syncing them to Firestore for signed-in users (for cross-device sync).
@@ -13,28 +13,74 @@
  *
  * Usage:
  *   // Normal preference (persists for everyone)
- *   const [darkMode, setDarkMode] = useSyncedPreference('darkMode', false);
+ *   const [darkMode, setDarkMode] = usePreference('darkMode', false);
  *
  *   // Ephemeral for signed-out users (always shows default, but localStorage used as Firestore fallback for signed-in)
- *   const [gridSize, setGridSize] = useSyncedPreference('gridSize', 3, { persistForSignedOut: false });
+ *   const [gridSize, setGridSize] = usePreference('gridSize', 3, { persistForSignedOut: false });
  *
  *   // Context-scoped (e.g., resets to default for each new puzzle)
- *   const [showNumbers, setShowNumbers] = useSyncedPreference('showNumbers', true, { contextKey: puzzleId });
+ *   const [showNumbers, setShowNumbers] = usePreference('showNumbers', true, { contextKey: puzzleId });
  */
 
 import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "./useAuth";
 import { useUser } from "./useUser";
-import { useUpdatePreferences } from "./useUpdatePreferences";
+import { updateUserPreferences } from "../backend/database";
 
-export function useSyncedPreference(
+export function usePreference(
 	key,
 	defaultValue,
 	options = { persistForSignedOut: true, contextKey: null },
 ) {
 	const { user } = useAuth();
 	const { data: userData } = useUser(user?.uid);
-	const { mutate: updatePreferences } = useUpdatePreferences(user?.uid);
+	const queryClient = useQueryClient();
+
+	// React Query mutation for updating preferences in Firestore
+	const updatePreferencesMutation = useMutation({
+		mutationFn: (preferences) => {
+			if (!user?.uid) {
+				throw new Error(
+					"Cannot update preferences: user not signed in",
+				);
+			}
+			return updateUserPreferences(user.uid, preferences);
+		},
+		onMutate: async (newPreferences) => {
+			// Cancel any outgoing refetches
+			await queryClient.cancelQueries({
+				queryKey: ["user", user?.uid],
+			});
+
+			// Snapshot the previous value for rollback
+			const previousUserData = queryClient.getQueryData([
+				"user",
+				user?.uid,
+			]);
+
+			// Optimistically update the cache
+			queryClient.setQueryData(["user", user?.uid], (old) => ({
+				...old,
+				preferences: {
+					...old?.preferences,
+					...newPreferences,
+				},
+			}));
+
+			return { previousUserData };
+		},
+		onError: (error, newPreferences, context) => {
+			console.error("Error updating preferences:", error);
+			// Rollback on error
+			if (context?.previousUserData) {
+				queryClient.setQueryData(
+					["user", user?.uid],
+					context.previousUserData,
+				);
+			}
+		},
+	});
 
 	// If contextKey is provided, scope the storage key (e.g., showNumbers_123 for puzzle 123)
 	const storageKey = options.contextKey
@@ -71,7 +117,7 @@ export function useSyncedPreference(
 		localStorage.setItem(storageKey, JSON.stringify(newValue));
 
 		if (user) {
-			updatePreferences({ [key]: newValue });
+			updatePreferencesMutation.mutate({ [key]: newValue });
 		}
 	};
 

@@ -212,7 +212,7 @@ export async function updateUserPreferences(userId, preferences) {
  * @param {Array} initialGrid - Starting grid configuration from Firestore
  * @returns {Promise<Object>} Updated gameState and stats
  */
-export async function savePuzzleStart(
+export async function saveGameStart(
 	userId,
 	puzzleId,
 	difficulty,
@@ -301,7 +301,7 @@ export async function savePuzzleStart(
  * @param {number} difficulty - Grid size (3 or 4)
  * @param {Object} gameData - { grid: Array }
  */
-export async function saveGameState(userId, puzzleId, difficulty, gameData) {
+export async function saveGameMove(userId, puzzleId, difficulty, gameData) {
 	if (!userId) {
 		throw new Error("User ID is required");
 	}
@@ -351,7 +351,7 @@ export async function saveGameState(userId, puzzleId, difficulty, gameData) {
  * @param {Object} completionData - { emoji: string, emojiName: string }
  * @returns {Promise<Object>} Updated stats
  */
-export async function saveCompletion(
+export async function saveGameCompletion(
 	userId,
 	puzzleId,
 	difficulty,
