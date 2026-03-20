@@ -34,11 +34,11 @@ export function saveGameProgress({
 	grid,
 	puzzleData,
 	user,
-	saveMoveToFirestore,
+	saveMove, // Mutation function from useSaveGameState hook
 }) {
 	if (user) {
 		// Signed in: save to Firestore
-		saveMoveToFirestore({
+		saveMove({
 			puzzleId: puzzleData.id,
 			gridSize,
 			grid,
@@ -58,13 +58,13 @@ export function saveGameCompletion({
 	grid,
 	puzzleData,
 	user,
-	saveCompletionToFirestore,
+	saveCompletion, // Mutation function from useSaveCompletion hook
 	updateCacheImmediately, // For instant trophy display
 }) {
 	if (user) {
 		// Signed in: save to Firestore
 		updateCacheImmediately();
-		saveCompletionToFirestore({
+		saveCompletion({
 			puzzleId: puzzleData.id,
 			gridSize,
 			emoji: puzzleData.emoji,

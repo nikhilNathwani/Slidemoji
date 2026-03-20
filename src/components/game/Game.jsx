@@ -74,7 +74,7 @@ function Game({
 			grid: newGrid,
 			puzzleData,
 			user,
-			saveMoveToFirestore: saveMove,
+			saveMove,
 		});
 	};
 
@@ -92,7 +92,7 @@ function Game({
 			grid: solvedGrid,
 			puzzleData,
 			user,
-			saveCompletionToFirestore: saveCompletion,
+			saveCompletion,
 			updateCacheImmediately: () => {
 				// Update cache immediately for instant trophy display
 				queryClient.setQueryData(["user", user.uid], (prevData) =>

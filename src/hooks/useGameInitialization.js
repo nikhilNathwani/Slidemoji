@@ -64,7 +64,7 @@ export function useGameInitialization({
 		// Priority 1: Firestore saved game with actual progress (when signed in)
 		if (hasFirestoreProgress) {
 			// If there's also localStorage data from being signed out, migrate completions only
-			if (localProgress && user) {
+			if (localProgress) {
 				const { isCompleted: wasCompleted } = localProgress;
 
 				if (wasCompleted) {
@@ -89,7 +89,7 @@ export function useGameInitialization({
 			return;
 		}
 
-		// Priority 2: localStorage data (signed out progress, or signed in with no real Firestore progress)
+		// Priority 2: localStorage data (signed in with no Firestore progress, migrating to Firestore)
 		if (localProgress && user) {
 			const {
 				isCompleted: wasCompleted,
@@ -116,7 +116,7 @@ export function useGameInitialization({
 			}
 
 			if (grid && initialGrid) {
-				// Migrate in-progress work (better than initial Firestore state or no state)
+				// Migrate in-progress work
 				savePuzzleStart({
 					puzzleId: puzzleData.id,
 					gridSize,
@@ -138,7 +138,7 @@ export function useGameInitialization({
 			}
 		}
 
-		// Priority 3: Start fresh
+		// Priority 3: Start fresh (signed in user with no saved game)
 		if (user) {
 			savePuzzleStart({
 				puzzleId: puzzleData.id,
@@ -147,6 +147,7 @@ export function useGameInitialization({
 			});
 		}
 
+		// Priority 4: Anonymous user starting fresh
 		setInitResult({
 			initialGrid: null, // null means "show initialGrid from puzzleData"
 			wasCompleted: false,
