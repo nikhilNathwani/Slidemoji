@@ -13,22 +13,10 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "./useAuth";
 import { useFirestoreMutations } from "./useFirestoreMutations";
-
-// Get localStorage key for signed-out progress
-const getLocalStorageKey = (puzzleId, gridSize) =>
-	`signedOutProgress_${puzzleId}_${gridSize}`;
-
-// Read signed-out progress from localStorage
-const getLocalProgress = (puzzleId, gridSize) => {
-	const key = getLocalStorageKey(puzzleId, gridSize);
-	const data = localStorage.getItem(key);
-	return data ? JSON.parse(data) : null;
-};
-
-// Clear localStorage after migration
-const clearLocalProgress = (puzzleId, gridSize) => {
-	localStorage.removeItem(getLocalStorageKey(puzzleId, gridSize));
-};
+import {
+	getLocalCompletion,
+	clearLocalProgress,
+} from "../utils/localStorage";
 
 export function useLoadGame({ puzzleId, gridSize, puzzleData, savedGame }) {
 	const { user } = useAuth();
@@ -39,7 +27,7 @@ export function useLoadGame({ puzzleId, gridSize, puzzleData, savedGame }) {
 	const [initResult, setInitResult] = useState(null);
 
 	useEffect(() => {
-		const localProgress = getLocalProgress(puzzleId, gridSize);
+		const localCompletion = getLocalCompletion(puzzleId, gridSize);
 
 		// Helper: Check if savedGame is just the initial grid (no real progress)
 		const isInitialGrid = (grid) => {
@@ -54,7 +42,7 @@ export function useLoadGame({ puzzleId, gridSize, puzzleData, savedGame }) {
 		// Priority 1: Firestore saved game with actual progress (signed-in users only)
 		if (hasFirestoreProgress) {
 			// Check for localStorage completions to migrate (signed in after completing while signed out)
-			if (localProgress?.isCompleted) {
+			if (localCompletion?.isCompleted) {
 				saveCompletionToFirestore({
 					puzzleId: puzzleData.id,
 					gridSize,
@@ -74,7 +62,7 @@ export function useLoadGame({ puzzleId, gridSize, puzzleData, savedGame }) {
 
 		// Priority 2: localStorage completion (signed in with no Firestore progress)
 		if (user) {
-			if (localProgress?.isCompleted) {
+			if (localCompletion?.isCompleted) {
 				// Migrate completion to Firestore
 				saveCompletionToFirestore({
 					puzzleId: puzzleData.id,

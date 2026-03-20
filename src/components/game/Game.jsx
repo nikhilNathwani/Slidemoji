@@ -9,6 +9,7 @@ import { useAuth } from "../../hooks/useAuth";
 import { useLoadGame } from "../../hooks/useLoadGame";
 import { useSaveGame } from "../../hooks/useSaveGame";
 import { getSolvedState } from "../../utils/gridHelpers";
+import { getSignedOutMaxSolved } from "../../utils/localStorage";
 
 function Game({
 	puzzleId,
@@ -42,27 +43,6 @@ function Game({
 	// Grid state - Game manages current gameplay state
 	const [currentGrid, setCurrentGrid] = useState(initialGrid);
 	const [isCompleted, setIsCompleted] = useState(wasCompleted);
-
-	// Track max grid size solved for signed-out users (persists until next puzzle)
-	// Signed-in users use maxGridSizeSolved prop from Firestore (persisted forever)
-	const [signedOutMaxSolved, setSignedOutMaxSolved] = useState(() => {
-		if (user) return 0; // Signed-in users don't need this
-
-		// Check localStorage for today's puzzle completions
-		const key = `signedOutProgress_${puzzleId}_3`;
-		const saved3 = localStorage.getItem(key);
-		const key4 = `signedOutProgress_${puzzleId}_4`;
-		const saved4 = localStorage.getItem(key4);
-		const key5 = `signedOutProgress_${puzzleId}_5`;
-		const saved5 = localStorage.getItem(key5);
-
-		let maxSolved = 0;
-		if (saved3 && JSON.parse(saved3).isCompleted) maxSolved = 3;
-		if (saved4 && JSON.parse(saved4).isCompleted) maxSolved = 4;
-		if (saved5 && JSON.parse(saved5).isCompleted) maxSolved = 5;
-
-		return maxSolved;
-	});
 
 	// Auto-save after each move
 	const handleMove = (newGrid) => {
@@ -121,7 +101,9 @@ function Game({
 						trophyEmoji={puzzleData.emoji}
 						trophyName={puzzleData.emojiName}
 						maxGridSizeSolved={
-							user ? maxGridSizeSolved : signedOutMaxSolved
+							user
+								? maxGridSizeSolved
+								: getSignedOutMaxSolved(puzzleId)
 						}
 					/>
 				</div>

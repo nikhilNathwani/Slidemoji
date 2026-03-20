@@ -12,18 +12,7 @@
 
 import { useAuth } from "./useAuth";
 import { useFirestoreMutations } from "./useFirestoreMutations";
-
-// Get localStorage key for signed-out progress
-const getLocalStorageKey = (puzzleId, gridSize) =>
-	`signedOutProgress_${puzzleId}_${gridSize}`;
-
-// Save signed-out completion to localStorage (just a flag, no grid state)
-const saveCompletionToLocalStorage = (puzzleId, gridSize) => {
-	localStorage.setItem(
-		getLocalStorageKey(puzzleId, gridSize),
-		JSON.stringify({ isCompleted: true }),
-	);
-};
+import { saveLocalCompletion } from "../utils/localStorage";
 
 export function useSaveGame() {
 	const { user } = useAuth();
@@ -64,7 +53,7 @@ export function useSaveGame() {
 			});
 		} else {
 			// Signed out: save completion flag only (for trophy display)
-			saveCompletionToLocalStorage(puzzleId, gridSize);
+			saveLocalCompletion(puzzleId, gridSize);
 		}
 	};
 
