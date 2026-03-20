@@ -10,13 +10,8 @@
  * Returns: { saveMove, saveCompletion, saveRestart }
  */
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "./useAuth";
-import {
-	saveGameStart,
-	saveGameMove,
-	saveGameCompletion,
-} from "../backend/database";
+import { useFirestoreMutations } from "./useFirestoreMutations";
 
 // Get localStorage key for signed-out progress
 const getLocalStorageKey = (puzzleId, gridSize) =>
@@ -42,56 +37,11 @@ const saveToLocalStorage = ({
 
 export function useSaveGame() {
 	const { user } = useAuth();
-	const queryClient = useQueryClient();
-
-	// React Query mutation for starting/restarting puzzles
-	const gameStartMutation = useMutation({
-		mutationFn: ({ puzzleId, gridSize, initialGrid }) => {
-			if (!user?.uid) return Promise.resolve();
-			return saveGameStart(user.uid, puzzleId, gridSize, initialGrid);
-		},
-		onError: (error) => {
-			console.error("Error starting puzzle:", error);
-		},
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["user", user?.uid] });
-		},
-	});
-
-	// React Query mutation for saving game state after moves
-	const gameMoveMutation = useMutation({
-		mutationFn: ({ puzzleId, gridSize, grid }) => {
-			if (!user?.uid) return Promise.resolve();
-			return saveGameMove(user.uid, puzzleId, gridSize, { grid });
-		},
-		onError: (error) => {
-			console.error("Error saving game state:", error);
-		},
-		// No cache invalidation - grid state is local only
-	});
-
-	// React Query mutation for saving completions
-	const gameCompletionMutation = useMutation({
-		mutationFn: ({ puzzleId, gridSize, emoji, emojiName }) => {
-			if (!user?.uid) return Promise.resolve();
-			return saveGameCompletion(user.uid, puzzleId, gridSize, {
-				emoji,
-				emojiName,
-			});
-		},
-		onError: (error) => {
-			console.error("Error saving completion:", error);
-		},
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["user", user?.uid] });
-		},
-	});
-
-	// Firestore save helpers (wrapper functions for mutations)
-	const saveGameStartToFirestore = (data) => gameStartMutation.mutate(data);
-	const saveGameMoveToFirestore = (data) => gameMoveMutation.mutate(data);
-	const saveGameCompletionToFirestore = (data) =>
-		gameCompletionMutation.mutate(data);
+	const {
+		saveStartToFirestore,
+		saveMoveToFirestore,
+		saveCompletionToFirestore,
+	} = useFirestoreMutations();
 
 	/**
 	 * Save game state after a move
@@ -100,7 +50,7 @@ export function useSaveGame() {
 	const saveMove = ({ puzzleId, gridSize, grid, puzzleData }) => {
 		if (user) {
 			// Signed in: save to Firestore
-			saveGameMoveToFirestore({
+			saveMoveToFirestore({
 				puzzleId: puzzleData.id,
 				gridSize,
 				grid,
@@ -131,7 +81,7 @@ export function useSaveGame() {
 		if (user) {
 			// Signed in: save to Firestore
 			updateCacheImmediately?.();
-			saveGameCompletionToFirestore({
+			saveCompletionToFirestore({
 				puzzleId: puzzleData.id,
 				gridSize,
 				emoji: puzzleData.emoji,
@@ -156,7 +106,7 @@ export function useSaveGame() {
 	const saveRestart = ({ gridSize, puzzleData }) => {
 		if (user) {
 			// Signed in: save to Firestore
-			saveGameStartToFirestore({
+			saveStartToFirestore({
 				puzzleId: puzzleData.id,
 				gridSize,
 				initialGrid: puzzleData[gridSize],
