@@ -28,7 +28,7 @@ function StatsContent({ showTitle = false, solvedPuzzles }) {
 					<p className={styles.privacyNote}>
 						<FontAwesomeIcon
 							icon="shield-alt"
-							style={{ position: "relative", top: "0.12em" }}
+							style={{ position: "relative", top: "0.275em" }}
 						/>
 						<span>
 							Your email is only used to save your progress. Your

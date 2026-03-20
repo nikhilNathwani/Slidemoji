@@ -1,7 +1,11 @@
 import AnimatedTileGrid from "./AnimatedTileGrid";
 import LandingFooter from "./LandingFooter";
+import { getLatestPuzzleId } from "../../utils/puzzleUtils";
 
 function LandingPage({ onPlay }) {
+	const puzzleId = getLatestPuzzleId();
+	const puzzleNumber = String(puzzleId).padStart(3, "0");
+
 	return (
 		<div className="landing-page">
 			<div className="landing-content">
@@ -26,7 +30,7 @@ function LandingPage({ onPlay }) {
 				</button>
 			</div>
 
-			<LandingFooter puzzleNumber="001" />
+			<LandingFooter puzzleNumber={puzzleNumber} />
 		</div>
 	);
 }
