@@ -22,12 +22,9 @@ function App() {
 	const { user } = useAuth();
 	const puzzleId = getLatestPuzzleId();
 
-	// Fetch puzzle and user data (conversions handled in hooks)
+	// Fetch puzzle data
 	const { data: puzzleData, isLoading: isLoadingPuzzle } =
 		usePuzzle(puzzleId);
-	const { data: userData, isLoading: isLoadingUser } = useUser(user?.uid);
-	const isLoading = isLoadingPuzzle || (user && isLoadingUser);
-	const savedGame = userData?.gameState?.[puzzleId]?.[gridSize];
 
 	// Show Page / Dialog
 	const [showLandingPage, setShowLandingPage] = useState(true);
@@ -52,10 +49,14 @@ function App() {
 	const [gridSize, setGridSize] = usePreference(
 		"gridSize",
 		DEFAULT_GRID_SIZE,
-		{ persistForSignedOut: false },
-		// Signed-out users always get default 3x3 grid size, to
-		// reinforce that you should sign in to retain progress
+		{ contextKey: puzzleId },
+		// Resets to default for each new puzzle to avoid confusion
 	);
+
+	// Fetch user data (needs gridSize to be defined)
+	const { data: userData, isLoading: isLoadingUser } = useUser(user?.uid);
+	const isLoading = isLoadingPuzzle || (user && isLoadingUser);
+	const savedGame = userData?.gameState?.[puzzleId]?.[gridSize];
 
 	if (showLandingPage) {
 		return (
@@ -84,7 +85,7 @@ function App() {
 
 	return (
 		<div
-			key={`${user?.uid || "anonymous"}-${puzzleId}-${gridSize}`}
+			key={`${user?.uid || "anonymous"}-${puzzleId}`}
 			className={`app ${darkMode ? "dark-theme" : "light-theme"}`}
 		>
 			<Header

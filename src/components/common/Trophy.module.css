@@ -85,12 +85,12 @@
 		rgba(255, 255, 255, 0.4),
 		transparent
 	);
-	transition: left 0.5s ease;
 }
 
-/* Mini trophy - hover animation */
+/* Mini trophy - hover animation (no reverse on unhover) */
 .trophy.gold.trophyMini:hover::before {
 	left: 100%;
+	transition: left 0.5s ease;
 }
 
 /* Regular trophy - looping animation */

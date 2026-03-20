@@ -44,7 +44,6 @@ function Tile({
 			transition={{
 				layout: { duration: 0.3, ease: "easeOut" },
 			}}
-			onLayoutAnimationComplete={onTransitionEnd}
 			className={classNames.join(" ")}
 			{...(isClickable && { onPointerDown })}
 			style={getTileStyle(tileNumber, gridSize, emojiSvgUrl)}

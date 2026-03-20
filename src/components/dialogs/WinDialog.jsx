@@ -6,11 +6,12 @@ import { FontAwesomeIcon } from "../../utils/icons";
 
 function WinDialog({ isOpen, onClose, puzzleData, gridSize }) {
 	const handleShare = () => {
-		const shareText = `Slidemoji #001 
+		const paddedId = String(puzzleData?.id).padStart(3, "0");
+		const shareText = `Slidemoji #${paddedId} 
 
 I unscrambled today's emoji! ${puzzleData?.emoji}
 
-Play at slidemoji.com`;
+Play at slidemoji.vercel.app`;
 
 		// Copy to clipboard
 		navigator.clipboard

@@ -14,6 +14,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "./useAuth";
 import { useFirestoreMutations } from "./useFirestoreMutations";
 import { getLocalCompletion, clearLocalProgress } from "../utils/localStorage";
+import { getSolvedState } from "../utils/gridHelpers";
 
 export function useLoadGame({ puzzleId, gridSize, puzzleData, savedGame }) {
 	const { user } = useAuth();
@@ -68,9 +69,9 @@ export function useLoadGame({ puzzleId, gridSize, puzzleData, savedGame }) {
 				clearLocalProgress(puzzleId, gridSize);
 				console.log("[GAME] Migrated completion from localStorage");
 
-				// Start fresh but mark as already completed
+				// Show solved grid with trophy
 				setInitResult({
-					initialGrid: null,
+					initialGrid: getSolvedState(gridSize),
 					wasCompleted: true,
 				});
 				return;
