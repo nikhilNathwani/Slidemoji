@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import "./App.css";
 import LandingPage from "./components/landing/LandingPage";
 import Header from "./components/Header";
@@ -17,21 +17,10 @@ import {
 	DEFAULT_SOUND_ENABLED,
 } from "./constants";
 import { getMaxGridSizeSolved } from "./utils/statsHelpers";
-import {
-	convertPuzzleFromFirestore,
-	convertGridFromFirestore,
-} from "./utils/puzzleUtils";
 
 function App() {
 	const { user } = useAuth();
 	const puzzleId = getLatestPuzzleId();
-
-	// Fetch puzzle data with loading state
-	const { data: rawPuzzleData, isLoading: isLoadingPuzzle } =
-		usePuzzle(puzzleId);
-	const puzzleData = useMemo(() => {
-		return rawPuzzleData ? convertPuzzleFromFirestore(rawPuzzleData) : null;
-	}, [rawPuzzleData]);
 
 	// Show Page / Dialog
 	const [showLandingPage, setShowLandingPage] = useState(true);
@@ -61,14 +50,13 @@ function App() {
 		// reinforce that you should sign in to retain progress
 	);
 
-	// Fetch User Data with React Query
+	// Fetch puzzle and user data (conversions handled in hooks)
+	const { data: puzzleData, isLoading: isLoadingPuzzle } = usePuzzle(puzzleId);
 	const { data: userData, isLoading: isLoadingUser } = useUser(user?.uid);
+	const isLoading = isLoadingPuzzle || (user && isLoadingUser);
 
-	// Convert savedGame grid from Firestore format if it exists
+	// Get saved game for current puzzle and difficulty
 	const savedGame = userData?.gameState?.[puzzleId]?.[gridSize];
-	const convertedSavedGame = savedGame
-		? { ...savedGame, grid: convertGridFromFirestore(savedGame.grid) }
-		: undefined;
 
 	if (showLandingPage) {
 		return (
@@ -81,7 +69,6 @@ function App() {
 	// Wait for data to load before rendering Game
 	// For signed-in users, wait for both puzzle and user data
 	// For signed-out users, only wait for puzzle data
-	const isLoading = isLoadingPuzzle || (user && isLoadingUser);
 	if (isLoading || !puzzleData) {
 		return (
 			<div className={`app ${darkMode ? "dark-theme" : "light-theme"}`}>
@@ -110,7 +97,7 @@ function App() {
 				puzzleId={puzzleId}
 				puzzleData={puzzleData}
 				gridSize={gridSize}
-				savedGame={convertedSavedGame}
+				savedGame={savedGame}
 				maxGridSizeSolved={getMaxGridSizeSolved(userData, puzzleId)}
 				hasNumbersShown={showNumbers}
 				hasSoundEnabled={soundEnabled}

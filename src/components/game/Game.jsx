@@ -45,8 +45,10 @@ function Game({
 	const [currentGrid, setCurrentGrid] = useState(null); // null = show initial grid from puzzleData, otherwise show this
 	const [isCompleted, setIsCompleted] = useState(false); // Track if puzzle is completed
 
-	// Track max grid size solved in this session (for signed-out users)
-	const [localMaxGridSizeSolved, setLocalMaxGridSizeSolved] = useState(0);
+	// Track max grid size solved IN THIS SESSION for signed-out users (for trophy color)
+	// Resets to 0 on refresh (session-only, not persisted)
+	// Signed-in users use maxGridSizeSolved prop from Firestore (persisted)
+	const [signedOutMaxSolved, setSignedOutMaxSolved] = useState(0);
 
 	// Firestore mutations
 	const { mutate: savePuzzleStart } = useSavePuzzleStart(user?.uid);
@@ -99,9 +101,6 @@ function Game({
 
 		setIsCompleted(true);
 
-		// Update local max grid size (for signed-out trophy color)
-		setLocalMaxGridSizeSolved((prev) => Math.max(prev, gridSize));
-
 		saveGameCompletion({
 			puzzleId,
 			gridSize,
@@ -120,6 +119,11 @@ function Game({
 				);
 			},
 		});
+
+		// For signed-out users, update session max (trophy persists until refresh)
+		if (!user) {
+			setSignedOutMaxSolved((prev) => Math.max(prev, gridSize));
+		}
 
 		setShowWinDialog(true);
 	};
@@ -153,10 +157,9 @@ function Game({
 						trophyNum={String(puzzleData.id).padStart(3, "0")}
 						trophyEmoji={puzzleData.emoji}
 						trophyName={puzzleData.emojiName}
-						maxGridSizeSolved={Math.max(
-							maxGridSizeSolved,
-							localMaxGridSizeSolved,
-						)}
+						maxGridSizeSolved={
+							user ? maxGridSizeSolved : signedOutMaxSolved
+						}
 					/>
 				</div>
 				<Grid

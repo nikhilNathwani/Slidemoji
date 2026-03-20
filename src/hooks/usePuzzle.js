@@ -12,7 +12,7 @@
  */
 
 import { useQuery } from "@tanstack/react-query";
-import { getPuzzleById } from "../utils/puzzleUtils";
+import { getPuzzleById, convertPuzzleFromFirestore } from "../utils/puzzleUtils";
 
 export function usePuzzle(puzzleId) {
 	return useQuery({
@@ -24,7 +24,8 @@ export function usePuzzle(puzzleId) {
 			// Fetch from Firestore
 			try {
 				const data = await getPuzzleById(puzzleId);
-				return data;
+				// Convert Firestore format (0 for gap) to client format (null for gap)
+				return convertPuzzleFromFirestore(data);
 			} catch (error) {
 				console.error("Error loading puzzle:", error);
 				throw error; // Let React Query handle retry logic
