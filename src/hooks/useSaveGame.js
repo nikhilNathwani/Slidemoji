@@ -71,16 +71,9 @@ export function useSaveGame() {
 	 * Save game completion (win)
 	 * Routes to Firestore (signed in) or localStorage (signed out)
 	 */
-	const saveCompletion = ({
-		puzzleId,
-		gridSize,
-		grid,
-		puzzleData,
-		updateCacheImmediately,
-	}) => {
+	const saveCompletion = ({ puzzleId, gridSize, grid, puzzleData }) => {
 		if (user) {
 			// Signed in: save to Firestore
-			updateCacheImmediately?.();
 			saveCompletionToFirestore({
 				puzzleId: puzzleData.id,
 				gridSize,

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import styles from "./Game.module.css";
 import Grid from "./Grid";
 import Trophy from "../common/Trophy";
@@ -9,7 +8,6 @@ import GameActionButton from "./GameActionButton";
 import { useAuth } from "../../hooks/useAuth";
 import { useLoadGame } from "../../hooks/useLoadGame";
 import { useSaveGame } from "../../hooks/useSaveGame";
-import { addPuzzleSolution } from "../../utils/statsHelpers";
 import { getSolvedState } from "../../utils/gridHelpers";
 
 function Game({
@@ -24,7 +22,6 @@ function Game({
 	onGridSizeChange, // For "Try Hard mode?" button
 }) {
 	const { user, signIn } = useAuth();
-	const queryClient = useQueryClient();
 
 	// Initialize grid on mount - handles loading saved games and localStorage migration
 	// Component remounts when user/puzzleId/gridSize changes (via key prop in App)
@@ -76,16 +73,6 @@ function Game({
 			gridSize,
 			grid: solvedGrid,
 			puzzleData,
-			updateCacheImmediately: () => {
-				// Update cache immediately for instant trophy display
-				queryClient.setQueryData(["user", user.uid], (prevData) =>
-					addPuzzleSolution(prevData, puzzleId, gridSize, {
-						completedAt: new Date(),
-						emoji: puzzleData.emoji,
-						emojiName: puzzleData.emojiName,
-					}),
-				);
-			},
 		});
 
 		// For signed-out users, update session max (trophy persists until refresh)

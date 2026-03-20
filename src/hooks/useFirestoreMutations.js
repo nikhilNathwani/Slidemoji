@@ -16,6 +16,7 @@ import {
 	saveGameMove,
 	saveGameCompletion,
 } from "../backend/database";
+import { addPuzzleSolution } from "../utils/statsHelpers";
 
 export function useFirestoreMutations() {
 	const { user } = useAuth();
@@ -55,6 +56,18 @@ export function useFirestoreMutations() {
 				emoji,
 				emojiName,
 			});
+		},
+		onMutate: ({ puzzleId, gridSize, emoji, emojiName }) => {
+			// Optimistic update: add solution to cache immediately for instant UI update
+			if (user?.uid) {
+				queryClient.setQueryData(["user", user.uid], (prevData) =>
+					addPuzzleSolution(prevData, puzzleId, gridSize, {
+						completedAt: new Date(),
+						emoji,
+						emojiName,
+					}),
+				);
+			}
 		},
 		onError: (error) => {
 			console.error("Error saving completion:", error);
