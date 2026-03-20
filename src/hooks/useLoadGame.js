@@ -107,7 +107,7 @@ export function useLoadGame({ puzzleId, gridSize, puzzleData, savedGame }) {
 
 				if (wasCompleted) {
 					// Migrate completed puzzles (signing in should never lose a trophy)
-				saveGameCompletionToFirestore({
+					saveGameCompletionToFirestore({
 						puzzleId: puzzleData.id,
 						gridSize,
 						emoji: puzzleData.emoji,

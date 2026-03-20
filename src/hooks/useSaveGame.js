@@ -23,13 +23,13 @@ const getLocalStorageKey = (puzzleId, gridSize) =>
 	`signedOutProgress_${puzzleId}_${gridSize}`;
 
 // Save signed-out progress to localStorage
-const saveToLocalStorage = (
+const saveToLocalStorage = ({
 	puzzleId,
 	gridSize,
 	grid,
 	puzzleData,
 	isCompleted,
-) => {
+}) => {
 	localStorage.setItem(
 		getLocalStorageKey(puzzleId, gridSize),
 		JSON.stringify({
@@ -107,7 +107,13 @@ export function useSaveGame() {
 			});
 		} else {
 			// Signed out: save to localStorage
-			saveToLocalStorage(puzzleId, gridSize, grid, puzzleData, false);
+			saveToLocalStorage({
+				puzzleId,
+				gridSize,
+				grid,
+				puzzleData,
+				isCompleted: false,
+			});
 		}
 	};
 
@@ -133,7 +139,13 @@ export function useSaveGame() {
 			});
 		} else {
 			// Signed out: save to localStorage
-			saveToLocalStorage(puzzleId, gridSize, grid, puzzleData, true);
+			saveToLocalStorage({
+				puzzleId,
+				gridSize,
+				grid,
+				puzzleData,
+				isCompleted: true,
+			});
 		}
 	};
 
