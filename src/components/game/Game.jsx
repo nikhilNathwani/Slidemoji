@@ -43,10 +43,26 @@ function Game({
 	const [currentGrid, setCurrentGrid] = useState(initialGrid);
 	const [isCompleted, setIsCompleted] = useState(wasCompleted);
 
-	// Track max grid size solved IN THIS SESSION for signed-out users (for trophy color)
-	// Resets to 0 on refresh (session-only, not persisted)
-	// Signed-in users use maxGridSizeSolved prop from Firestore (persisted)
-	const [signedOutMaxSolved, setSignedOutMaxSolved] = useState(0);
+	// Track max grid size solved for signed-out users (persists until next puzzle)
+	// Signed-in users use maxGridSizeSolved prop from Firestore (persisted forever)
+	const [signedOutMaxSolved, setSignedOutMaxSolved] = useState(() => {
+		if (user) return 0; // Signed-in users don't need this
+
+		// Check localStorage for today's puzzle completions
+		const key = `signedOutProgress_${puzzleId}_3`;
+		const saved3 = localStorage.getItem(key);
+		const key4 = `signedOutProgress_${puzzleId}_4`;
+		const saved4 = localStorage.getItem(key4);
+		const key5 = `signedOutProgress_${puzzleId}_5`;
+		const saved5 = localStorage.getItem(key5);
+
+		let maxSolved = 0;
+		if (saved3 && JSON.parse(saved3).isCompleted) maxSolved = 3;
+		if (saved4 && JSON.parse(saved4).isCompleted) maxSolved = 4;
+		if (saved5 && JSON.parse(saved5).isCompleted) maxSolved = 5;
+
+		return maxSolved;
+	});
 
 	// Auto-save after each move
 	const handleMove = (newGrid) => {
@@ -75,7 +91,7 @@ function Game({
 			puzzleData,
 		});
 
-		// For signed-out users, update session max (trophy persists until refresh)
+		// For signed-out users, update max solved (trophy persists until next puzzle)
 		if (!user) {
 			setSignedOutMaxSolved((prev) => Math.max(prev, gridSize));
 		}
