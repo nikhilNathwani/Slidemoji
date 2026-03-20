@@ -1,5 +1,5 @@
 /**
- * useGameInitialization - Hook to initialize game state on mount
+ * useLoadGame - Hook to load game state on mount
  *
  * Handles:
  * - Loading saved game from Firestore or localStorage
@@ -7,7 +7,7 @@
  * - Determining initial grid state
  * - Starting fresh games
  *
- * Returns: { initialGrid, wasCompleted, isReady }
+ * Returns: { initialGrid, wasCompleted }
  */
 
 import { useState, useEffect } from "react";
@@ -35,7 +35,7 @@ const clearLocalProgress = (puzzleId, gridSize) => {
 	localStorage.removeItem(getLocalStorageKey(puzzleId, gridSize));
 };
 
-export function useGameInitialization({
+export function useLoadGame({
 	puzzleId,
 	gridSize,
 	puzzleData,

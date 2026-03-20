@@ -1,5 +1,5 @@
 /**
- * useGameSaving - Unified hook for game state persistence
+ * useSaveGame - Unified hook for game state persistence
  *
  * Handles saving game state (moves, completions, restarts) with automatic routing to:
  * - Firestore (for signed-in users) via React Query mutations
@@ -40,7 +40,7 @@ const saveToLocalStorage = (
 	);
 };
 
-export function useGameSaving() {
+export function useSaveGame() {
 	const { user } = useAuth();
 	const queryClient = useQueryClient();
 

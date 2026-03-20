@@ -7,8 +7,8 @@ import ConfirmRestartDialog from "../dialogs/ConfirmRestartDialog";
 import WinDialog from "../dialogs/WinDialog";
 import GameActionButton from "./GameActionButton";
 import { useAuth } from "../../hooks/useAuth";
-import { useGameInitialization } from "../../hooks/useGameInitialization";
-import { useGameSaving } from "../../hooks/useGameSaving";
+import { useLoadGame } from "../../hooks/useLoadGame";
+import { useSaveGame } from "../../hooks/useSaveGame";
 import { addPuzzleSolution } from "../../utils/statsHelpers";
 import { getSolvedState } from "../../utils/gridHelpers";
 
@@ -28,7 +28,7 @@ function Game({
 
 	// Initialize grid on mount - handles loading saved games and localStorage migration
 	// Component remounts when user/puzzleId/gridSize changes (via key prop in App)
-	const { initialGrid, wasCompleted } = useGameInitialization({
+	const { initialGrid, wasCompleted } = useLoadGame({
 		puzzleId,
 		gridSize,
 		puzzleData,
@@ -36,7 +36,7 @@ function Game({
 	});
 
 	// Game state persistence - handles Firestore (signed in) and localStorage (signed out)
-	const { saveMove, saveCompletion, saveRestart } = useGameSaving();
+	const { saveMove, saveCompletion, saveRestart } = useSaveGame();
 
 	// Dialog state
 	const [showRestartDialog, setShowRestartDialog] = useState(false);
