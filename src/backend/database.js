@@ -18,12 +18,27 @@ import {
 	serverTimestamp,
 	Timestamp,
 } from "firebase/firestore";
-import { db } from "./config";
-import {
-	getTodaysDate,
-	getYesterdaysDate,
-	getLatestPuzzleId,
-} from "../utils/dateUtils";
+import { db } from "./firebaseConfig";
+import { getLatestPuzzleId } from "../utils/puzzleUtils";
+
+/**
+ * Get today's date as YYYY-MM-DD string
+ * @returns {string} Date in YYYY-MM-DD format
+ */
+function getTodaysDate() {
+	const now = new Date();
+	return now.toISOString().split("T")[0];
+}
+
+/**
+ * Get yesterday's date as YYYY-MM-DD string
+ * @returns {string} Date in YYYY-MM-DD format
+ */
+function getYesterdaysDate() {
+	const yesterday = new Date();
+	yesterday.setDate(yesterday.getDate() - 1);
+	return yesterday.toISOString().split("T")[0];
+}
 
 /**
  * User data structure (see FIRESTORE_SCHEMA.md for full documentation):

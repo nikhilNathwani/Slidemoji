@@ -1,5 +1,19 @@
 import { doc, getDoc, setDoc, collection, getDocs } from "firebase/firestore";
-import { db } from "../backend/config";
+import { db } from "../backend/firebaseConfig";
+
+/**
+ * Get the latest puzzle ID (today's puzzle number) based on start date
+ * Cycles back to 1 after 365 puzzles
+ * @returns {number} Puzzle ID (1-365)
+ */
+export function getLatestPuzzleId() {
+	const startDate = new Date("2026-01-01"); // First puzzle date
+	const today = new Date();
+	const daysSinceStart = Math.floor(
+		(today - startDate) / (1000 * 60 * 60 * 24),
+	);
+	return (daysSinceStart % 365) + 1; // Cycle after 365 puzzles
+}
 
 /**
  * Convert grid array from Firestore format to client format

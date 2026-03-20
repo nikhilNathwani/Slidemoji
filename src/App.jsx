@@ -5,7 +5,7 @@ import Header from "./components/Header";
 import Game from "./components/game/Game";
 import SettingsDialog from "./components/dialogs/SettingsDialog";
 import StatsDialog from "./components/dialogs/StatsDialog";
-import { getLatestPuzzleId } from "./utils/dateUtils";
+import { getLatestPuzzleId } from "./utils/puzzleUtils";
 import { useAuth } from "./hooks/useAuth";
 import { useUser } from "./hooks/useUser";
 import { usePuzzle } from "./hooks/usePuzzle";

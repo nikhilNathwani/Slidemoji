@@ -12,7 +12,7 @@ import {
 	signOut as firebaseSignOut,
 	onAuthStateChanged,
 } from "firebase/auth";
-import { auth } from "./config";
+import { auth } from "./firebaseConfig";
 import { getUserData, createUserData } from "./database";
 
 // Google OAuth provider for Firebase Authentication

@@ -2,7 +2,7 @@ import TrophyCase from "../stats/TrophyCase";
 import TrophyCaseTitle from "../stats/TrophyCaseTitle";
 import GoogleSignInButton from "../common/GoogleSignInButton";
 import { useAuth } from "../../hooks/useAuth";
-import { getLatestPuzzleId } from "../../utils/dateUtils";
+import { getLatestPuzzleId } from "../../utils/puzzleUtils";
 import styles from "./StatsContent.module.css";
 import { FontAwesomeIcon } from "../../utils/icons";
 

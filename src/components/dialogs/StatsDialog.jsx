@@ -1,7 +1,7 @@
 import Dialog from "./Dialog";
 import StatsContent from "../stats/StatsContent";
 import TrophyCaseTitle from "../stats/TrophyCaseTitle";
-import { getLatestPuzzleId } from "../../utils/dateUtils";
+import { getLatestPuzzleId } from "../../utils/puzzleUtils";
 
 function StatsDialog({ isOpen, onClose, userData }) {
 	const solvedPuzzles = userData?.stats?.solvedPuzzles;
