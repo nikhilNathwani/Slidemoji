@@ -80,6 +80,12 @@ export function useLoadGame({ puzzleId, gridSize, puzzleData, savedGame }) {
 		},
 	});
 
+	// Firestore save helpers (wrapper functions for mutations)
+	const saveGameStartToFirestore = (data) => gameStartMutation.mutate(data);
+	const saveGameMoveToFirestore = (data) => gameMoveMutation.mutate(data);
+	const saveGameCompletionToFirestore = (data) =>
+		gameCompletionMutation.mutate(data);
+
 	useEffect(() => {
 		const localProgress = getLocalProgress(puzzleId, gridSize);
 
@@ -101,7 +107,7 @@ export function useLoadGame({ puzzleId, gridSize, puzzleData, savedGame }) {
 
 				if (wasCompleted) {
 					// Migrate completed puzzles (signing in should never lose a trophy)
-				gameCompletionMutation.mutate({
+				saveGameCompletionToFirestore({
 						puzzleId: puzzleData.id,
 						gridSize,
 						emoji: puzzleData.emoji,
@@ -131,7 +137,7 @@ export function useLoadGame({ puzzleId, gridSize, puzzleData, savedGame }) {
 
 			if (wasCompleted) {
 				// Migrate completion
-				gameCompletionMutation.mutate({
+				saveGameCompletionToFirestore({
 					puzzleId: puzzleData.id,
 					gridSize,
 					emoji: puzzleData.emoji,
@@ -149,12 +155,12 @@ export function useLoadGame({ puzzleId, gridSize, puzzleData, savedGame }) {
 
 			if (grid && initialGrid) {
 				// Migrate in-progress work
-				gameStartMutation.mutate({
+				saveGameStartToFirestore({
 					puzzleId: puzzleData.id,
 					gridSize,
 					initialGrid,
 				});
-				gameMoveMutation.mutate({
+				saveGameMoveToFirestore({
 					puzzleId: puzzleData.id,
 					gridSize,
 					grid,
@@ -172,7 +178,7 @@ export function useLoadGame({ puzzleId, gridSize, puzzleData, savedGame }) {
 
 		// Priority 3: Start fresh (signed in user with no saved game)
 		if (user) {
-			gameStartMutation.mutate({
+			saveGameStartToFirestore({
 				puzzleId: puzzleData.id,
 				gridSize,
 				initialGrid: puzzleData[gridSize],

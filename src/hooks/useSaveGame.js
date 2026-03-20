@@ -87,6 +87,12 @@ export function useSaveGame() {
 		},
 	});
 
+	// Firestore save helpers (wrapper functions for mutations)
+	const saveGameStartToFirestore = (data) => gameStartMutation.mutate(data);
+	const saveGameMoveToFirestore = (data) => gameMoveMutation.mutate(data);
+	const saveGameCompletionToFirestore = (data) =>
+		gameCompletionMutation.mutate(data);
+
 	/**
 	 * Save game state after a move
 	 * Routes to Firestore (signed in) or localStorage (signed out)
@@ -94,7 +100,7 @@ export function useSaveGame() {
 	const saveMove = ({ puzzleId, gridSize, grid, puzzleData }) => {
 		if (user) {
 			// Signed in: save to Firestore
-			gameMoveMutation.mutate({
+			saveGameMoveToFirestore({
 				puzzleId: puzzleData.id,
 				gridSize,
 				grid,
@@ -119,7 +125,7 @@ export function useSaveGame() {
 		if (user) {
 			// Signed in: save to Firestore
 			updateCacheImmediately?.();
-			gameCompletionMutation.mutate({
+			saveGameCompletionToFirestore({
 				puzzleId: puzzleData.id,
 				gridSize,
 				emoji: puzzleData.emoji,
@@ -137,7 +143,8 @@ export function useSaveGame() {
 	 */
 	const saveRestart = ({ gridSize, puzzleData }) => {
 		if (user) {
-			gameStartMutation.mutate({
+			// Signed in: save to Firestore
+			saveGameStartToFirestore({
 				puzzleId: puzzleData.id,
 				gridSize,
 				initialGrid: puzzleData[gridSize],
