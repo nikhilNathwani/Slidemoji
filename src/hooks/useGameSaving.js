@@ -1,22 +1,22 @@
 /**
  * useGameSaving - Unified hook for game state persistence
  *
- * Handles saving game progress, completions, and restarts.
- * Automatically routes to:
- * - Firestore (for signed-in users)
+ * Handles saving game state (moves, completions, restarts) with automatic routing to:
+ * - Firestore (for signed-in users) via React Query mutations
  * - localStorage (for signed-out users)
  *
  * Game.jsx doesn't need to know about storage strategy - it's all encapsulated here.
  *
- * Returns: { saveProgress, saveCompletion, saveRestart }
+ * Returns: { saveMove, saveCompletion, saveRestart }
  */
 
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "./useAuth";
 import {
-	useSavePuzzleStart,
-	useSaveGameState,
-	useSaveCompletion,
-} from "./useGameMutations";
+	savePuzzleStart,
+	saveGameState,
+	saveCompletion as saveCompletionToFirestore,
+} from "../backend/database";
 
 // Get localStorage key for signed-out progress
 const getLocalStorageKey = (puzzleId, gridSize) =>
@@ -42,22 +42,59 @@ const saveToLocalStorage = (
 
 export function useGameSaving() {
 	const { user } = useAuth();
+	const queryClient = useQueryClient();
 
-	// Get Firestore mutation functions
-	const { mutate: savePuzzleStartToFirestore } = useSavePuzzleStart(
-		user?.uid,
-	);
-	const { mutate: saveStateToFirestore } = useSaveGameState(user?.uid);
-	const { mutate: saveCompletionToFirestore } = useSaveCompletion(user?.uid);
+	// React Query mutation for starting/restarting puzzles
+	const puzzleStartMutation = useMutation({
+		mutationFn: ({ puzzleId, gridSize, initialGrid }) => {
+			if (!user?.uid) return Promise.resolve();
+			return savePuzzleStart(user.uid, puzzleId, gridSize, initialGrid);
+		},
+		onError: (error) => {
+			console.error("Error starting puzzle:", error);
+		},
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["user", user?.uid] });
+		},
+	});
+
+	// React Query mutation for saving game state after moves
+	const gameStateMutation = useMutation({
+		mutationFn: ({ puzzleId, gridSize, grid }) => {
+			if (!user?.uid) return Promise.resolve();
+			return saveGameState(user.uid, puzzleId, gridSize, { grid });
+		},
+		onError: (error) => {
+			console.error("Error saving game state:", error);
+		},
+		// No cache invalidation - grid state is local only
+	});
+
+	// React Query mutation for saving completions
+	const completionMutation = useMutation({
+		mutationFn: ({ puzzleId, gridSize, emoji, emojiName }) => {
+			if (!user?.uid) return Promise.resolve();
+			return saveCompletionToFirestore(user.uid, puzzleId, gridSize, {
+				emoji,
+				emojiName,
+			});
+		},
+		onError: (error) => {
+			console.error("Error saving completion:", error);
+		},
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["user", user?.uid] });
+		},
+	});
 
 	/**
-	 * Save game progress after a move
+	 * Save game state after a move
 	 * Routes to Firestore (signed in) or localStorage (signed out)
 	 */
-	const saveProgress = ({ puzzleId, gridSize, grid, puzzleData }) => {
+	const saveMove = ({ puzzleId, gridSize, grid, puzzleData }) => {
 		if (user) {
 			// Signed in: save to Firestore
-			saveStateToFirestore({
+			gameStateMutation.mutate({
 				puzzleId: puzzleData.id,
 				gridSize,
 				grid,
@@ -82,7 +119,7 @@ export function useGameSaving() {
 		if (user) {
 			// Signed in: save to Firestore
 			updateCacheImmediately?.();
-			saveCompletionToFirestore({
+			completionMutation.mutate({
 				puzzleId: puzzleData.id,
 				gridSize,
 				emoji: puzzleData.emoji,
@@ -100,7 +137,7 @@ export function useGameSaving() {
 	 */
 	const saveRestart = ({ gridSize, puzzleData }) => {
 		if (user) {
-			savePuzzleStartToFirestore({
+			puzzleStartMutation.mutate({
 				puzzleId: puzzleData.id,
 				gridSize,
 				initialGrid: puzzleData[gridSize],
@@ -110,7 +147,7 @@ export function useGameSaving() {
 	};
 
 	return {
-		saveProgress,
+		saveMove,
 		saveCompletion,
 		saveRestart,
 	};

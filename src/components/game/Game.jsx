@@ -36,7 +36,7 @@ function Game({
 	});
 
 	// Game state persistence - handles Firestore (signed in) and localStorage (signed out)
-	const { saveProgress, saveCompletion, saveRestart } = useGameSaving();
+	const { saveMove, saveCompletion, saveRestart } = useGameSaving();
 
 	// Dialog state
 	const [showRestartDialog, setShowRestartDialog] = useState(false);
@@ -55,7 +55,7 @@ function Game({
 	const handleMove = (newGrid) => {
 		setCurrentGrid(newGrid);
 
-		saveProgress({
+		saveMove({
 			puzzleId,
 			gridSize,
 			grid: newGrid,

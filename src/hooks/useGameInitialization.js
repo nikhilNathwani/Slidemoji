@@ -11,12 +11,13 @@
  */
 
 import { useState, useEffect } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "./useAuth";
 import {
-	useSavePuzzleStart,
-	useSaveGameState,
-	useSaveCompletion,
-} from "./useGameMutations";
+	savePuzzleStart,
+	saveGameState,
+	saveCompletion as saveCompletionToFirestore,
+} from "../backend/database";
 
 // Get localStorage key for signed-out progress
 const getLocalStorageKey = (puzzleId, gridSize) =>
@@ -41,12 +42,48 @@ export function useGameInitialization({
 	savedGame,
 }) {
 	const { user } = useAuth();
+	const queryClient = useQueryClient();
 	const [initResult, setInitResult] = useState(null);
 
-	// Firestore mutations
-	const { mutate: savePuzzleStart } = useSavePuzzleStart(user?.uid);
-	const { mutate: saveMove } = useSaveGameState(user?.uid);
-	const { mutate: saveCompletion } = useSaveCompletion(user?.uid);
+	// React Query mutations for Firestore operations
+	const puzzleStartMutation = useMutation({
+		mutationFn: ({ puzzleId, gridSize, initialGrid }) => {
+			if (!user?.uid) return Promise.resolve();
+			return savePuzzleStart(user.uid, puzzleId, gridSize, initialGrid);
+		},
+		onError: (error) => {
+			console.error("Error starting puzzle:", error);
+		},
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["user", user?.uid] });
+		},
+	});
+
+	const gameStateMutation = useMutation({
+		mutationFn: ({ puzzleId, gridSize, grid }) => {
+			if (!user?.uid) return Promise.resolve();
+			return saveGameState(user.uid, puzzleId, gridSize, { grid });
+		},
+		onError: (error) => {
+			console.error("Error saving game state:", error);
+		},
+	});
+
+	const completionMutation = useMutation({
+		mutationFn: ({ puzzleId, gridSize, emoji, emojiName }) => {
+			if (!user?.uid) return Promise.resolve();
+			return saveCompletionToFirestore(user.uid, puzzleId, gridSize, {
+				emoji,
+				emojiName,
+			});
+		},
+		onError: (error) => {
+			console.error("Error saving completion:", error);
+		},
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["user", user?.uid] });
+		},
+	});
 
 	useEffect(() => {
 		const localProgress = getLocalProgress(puzzleId, gridSize);
@@ -69,7 +106,7 @@ export function useGameInitialization({
 
 				if (wasCompleted) {
 					// Migrate completed puzzles (signing in should never lose a trophy)
-					saveCompletion({
+					completionMutation.mutate({
 						puzzleId: puzzleData.id,
 						gridSize,
 						emoji: puzzleData.emoji,
@@ -99,7 +136,7 @@ export function useGameInitialization({
 
 			if (wasCompleted) {
 				// Migrate completion
-				saveCompletion({
+				completionMutation.mutate({
 					puzzleId: puzzleData.id,
 					gridSize,
 					emoji: puzzleData.emoji,
@@ -117,12 +154,12 @@ export function useGameInitialization({
 
 			if (grid && initialGrid) {
 				// Migrate in-progress work
-				savePuzzleStart({
+				puzzleStartMutation.mutate({
 					puzzleId: puzzleData.id,
 					gridSize,
 					initialGrid,
 				});
-				saveMove({
+				gameStateMutation.mutate({
 					puzzleId: puzzleData.id,
 					gridSize,
 					grid,
@@ -140,7 +177,7 @@ export function useGameInitialization({
 
 		// Priority 3: Start fresh (signed in user with no saved game)
 		if (user) {
-			savePuzzleStart({
+			puzzleStartMutation.mutate({
 				puzzleId: puzzleData.id,
 				gridSize,
 				initialGrid: puzzleData[gridSize],
