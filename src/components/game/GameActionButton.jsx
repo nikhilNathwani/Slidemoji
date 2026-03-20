@@ -25,9 +25,15 @@ function GameActionButton({
 		return (
 			<div
 				className={`${styles.restartContainer} ${styles.visible}`}
-				style={{ flexDirection: "column", gap: "16px" }}
+				style={{
+					flexDirection: "column",
+					gap: "16px",
+					alignItems: "center",
+				}}
 			>
-				<div style={{ textAlign: "center" }}>
+				<div
+					style={{ textAlign: "center", maxWidth: "min(90%, 400px)" }}
+				>
 					<h3
 						style={{
 							fontSize: "var(--text-lg)",
