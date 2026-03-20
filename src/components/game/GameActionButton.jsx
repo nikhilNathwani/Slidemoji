@@ -1,3 +1,4 @@
+import GoogleSignInButton from "../common/GoogleSignInButton";
 import { FontAwesomeIcon } from "../../utils/icons";
 import styles from "./Game.module.css";
 
@@ -15,7 +16,6 @@ function GameActionButton({
 	user,
 	gridSize,
 	maxGridSizeSolved,
-	onSignIn,
 	onOpenStats,
 	onGridSizeChange,
 	onRestart,
@@ -23,14 +23,9 @@ function GameActionButton({
 	// Signed out and solved - show sign-in upsell
 	if (isSolved && !user) {
 		return (
-			<button
-				className={`${styles.restartButton} ${styles.visible}`}
-				onClick={onSignIn}
-				title="Sign in to save your trophy"
-			>
-				<FontAwesomeIcon icon="user" />
-				Sign in to save
-			</button>
+			<div className={`${styles.restartContainer} ${styles.visible}`}>
+				<GoogleSignInButton />
+			</div>
 		);
 	}
 

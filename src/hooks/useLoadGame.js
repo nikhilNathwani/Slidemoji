@@ -87,8 +87,17 @@ export function useLoadGame({ puzzleId, gridSize, puzzleData, savedGame }) {
 			});
 		}
 
-		// Priority 3: Start fresh (signed-in with no save, or signed-out users always)
-		// Signed-out users NEVER load saved progress (incentive to sign in)
+		// Priority 3: Check localStorage for signed-out user completions
+		// (Trophies persist even when signed out, but not in-progress games)
+		if (localCompletion?.isCompleted) {
+			setInitResult({
+				loadedGrid: getSolvedState(gridSize),
+				wasSolved: true,
+			});
+			return;
+		}
+
+		// Default: Start fresh (signed-in with no save, or signed-out with no completion)
 		setInitResult({
 			loadedGrid: null, // null means "show fresh puzzle from puzzleData"
 			wasSolved: false,

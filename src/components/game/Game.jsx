@@ -21,7 +21,7 @@ function Game({
 	onOpenStats, // For "View Trophies" button
 	onGridSizeChange, // For "Try Hard mode?" button
 }) {
-	const { user, signIn } = useAuth();
+	const { user } = useAuth();
 
 	// Load game state on mount - handles resuming or starting fresh
 	// Component remounts when user/puzzleId/gridSize changes (via key prop in App)
@@ -105,7 +105,7 @@ function Game({
 				<Grid
 					size={gridSize}
 					onWin={handleSolve}
-					hasNumbersShown={hasNumbersShown && !showWinDialog}
+					hasNumbersShown={hasNumbersShown && !showWinDialog && !isSolved}
 					emoji={puzzleData.emoji}
 					grid={gridToShow}
 					onMove={handleMove}
@@ -118,7 +118,6 @@ function Game({
 						user={user}
 						gridSize={gridSize}
 						maxGridSizeSolved={maxGridSizeSolved}
-						onSignIn={signIn}
 						onOpenStats={onOpenStats}
 						onGridSizeChange={onGridSizeChange}
 						onRestart={handleRestartClick}
