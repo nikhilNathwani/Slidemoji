@@ -26,6 +26,13 @@ export function useLoadGame({ puzzleId, gridSize, puzzleData, savedGame }) {
 
 	useEffect(() => {
 		const localCompletion = getLocalCompletion(puzzleId, gridSize);
+		console.log("[useLoadGame] Starting load:", {
+			user: user?.uid || "signed-out",
+			puzzleId,
+			gridSize,
+			localCompletion,
+			hasSavedGame: !!savedGame,
+		});
 
 		// Helper: Check if savedGame is just the initial grid (no real progress)
 		const isInitialGrid = (grid) => {
@@ -90,6 +97,7 @@ export function useLoadGame({ puzzleId, gridSize, puzzleData, savedGame }) {
 		// Priority 3: Check localStorage for signed-out user completions
 		// (Trophies persist even when signed out, but not in-progress games)
 		if (!user && localCompletion?.isCompleted) {
+			console.log("[useLoadGame] Priority 3: Signed-out completion found");
 			setInitResult({
 				loadedGrid: getSolvedState(gridSize),
 				wasSolved: true,
@@ -98,6 +106,7 @@ export function useLoadGame({ puzzleId, gridSize, puzzleData, savedGame }) {
 		}
 
 		// Default: Start fresh (signed-in with no save, or signed-out with no completion)
+		console.log("[useLoadGame] Default: Starting fresh");
 		setInitResult({
 			loadedGrid: null, // null means "show fresh puzzle from puzzleData"
 			wasSolved: false,

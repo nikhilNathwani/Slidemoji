@@ -84,7 +84,7 @@ function App() {
 
 	return (
 		<div
-			key={`${user?.uid || "anonymous"}-${puzzleId}`}
+			key={`${user?.uid || "anonymous"}-${puzzleId}-${gridSize}`}
 			className={`app ${darkMode ? "dark-theme" : "light-theme"}`}
 		>
 			<Header
