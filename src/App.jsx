@@ -10,13 +10,13 @@ import { useAuth } from "./hooks/useAuth";
 import { useUser } from "./hooks/useUser";
 import { usePuzzle } from "./hooks/usePuzzle";
 import { usePreference } from "./hooks/usePreference";
-import {
-	DEFAULT_GRID_SIZE,
-	DEFAULT_DARK_MODE,
-	DEFAULT_SHOW_NUMBERS,
-	DEFAULT_SOUND_ENABLED,
-} from "./constants";
 import { getMaxGridSizeSolved } from "./utils/statsHelpers";
+
+// App-level preference defaults
+const DEFAULT_GRID_SIZE = 3;
+const DEFAULT_DARK_MODE = false;
+const DEFAULT_SHOW_NUMBERS = true;
+const DEFAULT_SOUND_ENABLED = false;
 
 function App() {
 	const { user } = useAuth();

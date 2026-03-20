@@ -1,5 +1,8 @@
 import emojiCalendar from "../../data/emoji_calendar.json";
-import { EMOJI_SVG_SIZE, EMOJI_SVG_FONT_SIZE } from "../constants";
+
+// SVG canvas configuration
+const EMOJI_SVG_SIZE = 2048;
+const EMOJI_SVG_FONT_SIZE = 1600;
 
 // Get daily emoji based on current date
 export function getDailyEmoji() {

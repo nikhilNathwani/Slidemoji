@@ -13,17 +13,12 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "./useAuth";
 import { useFirestoreMutations } from "./useFirestoreMutations";
-import {
-	getLocalCompletion,
-	clearLocalProgress,
-} from "../utils/localStorage";
+import { getLocalCompletion, clearLocalProgress } from "../utils/localStorage";
 
 export function useLoadGame({ puzzleId, gridSize, puzzleData, savedGame }) {
 	const { user } = useAuth();
-	const {
-		saveStartToFirestore,
-		saveCompletionToFirestore,
-	} = useFirestoreMutations();
+	const { saveStartToFirestore, saveCompletionToFirestore } =
+		useFirestoreMutations();
 	const [initResult, setInitResult] = useState(null);
 
 	useEffect(() => {
