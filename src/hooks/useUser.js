@@ -30,19 +30,22 @@ export function useUser(userId) {
 			// Fetch from Firestore
 			try {
 				const data = await getUserData(userId);
-				
+
 				// Convert saved game grids from Firestore format (0 for gap) to client format (null for gap)
 				if (data?.gameState) {
 					for (const puzzleId in data.gameState) {
 						for (const difficulty in data.gameState[puzzleId]) {
-							const savedGame = data.gameState[puzzleId][difficulty];
+							const savedGame =
+								data.gameState[puzzleId][difficulty];
 							if (savedGame?.grid) {
-								savedGame.grid = convertGridFromFirestore(savedGame.grid);
+								savedGame.grid = convertGridFromFirestore(
+									savedGame.grid,
+								);
 							}
 						}
 					}
 				}
-				
+
 				return data;
 			} catch (error) {
 				console.error("[AUTH] Error loading user data:", error);

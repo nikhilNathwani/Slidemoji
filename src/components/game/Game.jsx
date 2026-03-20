@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import styles from "./Game.module.css";
 import Grid from "./Grid";
@@ -7,6 +7,7 @@ import ConfirmRestartDialog from "../dialogs/ConfirmRestartDialog";
 import WinDialog from "../dialogs/WinDialog";
 import GameActionButton from "./GameActionButton";
 import { useAuth } from "../../hooks/useAuth";
+import { useGameInitialization } from "../../hooks/useGameInitialization";
 import { FontAwesomeIcon } from "../../utils/icons";
 import {
 	useSavePuzzleStart,
@@ -17,7 +18,6 @@ import {
 import { addPuzzleSolution } from "../../utils/statsHelpers";
 import { getSolvedState } from "../../utils/gridHelpers";
 import {
-	initializeGameState,
 	saveGameProgress,
 	saveGameCompletion,
 	saveGameRestart,
@@ -37,13 +37,22 @@ function Game({
 	const { user, signIn } = useAuth();
 	const queryClient = useQueryClient();
 
+	// Initialize grid on mount - handles loading saved games and localStorage migration
+	// Component remounts when user/puzzleId/gridSize changes (via key prop in App)
+	const { initialGrid, wasCompleted } = useGameInitialization({
+		puzzleId,
+		gridSize,
+		puzzleData,
+		savedGame,
+	});
+
 	// Dialog state
 	const [showRestartDialog, setShowRestartDialog] = useState(false);
 	const [showWinDialog, setShowWinDialog] = useState(false);
 
-	// Grid state - Game decides what to show
-	const [currentGrid, setCurrentGrid] = useState(null); // null = show initial grid from puzzleData, otherwise show this
-	const [isCompleted, setIsCompleted] = useState(false); // Track if puzzle is completed
+	// Grid state - Game manages current gameplay state
+	const [currentGrid, setCurrentGrid] = useState(initialGrid);
+	const [isCompleted, setIsCompleted] = useState(wasCompleted);
 
 	// Track max grid size solved IN THIS SESSION for signed-out users (for trophy color)
 	// Resets to 0 on refresh (session-only, not persisted)
@@ -54,30 +63,6 @@ function Game({
 	const { mutate: savePuzzleStart } = useSavePuzzleStart(user?.uid);
 	const { mutate: saveMove } = useSaveGameState(user?.uid);
 	const { mutate: saveCompletion } = useSaveCompletion(user?.uid);
-
-	// Initialize grid on mount
-	// Note: Component remounts when user/puzzleId/gridSize changes (via key prop on parent div)
-	// We need useEffect because we're performing side effects (storage operations, mutations)
-	// App ensures all data (puzzleData, savedGame) is ready before mounting Game
-	useEffect(() => {
-		const { initialGrid, isCompleted: wasCompleted } = initializeGameState({
-			puzzleId,
-			gridSize,
-			puzzleData,
-			savedGame,
-			user,
-			mutations: {
-				savePuzzleStart,
-				saveMove,
-				saveCompletion,
-			},
-		});
-
-		setCurrentGrid(initialGrid);
-		setIsCompleted(wasCompleted);
-		// Empty deps: runs once on mount, all data is ready via props
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
 
 	// Auto-save after each move
 	const handleMove = (newGrid) => {

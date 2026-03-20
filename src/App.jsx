@@ -22,6 +22,13 @@ function App() {
 	const { user } = useAuth();
 	const puzzleId = getLatestPuzzleId();
 
+	// Fetch puzzle and user data (conversions handled in hooks)
+	const { data: puzzleData, isLoading: isLoadingPuzzle } =
+		usePuzzle(puzzleId);
+	const { data: userData, isLoading: isLoadingUser } = useUser(user?.uid);
+	const isLoading = isLoadingPuzzle || (user && isLoadingUser);
+	const savedGame = userData?.gameState?.[puzzleId]?.[gridSize];
+
 	// Show Page / Dialog
 	const [showLandingPage, setShowLandingPage] = useState(true);
 	const [showSettingsDialog, setShowSettingsDialog] = useState(false);
@@ -49,14 +56,6 @@ function App() {
 		// Signed-out users always get default 3x3 grid size, to
 		// reinforce that you should sign in to retain progress
 	);
-
-	// Fetch puzzle and user data (conversions handled in hooks)
-	const { data: puzzleData, isLoading: isLoadingPuzzle } = usePuzzle(puzzleId);
-	const { data: userData, isLoading: isLoadingUser } = useUser(user?.uid);
-	const isLoading = isLoadingPuzzle || (user && isLoadingUser);
-
-	// Get saved game for current puzzle and difficulty
-	const savedGame = userData?.gameState?.[puzzleId]?.[gridSize];
 
 	if (showLandingPage) {
 		return (

@@ -12,7 +12,10 @@
  */
 
 import { useQuery } from "@tanstack/react-query";
-import { getPuzzleById, convertPuzzleFromFirestore } from "../utils/puzzleUtils";
+import {
+	getPuzzleById,
+	convertPuzzleFromFirestore,
+} from "../utils/puzzleUtils";
 
 export function usePuzzle(puzzleId) {
 	return useQuery({
