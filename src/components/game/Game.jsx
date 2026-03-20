@@ -87,14 +87,8 @@ function Game({
 		saveCompletion({
 			puzzleId,
 			gridSize,
-			grid: solvedGrid,
 			puzzleData,
 		});
-
-		// For signed-out users, update max solved (trophy persists until next puzzle)
-		if (!user) {
-			setSignedOutMaxSolved((prev) => Math.max(prev, gridSize));
-		}
 
 		setShowWinDialog(true);
 	};

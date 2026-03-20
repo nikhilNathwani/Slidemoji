@@ -17,21 +17,11 @@ import { useFirestoreMutations } from "./useFirestoreMutations";
 const getLocalStorageKey = (puzzleId, gridSize) =>
 	`signedOutProgress_${puzzleId}_${gridSize}`;
 
-// Save signed-out progress to localStorage
-const saveToLocalStorage = ({
-	puzzleId,
-	gridSize,
-	grid,
-	puzzleData,
-	isCompleted,
-}) => {
+// Save signed-out completion to localStorage (just a flag, no grid state)
+const saveCompletionToLocalStorage = (puzzleId, gridSize) => {
 	localStorage.setItem(
 		getLocalStorageKey(puzzleId, gridSize),
-		JSON.stringify({
-			isCompleted,
-			grid,
-			initialGrid: puzzleData[gridSize],
-		}),
+		JSON.stringify({ isCompleted: true }),
 	);
 };
 
@@ -45,9 +35,9 @@ export function useSaveGame() {
 
 	/**
 	 * Save game state after a move
-	 * Routes to Firestore (signed in) or localStorage (signed out)
+	 * Only persists for signed-in users (signed-out users get ephemeral experience)
 	 */
-	const saveMove = ({ puzzleId, gridSize, grid, puzzleData }) => {
+	const saveMove = ({ gridSize, grid, puzzleData }) => {
 		if (user) {
 			// Signed in: save to Firestore
 			saveMoveToFirestore({
@@ -55,23 +45,15 @@ export function useSaveGame() {
 				gridSize,
 				grid,
 			});
-		} else {
-			// Signed out: save to localStorage
-			saveToLocalStorage({
-				puzzleId,
-				gridSize,
-				grid,
-				puzzleData,
-				isCompleted: false,
-			});
 		}
+		// Note: Signed-out users don't persist moves (incentive to sign in)
 	};
 
 	/**
 	 * Save game completion (win)
-	 * Routes to Firestore (signed in) or localStorage (signed out)
+	 * Routes to Firestore (signed in) or localStorage flag (signed out)
 	 */
-	const saveCompletion = ({ puzzleId, gridSize, grid, puzzleData }) => {
+	const saveCompletion = ({ puzzleId, gridSize, puzzleData }) => {
 		if (user) {
 			// Signed in: save to Firestore
 			saveCompletionToFirestore({
@@ -81,14 +63,8 @@ export function useSaveGame() {
 				emojiName: puzzleData.emojiName,
 			});
 		} else {
-			// Signed out: save to localStorage
-			saveToLocalStorage({
-				puzzleId,
-				gridSize,
-				grid,
-				puzzleData,
-				isCompleted: true,
-			});
+			// Signed out: save completion flag only (for trophy display)
+			saveCompletionToLocalStorage(puzzleId, gridSize);
 		}
 	};
 
