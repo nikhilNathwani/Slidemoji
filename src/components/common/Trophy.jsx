@@ -13,7 +13,8 @@ function Trophy({
 }) {
 	// Fetch puzzle data if emoji not provided (for trophy case display)
 	// trophyNum is a string like "001", need to convert to number
-	const puzzleId = typeof trophyNum === "string" ? parseInt(trophyNum, 10) : trophyNum;
+	const puzzleId =
+		typeof trophyNum === "string" ? parseInt(trophyNum, 10) : trophyNum;
 	const { data: puzzleData } = usePuzzle(
 		!trophyEmoji && !isLocked && puzzleId ? puzzleId : null,
 	);

@@ -201,7 +201,9 @@ export async function saveGameStart(userId, puzzleId, initialGrid) {
 		const fromArchive = puzzleId !== getLatestPuzzleId();
 		let gameState = userData.gameState || {};
 		// Ensure stats structure exists (in case user data was corrupted/deleted)
-		let stats = userData.stats ? { ...userData.stats } : { solvedPuzzles: {} };
+		let stats = userData.stats
+			? { ...userData.stats }
+			: { solvedPuzzles: {} };
 		if (!stats.solvedPuzzles) {
 			stats.solvedPuzzles = {};
 		}
@@ -291,7 +293,9 @@ export async function saveGameCompletion(userId, puzzleId, completionData) {
 		}
 
 		let gameState = userData.gameState || {};
-		let stats = userData.stats ? { ...userData.stats } : { solvedPuzzles: {} };
+		let stats = userData.stats
+			? { ...userData.stats }
+			: { solvedPuzzles: {} };
 
 		// Ensure trophy structure exists
 		if (!stats.solvedPuzzles) {
