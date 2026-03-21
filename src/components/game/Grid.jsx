@@ -167,10 +167,13 @@ function Grid({
 		return () => window.removeEventListener("keydown", handleArrowKeyPress);
 	}, [handleArrowKeyPress]);
 
-	// ===== Render =====	// Don't render until we have valid tiles
+	// ===== Render =====
+	// Don't render until we have valid tiles
 	if (!tiles || !Array.isArray(tiles)) {
-		return null;
+		console.log("[Grid] Invalid tiles:", { tiles, grid });
+		return <div>Loading grid...</div>;
 	}
+
 	return (
 		<div
 			className={`${styles.grid}${isGameWon ? " " + styles.won : ""}`}

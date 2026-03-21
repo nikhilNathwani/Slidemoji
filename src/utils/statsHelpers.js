@@ -4,10 +4,9 @@
  *
  * @param {Object} userData - Current user data object
  * @param {number} puzzleId - Puzzle ID
- * @param {Object} solveData - Solve data to save (e.g., { completedAt, emoji, emojiName })
  * @returns {Object} Updated user data with new solve
  */
-export function addPuzzleSolve(userData, puzzleId, solveData) {
+export function addPuzzleSolve(userData, puzzleId) {
 	if (!userData || !userData.stats) return userData;
 
 	return {
@@ -16,7 +15,7 @@ export function addPuzzleSolve(userData, puzzleId, solveData) {
 			...userData.stats,
 			solvedPuzzles: {
 				...userData.stats.solvedPuzzles,
-				[puzzleId]: solveData,
+				[puzzleId]: true,
 			},
 		},
 	};

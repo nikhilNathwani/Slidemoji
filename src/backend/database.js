@@ -123,10 +123,8 @@ export async function createUserData(userId, userData = {}) {
 				soundEnabled: true, // Default to sound on
 			},
 			stats: {
-				// High-level counters
-				totalAttempted: 0,
-				totalSolved: 0,
-				// Trophy collection: one per puzzle ID (3x3 only)
+				// Trophy collection: track which puzzles are solved (3x3 only)
+				// Just stores puzzleId: true (emoji/emojiName looked up from puzzles collection)
 				solvedPuzzles: {},
 			},
 			// In-progress games (for resume functionality)
@@ -203,30 +201,28 @@ export async function saveGameStart(userId, puzzleId, initialGrid) {
 		const fromArchive = puzzleId !== getLatestPuzzleId();
 		let gameState = userData.gameState || {};
 		// Ensure stats structure exists (in case user data was corrupted/deleted)
-		let stats = userData.stats
-			? { ...userData.stats }
-			: { totalAttempted: 0, totalSolved: 0, solvedPuzzles: {} };
+		let stats = userData.stats ? { ...userData.stats } : { solvedPuzzles: {} };
+		if (!stats.solvedPuzzles) {
+			stats.solvedPuzzles = {};
+		}
+
+		// Convert client format (null as gap) to Firestore format (0 as gap)
+		const firestoreGrid = initialGrid.map((v) => (v === null ? 0 : v));
+
 		// Initialize game state for this puzzle (3x3 only)
 		gameState[puzzleId] = {
 			grid: firestoreGrid,
 			fromArchive, // Track whether this is a daily or archive play
 		};
 
-		// Increment attempts counter (only if first time trying this puzzle)
-		// If user already solved it, we still allow retry but don't re-count it
-		if (!stats.solvedPuzzles?.[puzzleId]) {
-			stats.totalAttempted++;
-		}
-
 		// Save to Firestore
 		const userDocRef = doc(db, "users", userId);
 		await updateDoc(userDocRef, {
 			gameState,
-			stats,
 			updatedAt: serverTimestamp(),
 		});
 
-		return { gameState, stats };
+		return { gameState };
 	} catch (error) {
 		console.error("Error starting puzzle:", error);
 		throw error;
@@ -271,17 +267,16 @@ export async function saveGameMove(userId, puzzleId, gameData) {
  * Called when user solves a puzzle.
  *
  * What it does:
- * 1. Saves trophy to solvedPuzzles[puzzleId][difficulty] with emoji data
- * 2. Increments totalSolved counter
- * 3. Clears the game from gameState (puzzle is done)
+ * 1. Marks puzzle as solved in solvedPuzzles[puzzleId] = true
+ * 2. Clears the game from gameState (puzzle is done)
  *
  * Trophy System:
- * - Each puzzle has one solution (3x3 only)
- * - solvedPuzzles[1] contains the trophy data
+ * - Each puzzle completion is tracked as puzzleId: true
+ * - Emoji/emojiName are fetched from puzzles collection (not duplicated here)
  *
  * @param {string} userId - Firebase Auth user ID
  * @param {number} puzzleId - Puzzle number (1-365)
- * @param {Object} completionData - { emoji: string, emojiName: string }
+ * @param {Object} completionData - Ignored (kept for backwards compatibility)
  * @returns {Promise<Object>} Updated stats
  */
 export async function saveGameCompletion(userId, puzzleId, completionData) {
@@ -296,34 +291,15 @@ export async function saveGameCompletion(userId, puzzleId, completionData) {
 		}
 
 		let gameState = userData.gameState || {};
-		let stats = { ...userData.stats };
-
-		// Get the saved game state for this puzzle
-		const game = gameState[puzzleId];
-		if (!game) {
-			throw new Error("Game state not found for this puzzle");
-		}
-
-		// Check if this was a daily puzzle or archive play
-		const fromArchive = game.fromArchive;
+		let stats = userData.stats ? { ...userData.stats } : { solvedPuzzles: {} };
 
 		// Ensure trophy structure exists
 		if (!stats.solvedPuzzles) {
 			stats.solvedPuzzles = {};
 		}
 
-		// Save solve trophy with emoji data
-		const completedAt = Timestamp.now();
-
-		stats.solvedPuzzles[puzzleId] = {
-			completedAt,
-			fromArchive, // Preserve whether this was daily or archive
-			emoji: completionData.emoji,
-			emojiName: completionData.emojiName,
-		};
-
-		// Update totals (both daily and archive count here)
-		stats.totalSolved++;
+		// Mark puzzle as solved (just store true, emoji looked up from puzzles collection)
+		stats.solvedPuzzles[puzzleId] = true;
 
 		// Clear this game from gameState (puzzle is complete!)
 		// But keep other in-progress games (user might be playing multiple puzzles)

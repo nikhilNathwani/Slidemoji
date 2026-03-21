@@ -38,17 +38,17 @@ function TrophyCase({
 				maxDifficulty: 0,
 			});
 		} else {
-			// Check if puzzle is earned (new schema: solvedPuzzles[id] = { completedAt, emoji, emojiName })
-			const puzzleData = solvedPuzzles?.[puzzleNum];
-			const isEarned = !!puzzleData;
+			// Check if puzzle is earned (simplified schema: solvedPuzzles[id] = true)
+			const isEarned = !!solvedPuzzles?.[puzzleNum];
 
 			trophySlots.push({
 				puzzleNum,
 				isPlaceholder: false,
 				isEarned,
 				isToday: puzzleNum === puzzleId,
-				emoji: puzzleData?.emoji || null,
-				name: puzzleData?.emojiName || null,
+				// Emoji/name will be fetched by Trophy component via usePuzzle
+				emoji: null,
+				name: null,
 				maxDifficulty: 0, // No longer used (3x3 only)
 			});
 		}
