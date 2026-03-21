@@ -29,6 +29,9 @@ export function convertGridFromFirestore(grid) {
 /**
  * Convert puzzle data from Firestore format to client format (3x3 only)
  * Firestore uses 0 for gap, client uses null for gap
+ * 
+ * Handles both old schema (puzzle.3) and new schema (puzzle.initialGrid)
+ * 
  * @param {Object} puzzleData - Puzzle data from Firestore
  * @returns {Object} Puzzle data with converted grid array
  */
@@ -37,8 +40,15 @@ export function convertPuzzleFromFirestore(puzzleData) {
 
 	const converted = { ...puzzleData };
 
-	// Convert initialGrid array (3x3 only)
-	if (converted.initialGrid) {
+	// Handle old schema: puzzle.3 (from before 3x3-only simplification)
+	// Convert to new schema: puzzle.initialGrid
+	if (converted["3"]) {
+		converted.initialGrid = convertGridFromFirestore(converted["3"]);
+		delete converted["3"]; // Clean up old field
+		delete converted["4"]; // Remove 4x4 data if present
+	}
+	// Handle new schema: puzzle.initialGrid
+	else if (converted.initialGrid) {
 		converted.initialGrid = convertGridFromFirestore(converted.initialGrid);
 	}
 
