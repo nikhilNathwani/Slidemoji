@@ -18,7 +18,10 @@ const DEFAULT_SOUND_ENABLED = false;
 
 function App() {
 	const { user } = useAuth();
-	const puzzleId = getLatestPuzzleId();
+	const [selectedPuzzleId, setSelectedPuzzleId] = useState(() =>
+		getLatestPuzzleId(),
+	);
+	const puzzleId = selectedPuzzleId;
 
 	// Fetch puzzle data
 	const { data: puzzleData, isLoading: isLoadingPuzzle } =
@@ -108,6 +111,11 @@ function App() {
 				isOpen={showStatsDialog}
 				onClose={() => setShowStatsDialog(false)}
 				solvedPuzzles={userData?.stats?.solvedPuzzles}
+				currentPuzzleId={puzzleId}
+				onSelectPuzzle={(id) => {
+					setSelectedPuzzleId(id);
+					setShowStatsDialog(false);
+				}}
 			/>
 		</div>
 	);

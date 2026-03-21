@@ -27,6 +27,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "./useAuth";
 import { useUser } from "./useUser";
 import { updateUserPreferences } from "../backend/database";
+import {
+	getLocalPreference,
+	saveLocalPreference,
+} from "../utils/localStorage";
 
 export function usePreference(key, defaultValue, options = {}) {
 	// Merge with defaults
@@ -86,8 +90,7 @@ export function usePreference(key, defaultValue, options = {}) {
 
 	// Initialize from localStorage
 	const [localValue, setLocalValue] = useState(() => {
-		const saved = localStorage.getItem(storageKey);
-		return saved !== null ? JSON.parse(saved) : defaultValue;
+		return getLocalPreference(storageKey, defaultValue);
 	});
 
 	// Derive the effective value based on sign-in state and options
@@ -111,7 +114,7 @@ export function usePreference(key, defaultValue, options = {}) {
 	// Update function that saves to both localStorage AND Firestore
 	const setValue = (newValue) => {
 		setLocalValue(newValue);
-		localStorage.setItem(storageKey, JSON.stringify(newValue));
+		saveLocalPreference(storageKey, newValue);
 
 		if (user) {
 			updatePreferencesMutation.mutate({ [key]: newValue });

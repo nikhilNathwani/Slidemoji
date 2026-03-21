@@ -8,6 +8,7 @@ function TrophyCase({
 	solvedPuzzles,
 	showTitle = true,
 	puzzleId,
+	onSelectPuzzle, // Callback when user clicks a trophy to play that puzzle
 }) {
 	const TROPHIES_PER_PAGE = 12;
 	const totalPages = Math.ceil(totalPuzzles / TROPHIES_PER_PAGE);
@@ -77,26 +78,37 @@ function TrophyCase({
 			)}
 
 			<div className={styles.emojiGrid}>
-				{trophySlots.map((slot) => (
-					<div
-						key={slot.puzzleNum}
-						style={{
-							visibility: slot.isPlaceholder
-								? "hidden"
-								: "visible",
-						}}
-					>
-						<Trophy
-							trophyNum={slot.puzzleNum}
-							trophyEmoji={slot.emoji}
-							trophyName={slot.name}
-							isLocked={!slot.isEarned}
-							isToday={slot.isToday && !slot.isEarned}
-							isSolved={slot.isEarned}
-							isMini={true}
-						/>
-					</div>
-				))}
+				{trophySlots.map((slot) => {
+					const canPlay =
+						!slot.isPlaceholder &&
+						slot.puzzleNum <= totalPuzzles;
+					const handleClick = canPlay
+						? () => onSelectPuzzle?.(slot.puzzleNum)
+						: undefined;
+
+					return (
+						<div
+							key={slot.puzzleNum}
+							style={{
+								visibility: slot.isPlaceholder
+									? "hidden"
+									: "visible",
+								cursor: canPlay ? "pointer" : "default",
+							}}
+							onClick={handleClick}
+						>
+							<Trophy
+								trophyNum={slot.puzzleNum}
+								trophyEmoji={slot.emoji}
+								trophyName={slot.name}
+								isLocked={!slot.isEarned}
+								isToday={slot.isToday && !slot.isEarned}
+								isSolved={slot.isEarned}
+								isMini={true}
+							/>
+						</div>
+					);
+				})}
 			</div>
 
 			{totalPages > 1 && (
