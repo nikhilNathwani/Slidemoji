@@ -65,7 +65,8 @@ function Grid({
 	}, [size, grid]);
 
 	// ===== Tile Movement Logic =====
-	const gapIndex = getGapIndex(tiles);
+	// Get gap position (handles null/undefined tiles gracefully)
+	const gapIndex = tiles ? getGapIndex(tiles) : -1;
 
 	// Move tile - smooth animation via CSS transitions
 	const moveTile = useCallback(
