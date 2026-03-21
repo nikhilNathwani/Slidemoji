@@ -19,7 +19,12 @@ import { getLocalCompletion, clearLocalProgress } from "../utils/localStorage";
 import { getSolvedState } from "../utils/gridHelpers";
 import { GRID_SIZE } from "../constants";
 
-export function useLoadGame({ puzzleId, puzzleData, savedGame, solvedPuzzles }) {
+export function useLoadGame({
+	puzzleId,
+	puzzleData,
+	savedGame,
+	solvedPuzzles,
+}) {
 	const { user } = useAuth();
 	const { saveStartToFirestore, saveCompletionToFirestore } =
 		useFirestoreMutations();
@@ -33,7 +38,8 @@ export function useLoadGame({ puzzleId, puzzleData, savedGame, solvedPuzzles }) 
 	const { loadedGrid, wasSolved, shouldMigrate, shouldSaveStart } =
 		useMemo(() => {
 			const localCompletion = getLocalCompletion(puzzleId);
-			const isInSolvedPuzzles = solvedPuzzles && puzzleId in solvedPuzzles;
+			const isInSolvedPuzzles =
+				solvedPuzzles && puzzleId in solvedPuzzles;
 			console.log("[useLoadGame] Computing state:", {
 				user: user?.uid || "signed-out",
 				puzzleId,

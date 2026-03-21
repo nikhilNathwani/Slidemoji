@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import Tile from "./Tile";
 import Gap from "./Gap";
 import {
@@ -29,6 +29,9 @@ function Grid({
 	const [isInputBlocked, setIsInputBlocked] = useState(false);
 	const [gridSizePx, setGridSizePx] = useState(() => calcBoardSizePx(size));
 
+	// Use ref for synchronous blocking (prevents multiple tiles moving before React re-renders)
+	const isInputBlockedRef = useRef(false);
+
 	// ===== Memoized Values =====
 	// Create emoji SVG URL once and memoize it
 	const emojiSvgUrl = useMemo(
@@ -57,6 +60,7 @@ function Grid({
 			setTiles(grid);
 			setIsGameWon(false);
 			setIsInputBlocked(false);
+			isInputBlockedRef.current = false; // Reset ref too
 		});
 	}, [size, grid]);
 
@@ -67,9 +71,14 @@ function Grid({
 	const moveTile = useCallback(
 		(tileIndex) => {
 			// Prevent multiple tiles moving simultaneously during animation
-			if (isInputBlocked) {
+			// Use ref for synchronous check (state updates are async)
+			if (isInputBlockedRef.current) {
 				return;
 			}
+
+			// Block input immediately (synchronous)
+			isInputBlockedRef.current = true;
+			setIsInputBlocked(true); // Also update state for UI reactivity
 
 			const currentGapIndex = getGapIndex(tiles);
 			const newTiles = swapTiles(tiles, tileIndex, currentGapIndex);
@@ -91,11 +100,8 @@ function Grid({
 
 			// Notify parent for Firestore save
 			onMove(newTiles);
-
-			// Block input during animation (unblocked by Tile's onTransitionEnd)
-			setIsInputBlocked(true);
 		},
-		[tiles, size, onMove, onWin, hasSoundEnabled, isInputBlocked],
+		[tiles, size, onMove, onWin, hasSoundEnabled],
 	);
 
 	// Validates tile selection and triggers movement if valid
@@ -190,7 +196,10 @@ function Grid({
 						hasNumbersShown={hasNumbersShown}
 						emojiSvgUrl={emojiSvgUrl}
 						gridSize={size}
-						onTransitionEnd={() => setIsInputBlocked(false)}
+						onTransitionEnd={() => {
+							isInputBlockedRef.current = false; // Unblock synchronously
+							setIsInputBlocked(false); // Update state for UI
+						}}
 						{...(isClickable && {
 							onPointerDown: () => handleTileSelect(index, null),
 						})}

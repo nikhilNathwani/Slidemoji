@@ -37,32 +37,18 @@ function TrophyCase({
 				maxDifficulty: 0,
 			});
 		} else {
-			// Check if puzzle is earned
-			const isEarned = solvedPuzzles?.[puzzleNum];
-			// Get actual emoji from solvedPuzzles if available
-			let emoji = null;
-			let name = null;
-			let maxDifficulty = 0;
-			if (isEarned) {
-				// Get emoji from first solved difficulty for this puzzle
-				const difficulties = Object.keys(solvedPuzzles[puzzleNum]);
-				if (difficulties.length > 0) {
-					const puzzleData =
-						solvedPuzzles[puzzleNum][difficulties[0]];
-					emoji = puzzleData?.emoji || null;
-					name = puzzleData?.emojiName || null;
-					maxDifficulty = Math.max(...difficulties.map(Number));
-				}
-			}
+			// Check if puzzle is earned (new schema: solvedPuzzles[id] = { completedAt, emoji, emojiName })
+			const puzzleData = solvedPuzzles?.[puzzleNum];
+			const isEarned = !!puzzleData;
 
 			trophySlots.push({
 				puzzleNum,
 				isPlaceholder: false,
 				isEarned,
 				isToday: puzzleNum === puzzleId,
-				emoji,
-				name,
-				maxDifficulty: maxDifficulty,
+				emoji: puzzleData?.emoji || null,
+				name: puzzleData?.emojiName || null,
+				maxDifficulty: 0, // No longer used (3x3 only)
 			});
 		}
 	}
@@ -106,7 +92,7 @@ function TrophyCase({
 							trophyName={slot.name}
 							isLocked={!slot.isEarned}
 							isToday={slot.isToday && !slot.isEarned}
-							maxGridSizeSolved={slot.maxDifficulty}
+							isSolved={slot.isEarned}
 							isMini={true}
 						/>
 					</div>
