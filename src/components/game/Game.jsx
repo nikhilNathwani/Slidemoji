@@ -38,7 +38,7 @@ function Game({
 	const [isSolved, setIsSolved] = useState(wasSolved);
 
 	// Game state persistence - handles Firestore (signed in) and localStorage (signed out)
-	const { saveMove, saveSolution, saveRestart } = useSaveGame();
+	const { saveMove, saveSolve, saveRestart } = useSaveGame();
 
 	// Dialog state
 	const [showRestartDialog, setShowRestartDialog] = useState(false);
@@ -50,13 +50,13 @@ function Game({
 		saveMove({ grid: newGrid, puzzleMetadata });
 	};
 
-	// Handle puzzle solution
+	// Handle puzzle solve
 	const handleSolve = () => {
 		// Update currentGrid to solved state to preserve it when signing in
 		const solvedGrid = getSolvedState(GRID_SIZE);
 		setCurrentGrid(solvedGrid);
 		setIsSolved(true);
-		saveSolution({ puzzleMetadata });
+		saveSolve({ puzzleMetadata });
 		setShowWinDialog(true);
 	};
 

@@ -27,10 +27,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "./useAuth";
 import { useUser } from "./useUser";
 import { updateUserPreferences } from "../backend/database";
-import {
-	getLocalPreference,
-	saveLocalPreference,
-} from "../utils/localStorage";
+import { getLocalPreference, saveLocalPreference } from "../utils/localStorage";
 
 export function usePreference(key, defaultValue, options = {}) {
 	// Merge with defaults

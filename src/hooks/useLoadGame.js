@@ -38,17 +38,17 @@ export function useLoadGame({
 	const { loadedGrid, wasSolved, shouldMigrate } = useMemo(() => {
 		// Check all data sources
 		const localCompletion = getLocalCompletion(puzzleId); // localStorage completion flag
-		const isInSolvedPuzzles = solvedPuzzles && puzzleId in solvedPuzzles; // Firestore completion
+		const hasSignedInSolve = solvedPuzzles && puzzleId in solvedPuzzles; // Firestore solvedPuzzles
 		console.log("[useLoadGame] Computing state:", {
 			user: user?.uid || "signed-out",
 			puzzleId,
-			localCompletion: localCompletion?.isCompleted || false,
-			hasFirestoreProgress: !!savedGame,
-			hasFirestoreCompletion: isInSolvedPuzzles,
+			hasSignedOutSolve: !!localCompletion?.isCompleted,
+			hasSignedInProgress: !!savedGame,
+			hasSignedInSolve,
 		});
 
 		// Priority 0: Already solved in Firestore (signed-in users only)
-		if (user && isInSolvedPuzzles) {
+		if (user && hasSignedInSolve) {
 			console.log(
 				"[useLoadGame] Priority 0: Already solved in Firestore",
 			);
@@ -75,9 +75,7 @@ export function useLoadGame({
 		// Old: gameState[puzzleId][3].grid, New: gameState[puzzleId].grid
 		let actualSavedGame = savedGame;
 		if (savedGame && savedGame[3]) {
-			console.log(
-				"[useLoadGame] Migrating old nested gameState format",
-			);
+			console.log("[useLoadGame] Migrating old nested gameState format");
 			actualSavedGame = savedGame[3]; // Use 3x3 data from old format
 		}
 
@@ -148,9 +146,7 @@ export function useLoadGame({
 				puzzleId,
 				initialGrid,
 			});
-			console.log(
-				"[useLoadGame] Saved initial grid state to Firestore",
-			);
+			console.log("[useLoadGame] Saved initial grid state to Firestore");
 		}
 	}, [
 		shouldMigrate,

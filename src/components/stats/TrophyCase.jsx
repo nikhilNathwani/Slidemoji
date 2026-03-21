@@ -80,8 +80,7 @@ function TrophyCase({
 			<div className={styles.emojiGrid}>
 				{trophySlots.map((slot) => {
 					const canPlay =
-						!slot.isPlaceholder &&
-						slot.puzzleNum <= totalPuzzles;
+						!slot.isPlaceholder && slot.puzzleNum <= totalPuzzles;
 					const handleClick = canPlay
 						? () => onSelectPuzzle?.(slot.puzzleNum)
 						: undefined;

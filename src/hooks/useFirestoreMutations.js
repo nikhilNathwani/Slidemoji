@@ -16,7 +16,7 @@ import {
 	saveGameMove,
 	saveGameCompletion,
 } from "../backend/database";
-import { addPuzzleSolution } from "../utils/statsHelpers";
+import { addPuzzleSolve } from "../utils/statsHelpers";
 
 export function useFirestoreMutations() {
 	const { user } = useAuth();

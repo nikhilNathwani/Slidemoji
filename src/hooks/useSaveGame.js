@@ -1,13 +1,13 @@
 /**
  * useSaveGame - Unified hook for game state persistence (3x3 only)
  *
- * Handles saving game state (moves, solutions, restarts) with automatic routing to:
+ * Handles saving game state (moves, solves, restarts) with automatic routing to:
  * - Firestore (for signed-in users) via React Query mutations
  * - localStorage (for signed-out users)
  *
  * Game.jsx doesn't need to know about storage strategy - it's all encapsulated here.
  *
- * Returns: { saveMove, saveSolution, saveRestart }
+ * Returns: { saveMove, saveSolve, saveRestart }
  */
 
 import { useAuth } from "./useAuth";
@@ -38,10 +38,10 @@ export function useSaveGame() {
 	};
 
 	/**
-	 * Save puzzle solution (when solved)
+	 * Save puzzle solve (when completed)
 	 * Routes to Firestore (signed in) or localStorage flag (signed out)
 	 */
-	const saveSolution = ({ puzzleMetadata }) => {
+	const saveSolve = ({ puzzleMetadata }) => {
 		if (user) {
 			// Signed in: save to Firestore
 			saveCompletionToFirestore({
@@ -72,7 +72,7 @@ export function useSaveGame() {
 
 	return {
 		saveMove,
-		saveSolution,
+		saveSolve,
 		saveRestart,
 	};
 }

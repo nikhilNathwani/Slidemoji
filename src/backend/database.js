@@ -314,7 +314,7 @@ export async function saveGameCompletion(
 			stats.solvedPuzzles = {};
 		}
 
-		// Save solution trophy with emoji data
+		// Save solve trophy with emoji data
 		const completedAt = Timestamp.now();
 
 		stats.solvedPuzzles[puzzleId] = {
