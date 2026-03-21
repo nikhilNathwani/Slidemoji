@@ -35,7 +35,7 @@ function Game({
 	// useLoadGame checks: Firestore solvedPuzzles, Firestore gameState, and localStorage
 	const { loadedGrid, wasSolved } = useLoadGame({
 		puzzleId,
-		puzzleData: puzzleMetadata,
+		puzzleMetadata,
 		savedGame,
 		solvedPuzzles,
 	});

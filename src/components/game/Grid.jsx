@@ -29,6 +29,13 @@ function Grid({
 	const [isInputBlocked, setIsInputBlocked] = useState(false);
 	const [gridSizePx, setGridSizePx] = useState(() => calcBoardSizePx(size));
 
+	console.log("[Grid] State:", {
+		tilesLength: tiles?.length,
+		isGameWon,
+		isInputBlocked,
+		gridFromProps: grid?.length,
+	});
+
 	// Use ref for synchronous blocking (prevents multiple tiles moving before React re-renders)
 	const isInputBlockedRef = useRef(false);
 
@@ -194,6 +201,16 @@ function Grid({
 					!isGameWon &&
 					!isInputBlocked &&
 					isAdjacent(gapIndex, index, size);
+
+				if (index === 0) {
+					console.log("[Grid] First tile state:", {
+						isGameWon,
+						isInputBlocked,
+						isAdjacent: isAdjacent(gapIndex, index, size),
+						isClickable,
+						gapIndex,
+					});
+				}
 
 				return (
 					<Tile

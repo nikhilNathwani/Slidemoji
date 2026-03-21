@@ -15,13 +15,13 @@ function Trophy({
 	// trophyNum is a string like "001", need to convert to number
 	const puzzleId =
 		typeof trophyNum === "string" ? parseInt(trophyNum, 10) : trophyNum;
-	const { data: puzzleData } = usePuzzle(
+	const { data: puzzleMetadata } = usePuzzle(
 		!trophyEmoji && !isLocked && puzzleId ? puzzleId : null,
 	);
 
 	// Use provided emoji/name or fetch from puzzle data
-	const emoji = trophyEmoji || puzzleData?.emoji;
-	const name = trophyName || puzzleData?.emojiName;
+	const emoji = trophyEmoji || puzzleMetadata?.emoji;
+	const name = trophyName || puzzleMetadata?.emojiName;
 
 	// Determine variant-specific class based on props (3x3 only)
 	const variantClass = isLocked

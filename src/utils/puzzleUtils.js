@@ -32,13 +32,13 @@ export function convertGridFromFirestore(grid) {
  * 
  * Handles both old schema (puzzle.3) and new schema (puzzle.initialGrid)
  * 
- * @param {Object} puzzleData - Puzzle data from Firestore
+ * @param {Object} puzzleMetadata - Puzzle data from Firestore
  * @returns {Object} Puzzle data with converted grid array
  */
-export function convertPuzzleFromFirestore(puzzleData) {
-	if (!puzzleData) return null;
+export function convertPuzzleFromFirestore(puzzleMetadata) {
+	if (!puzzleMetadata) return null;
 
-	const converted = { ...puzzleData };
+	const converted = { ...puzzleMetadata };
 
 	// Handle old schema: puzzle.3 (from before 3x3-only simplification)
 	// Convert to new schema: puzzle.initialGrid

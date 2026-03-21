@@ -21,7 +21,7 @@ import { GRID_SIZE } from "../constants";
 
 export function useLoadGame({
 	puzzleId,
-	puzzleData,
+	puzzleMetadata,
 	savedGame,
 	solvedPuzzles,
 }) {
@@ -29,10 +29,10 @@ export function useLoadGame({
 	const { saveStartToFirestore, saveCompletionToFirestore } =
 		useFirestoreMutations();
 
-	// Extract primitive values from puzzleData to avoid object reference issues
-	const puzzleEmoji = puzzleData.emoji;
-	const puzzleEmojiName = puzzleData.emojiName;
-	const initialGrid = puzzleData.initialGrid;
+	// Extract primitive values from puzzleMetadata to avoid object reference issues
+	const puzzleEmoji = puzzleMetadata.emoji;
+	const puzzleEmojiName = puzzleMetadata.emojiName;
+	const initialGrid = puzzleMetadata.initialGrid;
 
 	// Compute initial state synchronously (runs on every render but memoized)
 	const { loadedGrid, wasSolved, shouldMigrate } = useMemo(() => {

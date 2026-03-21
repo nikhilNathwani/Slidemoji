@@ -24,7 +24,7 @@ function App() {
 	const puzzleId = selectedPuzzleId;
 
 	// Fetch puzzle data
-	const { data: puzzleData, isLoading: isLoadingPuzzle } =
+	const { data: puzzleMetadata, isLoading: isLoadingPuzzle } =
 		usePuzzle(puzzleId);
 
 	// Show Page / Dialog
@@ -63,7 +63,7 @@ function App() {
 	// Wait for data to load before rendering Game
 	// For signed-in users, wait for both puzzle and user data
 	// For signed-out users, only wait for puzzle data
-	if (isLoading || !puzzleData) {
+	if (isLoading || !puzzleMetadata) {
 		return (
 			<div className={`app ${darkMode ? "dark-theme" : "light-theme"}`}>
 				<Header
@@ -88,7 +88,7 @@ function App() {
 			/>
 
 			<Game
-				puzzleMetadata={puzzleData}
+			puzzleMetadata={puzzleMetadata}
 				savedGame={userData?.gameState?.[puzzleId]}
 				solvedPuzzles={userData?.stats?.solvedPuzzles}
 				hasNumbersShown={showNumbers}
