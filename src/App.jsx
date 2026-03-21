@@ -10,8 +10,6 @@ import { useAuth } from "./hooks/useAuth";
 import { useUser } from "./hooks/useUser";
 import { usePuzzle } from "./hooks/usePuzzle";
 import { usePreference } from "./hooks/usePreference";
-import { getMaxGridSizeSolved } from "./utils/statsHelpers";
-import { GRID_SIZE } from "./constants";
 
 // App-level preference defaults
 const DEFAULT_DARK_MODE = false;
@@ -90,7 +88,7 @@ function App() {
 				puzzleId={puzzleId}
 				puzzleData={puzzleData}
 				savedGame={userData?.gameState?.[puzzleId]}
-				maxGridSizeSolved={getMaxGridSizeSolved(userData, puzzleId)}
+				isSolved={!!userData?.stats?.solvedPuzzles?.[puzzleId]}
 				hasNumbersShown={showNumbers}
 				hasSoundEnabled={soundEnabled}
 				onOpenStats={() => setShowStatsDialog(true)}

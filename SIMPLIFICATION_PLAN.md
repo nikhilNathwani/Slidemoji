@@ -34,12 +34,13 @@
 
 ### 5. Components Simplification
 
-- **App.jsx**: Remove gridSize state, pass hardcoded 3
-- **Game.jsx**: Remove gridSize prop, use constant
+- **App.jsx**: Remove gridSize state, pass hardcoded 3, use `isSolved` boolean instead of `maxGridSizeSolved`
+- **Game.jsx**: Remove gridSize prop, use constant, pass `isSolved` to Trophy
 - **SettingsDialog**: Remove difficulty toggle UI
 - **GameActionButton**: Remove "Try Hard mode?" button logic
-- **Trophy**: Remove teal variant (only gold/grey/puzzle-info)
-- **StatsHelpers**: Simplify to check single solution per puzzle
+- **Trophy**: Remove teal variant (only gold/grey), use `isSolved` prop instead of `maxGridSizeSolved`
+- **StatsHelpers**: Remove `getMaxGridSizeSolved` function (moot with single grid size)
+- **localStorage**: Replace `getSignedOutMaxSolved` with `isSignedOutPuzzleSolved` boolean
 
 ### 6. Constants
 

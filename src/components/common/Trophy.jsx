@@ -8,12 +8,12 @@ function Trophy({
 	isMini = false,
 	isLocked = false,
 	isToday = false, // Today's puzzle (not yet solved)
-	maxGridSizeSolved = 0, // 3 if solved (gold), 0 if not (grey)
+	isSolved = false, // Whether puzzle is solved (gold) or not (grey)
 }) {
 	// Determine variant-specific class based on props (3x3 only)
 	const variantClass = isLocked
 		? styles.locked
-		: maxGridSizeSolved > 0
+		: isSolved
 			? styles.gold
 			: styles.puzzleInfo;
 

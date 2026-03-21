@@ -8,7 +8,7 @@
  * 3x3 only - no difficulty variations
  */
 
-import { GRID_SIZE } from "../constants";
+
 
 // Get localStorage key for signed-out progress (3x3 only)
 export const getLocalStorageKey = (puzzleId) =>
@@ -34,8 +34,8 @@ export const clearLocalProgress = (puzzleId) => {
 	localStorage.removeItem(getLocalStorageKey(puzzleId));
 };
 
-// Check if signed-out user completed this puzzle (returns GRID_SIZE if solved, 0 if not)
-export const getSignedOutMaxSolved = (puzzleId) => {
+// Check if signed-out user completed this puzzle
+export const isSignedOutPuzzleSolved = (puzzleId) => {
 	const completion = getLocalCompletion(puzzleId);
-	return completion?.isCompleted ? GRID_SIZE : 0;
+	return !!completion?.isCompleted;
 };

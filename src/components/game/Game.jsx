@@ -15,7 +15,7 @@ function Game({
 	puzzleId,
 	puzzleData,
 	savedGame,
-	maxGridSizeSolved = 0,
+	isSolved: wasAlreadySolved = false,
 	hasNumbersShown,
 	hasSoundEnabled,
 	onOpenStats, // For "View Trophies" button
@@ -32,7 +32,7 @@ function Game({
 
 	// Grid state - Game manages current gameplay state
 	const [currentGrid, setCurrentGrid] = useState(loadedGrid);
-	const [isSolved, setIsSolved] = useState(wasSolved);
+	const [isSolved, setIsSolved] = useState(wasSolved || wasAlreadySolved);
 
 	// Game state persistence - handles Firestore (signed in) and localStorage (signed out)
 	const { saveMove, saveSolution, saveRestart } = useSaveGame();
@@ -94,7 +94,7 @@ function Game({
 						trophyNum={String(puzzleData.id).padStart(3, "0")}
 						trophyEmoji={puzzleData.emoji}
 						trophyName={puzzleData.emojiName}
-						maxGridSizeSolved={maxGridSizeSolved}
+						isSolved={isSolved}
 					/>
 				</div>
 				<Grid

@@ -1,6 +1,3 @@
-import { GRID_SIZE } from "../constants";
-import { getSignedOutMaxSolved } from "./localStorage";
-
 /**
  * Add a puzzle solution to the user's solved puzzles (3x3 only)
  * Safely handles object creation
@@ -23,22 +20,4 @@ export function addPuzzleSolution(userData, puzzleId, solutionData) {
 			},
 		},
 	};
-}
-
-/**
- * Get the grid size if puzzle is solved (3x3 only)
- * Handles both signed-in users (Firestore) and signed-out users (localStorage)
- *
- * @param {Object} userData - User data object (null/undefined for signed-out users)
- * @param {number} puzzleId - Puzzle ID
- * @returns {number} Grid size if solved (3), or 0 if not solved
- */
-export function getMaxGridSizeSolved(userData, puzzleId) {
-	// Signed-in user: check Firestore data
-	if (userData?.stats?.solvedPuzzles?.[puzzleId]) {
-		return GRID_SIZE;
-	}
-
-	// Signed-out user: check localStorage
-	return getSignedOutMaxSolved(puzzleId);
 }

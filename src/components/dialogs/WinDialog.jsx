@@ -3,7 +3,6 @@ import Trophy from "../common/Trophy";
 import StatsContent from "../stats/StatsContent";
 import styles from "./WinDialog.module.css";
 import { FontAwesomeIcon } from "../../utils/icons";
-import { GRID_SIZE } from "../../constants";
 
 function WinDialog({ isOpen, onClose, puzzleData }) {
 	const handleShare = () => {
@@ -32,7 +31,7 @@ Play at slidemoji.vercel.app`;
 					trophyNum={puzzleData?.id}
 					trophyEmoji={puzzleData?.emoji}
 					trophyName={puzzleData?.emojiName}
-					maxGridSizeSolved={GRID_SIZE}
+					isSolved={true}
 				/>
 				<h3>You earned today's emoji!</h3>
 
