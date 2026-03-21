@@ -3,8 +3,8 @@
  * Run this to reset to the new simplified 3x3-only schema
  *
  * Usage:
- *   1. Set your Firebase config below
- *   2. Run: node scripts/clearOldSchemaData.js
+ *   1. Make sure .env.local has your Firebase config
+ *   2. Run: node --env-file=.env.local scripts/clearOldSchemaData.js
  *
  * This will clear all gameState and solvedPuzzles data from Firestore.
  * Users will start fresh with the new schema.
@@ -26,15 +26,22 @@ import {
 	updateDoc,
 } from "firebase/firestore";
 
-// TODO: Replace with your actual Firebase config
+// Load Firebase config from environment variables
 const firebaseConfig = {
-	apiKey: "YOUR_API_KEY",
-	authDomain: "YOUR_AUTH_DOMAIN",
-	projectId: "YOUR_PROJECT_ID",
-	storageBucket: "YOUR_STORAGE_BUCKET",
-	messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-	appId: "YOUR_APP_ID",
+	apiKey: process.env.VITE_FIREBASE_API_KEY,
+	authDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN,
+	projectId: process.env.VITE_FIREBASE_PROJECT_ID,
+	storageBucket: process.env.VITE_FIREBASE_STORAGE_BUCKET,
+	messagingSenderId: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+	appId: process.env.VITE_FIREBASE_APP_ID,
 };
+
+// Validate config
+if (!firebaseConfig.apiKey) {
+	throw new Error(
+		"Missing Firebase config. Run with: node --env-file=.env.local scripts/clearOldSchemaData.js",
+	);
+}
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);

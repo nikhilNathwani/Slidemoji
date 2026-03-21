@@ -61,6 +61,19 @@ export function useLoadGame({
 				};
 			}
 
+			// Priority 1: localStorage completion (preserve signed-out solves when signing in)
+			if (user && localCompletion?.isCompleted) {
+				console.log(
+					"[useLoadGame] Priority 1: Signed-in user with localStorage completion (migrating)",
+				);
+				return {
+					loadedGrid: getSolvedState(GRID_SIZE),
+					wasSolved: true,
+					shouldMigrate: true,
+					shouldSaveStart: false,
+				};
+			}
+
 			// Migration: Handle old nested format from before simplification
 			// Old: gameState[puzzleId][3].grid, New: gameState[puzzleId].grid
 			let actualSavedGame = savedGame;
@@ -80,32 +93,18 @@ export function useLoadGame({
 			const hasFirestoreProgress =
 				actualSavedGame && !isInitialGrid(actualSavedGame.grid);
 
-			// Priority 1: Firestore saved game with actual progress (signed-in users only)
+			// Priority 2: Firestore saved game with actual progress (signed-in users only)
 			if (hasFirestoreProgress) {
 				console.log(
-					"[useLoadGame] Priority 1: Firestore progress found",
+					"[useLoadGame] Priority 2: Firestore in-progress game found",
 				);
 				return {
 					loadedGrid: actualSavedGame.grid,
 					wasSolved: false,
-					shouldMigrate: !!localCompletion?.isCompleted,
+					shouldMigrate: false,
 					shouldSaveStart: false,
 				};
 			}
-
-			// Priority 2: localStorage completion (signed-in user with no Firestore progress)
-			if (user && localCompletion?.isCompleted) {
-				console.log(
-					"[useLoadGame] Priority 2: Signed-in user with localStorage completion",
-				);
-				return {
-					loadedGrid: getSolvedState(GRID_SIZE),
-					wasSolved: true,
-					shouldMigrate: true,
-					shouldSaveStart: false,
-				};
-			}
-
 			// Priority 3: Check localStorage for signed-out user completions
 			// (Trophies persist even when signed out, but not in-progress games)
 			if (!user && localCompletion?.isCompleted) {
