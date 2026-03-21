@@ -12,27 +12,30 @@ import { getSolvedState } from "../../utils/gridHelpers";
 import { GRID_SIZE } from "../../constants";
 
 function Game({
-	puzzleId,
-	puzzleData,
+	puzzleMetadata, // Contains: id, emoji, emojiName, initialGrid
 	savedGame,
-	isSolved: wasAlreadySolved = false,
+	isSolved: wasPreviouslySolved = false, // Passed from App (checks Firestore solvedPuzzles)
 	hasNumbersShown,
 	hasSoundEnabled,
-	onOpenStats, // For "View Trophies" button
+	onOpenStats,
 }) {
+	const puzzleId = puzzleMetadata.id;
 	const { user } = useAuth();
 
 	// Load game state on mount - handles resuming or starting fresh (3x3 only)
 	// Component remounts when user/puzzleId changes (via key prop in App)
 	const { loadedGrid, wasSolved } = useLoadGame({
 		puzzleId,
-		puzzleData,
+		puzzleData: puzzleMetadata,
 		savedGame,
 	});
 
 	// Grid state - Game manages current gameplay state
 	const [currentGrid, setCurrentGrid] = useState(loadedGrid);
-	const [isSolved, setIsSolved] = useState(wasSolved || wasAlreadySolved);
+	// isSolved tracks current session state. Initialize from:
+	// 1. wasSolved (from localStorage/migration check in useLoadGame)
+	// 2. wasPreviouslySolved (from Firestore solvedPuzzles check in App)
+	const [isSolved, setIsSolved] = useState(wasSolved || wasPreviouslySolved);
 
 	// Game state persistence - handles Firestore (signed in) and localStorage (signed out)
 	const { saveMove, saveSolution, saveRestart } = useSaveGame();
@@ -44,12 +47,7 @@ function Game({
 	// Auto-save after each move
 	const handleMove = (newGrid) => {
 		setCurrentGrid(newGrid);
-
-		saveMove({
-			puzzleId,
-			grid: newGrid,
-			puzzleData,
-		});
+		saveMove({ grid: newGrid, puzzleMetadata });
 	};
 
 	// Handle puzzle solution
@@ -57,14 +55,8 @@ function Game({
 		// Update currentGrid to solved state to preserve it when signing in
 		const solvedGrid = getSolvedState(GRID_SIZE);
 		setCurrentGrid(solvedGrid);
-
 		setIsSolved(true);
-
-		saveSolution({
-			puzzleId,
-			puzzleData,
-		});
-
+		saveSolution({ puzzleMetadata });
 		setShowWinDialog(true);
 	};
 
@@ -77,23 +69,20 @@ function Game({
 		setShowRestartDialog(false);
 		setCurrentGrid(null); // Clear current grid to show initial
 		setIsSolved(false); // Reset solved state
-
-		saveRestart({
-			puzzleData,
-		});
+		saveRestart({ puzzleMetadata });
 	};
 
 	// Game decides which grid to show
-	const gridToShow = currentGrid || puzzleData.initialGrid;
+	const gridToShow = currentGrid || puzzleMetadata.initialGrid;
 
 	return (
 		<>
 			<main className={styles.main}>
 				<div className={styles.trophyContainer}>
 					<Trophy
-						trophyNum={String(puzzleData.id).padStart(3, "0")}
-						trophyEmoji={puzzleData.emoji}
-						trophyName={puzzleData.emojiName}
+						trophyNum={String(puzzleMetadata.id).padStart(3, "0")}
+						trophyEmoji={puzzleMetadata.emoji}
+						trophyName={puzzleMetadata.emojiName}
 						isSolved={isSolved}
 					/>
 				</div>
@@ -101,7 +90,7 @@ function Game({
 					size={GRID_SIZE}
 					onWin={handleSolve}
 					hasNumbersShown={hasNumbersShown && !isSolved}
-					emoji={puzzleData.emoji}
+					emoji={puzzleMetadata.emoji}
 					grid={gridToShow}
 					onMove={handleMove}
 					hasSoundEnabled={hasSoundEnabled}
@@ -126,7 +115,7 @@ function Game({
 			<WinDialog
 				isOpen={showWinDialog}
 				onClose={() => setShowWinDialog(false)}
-				puzzleData={puzzleData}
+				puzzleMetadata={puzzleMetadata}
 			/>
 		</>
 	);

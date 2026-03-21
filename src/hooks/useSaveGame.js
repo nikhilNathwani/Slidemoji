@@ -26,11 +26,11 @@ export function useSaveGame() {
 	 * Save game state after a move
 	 * Only persists for signed-in users (signed-out users get ephemeral experience)
 	 */
-	const saveMove = ({ grid, puzzleData }) => {
+	const saveMove = ({ grid, puzzleMetadata }) => {
 		if (user) {
 			// Signed in: save to Firestore
 			saveMoveToFirestore({
-				puzzleId: puzzleData.id,
+				puzzleId: puzzleMetadata.id,
 				grid,
 			});
 		}
@@ -41,17 +41,17 @@ export function useSaveGame() {
 	 * Save puzzle solution (when solved)
 	 * Routes to Firestore (signed in) or localStorage flag (signed out)
 	 */
-	const saveSolution = ({ puzzleId, puzzleData }) => {
+	const saveSolution = ({ puzzleMetadata }) => {
 		if (user) {
 			// Signed in: save to Firestore
 			saveCompletionToFirestore({
-				puzzleId: puzzleData.id,
-				emoji: puzzleData.emoji,
-				emojiName: puzzleData.emojiName,
+				puzzleId: puzzleMetadata.id,
+				emoji: puzzleMetadata.emoji,
+				emojiName: puzzleMetadata.emojiName,
 			});
 		} else {
 			// Signed out: save completion flag only (for trophy display)
-			saveLocalCompletion(puzzleId);
+			saveLocalCompletion(puzzleMetadata.id);
 		}
 	};
 
@@ -59,12 +59,12 @@ export function useSaveGame() {
 	 * Save game restart
 	 * Only persists for signed-in users (signed-out users get ephemeral experience)
 	 */
-	const saveRestart = ({ puzzleData }) => {
+	const saveRestart = ({ puzzleMetadata }) => {
 		if (user) {
 			// Signed in: save to Firestore
 			saveStartToFirestore({
-				puzzleId: puzzleData.id,
-				initialGrid: puzzleData.initialGrid,
+				puzzleId: puzzleMetadata.id,
+				initialGrid: puzzleMetadata.initialGrid,
 			});
 		}
 		// Note: Signed-out users don't persist restarts

@@ -4,12 +4,12 @@ import StatsContent from "../stats/StatsContent";
 import styles from "./WinDialog.module.css";
 import { FontAwesomeIcon } from "../../utils/icons";
 
-function WinDialog({ isOpen, onClose, puzzleData }) {
+function WinDialog({ isOpen, onClose, puzzleMetadata }) {
 	const handleShare = () => {
-		const paddedId = String(puzzleData?.id).padStart(3, "0");
+		const paddedId = String(puzzleMetadata?.id).padStart(3, "0");
 		const shareText = `Slidemoji #${paddedId} 
 
-I unscrambled today's emoji! ${puzzleData?.emoji}
+I unscrambled today's emoji! ${puzzleMetadata?.emoji}
 
 Play at slidemoji.vercel.app`;
 
@@ -28,9 +28,9 @@ Play at slidemoji.vercel.app`;
 		<Dialog isOpen={isOpen} onClose={onClose} title="Congratulations!">
 			<div className={styles.winDialogContent}>
 				<Trophy
-					trophyNum={puzzleData?.id}
-					trophyEmoji={puzzleData?.emoji}
-					trophyName={puzzleData?.emojiName}
+					trophyNum={puzzleMetadata?.id}
+					trophyEmoji={puzzleMetadata?.emoji}
+					trophyName={puzzleMetadata?.emojiName}
 					isSolved={true}
 				/>
 				<h3>You earned today's emoji!</h3>

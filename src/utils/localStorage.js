@@ -8,11 +8,8 @@
  * 3x3 only - no difficulty variations
  */
 
-
-
 // Get localStorage key for signed-out progress (3x3 only)
-export const getLocalStorageKey = (puzzleId) =>
-	`signedOutProgress_${puzzleId}`;
+export const getLocalStorageKey = (puzzleId) => `signedOutProgress_${puzzleId}`;
 
 // Read signed-out completion from localStorage
 export const getLocalCompletion = (puzzleId) => {

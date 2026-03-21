@@ -36,10 +36,17 @@ export function useLoadGame({ puzzleId, puzzleData, savedGame }) {
 			console.log("[useLoadGame] Computing state:", {
 				user: user?.uid || "signed-out",
 				puzzleId,
-				gridSize: GRID_SIZE,
 				localCompletion,
 				hasSavedGame: !!savedGame,
 			});
+
+			// Migration: Handle old nested format from before simplification
+			// Old: gameState[puzzleId][3].grid, New: gameState[puzzleId].grid
+			let actualSavedGame = savedGame;
+			if (savedGame && savedGame[3]) {
+				console.log("[useLoadGame] Migrating old nested gameState format");
+				actualSavedGame = savedGame[3]; // Use 3x3 data from old format
+			}
 
 			// Helper: Check if savedGame is just the initial grid (no real progress)
 			const isInitialGrid = (grid) => {
@@ -48,7 +55,7 @@ export function useLoadGame({ puzzleId, puzzleData, savedGame }) {
 			};
 
 			const hasFirestoreProgress =
-				savedGame && !isInitialGrid(savedGame.grid);
+				actualSavedGame && !isInitialGrid(actualSavedGame.grid);
 
 			// Priority 1: Firestore saved game with actual progress (signed-in users only)
 			if (hasFirestoreProgress) {
@@ -56,7 +63,7 @@ export function useLoadGame({ puzzleId, puzzleData, savedGame }) {
 					"[useLoadGame] Priority 1: Firestore progress found",
 				);
 				return {
-					loadedGrid: savedGame.grid,
+					loadedGrid: actualSavedGame.grid,
 					wasSolved: false,
 					shouldMigrate: !!localCompletion?.isCompleted,
 					shouldSaveStart: false,

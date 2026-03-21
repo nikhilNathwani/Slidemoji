@@ -19,24 +19,24 @@ export function playTileMoveSound() {
 		const ctx = getAudioContext();
 		const now = ctx.currentTime;
 
-		// Layer 1: Deep wooden thump (like hardwood hitting hardwood)
+		// Layer 1: Scrabble tile slide (low rumble)
 		const lowOsc = ctx.createOscillator();
 		const lowGain = ctx.createGain();
 		lowOsc.connect(lowGain);
 		lowGain.connect(ctx.destination);
 
-		lowOsc.type = "sine"; // Pure, deeper tone
-		lowOsc.frequency.setValueAtTime(90, now); // Lower for deeper wood sound
-		lowOsc.frequency.exponentialRampToValueAtTime(60, now + 0.06);
+		lowOsc.type = "sine";
+		lowOsc.frequency.setValueAtTime(120, now);
+		lowOsc.frequency.exponentialRampToValueAtTime(80, now + 0.08);
 
 		lowGain.gain.setValueAtTime(0, now);
-		lowGain.gain.linearRampToValueAtTime(0.25, now + 0.003); // Sharper attack
-		lowGain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+		lowGain.gain.linearRampToValueAtTime(0.15, now + 0.005);
+		lowGain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
 
 		lowOsc.start(now);
-		lowOsc.stop(now + 0.1);
+		lowOsc.stop(now + 0.12);
 
-		// Layer 2: Wood slide/scrape (friction as tile slides)
+		// Layer 2: Tile sliding friction (plastic on wood)
 		const midOsc = ctx.createOscillator();
 		const midGain = ctx.createGain();
 		const midFilter = ctx.createBiquadFilter();
@@ -44,21 +44,21 @@ export function playTileMoveSound() {
 		midFilter.connect(midGain);
 		midGain.connect(ctx.destination);
 
-		midOsc.type = "sawtooth"; // Rough texture for wood grain
-		midOsc.frequency.setValueAtTime(280, now);
-		midOsc.frequency.exponentialRampToValueAtTime(160, now + 0.05);
+		midOsc.type = "sawtooth";
+		midOsc.frequency.setValueAtTime(350, now);
+		midOsc.frequency.exponentialRampToValueAtTime(200, now + 0.06);
 
 		midFilter.type = "lowpass";
-		midFilter.frequency.setValueAtTime(1200, now); // Muffle for more natural wood sound
+		midFilter.frequency.setValueAtTime(1500, now);
 
 		midGain.gain.setValueAtTime(0, now);
-		midGain.gain.linearRampToValueAtTime(0.06, now + 0.008);
-		midGain.gain.exponentialRampToValueAtTime(0.01, now + 0.07);
+		midGain.gain.linearRampToValueAtTime(0.08, now + 0.01);
+		midGain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
 
 		midOsc.start(now);
-		midOsc.stop(now + 0.07);
+		midOsc.stop(now + 0.08);
 
-		// Layer 3: Sharp wooden click (tile settling into place)
+		// Layer 3: Crisp click (tile snapping into grid)
 		const clickOsc = ctx.createOscillator();
 		const clickGain = ctx.createGain();
 		const clickFilter = ctx.createBiquadFilter();
@@ -66,19 +66,19 @@ export function playTileMoveSound() {
 		clickFilter.connect(clickGain);
 		clickGain.connect(ctx.destination);
 
-		clickOsc.type = "square"; // Sharp percussive attack
-		clickOsc.frequency.setValueAtTime(650, now); // Lower for more wooden clack
+		clickOsc.type = "square";
+		clickOsc.frequency.setValueAtTime(800, now);
 
 		clickFilter.type = "bandpass";
-		clickFilter.frequency.setValueAtTime(800, now); // Focus on mid-range click
-		clickFilter.Q.setValueAtTime(2, now);
+		clickFilter.frequency.setValueAtTime(1200, now);
+		clickFilter.Q.setValueAtTime(3, now);
 
 		clickGain.gain.setValueAtTime(0, now);
-		clickGain.gain.linearRampToValueAtTime(0.08, now + 0.001); // Very sharp attack
-		clickGain.gain.exponentialRampToValueAtTime(0.01, now + 0.02);
+		clickGain.gain.linearRampToValueAtTime(0.12, now + 0.001);
+		clickGain.gain.exponentialRampToValueAtTime(0.01, now + 0.025);
 
 		clickOsc.start(now);
-		clickOsc.stop(now + 0.02);
+		clickOsc.stop(now + 0.025);
 	} catch (error) {
 		// Silently fail if Web Audio API is not supported
 		console.warn("Unable to play sound:", error);

@@ -4,9 +4,7 @@
 export const GRID_SIZE = 3;
 
 // Legacy: kept for potential future difficulty expansion
-export const DIFFICULTIES = [
-	{ size: 3, label: "Normal", display: "3×3" },
-];
+export const DIFFICULTIES = [{ size: 3, label: "Normal", display: "3×3" }];
 
 // Grid layout (used by gridHelpers.js)
 export const GRID_VIEWPORT_PADDING = 40; // Padding on each side of viewport

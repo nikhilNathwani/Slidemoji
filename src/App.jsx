@@ -85,8 +85,7 @@ function App() {
 			/>
 
 			<Game
-				puzzleId={puzzleId}
-				puzzleData={puzzleData}
+				puzzleMetadata={puzzleData}
 				savedGame={userData?.gameState?.[puzzleId]}
 				isSolved={!!userData?.stats?.solvedPuzzles?.[puzzleId]}
 				hasNumbersShown={showNumbers}

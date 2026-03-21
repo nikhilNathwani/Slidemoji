@@ -10,12 +10,7 @@ import styles from "./Game.module.css";
  * - View Trophies (when solved while signed in)
  * - Restart (when game is in progress)
  */
-function GameActionButton({
-	isSolved,
-	user,
-	onOpenStats,
-	onRestart,
-}) {
+function GameActionButton({ isSolved, user, onOpenStats, onRestart }) {
 	// Signed out and solved - show sign-in upsell
 	if (isSolved && !user) {
 		return (
