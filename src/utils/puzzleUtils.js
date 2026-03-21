@@ -29,9 +29,9 @@ export function convertGridFromFirestore(grid) {
 /**
  * Convert puzzle data from Firestore format to client format (3x3 only)
  * Firestore uses 0 for gap, client uses null for gap
- * 
+ *
  * Handles both old schema (puzzle.3) and new schema (puzzle.initialGrid)
- * 
+ *
  * @param {Object} puzzleMetadata - Puzzle data from Firestore
  * @returns {Object} Puzzle data with converted grid array
  */

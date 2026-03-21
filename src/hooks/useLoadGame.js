@@ -17,6 +17,7 @@ import { useAuth } from "./useAuth";
 import { useFirestoreMutations } from "./useFirestoreMutations";
 import { getLocalCompletion, clearLocalProgress } from "../utils/localStorage";
 import { getSolvedState } from "../utils/gridHelpers";
+import { convertGridFromFirestore } from "../utils/puzzleUtils";
 import { GRID_SIZE } from "../constants";
 
 export function useLoadGame({
@@ -94,7 +95,7 @@ export function useLoadGame({
 				"[useLoadGame] Priority 2: Firestore in-progress game found",
 			);
 			return {
-				loadedGrid: actualSavedGame.grid,
+				loadedGrid: convertGridFromFirestore(actualSavedGame.grid),
 				wasSolved: false,
 				shouldMigrate: false,
 			};
