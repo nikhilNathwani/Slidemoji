@@ -127,6 +127,11 @@ export function useLoadGame({
 
 	// Handle side effects (Firestore mutations) in useEffect
 	useEffect(() => {
+		// Don't run if puzzle data isn't loaded yet
+		if (!initialGrid || !puzzleId) {
+			return;
+		}
+
 		// Migrate localStorage completion to Firestore
 		if (shouldMigrate) {
 			saveCompletionToFirestore({

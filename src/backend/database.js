@@ -203,7 +203,9 @@ export async function saveGameStart(userId, puzzleId, initialGrid) {
 		const fromArchive = puzzleId !== getLatestPuzzleId();
 		let gameState = userData.gameState || {};
 		// Ensure stats structure exists (in case user data was corrupted/deleted)
-		let stats = userData.stats ? { ...userData.stats } : { totalAttempted: 0, totalSolved: 0, solvedPuzzles: {} };
+		let stats = userData.stats
+			? { ...userData.stats }
+			: { totalAttempted: 0, totalSolved: 0, solvedPuzzles: {} };
 		// Initialize game state for this puzzle (3x3 only)
 		gameState[puzzleId] = {
 			grid: firestoreGrid,
