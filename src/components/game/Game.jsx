@@ -14,7 +14,7 @@ import { GRID_SIZE } from "../../constants";
 function Game({
 	puzzleMetadata, // Contains: id, emoji, emojiName, initialGrid
 	savedGame,
-	isSolved: wasPreviouslySolved = false, // Passed from App (checks Firestore solvedPuzzles)
+	solvedPuzzles, // Firestore solvedPuzzles map (for checking if already completed)
 	hasNumbersShown,
 	hasSoundEnabled,
 	onOpenStats,
@@ -24,18 +24,18 @@ function Game({
 
 	// Load game state on mount - handles resuming or starting fresh (3x3 only)
 	// Component remounts when user/puzzleId changes (via key prop in App)
+	// useLoadGame checks: Firestore solvedPuzzles, Firestore gameState, and localStorage
 	const { loadedGrid, wasSolved } = useLoadGame({
 		puzzleId,
 		puzzleData: puzzleMetadata,
 		savedGame,
+		solvedPuzzles,
 	});
 
 	// Grid state - Game manages current gameplay state
 	const [currentGrid, setCurrentGrid] = useState(loadedGrid);
-	// isSolved tracks current session state. Initialize from:
-	// 1. wasSolved (from localStorage/migration check in useLoadGame)
-	// 2. wasPreviouslySolved (from Firestore solvedPuzzles check in App)
-	const [isSolved, setIsSolved] = useState(wasSolved || wasPreviouslySolved);
+	// isSolved tracks current session state, initialized from useLoadGame's wasSolved check
+	const [isSolved, setIsSolved] = useState(wasSolved);
 
 	// Game state persistence - handles Firestore (signed in) and localStorage (signed out)
 	const { saveMove, saveSolution, saveRestart } = useSaveGame();

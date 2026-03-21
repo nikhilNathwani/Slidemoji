@@ -19,7 +19,7 @@ import { getLocalCompletion, clearLocalProgress } from "../utils/localStorage";
 import { getSolvedState } from "../utils/gridHelpers";
 import { GRID_SIZE } from "../constants";
 
-export function useLoadGame({ puzzleId, puzzleData, savedGame }) {
+export function useLoadGame({ puzzleId, puzzleData, savedGame, solvedPuzzles }) {
 	const { user } = useAuth();
 	const { saveStartToFirestore, saveCompletionToFirestore } =
 		useFirestoreMutations();
@@ -33,18 +33,35 @@ export function useLoadGame({ puzzleId, puzzleData, savedGame }) {
 	const { loadedGrid, wasSolved, shouldMigrate, shouldSaveStart } =
 		useMemo(() => {
 			const localCompletion = getLocalCompletion(puzzleId);
+			const isInSolvedPuzzles = solvedPuzzles && puzzleId in solvedPuzzles;
 			console.log("[useLoadGame] Computing state:", {
 				user: user?.uid || "signed-out",
 				puzzleId,
 				localCompletion,
 				hasSavedGame: !!savedGame,
+				isInSolvedPuzzles,
 			});
+
+			// Priority 0: Already solved in Firestore (signed-in users only)
+			if (user && isInSolvedPuzzles) {
+				console.log(
+					"[useLoadGame] Priority 0: Already solved in Firestore",
+				);
+				return {
+					loadedGrid: getSolvedState(GRID_SIZE),
+					wasSolved: true,
+					shouldMigrate: false,
+					shouldSaveStart: false,
+				};
+			}
 
 			// Migration: Handle old nested format from before simplification
 			// Old: gameState[puzzleId][3].grid, New: gameState[puzzleId].grid
 			let actualSavedGame = savedGame;
 			if (savedGame && savedGame[3]) {
-				console.log("[useLoadGame] Migrating old nested gameState format");
+				console.log(
+					"[useLoadGame] Migrating old nested gameState format",
+				);
 				actualSavedGame = savedGame[3]; // Use 3x3 data from old format
 			}
 
@@ -116,7 +133,7 @@ export function useLoadGame({ puzzleId, puzzleData, savedGame }) {
 				shouldMigrate: false,
 				shouldSaveStart: false,
 			};
-		}, [user, puzzleId, initialGrid, savedGame]);
+		}, [user, puzzleId, initialGrid, savedGame, solvedPuzzles]);
 
 	// Handle side effects (Firestore mutations) in useEffect
 	useEffect(() => {

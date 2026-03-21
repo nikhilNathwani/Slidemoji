@@ -66,6 +66,11 @@ function Grid({
 	// Move tile - smooth animation via CSS transitions
 	const moveTile = useCallback(
 		(tileIndex) => {
+			// Prevent multiple tiles moving simultaneously during animation
+			if (isInputBlocked) {
+				return;
+			}
+
 			const currentGapIndex = getGapIndex(tiles);
 			const newTiles = swapTiles(tiles, tileIndex, currentGapIndex);
 
@@ -87,10 +92,10 @@ function Grid({
 			// Notify parent for Firestore save
 			onMove(newTiles);
 
-			// Block input during animation (unblocked by onLayoutAnimationComplete)
+			// Block input during animation (unblocked by Tile's onTransitionEnd)
 			setIsInputBlocked(true);
 		},
-		[tiles, size, onMove, onWin, hasSoundEnabled],
+		[tiles, size, onMove, onWin, hasSoundEnabled, isInputBlocked],
 	);
 
 	// Validates tile selection and triggers movement if valid

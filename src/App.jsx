@@ -87,7 +87,7 @@ function App() {
 			<Game
 				puzzleMetadata={puzzleData}
 				savedGame={userData?.gameState?.[puzzleId]}
-				isSolved={!!userData?.stats?.solvedPuzzles?.[puzzleId]}
+				solvedPuzzles={userData?.stats?.solvedPuzzles}
 				hasNumbersShown={showNumbers}
 				hasSoundEnabled={soundEnabled}
 				onOpenStats={() => setShowStatsDialog(true)}
