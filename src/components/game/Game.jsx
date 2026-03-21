@@ -9,25 +9,23 @@ import { useAuth } from "../../hooks/useAuth";
 import { useLoadGame } from "../../hooks/useLoadGame";
 import { useSaveGame } from "../../hooks/useSaveGame";
 import { getSolvedState } from "../../utils/gridHelpers";
+import { GRID_SIZE } from "../../constants";
 
 function Game({
 	puzzleId,
 	puzzleData,
-	gridSize,
 	savedGame,
 	maxGridSizeSolved = 0,
 	hasNumbersShown,
 	hasSoundEnabled,
 	onOpenStats, // For "View Trophies" button
-	onGridSizeChange, // For "Try Hard mode?" button
 }) {
 	const { user } = useAuth();
 
-	// Load game state on mount - handles resuming or starting fresh
-	// Component remounts when user/puzzleId/gridSize changes (via key prop in App)
+	// Load game state on mount - handles resuming or starting fresh (3x3 only)
+	// Component remounts when user/puzzleId changes (via key prop in App)
 	const { loadedGrid, wasSolved } = useLoadGame({
 		puzzleId,
-		gridSize,
 		puzzleData,
 		savedGame,
 	});
@@ -49,7 +47,6 @@ function Game({
 
 		saveMove({
 			puzzleId,
-			gridSize,
 			grid: newGrid,
 			puzzleData,
 		});
@@ -58,14 +55,13 @@ function Game({
 	// Handle puzzle solution
 	const handleSolve = () => {
 		// Update currentGrid to solved state to preserve it when signing in
-		const solvedGrid = getSolvedState(gridSize);
+		const solvedGrid = getSolvedState(GRID_SIZE);
 		setCurrentGrid(solvedGrid);
 
 		setIsSolved(true);
 
 		saveSolution({
 			puzzleId,
-			gridSize,
 			puzzleData,
 		});
 
@@ -83,13 +79,12 @@ function Game({
 		setIsSolved(false); // Reset solved state
 
 		saveRestart({
-			gridSize,
 			puzzleData,
 		});
 	};
 
 	// Game decides which grid to show
-	const gridToShow = currentGrid || puzzleData[gridSize];
+	const gridToShow = currentGrid || puzzleData.initialGrid;
 
 	return (
 		<>
@@ -103,7 +98,7 @@ function Game({
 					/>
 				</div>
 				<Grid
-					size={gridSize}
+					size={GRID_SIZE}
 					onWin={handleSolve}
 					hasNumbersShown={hasNumbersShown && !isSolved}
 					emoji={puzzleData.emoji}
@@ -116,10 +111,7 @@ function Game({
 					<GameActionButton
 						isSolved={isSolved}
 						user={user}
-						gridSize={gridSize}
-						maxGridSizeSolved={maxGridSizeSolved}
 						onOpenStats={onOpenStats}
-						onGridSizeChange={onGridSizeChange}
 						onRestart={handleRestartClick}
 					/>
 				</div>
@@ -135,7 +127,6 @@ function Game({
 				isOpen={showWinDialog}
 				onClose={() => setShowWinDialog(false)}
 				puzzleData={puzzleData}
-				gridSize={gridSize}
 			/>
 		</>
 	);

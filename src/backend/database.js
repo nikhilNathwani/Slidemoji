@@ -33,31 +33,28 @@ import { getLatestPuzzleId } from "../utils/puzzleUtils";
  *     darkMode: boolean,
  *     soundEnabled: boolean,
  *     showNumbers: boolean,
- *     gridSize: number (3 or 4),
  *   },
  *   stats: {
  *     totalAttempted: number,
  *     totalSolved: number,
  *     solvedPuzzles: {
  *       [puzzleId]: {
- *         [difficulty]: {
- *           moves: number,
- *           completedAt: Timestamp,
- *           startedAt: Timestamp,
- *           timeSpent: number,
- *           fromArchive: boolean,
- *         }
+ *         moves: number,
+ *         completedAt: Timestamp,
+ *         startedAt: Timestamp,
+ *         timeSpent: number,
+ *         fromArchive: boolean,
+ *         emoji: string,
+ *         emojiName: string,
  *       }
  *     }
  *   },
  *   gameState: {
  *     [puzzleId]: {
- *       [difficulty]: {
- *         moves: number,
- *         grid: array,
- *         startedAt: Timestamp,
- *         fromArchive: boolean,
- *       }
+ *       moves: number,
+ *       grid: array,
+ *       startedAt: Timestamp,
+ *       fromArchive: boolean,
  *     }
  *   } || null
  * }
@@ -129,7 +126,7 @@ export async function createUserData(userId, userData = {}) {
 				// High-level counters
 				totalAttempted: 0,
 				totalSolved: 0,
-				// Trophy collection: nested by puzzle ID → difficulty
+				// Trophy collection: one per puzzle ID (3x3 only)
 				solvedPuzzles: {},
 			},
 			// In-progress games (for resume functionality)
@@ -176,20 +173,19 @@ export async function updateUserPreferences(userId, preferences) {
 /**
  * Save puzzle start - creates game state
  *
- * Called when user starts a new puzzle or switches difficulty.
+ * Called when user starts a new puzzle.
  *
  * What it does:
- * 1. Creates nested gameState entry: gameState[puzzleId][difficulty]
+ * 1. Creates gameState entry: gameState[puzzleId]
  * 2. Determines if this is a daily puzzle or archive play
- * 3. Increments totalAttempted (only first time trying this puzzle+difficulty)
+ * 3. Increments totalAttempted (only first time trying this puzzle)
  *
  * @param {string} userId - Firebase Auth user ID
  * @param {number} puzzleId - Puzzle number (1-365)
- * @param {number} difficulty - Grid size (3 or 4)
  * @param {Array} initialGrid - Starting grid configuration from Firestore
  * @returns {Promise<Object>} Updated gameState and stats
  */
-export async function saveGameStart(userId, puzzleId, difficulty, initialGrid) {
+export async function saveGameStart(userId, puzzleId, initialGrid) {
 	if (!userId) {
 		throw new Error("User ID is required");
 	}
@@ -205,23 +201,18 @@ export async function saveGameStart(userId, puzzleId, difficulty, initialGrid) {
 		let gameState = userData.gameState || {};
 		let stats = { ...userData.stats };
 
-		// Create nested structure: gameState[puzzleId][difficulty]
-		if (!gameState[puzzleId]) {
-			gameState[puzzleId] = {};
-		}
-
 		// Convert client format (null as gap) to Firestore format (0 as gap)
 		const firestoreGrid = initialGrid.map((v) => (v === null ? 0 : v));
 
-		// Initialize game state for this specific puzzle+difficulty combo
-		gameState[puzzleId][difficulty] = {
+		// Initialize game state for this puzzle (3x3 only)
+		gameState[puzzleId] = {
 			grid: firestoreGrid,
 			fromArchive, // Track whether this is a daily or archive play
 		};
 
-		// Increment attempts counter (only if first time trying this puzzle+difficulty)
-		// If user already solved this combo, we still allow retry but don't re-count it
-		if (!stats.solvedPuzzles?.[puzzleId]?.[difficulty]) {
+		// Increment attempts counter (only if first time trying this puzzle)
+		// If user already solved it, we still allow retry but don't re-count it
+		if (!stats.solvedPuzzles?.[puzzleId]) {
 			stats.totalAttempted++;
 		}
 
@@ -248,10 +239,9 @@ export async function saveGameStart(userId, puzzleId, difficulty, initialGrid) {
  *
  * @param {string} userId - Firebase Auth user ID
  * @param {number} puzzleId - Puzzle number (1-365)
- * @param {number} difficulty - Grid size (3 or 4)
  * @param {Object} gameData - { grid: Array }
  */
-export async function saveGameMove(userId, puzzleId, difficulty, gameData) {
+export async function saveGameMove(userId, puzzleId, gameData) {
 	if (!userId) {
 		throw new Error("User ID is required");
 	}
@@ -263,7 +253,7 @@ export async function saveGameMove(userId, puzzleId, difficulty, gameData) {
 		// Use dot notation to update only this specific nested field
 		// This is more efficient than reading, modifying, and writing the entire document
 		await updateDoc(userDocRef, {
-			[`gameState.${puzzleId}.${difficulty}.grid`]: firestoreGrid,
+			[`gameState.${puzzleId}.grid`]: firestoreGrid,
 
 			updatedAt: serverTimestamp(),
 		});
@@ -284,20 +274,17 @@ export async function saveGameMove(userId, puzzleId, difficulty, gameData) {
  * 3. Clears the game from gameState (puzzle is done)
  *
  * Trophy System:
- * - User can solve same puzzle on multiple difficulties
- * - Each solution saved separately: solvedPuzzles[1][3] and solvedPuzzles[1][4]
- * - UI shows highest difficulty trophy (4x4 > 3x3)
+ * - Each puzzle has one solution (3x3 only)
+ * - solvedPuzzles[1] contains the trophy data
  *
  * @param {string} userId - Firebase Auth user ID
  * @param {number} puzzleId - Puzzle number (1-365)
- * @param {number} difficulty - Grid size (3 or 4)
  * @param {Object} completionData - { emoji: string, emojiName: string }
  * @returns {Promise<Object>} Updated stats
  */
 export async function saveGameCompletion(
 	userId,
 	puzzleId,
-	difficulty,
 	completionData,
 ) {
 	if (!userId) {
@@ -313,27 +300,24 @@ export async function saveGameCompletion(
 		let gameState = userData.gameState || {};
 		let stats = { ...userData.stats };
 
-		// Get the saved game state for this puzzle+difficulty
-		const game = gameState[puzzleId]?.[difficulty];
+		// Get the saved game state for this puzzle
+		const game = gameState[puzzleId];
 		if (!game) {
-			throw new Error("Game state not found for this puzzle+difficulty");
+			throw new Error("Game state not found for this puzzle");
 		}
 
 		// Check if this was a daily puzzle or archive play
 		const fromArchive = game.fromArchive;
 
-		// Ensure nested trophy structure exists
+		// Ensure trophy structure exists
 		if (!stats.solvedPuzzles) {
 			stats.solvedPuzzles = {};
-		}
-		if (!stats.solvedPuzzles[puzzleId]) {
-			stats.solvedPuzzles[puzzleId] = {};
 		}
 
 		// Save solution trophy with emoji data
 		const completedAt = Timestamp.now();
 
-		stats.solvedPuzzles[puzzleId][difficulty] = {
+		stats.solvedPuzzles[puzzleId] = {
 			completedAt,
 			fromArchive, // Preserve whether this was daily or archive
 			emoji: completionData.emoji,
@@ -345,10 +329,7 @@ export async function saveGameCompletion(
 
 		// Clear this game from gameState (puzzle is complete!)
 		// But keep other in-progress games (user might be playing multiple puzzles)
-		delete gameState[puzzleId][difficulty];
-		if (Object.keys(gameState[puzzleId]).length === 0) {
-			delete gameState[puzzleId]; // Clean up empty puzzle object
-		}
+		delete gameState[puzzleId];
 
 		// Save to Firestore
 		const userDocRef = doc(db, "users", userId);

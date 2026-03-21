@@ -1,5 +1,5 @@
 /**
- * useLoadGame - Hook to load game state on mount
+ * useLoadGame - Hook to load game state on mount (3x3 only)
  *
  * Handles:
  * - Loading saved game from Firestore or localStorage
@@ -17,8 +17,9 @@ import { useAuth } from "./useAuth";
 import { useFirestoreMutations } from "./useFirestoreMutations";
 import { getLocalCompletion, clearLocalProgress } from "../utils/localStorage";
 import { getSolvedState } from "../utils/gridHelpers";
+import { GRID_SIZE } from "../constants";
 
-export function useLoadGame({ puzzleId, gridSize, puzzleData, savedGame }) {
+export function useLoadGame({ puzzleId, puzzleData, savedGame }) {
 	const { user } = useAuth();
 	const { saveStartToFirestore, saveCompletionToFirestore } =
 		useFirestoreMutations();
@@ -26,16 +27,16 @@ export function useLoadGame({ puzzleId, gridSize, puzzleData, savedGame }) {
 	// Extract primitive values from puzzleData to avoid object reference issues
 	const puzzleEmoji = puzzleData.emoji;
 	const puzzleEmojiName = puzzleData.emojiName;
-	const initialGrid = puzzleData[gridSize];
+	const initialGrid = puzzleData.initialGrid;
 
 	// Compute initial state synchronously (runs on every render but memoized)
 	const { loadedGrid, wasSolved, shouldMigrate, shouldSaveStart } =
 		useMemo(() => {
-			const localCompletion = getLocalCompletion(puzzleId, gridSize);
+			const localCompletion = getLocalCompletion(puzzleId);
 			console.log("[useLoadGame] Computing state:", {
 				user: user?.uid || "signed-out",
 				puzzleId,
-				gridSize,
+				gridSize: GRID_SIZE,
 				localCompletion,
 				hasSavedGame: !!savedGame,
 			});
@@ -68,7 +69,7 @@ export function useLoadGame({ puzzleId, gridSize, puzzleData, savedGame }) {
 					"[useLoadGame] Priority 2: Signed-in user with localStorage completion",
 				);
 				return {
-					loadedGrid: getSolvedState(gridSize),
+					loadedGrid: getSolvedState(GRID_SIZE),
 					wasSolved: true,
 					shouldMigrate: true,
 					shouldSaveStart: false,
@@ -82,7 +83,7 @@ export function useLoadGame({ puzzleId, gridSize, puzzleData, savedGame }) {
 					"[useLoadGame] Priority 3: Signed-out completion found",
 				);
 				return {
-					loadedGrid: getSolvedState(gridSize),
+					loadedGrid: getSolvedState(GRID_SIZE),
 					wasSolved: true,
 					shouldMigrate: false,
 					shouldSaveStart: false,
@@ -108,25 +109,23 @@ export function useLoadGame({ puzzleId, gridSize, puzzleData, savedGame }) {
 				shouldMigrate: false,
 				shouldSaveStart: false,
 			};
-		}, [user, puzzleId, gridSize, initialGrid, savedGame]);
+		}, [user, puzzleId, initialGrid, savedGame]);
 
 	// Handle side effects (Firestore mutations) in useEffect
 	useEffect(() => {
 		if (shouldMigrate) {
 			saveCompletionToFirestore({
 				puzzleId,
-				gridSize,
 				emoji: puzzleEmoji,
 				emojiName: puzzleEmojiName,
 			});
-			clearLocalProgress(puzzleId, gridSize);
+			clearLocalProgress(puzzleId);
 			console.log("[GAME] Migrated completion from localStorage");
 		}
 
 		if (shouldSaveStart) {
 			saveStartToFirestore({
 				puzzleId,
-				gridSize,
 				initialGrid,
 			});
 		}
@@ -134,7 +133,6 @@ export function useLoadGame({ puzzleId, gridSize, puzzleData, savedGame }) {
 		shouldMigrate,
 		shouldSaveStart,
 		puzzleId,
-		gridSize,
 		puzzleEmoji,
 		puzzleEmojiName,
 		initialGrid,

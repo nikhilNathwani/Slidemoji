@@ -23,8 +23,7 @@ export function getMockPuzzle(puzzleId) {
 		date: "2026-03-03",
 		emoji: "🛝", // Playground slide (today's emoji)
 		emojiName: "Playground Slide",
-		initialGrid3x3: scramblePuzzle(3),
-		initialGrid4x4: scramblePuzzle(4),
+		initialGrid: scramblePuzzle(3), // 3x3 only
 	};
 }
 
@@ -171,13 +170,11 @@ export const mockUserScenarios = {
 		},
 		gameState: {
 			63: {
-				// Today's puzzle
-				3: {
-					moves: 15,
-					board: scramblePuzzle(3),
-					startedAt: Timestamp.now(),
-					fromArchive: false,
-				},
+				// Today's puzzle (3x3)
+				moves: 15,
+				board: scramblePuzzle(3),
+				startedAt: Timestamp.now(),
+				fromArchive: false,
 			},
 		},
 	},

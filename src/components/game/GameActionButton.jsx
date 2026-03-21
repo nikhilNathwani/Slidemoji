@@ -3,21 +3,17 @@ import { FontAwesomeIcon } from "../../utils/icons";
 import styles from "./Game.module.css";
 
 /**
- * GameActionButton - Dynamic button shown below the game grid
+ * GameActionButton - Dynamic button shown below the game grid (3x3 only)
  *
  * Shows different actions based on game state:
  * - Sign in upsell (when solved while signed out)
- * - View Trophies (when solved both difficulties or just 4x4)
- * - Try Hard mode (when solved 3x3 but not 4x4 yet)
+ * - View Trophies (when solved while signed in)
  * - Restart (when game is in progress)
  */
 function GameActionButton({
 	isSolved,
 	user,
-	gridSize,
-	maxGridSizeSolved,
 	onOpenStats,
-	onGridSizeChange,
 	onRestart,
 }) {
 	// Signed out and solved - show sign-in upsell
@@ -60,36 +56,8 @@ function GameActionButton({
 		);
 	}
 
-	// Solved 4x4 - show View Trophies
-	if (isSolved && gridSize === 4) {
-		return (
-			<button
-				className={`${styles.restartButton} ${styles.visible}`}
-				onClick={onOpenStats}
-				title="View your trophy collection"
-			>
-				<FontAwesomeIcon icon="trophy" />
-				View Trophies
-			</button>
-		);
-	}
-
-	// Solved 3x3 but not 4x4 - show Try Hard mode
-	if (isSolved && gridSize === 3 && maxGridSizeSolved < 4) {
-		return (
-			<button
-				className={`${styles.restartButton} ${styles.visible}`}
-				onClick={() => onGridSizeChange(4)}
-				title="Try the harder 4x4 puzzle"
-			>
-				<FontAwesomeIcon icon="arrow-up" />
-				Try Hard mode?
-			</button>
-		);
-	}
-
-	// Solved both 3x3 and 4x4 - show View Trophies
-	if (isSolved && gridSize === 3 && maxGridSizeSolved >= 4) {
+	// Solved and signed in - show View Trophies
+	if (isSolved) {
 		return (
 			<button
 				className={`${styles.restartButton} ${styles.visible}`}

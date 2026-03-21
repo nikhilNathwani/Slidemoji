@@ -27,22 +27,19 @@ export function convertGridFromFirestore(grid) {
 }
 
 /**
- * Convert puzzle data from Firestore format to client format
+ * Convert puzzle data from Firestore format to client format (3x3 only)
  * Firestore uses 0 for gap, client uses null for gap
  * @param {Object} puzzleData - Puzzle data from Firestore
- * @returns {Object} Puzzle data with converted grid arrays
+ * @returns {Object} Puzzle data with converted grid array
  */
 export function convertPuzzleFromFirestore(puzzleData) {
 	if (!puzzleData) return null;
 
 	const converted = { ...puzzleData };
 
-	// Convert grid arrays (keyed by difficulty: 3 and 4)
-	if (converted[3]) {
-		converted[3] = convertGridFromFirestore(converted[3]);
-	}
-	if (converted[4]) {
-		converted[4] = convertGridFromFirestore(converted[4]);
+	// Convert initialGrid array (3x3 only)
+	if (converted.initialGrid) {
+		converted.initialGrid = convertGridFromFirestore(converted.initialGrid);
 	}
 
 	return converted;

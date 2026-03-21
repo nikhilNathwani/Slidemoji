@@ -1,5 +1,5 @@
 /**
- * useSaveGame - Unified hook for game state persistence
+ * useSaveGame - Unified hook for game state persistence (3x3 only)
  *
  * Handles saving game state (moves, solutions, restarts) with automatic routing to:
  * - Firestore (for signed-in users) via React Query mutations
@@ -26,12 +26,11 @@ export function useSaveGame() {
 	 * Save game state after a move
 	 * Only persists for signed-in users (signed-out users get ephemeral experience)
 	 */
-	const saveMove = ({ gridSize, grid, puzzleData }) => {
+	const saveMove = ({ grid, puzzleData }) => {
 		if (user) {
 			// Signed in: save to Firestore
 			saveMoveToFirestore({
 				puzzleId: puzzleData.id,
-				gridSize,
 				grid,
 			});
 		}
@@ -42,18 +41,17 @@ export function useSaveGame() {
 	 * Save puzzle solution (when solved)
 	 * Routes to Firestore (signed in) or localStorage flag (signed out)
 	 */
-	const saveSolution = ({ puzzleId, gridSize, puzzleData }) => {
+	const saveSolution = ({ puzzleId, puzzleData }) => {
 		if (user) {
 			// Signed in: save to Firestore
 			saveCompletionToFirestore({
 				puzzleId: puzzleData.id,
-				gridSize,
 				emoji: puzzleData.emoji,
 				emojiName: puzzleData.emojiName,
 			});
 		} else {
 			// Signed out: save completion flag only (for trophy display)
-			saveLocalCompletion(puzzleId, gridSize);
+			saveLocalCompletion(puzzleId);
 		}
 	};
 
@@ -61,13 +59,12 @@ export function useSaveGame() {
 	 * Save game restart
 	 * Only persists for signed-in users (signed-out users get ephemeral experience)
 	 */
-	const saveRestart = ({ gridSize, puzzleData }) => {
+	const saveRestart = ({ puzzleData }) => {
 		if (user) {
 			// Signed in: save to Firestore
 			saveStartToFirestore({
 				puzzleId: puzzleData.id,
-				gridSize,
-				initialGrid: puzzleData[gridSize],
+				initialGrid: puzzleData.initialGrid,
 			});
 		}
 		// Note: Signed-out users don't persist restarts

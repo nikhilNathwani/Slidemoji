@@ -1,5 +1,5 @@
 /**
- * useFirestoreMutations - React Query mutations for Firestore game operations
+ * useFirestoreMutations - React Query mutations for Firestore game operations (3x3 only)
  *
  * Encapsulates all the React Query mutation boilerplate for saving game data to Firestore.
  * Returns simple wrapper functions that can be called to trigger Firestore saves.
@@ -24,9 +24,9 @@ export function useFirestoreMutations() {
 
 	// React Query mutation for starting/restarting puzzles
 	const gameStartMutation = useMutation({
-		mutationFn: ({ puzzleId, gridSize, initialGrid }) => {
+		mutationFn: ({ puzzleId, initialGrid }) => {
 			if (!user?.uid) return Promise.resolve();
-			return saveGameStart(user.uid, puzzleId, gridSize, initialGrid);
+			return saveGameStart(user.uid, puzzleId, initialGrid);
 		},
 		onError: (error) => {
 			console.error("Error starting puzzle:", error);
@@ -38,9 +38,9 @@ export function useFirestoreMutations() {
 
 	// React Query mutation for saving game state after moves
 	const gameMoveMutation = useMutation({
-		mutationFn: ({ puzzleId, gridSize, grid }) => {
+		mutationFn: ({ puzzleId, grid }) => {
 			if (!user?.uid) return Promise.resolve();
-			return saveGameMove(user.uid, puzzleId, gridSize, { grid });
+			return saveGameMove(user.uid, puzzleId, { grid });
 		},
 		onError: (error) => {
 			console.error("Error saving game state:", error);
@@ -50,18 +50,18 @@ export function useFirestoreMutations() {
 
 	// React Query mutation for saving completions
 	const gameCompletionMutation = useMutation({
-		mutationFn: ({ puzzleId, gridSize, emoji, emojiName }) => {
+		mutationFn: ({ puzzleId, emoji, emojiName }) => {
 			if (!user?.uid) return Promise.resolve();
-			return saveGameCompletion(user.uid, puzzleId, gridSize, {
+			return saveGameCompletion(user.uid, puzzleId, {
 				emoji,
 				emojiName,
 			});
 		},
-		onMutate: ({ puzzleId, gridSize, emoji, emojiName }) => {
+		onMutate: ({ puzzleId, emoji, emojiName }) => {
 			// Optimistic update: add solution to cache immediately for instant UI update
 			if (user?.uid) {
 				queryClient.setQueryData(["user", user.uid], (prevData) =>
-					addPuzzleSolution(prevData, puzzleId, gridSize, {
+					addPuzzleSolution(prevData, puzzleId, {
 						completedAt: new Date(),
 						emoji,
 						emojiName,

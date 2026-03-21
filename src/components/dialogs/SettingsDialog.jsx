@@ -1,14 +1,11 @@
 import Dialog from "./Dialog";
 import Toggle from "../common/Toggle";
-import { DIFFICULTIES } from "../../constants";
 import styles from "./SettingsDialog.module.css";
 import { FontAwesomeIcon } from "../../utils/icons";
 
 function SettingsDialog({
 	isOpen,
 	onClose,
-	gridSize,
-	onGridSizeChange,
 	hasDarkMode,
 	onDarkModeChange,
 	hasNumbersShown,
@@ -16,34 +13,9 @@ function SettingsDialog({
 	hasSoundEnabled,
 	onSoundEnabledChange,
 }) {
-	const difficulties = DIFFICULTIES;
-
 	return (
 		<Dialog isOpen={isOpen} onClose={onClose} title="Settings">
 			<div className={styles.settingsContent}>
-				<div className={styles.settingsItem}>
-					<label className={styles.settingsLabel}>Difficulty</label>
-					<div className={styles.difficultySelector}>
-						{difficulties.map((diff) => (
-							<button
-								key={diff.size}
-								className={
-									gridSize === diff.size
-										? `${styles.difficultyBtn} ${styles.active}`
-										: styles.difficultyBtn
-								}
-								onClick={() => onGridSizeChange(diff.size)}
-							>
-								<span className={styles.difficultyLabel}>
-									{diff.label}
-								</span>
-								<span className={styles.difficultySize}>
-									{diff.display}
-								</span>
-							</button>
-						))}
-					</div>
-				</div>
 				<div className={styles.settingsItem}>
 					<label className={styles.settingsLabel}>Show Numbers</label>
 					<Toggle
@@ -81,7 +53,6 @@ function SettingsDialog({
 							"Please describe the issue you encountered:\n\n\n\n---\nDebug Information:\n" +
 								`User Agent: ${navigator.userAgent}\n` +
 								`Screen Size: ${window.innerWidth}x${window.innerHeight}\n` +
-								`Grid Size: ${gridSize}\n` +
 								`Dark Mode: ${hasDarkMode}\n` +
 								`Show Numbers: ${hasNumbersShown}\n` +
 								`Timestamp: ${new Date().toISOString()}`,

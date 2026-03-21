@@ -11,9 +11,9 @@ import { useUser } from "./hooks/useUser";
 import { usePuzzle } from "./hooks/usePuzzle";
 import { usePreference } from "./hooks/usePreference";
 import { getMaxGridSizeSolved } from "./utils/statsHelpers";
+import { GRID_SIZE } from "./constants";
 
 // App-level preference defaults
-const DEFAULT_GRID_SIZE = 3;
 const DEFAULT_DARK_MODE = false;
 const DEFAULT_SHOW_NUMBERS = true;
 const DEFAULT_SOUND_ENABLED = false;
@@ -46,14 +46,8 @@ function App() {
 		{ contextKey: puzzleId },
 		// Resets to ON for each new puzzle (new puzzleId), but respects manual changes within the puzzle
 	);
-	const [gridSize, setGridSize] = usePreference(
-		"gridSize",
-		DEFAULT_GRID_SIZE,
-		{ contextKey: puzzleId },
-		// Resets to default for each new puzzle to avoid confusion
-	);
 
-	// Fetch user data (needs gridSize to be defined)
+	// Fetch user data
 	const { data: userData, isLoading: isLoadingUser } = useUser(user?.uid);
 	const isLoading = isLoadingPuzzle || (user && isLoadingUser);
 
@@ -84,7 +78,7 @@ function App() {
 
 	return (
 		<div
-			key={`${user?.uid || "anonymous"}-${puzzleId}-${gridSize}`}
+			key={`${user?.uid || "anonymous"}-${puzzleId}`}
 			className={`app ${darkMode ? "dark-theme" : "light-theme"}`}
 		>
 			<Header
@@ -95,26 +89,22 @@ function App() {
 			<Game
 				puzzleId={puzzleId}
 				puzzleData={puzzleData}
-				gridSize={gridSize}
-				savedGame={userData?.gameState?.[puzzleId]?.[gridSize]}
+				savedGame={userData?.gameState?.[puzzleId]}
 				maxGridSizeSolved={getMaxGridSizeSolved(userData, puzzleId)}
 				hasNumbersShown={showNumbers}
 				hasSoundEnabled={soundEnabled}
 				onOpenStats={() => setShowStatsDialog(true)}
-				onGridSizeChange={setGridSize}
 			/>
 
 			<SettingsDialog
 				isOpen={showSettingsDialog}
 				onClose={() => setShowSettingsDialog(false)}
-				gridSize={gridSize}
 				hasDarkMode={darkMode}
 				hasNumbersShown={showNumbers}
 				hasSoundEnabled={soundEnabled}
 				onShowNumbersChange={setShowNumbers}
 				onDarkModeChange={setDarkMode}
 				onSoundEnabledChange={setSoundEnabled}
-				onGridSizeChange={setGridSize}
 			/>
 
 			<StatsDialog

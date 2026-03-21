@@ -4,44 +4,38 @@
  * Signed-out users have limited persistence:
  * - Completions (trophies) persist until next puzzle
  * - In-progress work is ephemeral (lost on refresh) to incentivize sign-in
+ *
+ * 3x3 only - no difficulty variations
  */
 
-import { DIFFICULTIES } from "../constants";
+import { GRID_SIZE } from "../constants";
 
-// Get localStorage key for signed-out progress
-export const getLocalStorageKey = (puzzleId, gridSize) =>
-	`signedOutProgress_${puzzleId}_${gridSize}`;
+// Get localStorage key for signed-out progress (3x3 only)
+export const getLocalStorageKey = (puzzleId) =>
+	`signedOutProgress_${puzzleId}`;
 
 // Read signed-out completion from localStorage
-export const getLocalCompletion = (puzzleId, gridSize) => {
-	const key = getLocalStorageKey(puzzleId, gridSize);
+export const getLocalCompletion = (puzzleId) => {
+	const key = getLocalStorageKey(puzzleId);
 	const data = localStorage.getItem(key);
 	return data ? JSON.parse(data) : null;
 };
 
 // Save signed-out completion to localStorage (just a flag, no grid state)
-export const saveLocalCompletion = (puzzleId, gridSize) => {
+export const saveLocalCompletion = (puzzleId) => {
 	localStorage.setItem(
-		getLocalStorageKey(puzzleId, gridSize),
+		getLocalStorageKey(puzzleId),
 		JSON.stringify({ isCompleted: true }),
 	);
 };
 
 // Clear localStorage after migration
-export const clearLocalProgress = (puzzleId, gridSize) => {
-	localStorage.removeItem(getLocalStorageKey(puzzleId, gridSize));
+export const clearLocalProgress = (puzzleId) => {
+	localStorage.removeItem(getLocalStorageKey(puzzleId));
 };
 
-// Get max grid size completed by signed-out user for this puzzle
+// Check if signed-out user completed this puzzle (returns GRID_SIZE if solved, 0 if not)
 export const getSignedOutMaxSolved = (puzzleId) => {
-	let maxSolved = 0;
-
-	for (const { size } of DIFFICULTIES) {
-		const completion = getLocalCompletion(puzzleId, size);
-		if (completion?.isCompleted) {
-			maxSolved = size;
-		}
-	}
-
-	return maxSolved;
+	const completion = getLocalCompletion(puzzleId);
+	return completion?.isCompleted ? GRID_SIZE : 0;
 };
