@@ -58,10 +58,10 @@ export function useFirestoreMutations() {
 			});
 		},
 		onMutate: ({ puzzleId, emoji, emojiName }) => {
-			// Optimistic update: add solution to cache immediately for instant UI update
+			// Optimistic update: add solve to cache immediately for instant UI update
 			if (user?.uid) {
 				queryClient.setQueryData(["user", user.uid], (prevData) =>
-					addPuzzleSolution(prevData, puzzleId, {
+					addPuzzleSolve(prevData, puzzleId, {
 						completedAt: new Date(),
 						emoji,
 						emojiName,

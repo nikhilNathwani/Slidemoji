@@ -141,7 +141,7 @@ export function useLoadGame({
 		}
 
 		// Save initial state to Firestore when starting fresh (signed-in users only)
-		if (user && !savedGame && !shouldMigrate) {
+		if (user && !savedGame && !shouldMigrate && initialGrid) {
 			saveStartToFirestore({
 				puzzleId,
 				initialGrid,

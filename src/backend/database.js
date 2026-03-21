@@ -189,6 +189,9 @@ export async function saveGameStart(userId, puzzleId, initialGrid) {
 	if (!userId) {
 		throw new Error("User ID is required");
 	}
+	if (!initialGrid || !Array.isArray(initialGrid)) {
+		throw new Error("Initial grid is required and must be an array");
+	}
 
 	try {
 		const userData = await getUserData(userId);
@@ -199,11 +202,8 @@ export async function saveGameStart(userId, puzzleId, initialGrid) {
 		// Is this an archive puzzle (old puzzle) or today's daily?
 		const fromArchive = puzzleId !== getLatestPuzzleId();
 		let gameState = userData.gameState || {};
-		let stats = { ...userData.stats };
-
-		// Convert client format (null as gap) to Firestore format (0 as gap)
-		const firestoreGrid = initialGrid.map((v) => (v === null ? 0 : v));
-
+		// Ensure stats structure exists (in case user data was corrupted/deleted)
+		let stats = userData.stats ? { ...userData.stats } : { totalAttempted: 0, totalSolved: 0, solvedPuzzles: {} };
 		// Initialize game state for this puzzle (3x3 only)
 		gameState[puzzleId] = {
 			grid: firestoreGrid,
@@ -282,11 +282,7 @@ export async function saveGameMove(userId, puzzleId, gameData) {
  * @param {Object} completionData - { emoji: string, emojiName: string }
  * @returns {Promise<Object>} Updated stats
  */
-export async function saveGameCompletion(
-	userId,
-	puzzleId,
-	completionData,
-) {
+export async function saveGameCompletion(userId, puzzleId, completionData) {
 	if (!userId) {
 		throw new Error("User ID is required");
 	}
