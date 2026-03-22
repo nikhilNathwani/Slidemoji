@@ -80,20 +80,20 @@ function Grid({
 			// Update state (CSS transitions will handle smooth movement)
 			setTiles(newTiles);
 
-			// Check for win
-			if (checkWin(newTiles, getSolvedState(size))) {
-				setIsSolved(true);
-				// Notify parent immediately that game is won
-				onWin();
-			}
+			// Notify parent for Firestore save
+			onMove(newTiles);
 
 			// Play tile move sound
 			if (hasSoundEnabled) {
 				playTileMoveSound();
 			}
 
-			// Notify parent for Firestore save
-			onMove(newTiles);
+			// Check for win
+			if (checkWin(newTiles, getSolvedState(size))) {
+				setIsSolved(true);
+				// Notify parent immediately that game is won
+				onWin();
+			}
 		},
 		[tiles, size, isInputBlocked, onMove, onWin, hasSoundEnabled],
 	);
