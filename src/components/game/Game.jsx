@@ -8,7 +8,6 @@ import GameActionButton from "./GameActionButton";
 import { useAuth } from "../../hooks/useAuth";
 import { useLoadGame } from "../../hooks/useLoadGame";
 import { useSaveGame } from "../../hooks/useSaveGame";
-import { getSolvedState } from "../../utils/gridHelpers";
 import { GRID_SIZE } from "../../constants";
 
 function Game({
@@ -21,14 +20,6 @@ function Game({
 }) {
 	const puzzleId = puzzleMetadata.id;
 	const { user } = useAuth();
-
-	console.log("[Game] Rendering with puzzleMetadata:", {
-		id: puzzleMetadata.id,
-		emoji: puzzleMetadata.emoji,
-		emojiName: puzzleMetadata.emojiName,
-		hasInitialGrid: !!puzzleMetadata.initialGrid,
-		initialGridLength: puzzleMetadata.initialGrid?.length,
-	});
 
 	// Load game state on mount - handles resuming or starting fresh (3x3 only)
 	// Component remounts when user/puzzleId changes (via key prop in App)
@@ -60,9 +51,7 @@ function Game({
 
 	// Handle puzzle solve
 	const handleSolve = () => {
-		// Update currentGrid to solved state to preserve it when signing in
-		const solvedGrid = getSolvedState(GRID_SIZE);
-		setCurrentGrid(solvedGrid);
+		// Grid already saved the winning move via onMove, so currentGrid is already solved
 		setIsSolved(true);
 		saveSolve({ puzzleMetadata });
 		setShowWinDialog(true);
@@ -96,12 +85,12 @@ function Game({
 				</div>
 				<Grid
 					size={GRID_SIZE}
-					onWin={handleSolve}
-					hasNumbersShown={hasNumbersShown && !isSolved}
-					emoji={puzzleMetadata.emoji}
 					grid={gridToShow}
-					onMove={handleMove}
+					emoji={puzzleMetadata.emoji}
+					hasNumbersShown={hasNumbersShown && !isSolved}
 					hasSoundEnabled={hasSoundEnabled}
+					onMove={handleMove}
+					onWin={handleSolve}
 				/>
 
 				<div className={styles.restartContainer}>

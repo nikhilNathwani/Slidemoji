@@ -118,7 +118,6 @@ export async function batchSavePuzzles(puzzles) {
 	try {
 		const promises = puzzles.map((puzzle) => savePuzzle(puzzle));
 		await Promise.all(promises);
-		console.log(`Successfully saved ${puzzles.length} puzzles`);
 	} catch (error) {
 		console.error("Error batch saving puzzles:", error);
 		throw error;

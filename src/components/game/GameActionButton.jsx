@@ -42,8 +42,8 @@ function GameActionButton({ isSolved, user, onOpenStats, onRestart }) {
 							lineHeight: 1.5,
 						}}
 					>
-						Sign in to save your trophies across devices and track
-						your progress over time.
+						Sign in to save your trophies across devices and complete
+						your collection!
 					</p>
 				</div>
 				<GoogleSignInButton />

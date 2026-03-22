@@ -22,7 +22,7 @@
  *   const [showNumbers, setShowNumbers] = usePreference('showNumbers', true, { contextKey: puzzleId });
  */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "./useAuth";
 import { useUser } from "./useUser";
@@ -89,6 +89,19 @@ export function usePreference(key, defaultValue, options = {}) {
 	const [localValue, setLocalValue] = useState(() => {
 		return getLocalPreference(storageKey, defaultValue);
 	});
+
+	// Sync Firestore → localStorage when signed-in user data loads
+	// This ensures that when user signs out, they keep their signed-in settings
+	useEffect(() => {
+		if (user && userData?.preferences?.[key] !== undefined) {
+			const firestoreValue = userData.preferences[key];
+			// Only update localStorage if different (avoid unnecessary writes)
+			if (firestoreValue !== localValue) {
+				setLocalValue(firestoreValue);
+				saveLocalPreference(storageKey, firestoreValue);
+			}
+		}
+	}, [user, userData?.preferences?.[key], localValue, key, storageKey]);
 
 	// Derive the effective value based on sign-in state and options
 	const value = (() => {

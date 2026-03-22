@@ -22,10 +22,6 @@ if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
 }
 
 // Initialize Firebase
-console.log(
-	"[FIREBASE] Initializing with projectId:",
-	firebaseConfig.projectId,
-);
 const app = initializeApp(firebaseConfig);
 
 // Initialize Firebase services

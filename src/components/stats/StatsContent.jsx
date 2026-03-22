@@ -26,8 +26,8 @@ function StatsContent({
 						Save Your Trophies
 					</h3>
 					<p className={styles.statsDescription}>
-						Sign in to save your trophies across devices and track
-						your progress over time.
+						Sign in to save your trophies across devices and
+						complete your collection!
 					</p>
 					<GoogleSignInButton />
 					<p className={styles.privacyNote}>

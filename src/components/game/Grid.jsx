@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useMemo, useRef } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import Tile from "./Tile";
 import Gap from "./Gap";
 import {
@@ -16,28 +16,18 @@ import styles from "./Grid.module.css";
 
 function Grid({
 	size,
-	onWin,
-	hasNumbersShown,
+	grid,
 	emoji,
-	grid, // The grid configuration to display
-	onMove,
+	hasNumbersShown,
 	hasSoundEnabled,
+	onMove,
+	onWin,
 }) {
 	// ===== State =====
 	const [tiles, setTiles] = useState(grid);
-	const [isGameWon, setIsGameWon] = useState(false);
+	const [isSolved, setIsSolved] = useState(false);
 	const [isInputBlocked, setIsInputBlocked] = useState(false);
 	const [gridSizePx, setGridSizePx] = useState(() => calcBoardSizePx(size));
-
-	console.log("[Grid] State:", {
-		tilesLength: tiles?.length,
-		isGameWon,
-		isInputBlocked,
-		gridFromProps: grid?.length,
-	});
-
-	// Use ref for synchronous blocking (prevents multiple tiles moving before React re-renders)
-	const isInputBlockedRef = useRef(false);
 
 	// ===== Memoized Values =====
 	// Create emoji SVG URL once and memoize it
@@ -65,9 +55,8 @@ function Grid({
 	useEffect(() => {
 		Promise.resolve().then(() => {
 			setTiles(grid);
-			setIsGameWon(false);
+			setIsSolved(false);
 			setIsInputBlocked(false);
-			isInputBlockedRef.current = false; // Reset ref too
 		});
 	}, [size, grid]);
 
@@ -78,15 +67,12 @@ function Grid({
 	// Move tile - smooth animation via CSS transitions
 	const moveTile = useCallback(
 		(tileIndex) => {
-			// Prevent multiple tiles moving simultaneously during animation
-			// Use ref for synchronous check (state updates are async)
-			if (isInputBlockedRef.current) {
+			// Block input during animation
+			if (isInputBlocked) {
 				return;
 			}
 
-			// Block input immediately (synchronous)
-			isInputBlockedRef.current = true;
-			setIsInputBlocked(true); // Also update state for UI reactivity
+			setIsInputBlocked(true);
 
 			const currentGapIndex = getGapIndex(tiles);
 			const newTiles = swapTiles(tiles, tileIndex, currentGapIndex);
@@ -96,7 +82,7 @@ function Grid({
 
 			// Check for win
 			if (checkWin(newTiles, getSolvedState(size))) {
-				setIsGameWon(true);
+				setIsSolved(true);
 				// Notify parent immediately that game is won
 				onWin();
 			}
@@ -109,14 +95,14 @@ function Grid({
 			// Notify parent for Firestore save
 			onMove(newTiles);
 		},
-		[tiles, size, onMove, onWin, hasSoundEnabled],
+		[tiles, size, isInputBlocked, onMove, onWin, hasSoundEnabled],
 	);
 
 	// Validates tile selection and triggers movement if valid
 	const handleTileSelect = useCallback(
 		(tileIndex, direction = null) => {
 			// Block if game won or input blocked
-			if (isGameWon || isInputBlocked) {
+			if (isSolved || isInputBlocked) {
 				return;
 			}
 
@@ -140,7 +126,7 @@ function Grid({
 				moveTile(tileIndex);
 			}
 		},
-		[tiles, isGameWon, isInputBlocked, size, moveTile],
+		[tiles, isSolved, isInputBlocked, size, moveTile],
 	);
 
 	// ===== Event Handlers =====
@@ -161,11 +147,11 @@ function Grid({
 			event.stopPropagation();
 
 			// Only process if input is not blocked
-			if (!isInputBlocked && !isGameWon) {
+			if (!isInputBlocked && !isSolved) {
 				handleTileSelect(null, event.key);
 			}
 		},
-		[handleTileSelect, isInputBlocked, isGameWon],
+		[handleTileSelect, isInputBlocked, isSolved],
 	);
 
 	// Keyboard listener: Always attached to prevent scroll, but only processes when not blocked
@@ -177,13 +163,12 @@ function Grid({
 	// ===== Render =====
 	// Don't render until we have valid tiles
 	if (!tiles || !Array.isArray(tiles)) {
-		console.log("[Grid] Invalid tiles:", { tiles, grid });
 		return <div>Loading grid...</div>;
 	}
 
 	return (
 		<div
-			className={`${styles.grid}${isGameWon ? " " + styles.won : ""}`}
+			className={`${styles.grid}${isSolved ? " " + styles.won : ""}`}
 			style={{
 				width: `${gridSizePx}px`,
 				height: `${gridSizePx}px`,
@@ -198,19 +183,9 @@ function Grid({
 					return <Gap key="gap" />;
 				}
 				const isClickable =
-					!isGameWon &&
+					!isSolved &&
 					!isInputBlocked &&
 					isAdjacent(gapIndex, index, size);
-
-				if (index === 0) {
-					console.log("[Grid] First tile state:", {
-						isGameWon,
-						isInputBlocked,
-						isAdjacent: isAdjacent(gapIndex, index, size),
-						isClickable,
-						gapIndex,
-					});
-				}
 
 				return (
 					<Tile
@@ -220,10 +195,7 @@ function Grid({
 						hasNumbersShown={hasNumbersShown}
 						emojiSvgUrl={emojiSvgUrl}
 						gridSize={size}
-						onTransitionEnd={() => {
-							isInputBlockedRef.current = false; // Unblock synchronously
-							setIsInputBlocked(false); // Update state for UI
-						}}
+						onTransitionEnd={() => setIsInputBlocked(false)}
 						{...(isClickable && {
 							onPointerDown: () => handleTileSelect(index, null),
 						})}
