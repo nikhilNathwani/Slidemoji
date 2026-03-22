@@ -91,17 +91,21 @@ export function usePreference(key, defaultValue, options = {}) {
 	});
 
 	// Sync Firestore → localStorage when signed-in user data loads
-	// This ensures that when user signs out, they keep their signed-in settings
+	// This ensures cross-device sync: if you change settings on device A,
+	// then sign in on device B, localStorage on B gets updated so when you
+	// sign out, you keep the settings from device A.
 	useEffect(() => {
 		if (user && userData?.preferences?.[key] !== undefined) {
 			const firestoreValue = userData.preferences[key];
-			// Only update localStorage if different (avoid unnecessary writes)
-			if (firestoreValue !== localValue) {
+			const currentLocalValue = getLocalPreference(storageKey, defaultValue);
+			// Only update if different (avoid unnecessary writes)
+			if (firestoreValue !== currentLocalValue) {
 				setLocalValue(firestoreValue);
 				saveLocalPreference(storageKey, firestoreValue);
 			}
 		}
-	}, [user, userData?.preferences?.[key], localValue, key, storageKey]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [user, userData?.preferences?.[key], key, storageKey, defaultValue]);
 
 	// Derive the effective value based on sign-in state and options
 	const value = (() => {
