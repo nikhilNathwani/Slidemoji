@@ -6,12 +6,7 @@ import { getLatestPuzzleId } from "../../utils/puzzleUtils";
 import styles from "./StatsContent.module.css";
 import { FontAwesomeIcon } from "../../utils/icons";
 
-function StatsContent({
-	showTitle = false,
-	solvedPuzzles,
-	currentPuzzleId,
-	onSelectPuzzle,
-}) {
+function StatsContent({ showTitle = false, solvedPuzzles, currentPuzzleId }) {
 	const { user } = useAuth();
 
 	const numTotalPuzzles = getLatestPuzzleId();
@@ -59,7 +54,6 @@ function StatsContent({
 						solvedPuzzles={solvedPuzzles}
 						showTitle={false}
 						puzzleId={currentPuzzleId || getLatestPuzzleId()}
-						onSelectPuzzle={onSelectPuzzle}
 					/>
 
 					{/* Archive Coming Soon (signed-in only) */}

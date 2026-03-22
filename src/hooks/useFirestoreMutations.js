@@ -57,7 +57,7 @@ export function useFirestoreMutations() {
 				emojiName,
 			});
 		},
-		onMutate: ({ puzzleId, emoji, emojiName }) => {
+		onMutate: ({ puzzleId }) => {
 			// Optimistic update: add solve to cache immediately for instant UI update
 			if (user?.uid) {
 				queryClient.setQueryData(["user", user.uid], (prevData) =>

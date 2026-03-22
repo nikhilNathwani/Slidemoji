@@ -118,10 +118,6 @@ function App() {
 				onClose={() => setShowStatsDialog(false)}
 				solvedPuzzles={userData?.stats?.solvedPuzzles}
 				currentPuzzleId={puzzleId}
-				onSelectPuzzle={(id) => {
-					setSelectedPuzzleId(id);
-					setShowStatsDialog(false);
-				}}
 			/>
 		</div>
 	);
