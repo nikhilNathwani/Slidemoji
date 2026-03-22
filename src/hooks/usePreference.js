@@ -97,7 +97,10 @@ export function usePreference(key, defaultValue, options = {}) {
 	useEffect(() => {
 		if (user && userData?.preferences?.[key] !== undefined) {
 			const firestoreValue = userData.preferences[key];
-			const currentLocalValue = getLocalPreference(storageKey, defaultValue);
+			const currentLocalValue = getLocalPreference(
+				storageKey,
+				defaultValue,
+			);
 			// Only update if different (avoid unnecessary writes)
 			if (firestoreValue !== currentLocalValue) {
 				setLocalValue(firestoreValue);
