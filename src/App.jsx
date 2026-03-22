@@ -24,7 +24,7 @@ function App() {
 	const isDemoMode = urlParams.get("demo") === "true";
 
 	const [selectedPuzzleId, setSelectedPuzzleId] = useState(
-		() => (isDemoMode ? 78 : getLatestPuzzleId()), // Puzzle 78 = Face with Tears of Joy 😂
+		() => (isDemoMode ? 134 : getLatestPuzzleId()), // Puzzle 134 = Hamburger 🍔
 	);
 	const puzzleId = selectedPuzzleId;
 
