@@ -62,25 +62,14 @@ function StatsContent({
 						onSelectPuzzle={onSelectPuzzle}
 					/>
 
-					{/* Archive upsell (signed-in only) */}
+					{/* Archive Coming Soon (signed-in only) */}
 					<div className={styles.statsDivider}></div>
 					<div className={styles.archiveSection}>
-						<h3 className={styles.archiveTitle}>
-							Catch Up on Past Puzzles
-						</h3>
+						<h3 className={styles.archiveTitle}>Coming Soon</h3>
 						<p className={styles.archiveDescription}>
-							Unlock the Slidemoji Archive to play past puzzles
-							and complete your trophy case!
+							Play past puzzles from the archive to earn missed
+							trophies and complete your collection!
 						</p>
-						<button
-							className={styles.unlockArchiveButton}
-							onClick={() =>
-								alert("Archive unlock feature coming soon!")
-							}
-						>
-							<FontAwesomeIcon icon="unlock" />
-							Unlock Archive
-						</button>
 					</div>
 				</>
 			)}

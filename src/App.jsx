@@ -18,8 +18,13 @@ const DEFAULT_SOUND_ENABLED = false;
 
 function App() {
 	const { user } = useAuth();
+	
+	// Check for demo mode URL param (e.g., ?demo=true shows slide emoji puzzle)
+	const urlParams = new URLSearchParams(window.location.search);
+	const isDemoMode = urlParams.get('demo') === 'true';
+	
 	const [selectedPuzzleId, setSelectedPuzzleId] = useState(() =>
-		getLatestPuzzleId(),
+		isDemoMode ? 1 : getLatestPuzzleId(), // Puzzle 1 = slide emoji (Jan 1, 2026)
 	);
 	const puzzleId = selectedPuzzleId;
 
