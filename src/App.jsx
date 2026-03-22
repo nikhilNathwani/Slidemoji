@@ -19,12 +19,13 @@ const DEFAULT_SOUND_ENABLED = false;
 function App() {
 	const { user } = useAuth();
 
-	// Check for demo mode URL param (e.g., ?demo=true for screenshots)
+	// Check for demo URL param (e.g., ?demo=134 to view specific puzzle)
 	const urlParams = new URLSearchParams(window.location.search);
-	const isDemoMode = urlParams.get("demo") === "true";
+	const demoParam = urlParams.get("demo");
+	const demoPuzzleId = demoParam ? parseInt(demoParam, 10) : null;
 
 	const [selectedPuzzleId, setSelectedPuzzleId] = useState(
-		() => (isDemoMode ? 134 : getLatestPuzzleId()), // Puzzle 134 = Hamburger 🍔
+		() => demoPuzzleId || getLatestPuzzleId(),
 	);
 	const puzzleId = selectedPuzzleId;
 
