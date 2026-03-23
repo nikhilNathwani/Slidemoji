@@ -2,9 +2,9 @@
 :root {
 	/* Trophy Dimensions */
 	--trophy-mini-width: 70px;
-	--trophy-mini-height: 80px;
+	--trophy-mini-height: 85px;
 	--trophy-mini-width-mobile: 60px;
-	--trophy-mini-height-mobile: 70px;
+	--trophy-mini-height-mobile: 75px;
 
 	/* Gold Trophy (Normal 3x3) */
 	--trophy-gold-base: #fbbf24;
@@ -49,6 +49,7 @@
 	width: var(--trophy-mini-width);
 	height: var(--trophy-mini-height);
 	justify-content: space-between; /* Distribute number to top, emoji/lock to bottom */
+	gap: 0; /* Remove gap - space-between handles distribution */
 }
 
 /* Mobile: smaller mini trophies */
@@ -231,13 +232,13 @@
 }
 
 .trophyMini .lockIcon {
-	font-size: 2rem; /* Match emoji size for proper alignment */
+	font-size: 1.75rem; /* Slightly smaller than emoji for visual balance */
 }
 
 /* Mobile: scale lock icon down proportionally */
 @media (max-width: 480px) {
 	.trophyMini .lockIcon {
-		font-size: 1.75rem; /* Match mobile emoji size */
+		font-size: 1.5rem; /* Slightly smaller than mobile emoji */
 	}
 }
 
