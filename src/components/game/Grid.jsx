@@ -95,14 +95,7 @@ function Grid({
 				onWin();
 			}
 		},
-		[tiles, size, isInputBlocked, onMove, onWin, hasSoundEnabled],
-	);
-
-	// Validates tile selection and triggers movement if valid
-	const handleTileSelect = useCallback(
-		(tileIndex, direction = null) => {
-			// Block if game won or input blocked
-			if (isSolved || isInputBlocked) {
+	[tiles, size, isInputBlocked, isSolved, onMove, onWin, hasSoundEnabled],
 				return;
 			}
 
