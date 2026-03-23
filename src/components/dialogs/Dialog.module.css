@@ -65,7 +65,7 @@
 }
 
 .dialogBody {
-	padding: 24px;
+	padding: 36px 24px;
 }
 
 @keyframes fadeIn {

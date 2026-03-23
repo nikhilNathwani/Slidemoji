@@ -12,15 +12,32 @@ function SettingsDialog({
 	onShowNumbersChange,
 	hasSoundEnabled,
 	onSoundEnabledChange,
+	isPuzzleSolved = false,
 }) {
 	return (
 		<Dialog isOpen={isOpen} onClose={onClose} title="Settings">
 			<div className={styles.settingsContent}>
-				<div className={styles.settingsItem}>
-					<label className={styles.settingsLabel}>Show Numbers</label>
+				<div
+					className={`${styles.settingsItem} ${
+						isPuzzleSolved ? styles.disabled : ""
+					}`}
+				>
+					<label className={styles.settingsLabel}>
+						Show Numbers
+						{isPuzzleSolved && (
+							<span className={styles.disabledHint}>
+								(hidden when solved)
+							</span>
+						)}
+					</label>
 					<Toggle
 						isOn={hasNumbersShown}
-						onToggle={() => onShowNumbersChange(!hasNumbersShown)}
+						onToggle={
+							isPuzzleSolved
+								? undefined
+								: () => onShowNumbersChange(!hasNumbersShown)
+						}
+						disabled={isPuzzleSolved}
 					/>
 				</div>
 				<div className={styles.settingsItem}>

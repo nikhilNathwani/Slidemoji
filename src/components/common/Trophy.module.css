@@ -48,6 +48,7 @@
 .trophy.trophyMini {
 	width: var(--trophy-mini-width);
 	height: var(--trophy-mini-height);
+	justify-content: space-between; /* Distribute number to top, emoji/lock to bottom */
 }
 
 /* Mobile: smaller mini trophies */
@@ -230,13 +231,13 @@
 }
 
 .trophyMini .lockIcon {
-	font-size: 1.5rem;
+	font-size: 2rem; /* Match emoji size for proper alignment */
 }
 
 /* Mobile: scale lock icon down proportionally */
 @media (max-width: 480px) {
 	.trophyMini .lockIcon {
-		font-size: 1.3rem;
+		font-size: 1.75rem; /* Match mobile emoji size */
 	}
 }
 

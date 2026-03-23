@@ -3,8 +3,7 @@
 	flex-flow: column nowrap;
 	align-items: center;
 	text-align: center;
-	padding-top: 18px;
-	padding-bottom: 6px;
+	padding-block: 6px;
 }
 
 .winDialogContent .emoji {

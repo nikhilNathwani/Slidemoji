@@ -110,8 +110,7 @@ function App() {
 				hasSoundEnabled={soundEnabled}
 				onShowNumbersChange={setShowNumbers}
 				onDarkModeChange={setDarkMode}
-				onSoundEnabledChange={setSoundEnabled}
-			/>
+				onSoundEnabledChange={setSoundEnabled}			isPuzzleSolved={!!userData?.stats?.solvedPuzzles?.[puzzleId]}			/>
 
 			<StatsDialog
 				isOpen={showStatsDialog}

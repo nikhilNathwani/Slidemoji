@@ -67,8 +67,8 @@ function Grid({
 	// Move tile - smooth animation via CSS transitions
 	const moveTile = useCallback(
 		(tileIndex) => {
-			// Block input during animation
-			if (isInputBlocked) {
+			// Block input during animation or if puzzle is solved
+			if (isInputBlocked || isSolved) {
 				return;
 			}
 
