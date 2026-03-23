@@ -1,5 +1,11 @@
 /* Trophy Color Variables */
 :root {
+	/* Trophy Dimensions */
+	--trophy-mini-width: 70px;
+	--trophy-mini-height: 80px;
+	--trophy-mini-width-mobile: 60px;
+	--trophy-mini-height-mobile: 70px;
+
 	/* Gold Trophy (Normal 3x3) */
 	--trophy-gold-base: #fbbf24;
 	--trophy-gold-highlight: #fcd34d;
@@ -39,8 +45,16 @@
 
 /* Mini trophies have fixed width for consistency */
 .trophy.trophyMini {
-	width: 70px;
-	height: 80px;
+	width: var(--trophy-mini-width);
+	height: var(--trophy-mini-height);
+}
+
+/* Mobile: smaller mini trophies */
+@media (max-width: 480px) {
+	.trophy.trophyMini {
+		width: var(--trophy-mini-width-mobile);
+		height: var(--trophy-mini-height-mobile);
+	}
 }
 
 /* Variant: Puzzle Info (when playing) */

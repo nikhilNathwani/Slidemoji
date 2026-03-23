@@ -1,10 +1,10 @@
 import TrophyCase from "../stats/TrophyCase";
 import TrophyCaseTitle from "../stats/TrophyCaseTitle";
 import GoogleSignInButton from "../common/GoogleSignInButton";
+import PrivacyNote from "../common/PrivacyNote";
 import { useAuth } from "../../hooks/useAuth";
 import { getLatestPuzzleId } from "../../utils/puzzleUtils";
 import styles from "./StatsContent.module.css";
-import { FontAwesomeIcon } from "../../utils/icons";
 
 function StatsContent({ showTitle = false, solvedPuzzles, currentPuzzleId }) {
 	const { user } = useAuth();
@@ -25,16 +25,7 @@ function StatsContent({ showTitle = false, solvedPuzzles, currentPuzzleId }) {
 						complete your collection!
 					</p>
 					<GoogleSignInButton />
-					<p className={styles.privacyNote}>
-						<FontAwesomeIcon
-							icon="shield-alt"
-							style={{ position: "relative", top: "0.275em" }}
-						/>
-						<span>
-							Your email is only used to save your progress. Your
-							data is never sold or shared.
-						</span>
-					</p>
+					<PrivacyNote />
 				</div>
 			) : (
 				<>
