@@ -79,8 +79,6 @@ export const mockUserScenarios = {
 			darkMode: false,
 		},
 		stats: {
-			totalAttempted: 0,
-			totalSolved: 0,
 			solvedPuzzles: {},
 		},
 		gameState: null,
@@ -95,8 +93,6 @@ export const mockUserScenarios = {
 			darkMode: true,
 		},
 		stats: {
-			totalAttempted: 15,
-			totalSolved: 12,
 			solvedPuzzles: {
 				// Solved puzzles 1-10 on both difficulties
 				...Object.fromEntries(
@@ -152,8 +148,6 @@ export const mockUserScenarios = {
 			darkMode: false,
 		},
 		stats: {
-			totalAttempted: 5,
-			totalSolved: 3,
 			solvedPuzzles: {
 				1: {
 					3: {
@@ -188,8 +182,6 @@ export const mockUserScenarios = {
 			darkMode: true,
 		},
 		stats: {
-			totalAttempted: 50,
-			totalSolved: 45,
 			solvedPuzzles: {
 				// Solved 30 puzzles
 				...Object.fromEntries(

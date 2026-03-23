@@ -35,8 +35,6 @@ import { getLatestPuzzleId } from "../utils/puzzleUtils";
  *     showNumbers: boolean,
  *   },
  *   stats: {
- *     totalAttempted: number,
- *     totalSolved: number,
  *     solvedPuzzles: {
  *       [puzzleId]: {
  *         moves: number,
@@ -176,7 +174,6 @@ export async function updateUserPreferences(userId, preferences) {
  * What it does:
  * 1. Creates gameState entry: gameState[puzzleId]
  * 2. Determines if this is a daily puzzle or archive play
- * 3. Increments totalAttempted (only first time trying this puzzle)
  *
  * @param {string} userId - Firebase Auth user ID
  * @param {number} puzzleId - Puzzle number (1-365)

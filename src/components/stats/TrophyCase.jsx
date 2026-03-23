@@ -78,15 +78,15 @@ function TrophyCase({
 
 			<div className={styles.emojiGrid}>
 				{trophySlots.map((slot) => {
-				return (
-					<div
-						key={slot.puzzleNum}
-						style={{
-							visibility: slot.isPlaceholder
-								? "hidden"
-								: "visible",
-						}}
-					>
+					return (
+						<div
+							key={slot.puzzleNum}
+							style={{
+								visibility: slot.isPlaceholder
+									? "hidden"
+									: "visible",
+							}}
+						>
 							<Trophy
 								trophyNum={slot.puzzleNum}
 								trophyEmoji={slot.emoji}
