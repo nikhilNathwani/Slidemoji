@@ -17,6 +17,7 @@ function Game({
 	hasNumbersShown,
 	hasSoundEnabled,
 	onOpenStats,
+	isAppDialogOpen = false,
 }) {
 	const puzzleId = puzzleMetadata.id;
 	const { user } = useAuth();
@@ -42,6 +43,7 @@ function Game({
 	// Dialog state
 	const [showRestartDialog, setShowRestartDialog] = useState(false);
 	const [showWinDialog, setShowWinDialog] = useState(false);
+	const isDialogOpen = isAppDialogOpen || showRestartDialog || showWinDialog;
 
 	// Auto-save after each move
 	const handleMove = (newGrid) => {
@@ -64,7 +66,7 @@ function Game({
 
 	const handleRestartConfirm = () => {
 		setShowRestartDialog(false);
-		setCurrentGrid(null); // Clear current grid to show initial
+		setCurrentGrid(puzzleMetadata.initialGrid); // Reset to initial grid (Grid displays what's passed)
 		setIsSolved(false); // Reset solved state
 		saveRestart({ puzzleMetadata });
 	};
@@ -84,13 +86,13 @@ function Game({
 					/>
 				</div>
 				<Grid
-					size={GRID_SIZE}
-					grid={gridToShow}
-					emoji={puzzleMetadata.emoji}
-					hasNumbersShown={hasNumbersShown && !isSolved}
-					hasSoundEnabled={hasSoundEnabled}
-					onMove={handleMove}
-					onWin={handleSolve}
+				grid={gridToShow}
+				emoji={puzzleMetadata.emoji}
+				hasNumbersShown={hasNumbersShown && !isSolved}
+				hasSoundEnabled={hasSoundEnabled}
+				onMove={handleMove}
+				onWin={handleSolve}
+				isDialogOpen={isDialogOpen}
 				/>
 
 				<div className={styles.restartContainer}>

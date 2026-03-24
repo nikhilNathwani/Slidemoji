@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useRef } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Tile from "./Tile";
 import Gap from "./Gap";
 import {
@@ -15,23 +15,20 @@ import { playTileMoveSound } from "../../utils/sound";
 import styles from "./Grid.module.css";
 
 function Grid({
-	size,
 	grid,
 	emoji,
 	hasNumbersShown,
 	hasSoundEnabled,
 	onMove,
 	onWin,
+	isDialogOpen = false,
 }) {
-	// ===== State =====
-	const [tiles, setTiles] = useState(grid);
-	const [isSolved, setIsSolved] = useState(() =>
-		checkWin(grid, getSolvedState(size)),
-	);
-	const [gridSizePx, setGridSizePx] = useState(() => calcBoardSizePx(size));
+	// Derive size from grid (no need to pass as prop)
+	const size = Math.sqrt(grid?.length || 9);
 
-	// Grid ref for auto-focus (enables arrow keys without clicking)
-	const gridRef = useRef(null);
+	// ===== State =====
+	// Grid is fully controlled - no internal tile state, just displays what's passed
+	const [gridSizePx, setGridSizePx] = useState(() => calcBoardSizePx(size));
 
 	// ===== Memoized Values =====
 	// Create emoji SVG URL once and memoize it
@@ -40,37 +37,28 @@ function Grid({
 		[emoji],
 	);
 
-	// ===== Effects =====
-	// Auto-focus grid on mount for immediate arrow key control
-	useEffect(() => {
-		gridRef.current?.focus();
-	}, []);
-
-	// Update grid size on window resize
-	useEffect(() => {
-		const handleResize = () => setGridSizePx(calcBoardSizePx(size));
-		window.addEventListener("resize", handleResize);
-		return () => window.removeEventListener("resize", handleResize);
-	}, [size]);
+	// Derive solved state from grid prop (no internal state)
+	const isSolved = useMemo(
+		() => checkWin(grid, getSolvedState(size)),
+		[grid, size],
+	);
 
 	// ===== Tile Movement Logic =====
-	// Get gap position (handles null/undefined tiles gracefully)
-	const gapIndex = tiles ? getGapIndex(tiles) : -1;
+	// Get gap position (handles null/undefined grid gracefully)
+	const gapIndex = grid ? getGapIndex(grid) : -1;
 
 	// Move tile (executes the move, checks for win)
 	const moveTile = (tileIndex) => {
-		const currentGapIndex = getGapIndex(tiles);
-		const newTiles = swapTiles(tiles, tileIndex, currentGapIndex);
+		const currentGapIndex = getGapIndex(grid);
+		const newGrid = swapTiles(grid, tileIndex, currentGapIndex);
 
-		setTiles(newTiles);
-		onMove(newTiles);
+		onMove(newGrid); // Parent updates state, flows back as prop
 
 		if (hasSoundEnabled) {
 			playTileMoveSound();
 		}
 
-		if (checkWin(newTiles, getSolvedState(size))) {
-			setIsSolved(true);
+		if (checkWin(newGrid, getSolvedState(size))) {
 			onWin();
 		}
 	};
@@ -79,47 +67,71 @@ function Grid({
 	const handleTileSelect = (tileIndex) => {
 		if (isSolved) return;
 
-		const gapIndex = getGapIndex(tiles);
+		const gapIndex = getGapIndex(grid);
 		if (isAdjacent(gapIndex, tileIndex, size)) {
 			moveTile(tileIndex);
 		}
 	};
 
-	// Keyboard handler for arrow keys
-	const handleKeyDown = (event) => {
-		const arrowKeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
-		if (!arrowKeys.includes(event.key)) return;
+	// ===== Effects =====
+	// Update grid size on window resize
+	useEffect(() => {
+		const handleResize = () => setGridSizePx(calcBoardSizePx(size));
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, [size]);
 
-		// Prevent arrow keys from scrolling the page
-		event.preventDefault();
+	// Keyboard listener: works globally regardless of focus
+	useEffect(() => {
+		const handleKeyDown = (event) => {
+			const arrowKeys = [
+				"ArrowUp",
+				"ArrowDown",
+				"ArrowLeft",
+				"ArrowRight",
+			];
+			if (!arrowKeys.includes(event.key)) return;
+			if (isDialogOpen) return; // Block moves when dialogs are shown
+			if (isSolved) return;
 
-		if (isSolved) return;
+			// Convert arrow key to target tile and move if valid
+			const gapIndex = getGapIndex(grid);
+			const targetTileIndex = getTileIndexFromDirection(
+				gapIndex,
+				event.key,
+				size,
+			);
 
-		// Convert arrow key to target tile and move if valid
-		const gapIndex = getGapIndex(tiles);
-		const targetTileIndex = getTileIndexFromDirection(
-			gapIndex,
-			event.key,
-			size,
-		);
+			if (
+				targetTileIndex !== null &&
+				isAdjacent(gapIndex, targetTileIndex, size)
+			) {
+				// Execute the move
+				const newGrid = swapTiles(grid, targetTileIndex, gapIndex);
+				onMove(newGrid); // Parent updates state, flows back as prop
 
-		if (
-			targetTileIndex !== null &&
-			isAdjacent(gapIndex, targetTileIndex, size)
-		) {
-			moveTile(targetTileIndex);
-		}
-	};
+				if (hasSoundEnabled) {
+					playTileMoveSound();
+				}
 
-	// ===== Render =====
-	// Don't render until we have valid tiles
-	if (!tiles || !Array.isArray(tiles)) {
+				if (checkWin(newGrid, getSolvedState(size))) {
+					onWin();
+				}
+			}
+		};
+
+		window.addEventListener("keydown", handleKeyDown);
+		return () => window.removeEventListener("keydown", handleKeyDown);
+	}, [grid, isSolved, size, onMove, hasSoundEnabled, onWin, isDialogOpen]);
+
+	// ===== Render ===
+	// Don't render until we have valid grid
+	if (!grid || !Array.isArray(grid)) {
 		return <div>Loading grid...</div>;
 	}
 
 	return (
 		<div
-			ref={gridRef}
 			className={`${styles.grid}${isSolved ? " " + styles.won : ""}`}
 			style={{
 				width: `${gridSizePx}px`,
@@ -127,10 +139,8 @@ function Grid({
 				gridTemplateColumns: `repeat(${size}, 1fr)`,
 				gridTemplateRows: `repeat(${size}, 1fr)`,
 			}}
-			tabIndex={0}
-			onKeyDown={handleKeyDown}
 		>
-			{tiles.map((value, index) => {
+			{grid.map((value, index) => {
 				const isGap = value === null;
 
 				if (isGap) {
