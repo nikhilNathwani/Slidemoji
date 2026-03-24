@@ -25,8 +25,9 @@ function Grid({
 }) {
 	// ===== State =====
 	const [tiles, setTiles] = useState(grid);
-	const [isSolved, setIsSolved] = useState(false);
-	const [isInputBlocked, setIsInputBlocked] = useState(false);
+	const [isSolved, setIsSolved] = useState(() =>
+		checkWin(grid, getSolvedState(size)),
+	);
 	const [gridSizePx, setGridSizePx] = useState(() => calcBoardSizePx(size));
 
 	// ===== Memoized Values =====
@@ -49,14 +50,13 @@ function Grid({
 		const handleResize = () => setGridSizePx(getResponsiveGridSize());
 		window.addEventListener("resize", handleResize);
 		return () => window.removeEventListener("resize", handleResize);
-	}, [size, getResponsiveGridSize]); // size for clarity, getResponsiveGridSize for actual dependency
+	}, [size, getResponsiveGridSize]);
 
 	// Reset grid when size or grid changes
 	useEffect(() => {
 		Promise.resolve().then(() => {
 			setTiles(grid);
-			setIsSolved(false);
-			setIsInputBlocked(false);
+			setIsSolved(checkWin(grid, getSolvedState(size)));
 		});
 	}, [size, grid]);
 
@@ -64,16 +64,9 @@ function Grid({
 	// Get gap position (handles null/undefined tiles gracefully)
 	const gapIndex = tiles ? getGapIndex(tiles) : -1;
 
-	// Move tile - smooth animation via CSS transitions
+	// Move tile (no validation, just executes the move)
 	const moveTile = useCallback(
 		(tileIndex) => {
-			// Block input during animation or if puzzle is solved
-			if (isInputBlocked || isSolved) {
-				return;
-			}
-
-			setIsInputBlocked(true);
-
 			const currentGapIndex = getGapIndex(tiles);
 			const newTiles = swapTiles(tiles, tileIndex, currentGapIndex);
 
@@ -95,31 +88,25 @@ function Grid({
 				onWin();
 			}
 		},
-	[tiles, size, isInputBlocked, isSolved, onMove, onWin, hasSoundEnabled],
+		[tiles, size, onMove, onWin, hasSoundEnabled],
+	);
+
+	// Arbiter: validates and decides if move should happen
+	const handleTileSelect = useCallback(
+		(tileIndex) => {
+			// Block if puzzle is solved
+			if (isSolved) {
 				return;
 			}
 
 			const gapIndex = getGapIndex(tiles);
 
-			// For keyboard controls: find tile in direction from gap
-			if (direction !== null && tileIndex === null) {
-				const targetTileIndex = getTileIndexFromDirection(
-					gapIndex,
-					direction,
-					size,
-				);
-				if (targetTileIndex !== null) {
-					moveTile(targetTileIndex);
-				}
-				return;
-			}
-
-			// For click/tap/swipe: verify tile is adjacent to gap before moving
+			// Verify tile is adjacent to gap before moving
 			if (tileIndex !== null && isAdjacent(gapIndex, tileIndex, size)) {
 				moveTile(tileIndex);
 			}
 		},
-		[tiles, isSolved, isInputBlocked, size, moveTile],
+		[tiles, isSolved, size, moveTile],
 	);
 
 	// ===== Event Handlers =====
@@ -139,15 +126,22 @@ function Grid({
 			event.preventDefault();
 			event.stopPropagation();
 
-			// Only process if input is not blocked
-			if (!isInputBlocked && !isSolved) {
-				handleTileSelect(null, event.key);
+			// Convert arrow key direction to target tile index
+			const gapIndex = getGapIndex(tiles);
+			const targetTileIndex = getTileIndexFromDirection(
+				gapIndex,
+				event.key,
+				size,
+			);
+
+			if (targetTileIndex !== null) {
+				handleTileSelect(targetTileIndex);
 			}
 		},
-		[handleTileSelect, isInputBlocked, isSolved],
+		[tiles, size, handleTileSelect],
 	);
 
-	// Keyboard listener: Always attached to prevent scroll, but only processes when not blocked
+	// Keyboard listener: Always attached to prevent scroll
 	useEffect(() => {
 		window.addEventListener("keydown", handleArrowKeyPress);
 		return () => window.removeEventListener("keydown", handleArrowKeyPress);
@@ -175,10 +169,9 @@ function Grid({
 				if (isGap) {
 					return <Gap key="gap" />;
 				}
-				const isClickable =
-					!isSolved &&
-					!isInputBlocked &&
-					isAdjacent(gapIndex, index, size);
+
+				// Determine if tile should show as clickable (for UI/cursor feedback)
+				const isClickable = !isSolved && isAdjacent(gapIndex, index, size);
 
 				return (
 					<Tile
@@ -188,9 +181,8 @@ function Grid({
 						hasNumbersShown={hasNumbersShown}
 						emojiSvgUrl={emojiSvgUrl}
 						gridSize={size}
-						onTransitionEnd={() => setIsInputBlocked(false)}
 						{...(isClickable && {
-							onPointerDown: () => handleTileSelect(index, null),
+							onPointerDown: () => handleTileSelect(index),
 						})}
 					/>
 				);
