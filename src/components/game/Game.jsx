@@ -71,9 +71,6 @@ function Game({
 		saveRestart({ puzzleMetadata });
 	};
 
-	// Game decides which grid to show
-	const gridToShow = currentGrid || puzzleMetadata.initialGrid;
-
 	return (
 		<>
 			<main className={styles.main}>
@@ -86,7 +83,7 @@ function Game({
 					/>
 				</div>
 				<Grid
-				grid={gridToShow}
+					grid={currentGrid || puzzleMetadata.initialGrid}
 				emoji={puzzleMetadata.emoji}
 				hasNumbersShown={hasNumbersShown && !isSolved}
 				hasSoundEnabled={hasSoundEnabled}

@@ -24,7 +24,7 @@ function Grid({
 	isDialogOpen = false,
 }) {
 	// Derive size from grid (no need to pass as prop)
-	const size = Math.sqrt(grid?.length || 9);
+	const size = Math.floor(Math.sqrt(grid?.length || 9));
 
 	// ===== State =====
 	// Grid is fully controlled - no internal tile state, just displays what's passed
@@ -37,11 +37,8 @@ function Grid({
 		[emoji],
 	);
 
-	// Derive solved state from grid prop (no internal state)
-	const isSolved = useMemo(
-		() => checkWin(grid, getSolvedState(size)),
-		[grid, size],
-	);
+	// Check if puzzle is solved (simple comparison, no memoization needed)
+	const isSolved = checkWin(grid, getSolvedState(size));
 
 	// ===== Tile Movement Logic =====
 	// Get gap position (handles null/undefined grid gracefully)
