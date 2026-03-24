@@ -52,12 +52,10 @@ function Grid({
 		return () => window.removeEventListener("resize", handleResize);
 	}, [size, getResponsiveGridSize]);
 
-	// Reset grid when size or grid changes
+	// Sync state when grid prop changes (e.g., loading different puzzle)
 	useEffect(() => {
-		Promise.resolve().then(() => {
-			setTiles(grid);
-			setIsSolved(checkWin(grid, getSolvedState(size)));
-		});
+		setTiles(grid);
+		setIsSolved(checkWin(grid, getSolvedState(size)));
 	}, [size, grid]);
 
 	// ===== Tile Movement Logic =====
@@ -102,6 +100,7 @@ function Grid({
 			const gapIndex = getGapIndex(tiles);
 
 			// Verify tile is adjacent to gap before moving
+			// Note: tileIndex can be null from keyboard handler if move is invalid
 			if (tileIndex !== null && isAdjacent(gapIndex, tileIndex, size)) {
 				moveTile(tileIndex);
 			}
