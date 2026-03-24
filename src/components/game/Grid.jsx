@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import Tile from "./Tile";
 import Gap from "./Gap";
 import {
@@ -30,6 +30,9 @@ function Grid({
 	);
 	const [gridSizePx, setGridSizePx] = useState(() => calcBoardSizePx(size));
 
+	// Grid ref for auto-focus (enables arrow keys without clicking)
+	const gridRef = useRef(null);
+
 	// ===== Memoized Values =====
 	// Create emoji SVG URL once and memoize it
 	const emojiSvgUrl = useMemo(
@@ -38,6 +41,11 @@ function Grid({
 	);
 
 	// ===== Effects =====
+	// Auto-focus grid on mount for immediate arrow key control
+	useEffect(() => {
+		gridRef.current?.focus();
+	}, []);
+
 	// Update grid size on window resize
 	useEffect(() => {
 		const handleResize = () => setGridSizePx(calcBoardSizePx(size));
@@ -95,7 +103,10 @@ function Grid({
 			size,
 		);
 
-		if (targetTileIndex !== null && isAdjacent(gapIndex, targetTileIndex, size)) {
+		if (
+			targetTileIndex !== null &&
+			isAdjacent(gapIndex, targetTileIndex, size)
+		) {
 			moveTile(targetTileIndex);
 		}
 	};
@@ -108,6 +119,7 @@ function Grid({
 
 	return (
 		<div
+			ref={gridRef}
 			className={`${styles.grid}${isSolved ? " " + styles.won : ""}`}
 			style={{
 				width: `${gridSizePx}px`,
