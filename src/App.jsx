@@ -94,6 +94,7 @@ function App() {
 			/>
 
 			<Game
+				key={puzzleId}
 				puzzleMetadata={puzzleMetadata}
 				savedGame={userData?.gameState?.[puzzleId]}
 				solvedPuzzles={userData?.stats?.solvedPuzzles}

@@ -52,12 +52,6 @@ function Grid({
 		return () => window.removeEventListener("resize", handleResize);
 	}, [size, getResponsiveGridSize]);
 
-	// Sync state when grid prop changes (e.g., loading different puzzle)
-	useEffect(() => {
-		setTiles(grid);
-		setIsSolved(checkWin(grid, getSolvedState(size)));
-	}, [size, grid]);
-
 	// ===== Tile Movement Logic =====
 	// Get gap position (handles null/undefined tiles gracefully)
 	const gapIndex = tiles ? getGapIndex(tiles) : -1;
