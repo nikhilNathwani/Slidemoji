@@ -94,8 +94,7 @@ function Grid({
 			const gapIndex = getGapIndex(tiles);
 
 			// Verify tile is adjacent to gap before moving
-			// Note: tileIndex can be null from keyboard handler if move is invalid
-			if (tileIndex !== null && isAdjacent(gapIndex, tileIndex, size)) {
+			if (isAdjacent(gapIndex, tileIndex, size)) {
 				moveTile(tileIndex);
 			}
 		},
