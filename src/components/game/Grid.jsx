@@ -62,14 +62,18 @@ function Grid({
 	);
 
 	// Arbiter: validates if move should happen, then executes
-	const handleTileSelect = (tileIndex) => {
-		if (isSolved) return;
+	const handleTileSelect = useCallback(
+		(tileIndex) => {
+			if (isDialogOpen) return; // Block moves when dialogs are shown
+			if (isSolved) return;
 
-		const gapIndex = getGapIndex(grid);
-		if (isAdjacent(gapIndex, tileIndex, gridSize)) {
-			moveTile(tileIndex);
-		}
-	};
+			const gapIndex = getGapIndex(grid);
+			if (isAdjacent(gapIndex, tileIndex, gridSize)) {
+				moveTile(tileIndex);
+			}
+		},
+		[isDialogOpen, isSolved, grid, gridSize, moveTile],
+	);
 
 	// ===== Effects =====
 	// Update grid size on window resize
@@ -89,8 +93,6 @@ function Grid({
 				"ArrowRight",
 			];
 			if (!arrowKeys.includes(event.key)) return;
-			if (isDialogOpen) return; // Block moves when dialogs are shown
-			if (isSolved) return;
 
 			// Convert arrow key to target tile index
 			const gapIndex = getGapIndex(grid);
@@ -100,18 +102,15 @@ function Grid({
 				gridSize,
 			);
 
-			// Validate and execute move if valid
-			if (
-				targetTileIndex !== null &&
-				isAdjacent(gapIndex, targetTileIndex, gridSize)
-			) {
-				moveTile(targetTileIndex);
+			// Let handleTileSelect do all validation
+			if (targetTileIndex !== null) {
+				handleTileSelect(targetTileIndex);
 			}
 		};
 
 		window.addEventListener("keydown", handleKeyDown);
 		return () => window.removeEventListener("keydown", handleKeyDown);
-	}, [grid, isSolved, gridSize, moveTile, isDialogOpen]);
+	}, [grid, gridSize, handleTileSelect]);
 
 	// ===== Render ===
 	// Don't render until we have valid grid
