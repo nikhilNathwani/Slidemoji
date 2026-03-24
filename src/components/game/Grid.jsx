@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import Tile from "./Tile";
 import Gap from "./Gap";
 import {
@@ -23,12 +23,13 @@ function Grid({
 	onWin,
 	isDialogOpen = false,
 }) {
-	// Derive size from grid (no need to pass as prop)
-	const size = Math.floor(Math.sqrt(grid?.length || 9));
+	const gridSize = Math.floor(Math.sqrt(grid?.length || 9));
+	const isSolved = checkWin(grid, getSolvedState(gridSize));
 
 	// ===== State =====
-	// Grid is fully controlled - no internal tile state, just displays what's passed
-	const [gridSizePx, setGridSizePx] = useState(() => calcBoardSizePx(size));
+	const [gridSizePx, setGridSizePx] = useState(() =>
+		calcBoardSizePx(gridSize),
+	);
 
 	// ===== Memoized Values =====
 	// Create emoji SVG URL once and memoize it
@@ -37,35 +38,35 @@ function Grid({
 		[emoji],
 	);
 
-	// Check if puzzle is solved (simple comparison, no memoization needed)
-	const isSolved = checkWin(grid, getSolvedState(size));
-
 	// ===== Tile Movement Logic =====
 	// Get gap position (handles null/undefined grid gracefully)
 	const gapIndex = grid ? getGapIndex(grid) : -1;
 
 	// Move tile (executes the move, checks for win)
-	const moveTile = (tileIndex) => {
-		const currentGapIndex = getGapIndex(grid);
-		const newGrid = swapTiles(grid, tileIndex, currentGapIndex);
+	const moveTile = useCallback(
+		(tileIndex) => {
+			const currentGapIndex = getGapIndex(grid);
+			const newGrid = swapTiles(grid, tileIndex, currentGapIndex);
 
-		onMove(newGrid); // Parent updates state, flows back as prop
+			onMove(newGrid); // Parent updates state, flows back as prop
 
-		if (hasSoundEnabled) {
-			playTileMoveSound();
-		}
+			if (hasSoundEnabled) {
+				playTileMoveSound();
+			}
 
-		if (checkWin(newGrid, getSolvedState(size))) {
-			onWin();
-		}
-	};
+			if (checkWin(newGrid, getSolvedState(gridSize))) {
+				onWin();
+			}
+		},
+		[grid, gridSize, onMove, hasSoundEnabled, onWin],
+	);
 
 	// Arbiter: validates if move should happen, then executes
 	const handleTileSelect = (tileIndex) => {
 		if (isSolved) return;
 
 		const gapIndex = getGapIndex(grid);
-		if (isAdjacent(gapIndex, tileIndex, size)) {
+		if (isAdjacent(gapIndex, tileIndex, gridSize)) {
 			moveTile(tileIndex);
 		}
 	};
@@ -73,10 +74,10 @@ function Grid({
 	// ===== Effects =====
 	// Update grid size on window resize
 	useEffect(() => {
-		const handleResize = () => setGridSizePx(calcBoardSizePx(size));
+		const handleResize = () => setGridSizePx(calcBoardSizePx(gridSize));
 		window.addEventListener("resize", handleResize);
 		return () => window.removeEventListener("resize", handleResize);
-	}, [size]);
+	}, [gridSize]);
 
 	// Keyboard listener: works globally regardless of focus
 	useEffect(() => {
@@ -91,35 +92,26 @@ function Grid({
 			if (isDialogOpen) return; // Block moves when dialogs are shown
 			if (isSolved) return;
 
-			// Convert arrow key to target tile and move if valid
+			// Convert arrow key to target tile index
 			const gapIndex = getGapIndex(grid);
 			const targetTileIndex = getTileIndexFromDirection(
 				gapIndex,
 				event.key,
-				size,
+				gridSize,
 			);
 
+			// Validate and execute move if valid
 			if (
 				targetTileIndex !== null &&
-				isAdjacent(gapIndex, targetTileIndex, size)
+				isAdjacent(gapIndex, targetTileIndex, gridSize)
 			) {
-				// Execute the move
-				const newGrid = swapTiles(grid, targetTileIndex, gapIndex);
-				onMove(newGrid); // Parent updates state, flows back as prop
-
-				if (hasSoundEnabled) {
-					playTileMoveSound();
-				}
-
-				if (checkWin(newGrid, getSolvedState(size))) {
-					onWin();
-				}
+				moveTile(targetTileIndex);
 			}
 		};
 
 		window.addEventListener("keydown", handleKeyDown);
 		return () => window.removeEventListener("keydown", handleKeyDown);
-	}, [grid, isSolved, size, onMove, hasSoundEnabled, onWin, isDialogOpen]);
+	}, [grid, isSolved, gridSize, moveTile, isDialogOpen]);
 
 	// ===== Render ===
 	// Don't render until we have valid grid
@@ -130,12 +122,12 @@ function Grid({
 	return (
 		<div
 			className={`${styles.grid}${isSolved ? " " + styles.won : ""}`}
-			style={{
-				width: `${gridSizePx}px`,
-				height: `${gridSizePx}px`,
-				gridTemplateColumns: `repeat(${size}, 1fr)`,
-				gridTemplateRows: `repeat(${size}, 1fr)`,
-			}}
+				style={{
+					width: `${gridSizePx}px`,
+					height: `${gridSizePx}px`,
+					gridTemplateColumns: `repeat(${gridSize}, 1fr)`,
+					gridTemplateRows: `repeat(${gridSize}, 1fr)`,
+				}}
 		>
 			{grid.map((value, index) => {
 				const isGap = value === null;
@@ -146,7 +138,7 @@ function Grid({
 
 				// Determine if tile should show as clickable (for UI/cursor feedback)
 				const isClickable =
-					!isSolved && isAdjacent(gapIndex, index, size);
+					!isSolved && isAdjacent(gapIndex, index, gridSize);
 
 				return (
 					<Tile
@@ -155,7 +147,7 @@ function Grid({
 						isClickable={isClickable}
 						hasNumbersShown={hasNumbersShown}
 						emojiSvgUrl={emojiSvgUrl}
-						gridSize={size}
+						gridSize={gridSize}
 						{...(isClickable && {
 							onPointerDown: () => handleTileSelect(index),
 						})}

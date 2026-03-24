@@ -84,12 +84,12 @@ function Game({
 				</div>
 				<Grid
 					grid={currentGrid || puzzleMetadata.initialGrid}
-				emoji={puzzleMetadata.emoji}
-				hasNumbersShown={hasNumbersShown && !isSolved}
-				hasSoundEnabled={hasSoundEnabled}
-				onMove={handleMove}
-				onWin={handleSolve}
-				isDialogOpen={isDialogOpen}
+					emoji={puzzleMetadata.emoji}
+					hasNumbersShown={hasNumbersShown && !isSolved}
+					hasSoundEnabled={hasSoundEnabled}
+					onMove={handleMove}
+					onWin={handleSolve}
+					isDialogOpen={isDialogOpen}
 				/>
 
 				<div className={styles.restartContainer}>
