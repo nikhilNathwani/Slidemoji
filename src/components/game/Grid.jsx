@@ -56,69 +56,53 @@ function Grid({
 	// Get gap position (handles null/undefined tiles gracefully)
 	const gapIndex = tiles ? getGapIndex(tiles) : -1;
 
-	// Move tile (no validation, just executes the move)
+	// Move tile (executes the move, checks for win)
+	// useCallback needed: prevents effect from re-running on every render
 	const moveTile = useCallback(
 		(tileIndex) => {
 			const currentGapIndex = getGapIndex(tiles);
 			const newTiles = swapTiles(tiles, tileIndex, currentGapIndex);
 
-			// Update state (CSS transitions will handle smooth movement)
 			setTiles(newTiles);
-
-			// Notify parent for Firestore save
 			onMove(newTiles);
 
-			// Play tile move sound
 			if (hasSoundEnabled) {
 				playTileMoveSound();
 			}
 
-			// Check for win
 			if (checkWin(newTiles, getSolvedState(size))) {
 				setIsSolved(true);
-				// Notify parent immediately that game is won
 				onWin();
 			}
 		},
 		[tiles, size, onMove, onWin, hasSoundEnabled],
 	);
 
-	// Arbiter: validates and decides if move should happen
-	const handleTileSelect = useCallback(
-		(tileIndex) => {
-			// Block if puzzle is solved
-			if (isSolved) {
-				return;
-			}
+	// Arbiter: validates if move should happen, then executes
+	const handleTileSelect = (tileIndex) => {
+		if (isSolved) return;
 
-			const gapIndex = getGapIndex(tiles);
+		const gapIndex = getGapIndex(tiles);
+		if (isAdjacent(gapIndex, tileIndex, size)) {
+			moveTile(tileIndex);
+		}
+	};
 
-			// Verify tile is adjacent to gap before moving
-			if (isAdjacent(gapIndex, tileIndex, size)) {
-				moveTile(tileIndex);
-			}
-		},
-		[tiles, isSolved, size, moveTile],
-	);
+	// ===== Effects =====
 
-	// ===== Event Handlers =====
-
-	// Keyboard controls (arrow keys move tile FROM gap in that direction)
-	const handleArrowKeyPress = useCallback(
-		(event) => {
-			const arrowKeys = [
-				"ArrowUp",
-				"ArrowDown",
-				"ArrowLeft",
-				"ArrowRight",
-			];
+	// Keyboard listener: prevents arrow key scrolling and handles tile movement
+	useEffect(() => {
+		const handleKeyPress = (event) => {
+			const arrowKeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
 			if (!arrowKeys.includes(event.key)) return;
 
-			// Prevent default behavior (scrolling the page)
+			// Always prevent scrolling, even when puzzle is solved
 			event.preventDefault();
 			event.stopPropagation();
 
-			// Convert arrow key direction to target tile index
+			if (isSolved) return;
+
+			// Convert arrow key to target tile and move if valid
 			const gapIndex = getGapIndex(tiles);
 			const targetTileIndex = getTileIndexFromDirection(
 				gapIndex,
@@ -126,18 +110,14 @@ function Grid({
 				size,
 			);
 
-			if (targetTileIndex !== null) {
-				handleTileSelect(targetTileIndex);
+			if (targetTileIndex !== null && isAdjacent(gapIndex, targetTileIndex, size)) {
+				moveTile(targetTileIndex);
 			}
-		},
-		[tiles, size, handleTileSelect],
-	);
+		};
 
-	// Keyboard listener: Always attached to prevent scroll
-	useEffect(() => {
-		window.addEventListener("keydown", handleArrowKeyPress);
-		return () => window.removeEventListener("keydown", handleArrowKeyPress);
-	}, [handleArrowKeyPress]);
+		window.addEventListener("keydown", handleKeyPress);
+		return () => window.removeEventListener("keydown", handleKeyPress);
+	}, [tiles, isSolved, size, moveTile]);
 
 	// ===== Render =====
 	// Don't render until we have valid tiles
@@ -163,7 +143,8 @@ function Grid({
 				}
 
 				// Determine if tile should show as clickable (for UI/cursor feedback)
-				const isClickable = !isSolved && isAdjacent(gapIndex, index, size);
+				const isClickable =
+					!isSolved && isAdjacent(gapIndex, index, size);
 
 				return (
 					<Tile
