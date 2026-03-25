@@ -21,6 +21,10 @@ import {
 	faChevronLeft,
 	faChevronRight,
 	faMedal,
+	faCalendarAlt,
+	faCalendarDay,
+	faClockRotateLeft,
+	faPlayCircle,
 } from "@fortawesome/free-solid-svg-icons";
 
 // Add all icons to the library so they can be used throughout the app
@@ -41,6 +45,10 @@ library.add(
 	faChevronLeft,
 	faChevronRight,
 	faMedal,
+	faCalendarAlt,
+	faCalendarDay,
+	faClockRotateLeft,
+	faPlayCircle,
 );
 
 // Export FontAwesomeIcon component for use in other files

@@ -5,6 +5,7 @@ import Header from "./components/Header";
 import Game from "./components/game/Game";
 import SettingsDialog from "./components/dialogs/SettingsDialog";
 import StatsDialog from "./components/dialogs/StatsDialog";
+import ArchiveDialog from "./components/dialogs/ArchiveDialog";
 import { getLatestPuzzleId } from "./utils/puzzleUtils";
 import { useAuth } from "./hooks/useAuth";
 import { useUser } from "./hooks/useUser";
@@ -37,6 +38,7 @@ function App() {
 	const [showLandingPage, setShowLandingPage] = useState(true);
 	const [showSettingsDialog, setShowSettingsDialog] = useState(false);
 	const [showStatsDialog, setShowStatsDialog] = useState(false);
+	const [showArchiveDialog, setShowArchiveDialog] = useState(false);
 
 	// Synced preferences (localStorage for signed-out, Firestore for signed-in)
 	const [darkMode, setDarkMode] = usePreference(
@@ -73,6 +75,7 @@ function App() {
 		return (
 			<div className={`app ${darkMode ? "dark-theme" : "light-theme"}`}>
 				<Header
+					onArchiveClick={() => setShowArchiveDialog(true)}
 					onSettingsClick={() => setShowSettingsDialog(true)}
 					onStatsClick={() => setShowStatsDialog(true)}
 				/>
@@ -90,6 +93,7 @@ function App() {
 		>
 			<Header
 				onSettingsClick={() => setShowSettingsDialog(true)}
+				onArchiveClick={() => setShowArchiveDialog(true)}
 				onStatsClick={() => setShowStatsDialog(true)}
 			/>
 
@@ -114,6 +118,14 @@ function App() {
 				onDarkModeChange={setDarkMode}
 				onSoundEnabledChange={setSoundEnabled}
 				isPuzzleSolved={!!userData?.stats?.solvedPuzzles?.[puzzleId]}
+			/>
+
+			<ArchiveDialog
+				isOpen={showArchiveDialog}
+				onClose={() => setShowArchiveDialog(false)}
+				solvedPuzzles={userData?.stats?.solvedPuzzles}
+				currentPuzzleId={puzzleId}
+				onPuzzleSelect={setSelectedPuzzleId}
 			/>
 
 			<StatsDialog

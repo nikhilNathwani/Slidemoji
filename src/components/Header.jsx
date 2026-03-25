@@ -4,7 +4,7 @@ import GoogleSignInButton from "./common/GoogleSignInButton";
 import { useAuth } from "../hooks/useAuth";
 import { FontAwesomeIcon } from "../utils/icons";
 
-function Header({ onSettingsClick, onStatsClick }) {
+function Header({ onSettingsClick, onStatsClick, onArchiveClick }) {
 	const { user, signOut } = useAuth();
 	const [showAccountMenu, setShowAccountMenu] = useState(false);
 	const menuRef = useRef(null);
@@ -35,11 +35,11 @@ function Header({ onSettingsClick, onStatsClick }) {
 			<div className={styles.headerActions}>
 				<button
 					className={styles.iconButton}
-					onClick={onSettingsClick}
-					aria-label="Settings"
-					title="Settings"
+					onClick={onArchiveClick}
+					aria-label="Archive"
+					title="Puzzle Archive"
 				>
-					<FontAwesomeIcon icon="cog" />
+					<FontAwesomeIcon icon="clock-rotate-left" />
 				</button>
 				<button
 					className={styles.iconButton}
@@ -48,6 +48,14 @@ function Header({ onSettingsClick, onStatsClick }) {
 					title="Stats"
 				>
 					<FontAwesomeIcon icon="trophy" />
+				</button>
+				<button
+					className={styles.iconButton}
+					onClick={onSettingsClick}
+					aria-label="Settings"
+					title="Settings"
+				>
+					<FontAwesomeIcon icon="cog" />
 				</button>
 				{user ? (
 					<div className={styles.accountContainer} ref={menuRef}>
