@@ -20,13 +20,8 @@ const DEFAULT_SOUND_ENABLED = false;
 function App() {
 	const { user } = useAuth();
 
-	// Check for demo URL param (e.g., ?demo=134 to view specific puzzle)
-	const urlParams = new URLSearchParams(window.location.search);
-	const demoParam = urlParams.get("demo");
-	const demoPuzzleId = demoParam ? parseInt(demoParam, 10) : null;
-
-	const [selectedPuzzleId, setSelectedPuzzleId] = useState(
-		() => demoPuzzleId || getLatestPuzzleId(),
+	const [selectedPuzzleId, setSelectedPuzzleId] = useState(() =>
+		getLatestPuzzleId(),
 	);
 	const puzzleId = selectedPuzzleId;
 
