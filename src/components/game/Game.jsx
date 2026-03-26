@@ -11,7 +11,7 @@ import { checkWin } from "../../utils/gridHelpers";
 function Game({
 	puzzleMetadata, // { id, emoji, emojiName, initialGrids: { normal, hard } }
 	gameState, // { normal: grid, hard: grid, currentDifficulty: "normal"|"hard" }
-	setCurrentGrid, // Function to update current grid: setCurrentGrid(grid) - infers action & difficulty
+	setGameState, // Function to update game state: setGameState({ grid?, currentDifficulty? })
 	hasNumbersShown,
 	hasSoundEnabled,
 	onOpenStats,
@@ -30,13 +30,13 @@ function Game({
 
 	// Auto-save after each move
 	const handleMove = (newGrid) => {
-		setCurrentGrid(newGrid);
+		setGameState({ grid: newGrid });
 	};
 
 	// Handle puzzle solve
 	const handleSolve = () => {
 		// Grid already saved the winning move via onMove, so currentGrid is already solved
-		// setCurrentGrid with solved grid was already called in handleMove, no need to call again
+		// setGameState with solved grid was already called in handleMove, no need to call again
 		setShowWinDialog(true);
 	};
 
@@ -47,7 +47,9 @@ function Game({
 
 	const handleRestartConfirm = () => {
 		setShowRestartDialog(false);
-		setCurrentGrid(puzzleMetadata.initialGrids[gameState.currentDifficulty]);
+		setGameState({
+			grid: puzzleMetadata.initialGrids[gameState.currentDifficulty],
+		});
 	};
 
 	return (

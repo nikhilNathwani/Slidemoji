@@ -54,7 +54,7 @@ function App() {
 	);
 
 	// Load and manage game state (unified hook for loading + saving)
-	const [gameState, setCurrentGrid, setCurrentDifficulty] = useGameState({
+	const [gameState, setGameState] = useGameState({
 		puzzleId,
 		normalPuzzle,
 		hardPuzzle,
@@ -130,7 +130,7 @@ function App() {
 				key={`${puzzleId}-${gameState.currentDifficulty}`}
 				puzzleMetadata={puzzleMetadata}
 				gameState={gameState}
-				setCurrentGrid={setCurrentGrid}
+				setGameState={setGameState}
 				hasNumbersShown={showNumbers}
 				hasSoundEnabled={soundEnabled}
 				onOpenStats={() => setShowStatsDialog(true)}
@@ -147,7 +147,7 @@ function App() {
 				onShowNumbersChange={setShowNumbers}
 				onDarkModeChange={setDarkMode}
 				onSoundEnabledChange={setSoundEnabled}
-				onDifficultyChange={setCurrentDifficulty}
+				onDifficultyChange={(diff) => setGameState({ currentDifficulty: diff })}
 				isPuzzleSolved={!!userData?.stats?.solvedPuzzles?.[puzzleId]}
 			/>
 
