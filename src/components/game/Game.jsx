@@ -59,7 +59,7 @@ function Game({
 						trophyEmoji={puzzleMetadata.emoji}
 						trophyName={puzzleMetadata.emojiName}
 						solvedDifficulty={
-							checkWin(gameState[gameState.currentDifficulty])
+							checkWin(currentGrid)
 								? gameState.currentDifficulty
 								: null
 						}
