@@ -3,10 +3,11 @@
  *
  * Combines game state loading and saving into a single hook with a useState-like API:
  *
- * const [gameState, setGameState] = useGameState({ puzzleId, normalPuzzle, hardPuzzle, userData, currentDifficulty })
+ * const [gameState, setCurrentGrid, setCurrentDifficulty] = useGameState({ puzzleId, normalPuzzle, hardPuzzle, userData, currentDifficulty })
  *
  * gameState: { normal: grid, hard: grid, currentDifficulty }
- * setGameState: (grid) => void - Automatically infers action and difficulty from grid state
+ * setCurrentGrid: (grid) => void - Automatically infers action and difficulty from grid state
+ * setCurrentDifficulty: (difficulty) => void - Switches which difficulty is displayed
  *
  * This hook:
  * - Loads saved game state from Firestore or localStorage
@@ -186,10 +187,10 @@ export function useGameState({
 		saveStartToFirestore,
 	]);
 
-	// Single setter function (like useState) that infers action from grid state
-	const setGameState = useMemo(() => {
+	// Setter for game grid (infers action from grid state)
+	const setCurrentGrid = useMemo(() => {
 		/**
-		 * Update game state - intelligently infers the action and difficulty from grid
+		 * Update game grid - intelligently infers the action and difficulty from grid
 		 *
 		 * Infers action by comparing grid state:
 		 * - Grid matches initial grid → restart
@@ -201,7 +202,7 @@ export function useGameState({
 		 * Updates local state immediately, then saves to Firestore/localStorage async
 		 *
 		 * Usage:
-		 *   setGameState(grid)
+		 *   setCurrentGrid(grid)
 		 */
 		return (grid) => {
 			if (!normalPuzzle || !hardPuzzle) return;
@@ -270,5 +271,39 @@ export function useGameState({
 		saveStartToFirestore,
 	]);
 
-	return [gameState, setGameState];
+	// Setter for currentDifficulty (switches view without changing grid data)
+	const setCurrentDifficulty = useMemo(() => {
+		/**
+		 * Switch which difficulty is displayed
+		 *
+		 * Just updates the currentDifficulty field to change which grid is shown.
+		 * Preserves all grid data (normal and hard) - doesn't reset anything.
+		 *
+		 * Persists the preference to Firestore for signed-in users.
+		 *
+		 * Usage:
+		 *   setCurrentDifficulty(DIFFICULTY.HARD)
+		 */
+		return (newDifficulty) => {
+			// Update local state immediately
+			setGameStateInternal((prev) => ({
+				...prev,
+				currentDifficulty: newDifficulty,
+			}));
+
+			// Persist to Firestore if signed in
+			if (user) {
+				const gridToSave = gameState?.[newDifficulty];
+				if (gridToSave) {
+					saveMoveToFirestore({
+						puzzleId,
+						grid: gridToSave,
+						difficulty: newDifficulty,
+					});
+				}
+			}
+		};
+	}, [user, puzzleId, gameState, saveMoveToFirestore]);
+
+	return [gameState, setCurrentGrid, setCurrentDifficulty];
 }

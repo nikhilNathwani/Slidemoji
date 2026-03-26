@@ -31,19 +31,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "./useAuth";
 import { useUser } from "./useUser";
 import { updateUserPreferences } from "../backend/database";
-import {
-	getLocalPreference,
-	saveLocalPreference,
-	getLocalCurrentDifficulty,
-} from "../utils/localStorage";
+import { getLocalPreference, saveLocalPreference } from "../utils/localStorage";
 
 export function usePreference(key, defaultValue, options = {}) {
 	// Merge with defaults
-	const {
-		persistForSignedOut = true,
-		contextKey = null,
-		puzzleId = null,
-	} = options;
+	const { persistForSignedOut = true, contextKey = null } = options;
 
 	const { user } = useAuth();
 	const { data: userData } = useUser(user?.uid);
@@ -124,25 +116,6 @@ export function usePreference(key, defaultValue, options = {}) {
 
 	// Derive the effective value based on sign-in state and options
 	const value = (() => {
-		// Special case: difficulty is per-puzzle only (no global preference)
-		// - New puzzle: always start in NORMAL
-		// - Resume puzzle: use currentDifficulty from gameState
-		if (key === "difficulty" && puzzleId) {
-			// Signed-in: Check Firestore gameState
-			if (userData?.gameState?.[puzzleId]?.currentDifficulty) {
-				return userData.gameState[puzzleId].currentDifficulty;
-			}
-			// Signed-out: Check localStorage completion data
-			if (!user) {
-				const localCurrent = getLocalCurrentDifficulty(puzzleId);
-				if (localCurrent) {
-					return localCurrent;
-				}
-			}
-			// No saved difficulty for this puzzle → default to NORMAL (don't use global preference)
-			return defaultValue;
-		}
-
 		// Signed-in: Use Firestore > localStorage > default (normal hierarchy)
 		if (user && userData?.preferences?.[key] !== undefined) {
 			return userData.preferences[key];

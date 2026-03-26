@@ -22,10 +22,7 @@ const DEFAULT_SOUND_ENABLED = false;
 function App() {
 	const { user } = useAuth();
 
-	const [selectedPuzzleId, setSelectedPuzzleId] = useState(() =>
-		getLatestPuzzleId(),
-	);
-	const puzzleId = selectedPuzzleId;
+	const [puzzleId, setPuzzleId] = useState(() => getLatestPuzzleId());
 
 	// Synced preferences (localStorage for signed-out, Firestore for signed-in)
 	const [darkMode, setDarkMode] = usePreference(
@@ -44,12 +41,7 @@ function App() {
 	// Fetch user data
 	const { data: userData, isLoading: isLoadingUser } = useUser(user?.uid);
 
-	// Difficulty preference: per-puzzle (checks lastPlayedDifficulty, falls back to NORMAL)
-	const [difficulty, setDifficulty] = usePreference(
-		"difficulty",
-		DEFAULT_DIFFICULTY,
-		{ puzzleId },
-	);
+	// No separate difficulty preference: use gameState.currentDifficulty as source of truth
 
 	// Fetch both puzzle difficulties (normal and hard)
 	const { data: normalPuzzle, isLoading: isLoadingNormal } = usePuzzle(
@@ -62,26 +54,27 @@ function App() {
 	);
 
 	// Load and manage game state (unified hook for loading + saving)
-	const [gameState, setGameState] = useGameState({
+	const [gameState, setCurrentGrid, setCurrentDifficulty] = useGameState({
 		puzzleId,
 		normalPuzzle,
 		hardPuzzle,
 		userData,
-		currentDifficulty: difficulty,
+		currentDifficulty: DEFAULT_DIFFICULTY, // Only used for initial load; after that, gameState.currentDifficulty is source of truth
 	});
 
 	// Separate puzzle metadata (not part of gameState)
-	const puzzleMetadata = normalPuzzle
-		? {
-				id: puzzleId,
-				emoji: normalPuzzle.emoji,
-				emojiName: normalPuzzle.emojiName,
-				initialGrids: {
-					normal: normalPuzzle.initialGrid,
-					hard: hardPuzzle?.initialGrid,
-				},
-			}
-		: null;
+	const puzzleMetadata =
+		normalPuzzle && hardPuzzle
+			? {
+					id: puzzleId,
+					emoji: normalPuzzle.emoji,
+					emojiName: normalPuzzle.emojiName,
+					initialGrids: {
+						normal: normalPuzzle.initialGrid,
+						hard: hardPuzzle.initialGrid,
+					},
+				}
+			: null;
 
 	// Show Page / Dialog
 	const [showLandingPage, setShowLandingPage] = useState(true);
@@ -134,10 +127,10 @@ function App() {
 			/>
 
 			<Game
-				key={`${puzzleId}-${difficulty}`}
+				key={`${puzzleId}-${gameState.currentDifficulty}`}
 				puzzleMetadata={puzzleMetadata}
 				gameState={gameState}
-				setGameState={setGameState}
+				setCurrentGrid={setCurrentGrid}
 				hasNumbersShown={showNumbers}
 				hasSoundEnabled={soundEnabled}
 				onOpenStats={() => setShowStatsDialog(true)}
@@ -150,11 +143,11 @@ function App() {
 				hasDarkMode={darkMode}
 				hasNumbersShown={showNumbers}
 				hasSoundEnabled={soundEnabled}
-				difficulty={difficulty}
+				difficulty={gameState.currentDifficulty}
 				onShowNumbersChange={setShowNumbers}
 				onDarkModeChange={setDarkMode}
 				onSoundEnabledChange={setSoundEnabled}
-				onDifficultyChange={setDifficulty}
+				onDifficultyChange={setCurrentDifficulty}
 				isPuzzleSolved={!!userData?.stats?.solvedPuzzles?.[puzzleId]}
 			/>
 
@@ -163,7 +156,7 @@ function App() {
 				onClose={() => setShowArchiveDialog(false)}
 				solvedPuzzles={userData?.stats?.solvedPuzzles}
 				currentPuzzleId={puzzleId}
-				onPuzzleSelect={setSelectedPuzzleId}
+				onPuzzleSelect={setPuzzleId}
 			/>
 
 			<StatsDialog
