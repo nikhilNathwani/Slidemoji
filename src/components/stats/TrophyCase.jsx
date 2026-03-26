@@ -105,7 +105,10 @@ function TrophyCase({
 								trophyName={slot.name}
 								isLocked={!slot.isEarned}
 								isToday={slot.isToday && !slot.isEarned}
-								solvedDifficulty={slot.solvedDifficulty}
+								isSolved={!!slot.solvedDifficulty}
+								difficulty={
+									slot.solvedDifficulty || DIFFICULTY.NORMAL
+								}
 								isMini={true}
 							/>
 						</div>

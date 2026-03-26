@@ -58,11 +58,8 @@ function Game({
 						trophyNum={String(puzzleId).padStart(3, "0")}
 						trophyEmoji={puzzleMetadata.emoji}
 						trophyName={puzzleMetadata.emojiName}
-						solvedDifficulty={
-							checkWin(currentGrid)
-								? gameState.currentDifficulty
-								: null
-						}
+						isSolved={checkWin(currentGrid)}
+						difficulty={gameState.currentDifficulty}
 					/>
 				</div>
 				<Grid

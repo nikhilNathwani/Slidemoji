@@ -10,8 +10,8 @@ function Trophy({
 	isMini = false,
 	isLocked = false,
 	isToday = false, // Today's puzzle (not yet solved)
-	isSolved = false, // Legacy prop - whether puzzle is solved
-	solvedDifficulty = null, // New prop - DIFFICULTY.NORMAL | DIFFICULTY.HARD | null
+	isSolved = false, // Whether the current difficulty is solved
+	difficulty = DIFFICULTY.NORMAL, // Current difficulty being played/viewed
 }) {
 	// Fetch puzzle data if emoji not provided (for trophy case display)
 	// trophyNum is a string like "001", need to convert to number
@@ -29,11 +29,11 @@ function Trophy({
 	// Gold (normal), Teal (hard), Grey (locked/unsolved)
 	const variantClass = isLocked
 		? styles.locked
-		: solvedDifficulty === DIFFICULTY.HARD
-			? styles.special // Teal for hard
-			: solvedDifficulty === DIFFICULTY.NORMAL || isSolved // Legacy support
-				? styles.gold // Gold for normal
-				: styles.puzzleInfo; // Grey for unsolved
+		: !isSolved
+			? styles.puzzleInfo // Grey for unsolved
+			: difficulty === DIFFICULTY.HARD
+				? styles.special // Teal for hard
+				: styles.gold; // Gold for normal
 
 	return (
 		<div
