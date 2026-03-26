@@ -121,17 +121,11 @@ export function useGameState({
 	}, [normalPuzzle, hardPuzzle, userData, puzzleId, currentDifficulty, user]);
 
 	// Use state to maintain current grid values (updates immediately on moves)
+	// Initialize directly from computed data - no need for sync effect
 	const [gameState, setGameStateInternal] = useState(
-		initialGameStateData?.gameState || null,
+		() => initialGameStateData?.gameState || null,
 	);
 	const shouldMigrateInternal = initialGameStateData?.shouldMigrateInternal;
-
-	// Sync state when initial data changes (e.g., user signs in, puzzle changes)
-	useEffect(() => {
-		if (initialGameStateData?.gameState) {
-			setGameStateInternal(initialGameStateData.gameState);
-		}
-	}, [initialGameStateData]);
 
 	// Handle migrations and initial state saves
 	useEffect(() => {
@@ -279,4 +273,3 @@ export function useGameState({
 
 	return [gameState, setGameState];
 }
-

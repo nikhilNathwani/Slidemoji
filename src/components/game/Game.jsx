@@ -23,13 +23,9 @@ function Game({
 	// Extract data from gameState and puzzleMetadata
 	const puzzleId = puzzleMetadata.id;
 	const currentDifficulty = gameState.currentDifficulty;
-	const loadedGrid = gameState[currentDifficulty];
-	const initialPuzzleGrid = puzzleMetadata.initialGrids[currentDifficulty];
+	const currentGrid = gameState[currentDifficulty];
 
-	// Grid state - Game manages current gameplay state
-	const [currentGrid, setCurrentGrid] = useState(loadedGrid);
-
-	// Derive isSolved from currentGrid
+	// Derive isSolved from gameState
 	const gridSize = getDifficultySize(currentDifficulty);
 	const solvedState = getSolvedState(gridSize);
 	const isSolved = checkWin(currentGrid, solvedState);
@@ -41,7 +37,6 @@ function Game({
 
 	// Auto-save after each move
 	const handleMove = (newGrid) => {
-		setCurrentGrid(newGrid);
 		setGameState(newGrid);
 	};
 
@@ -59,8 +54,7 @@ function Game({
 
 	const handleRestartConfirm = () => {
 		setShowRestartDialog(false);
-		setCurrentGrid(initialPuzzleGrid); // Reset to initial grid (Grid displays what's passed)
-		setGameState(initialPuzzleGrid);
+		setGameState(puzzleMetadata.initialGrids[currentDifficulty]);
 	};
 
 	return (
@@ -80,7 +74,7 @@ function Game({
 					/>
 				</div>
 				<Grid
-					grid={currentGrid || initialPuzzleGrid}
+					grid={currentGrid}
 					emoji={puzzleMetadata.emoji}
 					hasNumbersShown={hasNumbersShown && !isSolved}
 					hasSoundEnabled={hasSoundEnabled}
