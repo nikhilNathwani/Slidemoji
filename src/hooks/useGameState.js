@@ -213,7 +213,6 @@ export function useGameState({
 				difficulty === DIFFICULTY.NORMAL
 					? normalPuzzle.initialGrid
 					: hardPuzzle.initialGrid;
-			const solvedState = getSolvedState(gridSize);
 
 			// Update local state immediately (synchronous)
 			setGameStateInternal((prev) => ({
@@ -224,7 +223,7 @@ export function useGameState({
 			// Infer action from grid state for async save
 			const isInitialGrid =
 				JSON.stringify(grid) === JSON.stringify(initialGrid);
-			const isSolvedGrid = checkWin(grid, solvedState);
+			const isSolvedGrid = checkWin(grid);
 
 			// Save to Firestore/localStorage (asynchronous)
 			if (isInitialGrid) {

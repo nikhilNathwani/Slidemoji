@@ -24,7 +24,7 @@ function Grid({
 	isDialogOpen = false,
 }) {
 	const gridSize = Math.floor(Math.sqrt(grid?.length || 9));
-	const isSolved = checkWin(grid, getSolvedState(gridSize));
+	const isSolved = checkWin(grid);
 
 	const [gridSizePx, setGridSizePx] = useState(() =>
 		calcBoardSizePx(gridSize),
@@ -48,7 +48,7 @@ function Grid({
 				playTileMoveSound();
 			}
 
-			if (checkWin(newGrid, getSolvedState(gridSize))) {
+			if (checkWin(newGrid)) {
 				onWin();
 			}
 		},

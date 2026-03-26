@@ -6,8 +6,7 @@ import ConfirmRestartDialog from "../dialogs/ConfirmRestartDialog";
 import WinDialog from "../dialogs/WinDialog";
 import GameActionButton from "./GameActionButton";
 import { useAuth } from "../../hooks/useAuth";
-import { checkWin, getSolvedState } from "../../utils/gridHelpers";
-import { getDifficultySize } from "../../constants";
+import { checkWin } from "../../utils/gridHelpers";
 
 function Game({
 	puzzleMetadata, // { id, emoji, emojiName, initialGrids: { normal, hard } }
@@ -22,13 +21,7 @@ function Game({
 
 	// Extract data from gameState and puzzleMetadata
 	const puzzleId = puzzleMetadata.id;
-	const currentDifficulty = gameState.currentDifficulty;
-	const currentGrid = gameState[currentDifficulty];
-
-	// Derive isSolved from gameState
-	const gridSize = getDifficultySize(currentDifficulty);
-	const solvedState = getSolvedState(gridSize);
-	const isSolved = checkWin(currentGrid, solvedState);
+	const currentGrid = gameState[gameState.currentDifficulty];
 
 	// Dialog state
 	const [showRestartDialog, setShowRestartDialog] = useState(false);
@@ -54,7 +47,7 @@ function Game({
 
 	const handleRestartConfirm = () => {
 		setShowRestartDialog(false);
-		setGameState(puzzleMetadata.initialGrids[currentDifficulty]);
+		setGameState(puzzleMetadata.initialGrids[gameState.currentDifficulty]);
 	};
 
 	return (
@@ -66,9 +59,8 @@ function Game({
 						trophyEmoji={puzzleMetadata.emoji}
 						trophyName={puzzleMetadata.emojiName}
 						solvedDifficulty={
-							// Check if this difficulty has been beaten (derive from gameState)
-							checkWin(gameState[currentDifficulty], solvedState)
-								? currentDifficulty
+							checkWin(gameState[gameState.currentDifficulty])
+								? gameState.currentDifficulty
 								: null
 						}
 					/>
@@ -76,7 +68,7 @@ function Game({
 				<Grid
 					grid={currentGrid}
 					emoji={puzzleMetadata.emoji}
-					hasNumbersShown={hasNumbersShown && !isSolved}
+					hasNumbersShown={hasNumbersShown && !checkWin(currentGrid)}
 					hasSoundEnabled={hasSoundEnabled}
 					onMove={handleMove}
 					onWin={handleSolve}
@@ -85,7 +77,7 @@ function Game({
 
 				<div className={styles.restartContainer}>
 					<GameActionButton
-						isSolved={isSolved}
+						isSolved={checkWin(currentGrid)}
 						user={user}
 						onOpenStats={onOpenStats}
 						onRestart={handleRestartClick}
@@ -103,7 +95,7 @@ function Game({
 				isOpen={showWinDialog}
 				onClose={() => setShowWinDialog(false)}
 				puzzleMetadata={puzzleMetadata}
-				difficulty={currentDifficulty}
+				difficulty={gameState.currentDifficulty}
 			/>
 		</>
 	);

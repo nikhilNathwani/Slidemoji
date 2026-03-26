@@ -116,12 +116,22 @@ export function swapTiles(tiles, index1, index2) {
 
 /**
  * Check if the current grid state is solved
- * @param {Array} tiles - Array of tile values
- * @param {Array} solvedState - The solved state to compare against
+ * Grid is solved if elements are monotonically increasing with gap (null) at the end
+ * @param {Array} tiles - Current tiles array
  * @returns {boolean} True if grid is solved
  */
-export function checkWin(tiles, solvedState) {
-	return tiles.every((tile, index) => tile === solvedState[index]);
+export function checkWin(tiles) {
+	if (!tiles || tiles.length === 0) return false;
+
+	// Gap must be in the last position
+	if (tiles[tiles.length - 1] !== null) return false;
+
+	// All other elements must be strictly monotonically increasing (1, 2, 3, ...)
+	for (let i = 0; i < tiles.length - 1; i++) {
+		if (tiles[i] !== i + 1) return false;
+	}
+
+	return true;
 }
 
 /**
