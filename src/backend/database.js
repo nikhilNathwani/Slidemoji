@@ -20,6 +20,7 @@ import {
 } from "firebase/firestore";
 import { db } from "./firebaseConfig";
 import { getLatestPuzzleId } from "../utils/puzzleUtils";
+import { DIFFICULTY, DEFAULT_DIFFICULTY } from "../constants";
 
 /**
  * User data structure (see FIRESTORE_SCHEMA.md for full documentation):
@@ -178,9 +179,15 @@ export async function updateUserPreferences(userId, preferences) {
  * @param {string} userId - Firebase Auth user ID
  * @param {number} puzzleId - Puzzle number (1-365)
  * @param {Array} initialGrid - Starting grid configuration from Firestore
+ * @param {string} difficulty - Difficulty level (DIFFICULTY.NORMAL or DIFFICULTY.HARD)
  * @returns {Promise<Object>} Updated gameState and stats
  */
-export async function saveGameStart(userId, puzzleId, initialGrid) {
+export async function saveGameStart(
+	userId,
+	puzzleId,
+	initialGrid,
+	difficulty = DEFAULT_DIFFICULTY,
+) {
 	if (!userId) {
 		throw new Error("User ID is required");
 	}
@@ -194,8 +201,6 @@ export async function saveGameStart(userId, puzzleId, initialGrid) {
 			throw new Error("User data not found");
 		}
 
-		// Is this an archive puzzle (old puzzle) or today's daily?
-		const fromArchive = puzzleId !== getLatestPuzzleId();
 		let gameState = userData.gameState || {};
 		// Ensure stats structure exists (in case user data was corrupted/deleted)
 		let stats = userData.stats
@@ -208,11 +213,14 @@ export async function saveGameStart(userId, puzzleId, initialGrid) {
 		// Convert client format (null as gap) to Firestore format (0 as gap)
 		const firestoreGrid = initialGrid.map((v) => (v === null ? 0 : v));
 
-		// Initialize game state for this puzzle (3x3 only)
-		gameState[puzzleId] = {
-			grid: firestoreGrid,
-			fromArchive, // Track whether this is a daily or archive play
-		};
+		// Initialize game state for this puzzle at this difficulty
+		// Structure: gameState[puzzleId][difficulty] = Array (grid directly)
+		// Also track currentDifficulty to determine which difficulty to show on next load
+		if (!gameState[puzzleId]) {
+			gameState[puzzleId] = {};
+		}
+		gameState[puzzleId][difficulty] = firestoreGrid;
+		gameState[puzzleId].currentDifficulty = difficulty;
 
 		// Save to Firestore
 		const userDocRef = doc(db, "users", userId);
@@ -236,7 +244,7 @@ export async function saveGameStart(userId, puzzleId, initialGrid) {
  *
  * @param {string} userId - Firebase Auth user ID
  * @param {number} puzzleId - Puzzle number (1-365)
- * @param {Object} gameData - { grid: Array }
+ * @param {Object} gameData - { grid: Array, difficulty: string }
  */
 export async function saveGameMove(userId, puzzleId, gameData) {
 	if (!userId) {
@@ -249,11 +257,14 @@ export async function saveGameMove(userId, puzzleId, gameData) {
 		const firestoreGrid = gameData.grid.map((v) => (v === null ? 0 : v));
 		// Use dot notation to update only this specific nested field
 		// This is more efficient than reading, modifying, and writing the entire document
-		await updateDoc(userDocRef, {
-			[`gameState.${puzzleId}.grid`]: firestoreGrid,
-
+		// Structure: gameState[puzzleId][difficulty] = Array (grid directly)
+		// Also update currentDifficulty to track which difficulty to show on next load
+		const updateData = {
+			[`gameState.${puzzleId}.${gameData.difficulty}`]: firestoreGrid,
+			[`gameState.${puzzleId}.currentDifficulty`]: gameData.difficulty,
 			updatedAt: serverTimestamp(),
-		});
+		};
+		await updateDoc(userDocRef, updateData);
 	} catch (error) {
 		console.error("Error saving game state:", error);
 		throw error;
@@ -266,19 +277,21 @@ export async function saveGameMove(userId, puzzleId, gameData) {
  * Called when user solves a puzzle.
  *
  * What it does:
- * 1. Marks puzzle as solved in solvedPuzzles[puzzleId] = true
- * 2. Clears the game from gameState (puzzle is done)
+ * 1. Marks puzzle as solved in solvedPuzzles[puzzleId][difficulty] = true
+ * 2. Clears the game from gameState[puzzleId][difficulty] (puzzle is done at this difficulty)
  *
  * Trophy System:
- * - Each puzzle completion is tracked as puzzleId: true
+ * - Each puzzle completion tracks both difficulties separately: { DIFFICULTY.NORMAL: true, DIFFICULTY.HARD: true }
+ * - Trophy case shows the MAX difficulty achieved (DIFFICULTY.HARD > DIFFICULTY.NORMAL)
+ * - During gameplay, trophy shows if you've beaten the CURRENT difficulty
  * - Emoji/emojiName are fetched from puzzles collection (not duplicated here)
  *
  * @param {string} userId - Firebase Auth user ID
  * @param {number} puzzleId - Puzzle number (1-365)
- * @param {Object} completionData - Ignored (kept for backwards compatibility)
+ * @param {string} difficulty - Difficulty level (DIFFICULTY.NORMAL or DIFFICULTY.HARD)
  * @returns {Promise<Object>} Updated stats
  */
-export async function saveGameCompletion(userId, puzzleId, completionData) {
+export async function saveGameCompletion(userId, puzzleId, difficulty) {
 	if (!userId) {
 		throw new Error("User ID is required");
 	}
@@ -299,12 +312,23 @@ export async function saveGameCompletion(userId, puzzleId, completionData) {
 			stats.solvedPuzzles = {};
 		}
 
-		// Mark puzzle as solved (just store true, emoji looked up from puzzles collection)
-		stats.solvedPuzzles[puzzleId] = true;
+		// Initialize puzzle entry if it doesn't exist
+		if (!stats.solvedPuzzles[puzzleId]) {
+			stats.solvedPuzzles[puzzleId] = {};
+		}
 
-		// Clear this game from gameState (puzzle is complete!)
-		// But keep other in-progress games (user might be playing multiple puzzles)
-		delete gameState[puzzleId];
+		// Mark this specific difficulty as completed
+		stats.solvedPuzzles[puzzleId][difficulty] = true;
+
+		// Clear this specific difficulty game from gameState
+		// Structure: gameState[puzzleId][difficulty]
+		if (gameState[puzzleId]) {
+			delete gameState[puzzleId][difficulty];
+			// If no difficulties remaining for this puzzle, delete the puzzle entry
+			if (Object.keys(gameState[puzzleId]).length === 0) {
+				delete gameState[puzzleId];
+			}
+		}
 
 		// Save to Firestore
 		const userDocRef = doc(db, "users", userId);

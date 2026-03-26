@@ -6,39 +6,33 @@ import ConfirmRestartDialog from "../dialogs/ConfirmRestartDialog";
 import WinDialog from "../dialogs/WinDialog";
 import GameActionButton from "./GameActionButton";
 import { useAuth } from "../../hooks/useAuth";
-import { useLoadGame } from "../../hooks/useLoadGame";
-import { useSaveGame } from "../../hooks/useSaveGame";
-import { GRID_SIZE } from "../../constants";
+import { checkWin, getSolvedState } from "../../utils/gridHelpers";
+import { getDifficultySize } from "../../constants";
 
 function Game({
-	puzzleMetadata, // Contains: id, emoji, emojiName, initialGrid
-	savedGame,
-	solvedPuzzles, // Firestore solvedPuzzles map (for checking if already completed)
+	puzzleMetadata, // { id, emoji, emojiName, initialGrids: { normal, hard } }
+	gameState, // { normal: grid, hard: grid, currentDifficulty: "normal"|"hard" }
+	setGameState, // Function to update game state: setGameState(grid) - infers action & difficulty
 	hasNumbersShown,
 	hasSoundEnabled,
 	onOpenStats,
 	isAppDialogOpen = false,
 }) {
-	const puzzleId = puzzleMetadata.id;
 	const { user } = useAuth();
 
-	// Load game state on mount - handles resuming or starting fresh (3x3 only)
-	// Component remounts when user/puzzleId changes (via key prop in App)
-	// useLoadGame checks: Firestore solvedPuzzles, Firestore gameState, and localStorage
-	const { loadedGrid, wasSolved } = useLoadGame({
-		puzzleId,
-		puzzleMetadata,
-		savedGame,
-		solvedPuzzles,
-	});
+	// Extract data from gameState and puzzleMetadata
+	const puzzleId = puzzleMetadata.id;
+	const currentDifficulty = gameState.currentDifficulty;
+	const loadedGrid = gameState[currentDifficulty];
+	const initialPuzzleGrid = puzzleMetadata.initialGrids[currentDifficulty];
 
 	// Grid state - Game manages current gameplay state
 	const [currentGrid, setCurrentGrid] = useState(loadedGrid);
-	// isSolved tracks current session state, initialized from useLoadGame's wasSolved check
-	const [isSolved, setIsSolved] = useState(wasSolved);
 
-	// Game state persistence - handles Firestore (signed in) and localStorage (signed out)
-	const { saveMove, saveSolve, saveRestart } = useSaveGame();
+	// Derive isSolved from currentGrid
+	const gridSize = getDifficultySize(currentDifficulty);
+	const solvedState = getSolvedState(gridSize);
+	const isSolved = checkWin(currentGrid, solvedState);
 
 	// Dialog state
 	const [showRestartDialog, setShowRestartDialog] = useState(false);
@@ -48,14 +42,13 @@ function Game({
 	// Auto-save after each move
 	const handleMove = (newGrid) => {
 		setCurrentGrid(newGrid);
-		saveMove({ grid: newGrid, puzzleMetadata });
+		setGameState(newGrid);
 	};
 
 	// Handle puzzle solve
 	const handleSolve = () => {
 		// Grid already saved the winning move via onMove, so currentGrid is already solved
-		setIsSolved(true);
-		saveSolve({ puzzleMetadata });
+		// setGameState with solved grid was already called in handleMove, no need to call again
 		setShowWinDialog(true);
 	};
 
@@ -66,9 +59,8 @@ function Game({
 
 	const handleRestartConfirm = () => {
 		setShowRestartDialog(false);
-		setCurrentGrid(puzzleMetadata.initialGrid); // Reset to initial grid (Grid displays what's passed)
-		setIsSolved(false); // Reset solved state
-		saveRestart({ puzzleMetadata });
+		setCurrentGrid(initialPuzzleGrid); // Reset to initial grid (Grid displays what's passed)
+		setGameState(initialPuzzleGrid);
 	};
 
 	return (
@@ -76,14 +68,19 @@ function Game({
 			<main className={styles.main}>
 				<div className={styles.trophyContainer}>
 					<Trophy
-						trophyNum={String(puzzleMetadata.id).padStart(3, "0")}
+						trophyNum={String(puzzleId).padStart(3, "0")}
 						trophyEmoji={puzzleMetadata.emoji}
 						trophyName={puzzleMetadata.emojiName}
-						isSolved={isSolved}
+						solvedDifficulty={
+							// Check if this difficulty has been beaten (derive from gameState)
+							checkWin(gameState[currentDifficulty], solvedState)
+								? currentDifficulty
+								: null
+						}
 					/>
 				</div>
 				<Grid
-					grid={currentGrid || puzzleMetadata.initialGrid}
+					grid={currentGrid || initialPuzzleGrid}
 					emoji={puzzleMetadata.emoji}
 					hasNumbersShown={hasNumbersShown && !isSolved}
 					hasSoundEnabled={hasSoundEnabled}
@@ -112,6 +109,7 @@ function Game({
 				isOpen={showWinDialog}
 				onClose={() => setShowWinDialog(false)}
 				puzzleMetadata={puzzleMetadata}
+				difficulty={currentDifficulty}
 			/>
 		</>
 	);

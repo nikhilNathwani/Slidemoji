@@ -1,5 +1,6 @@
 import { FontAwesomeIcon } from "../../utils/icons";
 import Trophy from "../common/Trophy";
+import { DIFFICULTY } from "../../constants";
 import styles from "./TrophyCase.module.css";
 import { useState } from "react";
 
@@ -34,21 +35,32 @@ function TrophyCase({
 				isEarned: false,
 				emoji: null,
 				name: null,
-				maxDifficulty: 0,
 			});
 		} else {
-			// Check if puzzle is earned (simplified schema: solvedPuzzles[id] = true)
-			const isEarned = !!solvedPuzzles?.[puzzleNum];
+			// Check if puzzle is earned and at what difficulty
+			// solvedPuzzles[id] = { DIFFICULTY.NORMAL: true, DIFFICULTY.HARD: true } | undefined
+			const puzzleSolved = solvedPuzzles?.[puzzleNum];
+			const isEarned =
+				!!puzzleSolved?.[DIFFICULTY.NORMAL] ||
+				!!puzzleSolved?.[DIFFICULTY.HARD];
+
+			// Determine max difficulty for trophy case display (DIFFICULTY.HARD > DIFFICULTY.NORMAL)
+			let solvedDifficulty = null;
+			if (puzzleSolved?.[DIFFICULTY.HARD]) {
+				solvedDifficulty = DIFFICULTY.HARD;
+			} else if (puzzleSolved?.[DIFFICULTY.NORMAL]) {
+				solvedDifficulty = DIFFICULTY.NORMAL;
+			}
 
 			trophySlots.push({
 				puzzleNum,
 				isPlaceholder: false,
 				isEarned,
+				solvedDifficulty, // DIFFICULTY.NORMAL | DIFFICULTY.HARD | null (max difficulty)
 				isToday: puzzleNum === puzzleId,
 				// Emoji/name will be fetched by Trophy component via usePuzzle
 				emoji: null,
 				name: null,
-				maxDifficulty: 0, // No longer used (3x3 only)
 			});
 		}
 	}
@@ -93,7 +105,7 @@ function TrophyCase({
 								trophyName={slot.name}
 								isLocked={!slot.isEarned}
 								isToday={slot.isToday && !slot.isEarned}
-								isSolved={slot.isEarned}
+								solvedDifficulty={slot.solvedDifficulty}
 								isMini={true}
 							/>
 						</div>

@@ -1,13 +1,16 @@
 /**
- * Add a puzzle solve to the user's solved puzzles (3x3 only)
- * Safely handles object creation
+ * Add a puzzle solve to the user's solved puzzles
+ * Safely handles object creation and tracks both difficulties separately
  *
  * @param {Object} userData - Current user data object
  * @param {number} puzzleId - Puzzle ID
+ * @param {string} difficulty - Difficulty level (DIFFICULTY.NORMAL or DIFFICULTY.HARD)
  * @returns {Object} Updated user data with new solve
  */
-export function addPuzzleSolve(userData, puzzleId) {
+export function addPuzzleSolve(userData, puzzleId, difficulty) {
 	if (!userData || !userData.stats) return userData;
+
+	const currentPuzzle = userData.stats.solvedPuzzles?.[puzzleId] || {};
 
 	return {
 		...userData,
@@ -15,7 +18,10 @@ export function addPuzzleSolve(userData, puzzleId) {
 			...userData.stats,
 			solvedPuzzles: {
 				...userData.stats.solvedPuzzles,
-				[puzzleId]: true,
+				[puzzleId]: {
+					...currentPuzzle,
+					[difficulty]: true,
+				},
 			},
 		},
 	};

@@ -7,10 +7,12 @@ import SettingsDialog from "./components/dialogs/SettingsDialog";
 import StatsDialog from "./components/dialogs/StatsDialog";
 import ArchiveDialog from "./components/dialogs/ArchiveDialog";
 import { getLatestPuzzleId } from "./utils/puzzleUtils";
+import { DEFAULT_DIFFICULTY, DIFFICULTY, getDifficultySize } from "./constants";
 import { useAuth } from "./hooks/useAuth";
 import { useUser } from "./hooks/useUser";
 import { usePuzzle } from "./hooks/usePuzzle";
 import { usePreference } from "./hooks/usePreference";
+import { useGameState } from "./hooks/useGameState";
 
 // App-level preference defaults
 const DEFAULT_DARK_MODE = false;
@@ -25,16 +27,6 @@ function App() {
 	);
 	const puzzleId = selectedPuzzleId;
 
-	// Fetch puzzle data
-	const { data: puzzleMetadata, isLoading: isLoadingPuzzle } =
-		usePuzzle(puzzleId);
-
-	// Show Page / Dialog
-	const [showLandingPage, setShowLandingPage] = useState(true);
-	const [showSettingsDialog, setShowSettingsDialog] = useState(false);
-	const [showStatsDialog, setShowStatsDialog] = useState(false);
-	const [showArchiveDialog, setShowArchiveDialog] = useState(false);
-
 	// Synced preferences (localStorage for signed-out, Firestore for signed-in)
 	const [darkMode, setDarkMode] = usePreference(
 		"darkMode",
@@ -47,13 +39,62 @@ function App() {
 	const [showNumbers, setShowNumbers] = usePreference(
 		"showNumbers",
 		DEFAULT_SHOW_NUMBERS,
-		{ contextKey: puzzleId },
-		// Resets to ON for each new puzzle (new puzzleId), but respects manual changes within the puzzle
 	);
 
 	// Fetch user data
 	const { data: userData, isLoading: isLoadingUser } = useUser(user?.uid);
-	const isLoading = isLoadingPuzzle || (user && isLoadingUser);
+
+	// Difficulty preference: per-puzzle (checks lastPlayedDifficulty, falls back to NORMAL)
+	const [difficulty, setDifficulty] = usePreference(
+		"difficulty",
+		DEFAULT_DIFFICULTY,
+		{ puzzleId },
+	);
+
+	// Fetch both puzzle difficulties (normal and hard)
+	const { data: normalPuzzle, isLoading: isLoadingNormal } = usePuzzle(
+		puzzleId,
+		getDifficultySize(DIFFICULTY.NORMAL),
+	);
+	const { data: hardPuzzle, isLoading: isLoadingHard } = usePuzzle(
+		puzzleId,
+		getDifficultySize(DIFFICULTY.HARD),
+	);
+
+	// Load and manage game state (unified hook for loading + saving)
+	const [gameState, setGameState] = useGameState({
+		puzzleId,
+		normalPuzzle,
+		hardPuzzle,
+		userData,
+		currentDifficulty: difficulty,
+	});
+
+	// Separate puzzle metadata (not part of gameState)
+	const puzzleMetadata = normalPuzzle
+		? {
+				id: puzzleId,
+				emoji: normalPuzzle.emoji,
+				emojiName: normalPuzzle.emojiName,
+				initialGrids: {
+					normal: normalPuzzle.initialGrid,
+					hard: hardPuzzle?.initialGrid,
+				},
+			}
+		: null;
+
+	// Show Page / Dialog
+	const [showLandingPage, setShowLandingPage] = useState(true);
+	const [showSettingsDialog, setShowSettingsDialog] = useState(false);
+	const [showStatsDialog, setShowStatsDialog] = useState(false);
+	const [showArchiveDialog, setShowArchiveDialog] = useState(false);
+
+	const isLoading =
+		isLoadingNormal ||
+		isLoadingHard ||
+		(user && isLoadingUser) ||
+		!gameState ||
+		!puzzleMetadata;
 
 	if (showLandingPage) {
 		return (
@@ -66,7 +107,7 @@ function App() {
 	// Wait for data to load before rendering Game
 	// For signed-in users, wait for both puzzle and user data
 	// For signed-out users, only wait for puzzle data
-	if (isLoading || !puzzleMetadata) {
+	if (isLoading) {
 		return (
 			<div className={`app ${darkMode ? "dark-theme" : "light-theme"}`}>
 				<Header
@@ -93,10 +134,10 @@ function App() {
 			/>
 
 			<Game
-				key={puzzleId}
+				key={`${puzzleId}-${difficulty}`}
 				puzzleMetadata={puzzleMetadata}
-				savedGame={userData?.gameState?.[puzzleId]}
-				solvedPuzzles={userData?.stats?.solvedPuzzles}
+				gameState={gameState}
+				setGameState={setGameState}
 				hasNumbersShown={showNumbers}
 				hasSoundEnabled={soundEnabled}
 				onOpenStats={() => setShowStatsDialog(true)}
@@ -109,9 +150,11 @@ function App() {
 				hasDarkMode={darkMode}
 				hasNumbersShown={showNumbers}
 				hasSoundEnabled={soundEnabled}
+				difficulty={difficulty}
 				onShowNumbersChange={setShowNumbers}
 				onDarkModeChange={setDarkMode}
 				onSoundEnabledChange={setSoundEnabled}
+				onDifficultyChange={setDifficulty}
 				isPuzzleSolved={!!userData?.stats?.solvedPuzzles?.[puzzleId]}
 			/>
 

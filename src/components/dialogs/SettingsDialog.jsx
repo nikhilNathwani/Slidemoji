@@ -2,6 +2,7 @@ import Dialog from "./Dialog";
 import Toggle from "../common/Toggle";
 import styles from "./SettingsDialog.module.css";
 import { FontAwesomeIcon } from "../../utils/icons";
+import { DIFFICULTIES } from "../../constants";
 
 function SettingsDialog({
 	isOpen,
@@ -12,11 +13,37 @@ function SettingsDialog({
 	onShowNumbersChange,
 	hasSoundEnabled,
 	onSoundEnabledChange,
+	difficulty,
+	onDifficultyChange,
 	isPuzzleSolved = false,
 }) {
 	return (
 		<Dialog isOpen={isOpen} onClose={onClose} title="Settings">
 			<div className={styles.settingsContent}>
+				<div className={styles.settingsItem}>
+					<label className={styles.settingsLabel}>Difficulty</label>
+					<div className={styles.difficultySelector}>
+						{DIFFICULTIES.map((diff) => (
+							<button
+								key={diff.value}
+								className={`${styles.difficultyBtn} ${
+									difficulty === diff.value
+										? styles.active
+										: ""
+								}`}
+								onClick={() => onDifficultyChange(diff.value)}
+							>
+								<span className={styles.difficultyLabel}>
+									{diff.label}
+								</span>
+								<span className={styles.difficultySize}>
+									{diff.display}
+								</span>
+							</button>
+						))}
+					</div>
+				</div>
+				<div className={styles.settingsDivider}></div>
 				<div
 					className={`${styles.settingsItem} ${
 						isPuzzleSolved ? styles.disabled : ""

@@ -24,9 +24,9 @@ export function useFirestoreMutations() {
 
 	// React Query mutation for starting/restarting puzzles
 	const gameStartMutation = useMutation({
-		mutationFn: ({ puzzleId, initialGrid }) => {
+		mutationFn: ({ puzzleId, initialGrid, difficulty }) => {
 			if (!user?.uid) return Promise.resolve();
-			return saveGameStart(user.uid, puzzleId, initialGrid);
+			return saveGameStart(user.uid, puzzleId, initialGrid, difficulty);
 		},
 		onError: (error) => {
 			console.error("Error starting puzzle:", error);
@@ -38,30 +38,48 @@ export function useFirestoreMutations() {
 
 	// React Query mutation for saving game state after moves
 	const gameMoveMutation = useMutation({
-		mutationFn: ({ puzzleId, grid }) => {
+		mutationFn: ({ puzzleId, grid, difficulty }) => {
 			if (!user?.uid) return Promise.resolve();
-			return saveGameMove(user.uid, puzzleId, { grid });
+			return saveGameMove(user.uid, puzzleId, { grid, difficulty });
+		},
+		onMutate: ({ puzzleId, grid, difficulty }) => {
+			// Optimistic update: update cache immediately for instant UI update
+			if (user?.uid) {
+				queryClient.setQueryData(["user", user.uid], (prevData) => {
+					if (!prevData) return prevData;
+
+					// Deep clone to avoid mutations
+					const newData = {
+						...prevData,
+						gameState: {
+							...prevData.gameState,
+							[puzzleId]: {
+								...prevData.gameState?.[puzzleId],
+								[difficulty]: grid, // Already in client format (null for gap)
+							},
+						},
+					};
+					return newData;
+				});
+			}
 		},
 		onError: (error) => {
 			console.error("Error saving game state:", error);
+			// Could rollback optimistic update here if needed
 		},
-		// No cache invalidation - grid state is local only
 	});
 
 	// React Query mutation for saving completions
 	const gameCompletionMutation = useMutation({
-		mutationFn: ({ puzzleId, emoji, emojiName }) => {
+		mutationFn: ({ puzzleId, difficulty }) => {
 			if (!user?.uid) return Promise.resolve();
-			return saveGameCompletion(user.uid, puzzleId, {
-				emoji,
-				emojiName,
-			});
+			return saveGameCompletion(user.uid, puzzleId, difficulty);
 		},
-		onMutate: ({ puzzleId }) => {
+		onMutate: ({ puzzleId, difficulty }) => {
 			// Optimistic update: add solve to cache immediately for instant UI update
 			if (user?.uid) {
 				queryClient.setQueryData(["user", user.uid], (prevData) =>
-					addPuzzleSolve(prevData, puzzleId),
+					addPuzzleSolve(prevData, puzzleId, difficulty),
 				);
 			}
 		},

@@ -32,15 +32,15 @@ export function useUser(userId) {
 				const data = await getUserData(userId);
 
 				// Convert saved game grids from Firestore format (0 for gap) to client format (null for gap)
+				// Structure: gameState[puzzleId][difficulty] = Array (grid directly)
 				if (data?.gameState) {
 					for (const puzzleId in data.gameState) {
 						for (const difficulty in data.gameState[puzzleId]) {
-							const savedGame =
+							const savedGrid =
 								data.gameState[puzzleId][difficulty];
-							if (savedGame?.grid) {
-								savedGame.grid = convertGridFromFirestore(
-									savedGame.grid,
-								);
+							if (Array.isArray(savedGrid)) {
+								data.gameState[puzzleId][difficulty] =
+									convertGridFromFirestore(savedGrid);
 							}
 						}
 					}

@@ -4,7 +4,7 @@ import StatsContent from "../stats/StatsContent";
 import styles from "./WinDialog.module.css";
 import { FontAwesomeIcon } from "../../utils/icons";
 
-function WinDialog({ isOpen, onClose, puzzleMetadata }) {
+function WinDialog({ isOpen, onClose, puzzleMetadata, difficulty }) {
 	const handleShare = () => {
 		const paddedId = String(puzzleMetadata?.id).padStart(3, "0");
 		const shareText = `Slidemoji #${paddedId} 
@@ -31,7 +31,7 @@ Play at slidemoji.vercel.app`;
 					trophyNum={puzzleMetadata?.id}
 					trophyEmoji={puzzleMetadata?.emoji}
 					trophyName={puzzleMetadata?.emojiName}
-					isSolved={true}
+					solvedDifficulty={difficulty}
 				/>
 				<h3>You earned today's emoji!</h3>
 

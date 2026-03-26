@@ -10,26 +10,58 @@
  * - Preferences persist locally (signed-in users sync to Firestore)
  * - In-progress work is ephemeral (lost on refresh) to incentivize sign-in
  *
- * 3x3 only - no difficulty variations
+ * Format: { [DIFFICULTY.NORMAL]: boolean, [DIFFICULTY.HARD]: boolean, currentDifficulty: string }
  */
+
+import { DIFFICULTY } from "../constants";
 
 // ===== Game Completion Storage =====
 
-// Get localStorage key for signed-out progress (3x3 only)
+// Get localStorage key for signed-out progress
 export const getLocalStorageKey = (puzzleId) => `signedOutProgress_${puzzleId}`;
 
 // Read signed-out completion from localStorage
 export const getLocalCompletion = (puzzleId) => {
 	const key = getLocalStorageKey(puzzleId);
 	const data = localStorage.getItem(key);
-	return data ? JSON.parse(data) : null;
+	if (!data) return null;
+
+	const parsed = JSON.parse(data);
+	// Handle legacy formats:
+	// 1. { isCompleted: true } -> { [DIFFICULTY.NORMAL]: true }
+	// 2. { maxDifficulty: 'normal' | 'hard' } -> { [DIFFICULTY.NORMAL]: true } or { [DIFFICULTY.NORMAL]: true, [DIFFICULTY.HARD]: true }
+	if (
+		parsed.isCompleted &&
+		!parsed[DIFFICULTY.NORMAL] &&
+		!parsed[DIFFICULTY.HARD]
+	) {
+		return { [DIFFICULTY.NORMAL]: true };
+	}
+	if (
+		parsed.maxDifficulty &&
+		!parsed[DIFFICULTY.NORMAL] &&
+		!parsed[DIFFICULTY.HARD]
+	) {
+		return {
+			[DIFFICULTY.NORMAL]: true,
+			[DIFFICULTY.HARD]: parsed.maxDifficulty === DIFFICULTY.HARD,
+		};
+	}
+	return parsed;
 };
 
-// Save signed-out completion to localStorage (just a flag, no grid state)
-export const saveLocalCompletion = (puzzleId) => {
+// Save signed-out completion to localStorage
+// Tracks both difficulties separately and remembers current difficulty
+export const saveLocalCompletion = (puzzleId, difficulty) => {
+	const existing = getLocalCompletion(puzzleId);
+
 	localStorage.setItem(
 		getLocalStorageKey(puzzleId),
-		JSON.stringify({ isCompleted: true }),
+		JSON.stringify({
+			...existing,
+			[difficulty]: true,
+			currentDifficulty: difficulty,
+		}),
 	);
 };
 
@@ -38,10 +70,16 @@ export const clearLocalProgress = (puzzleId) => {
 	localStorage.removeItem(getLocalStorageKey(puzzleId));
 };
 
-// Check if signed-out user completed this puzzle
-export const isSignedOutPuzzleSolved = (puzzleId) => {
+// Check if signed-out user completed this puzzle at this difficulty
+export const isSignedOutPuzzleSolved = (puzzleId, difficulty) => {
 	const completion = getLocalCompletion(puzzleId);
-	return !!completion?.isCompleted;
+	return !!completion?.[difficulty];
+};
+
+// Get the current difficulty for a signed-out user
+export const getLocalCurrentDifficulty = (puzzleId) => {
+	const completion = getLocalCompletion(puzzleId);
+	return completion?.currentDifficulty || null;
 };
 
 // ===== Preference Storage =====

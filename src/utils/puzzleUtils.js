@@ -19,35 +19,45 @@ export function getLatestPuzzleId() {
  * Convert grid array from Firestore format to client format
  * Firestore uses 0 for gap, client uses null for gap
  * @param {Array} grid - Grid array from Firestore
- * @returns {Array} Grid array with gaps as null
+ * @returns {Array|null} Grid array with gaps as null, or null if invalid input
  */
 export function convertGridFromFirestore(grid) {
-	if (!grid) return null;
+	if (!grid || !Array.isArray(grid)) return null;
 	return grid.map((v) => (v === 0 ? null : v));
 }
 
 /**
- * Convert puzzle data from Firestore format to client format (3x3 only)
+ * Convert puzzle data from Firestore format to client format
  * Firestore uses 0 for gap, client uses null for gap
  *
- * Handles both old schema (puzzle.3) and new schema (puzzle.initialGrid)
+ * Handles both old schema (puzzle.3/puzzle.4) and new schema (puzzle.initialGrid)
  *
  * @param {Object} puzzleMetadata - Puzzle data from Firestore
- * @returns {Object} Puzzle data with converted grid array
+ * @param {number} gridSize - Grid size (3 or 4)
+ * @returns {Object} Puzzle data with converted grid array for the specified size
  */
-export function convertPuzzleFromFirestore(puzzleMetadata) {
+export function convertPuzzleFromFirestore(puzzleMetadata, gridSize = 3) {
 	if (!puzzleMetadata) return null;
 
 	const converted = { ...puzzleMetadata };
 
-	// Handle old schema: puzzle.3 (from before 3x3-only simplification)
-	// Convert to new schema: puzzle.initialGrid
-	if (converted["3"]) {
-		converted.initialGrid = convertGridFromFirestore(converted["3"]);
-		delete converted["3"]; // Clean up old field
-		delete converted["4"]; // Remove 4x4 data if present
+	// Handle schema with separate 3x3 and 4x4 grids
+	if (converted["3"] || converted["4"]) {
+		// Load the grid for the requested size
+		const gridKey = gridSize.toString();
+		if (converted[gridKey]) {
+			converted.initialGrid = convertGridFromFirestore(
+				converted[gridKey],
+			);
+		} else {
+			// Fallback to 3x3 if requested size doesn't exist
+			converted.initialGrid = convertGridFromFirestore(converted["3"]);
+		}
+		// Keep original fields for reference
+		converted.grid3x3 = converted["3"];
+		converted.grid4x4 = converted["4"];
 	}
-	// Handle new schema: puzzle.initialGrid
+	// Handle new schema: puzzle.initialGrid (backward compatibility)
 	else if (converted.initialGrid) {
 		converted.initialGrid = convertGridFromFirestore(converted.initialGrid);
 	}

@@ -1,5 +1,6 @@
 import { FontAwesomeIcon } from "../../utils/icons";
 import { usePuzzle } from "../../hooks/usePuzzle";
+import { DIFFICULTY } from "../../constants";
 import styles from "./Trophy.module.css";
 
 function Trophy({
@@ -9,7 +10,8 @@ function Trophy({
 	isMini = false,
 	isLocked = false,
 	isToday = false, // Today's puzzle (not yet solved)
-	isSolved = false, // Whether puzzle is solved (gold) or not (grey)
+	isSolved = false, // Legacy prop - whether puzzle is solved
+	solvedDifficulty = null, // New prop - DIFFICULTY.NORMAL | DIFFICULTY.HARD | null
 }) {
 	// Fetch puzzle data if emoji not provided (for trophy case display)
 	// trophyNum is a string like "001", need to convert to number
@@ -23,12 +25,15 @@ function Trophy({
 	const emoji = trophyEmoji || puzzleMetadata?.emoji;
 	const name = trophyName || puzzleMetadata?.emojiName;
 
-	// Determine variant-specific class based on props (3x3 only)
+	// Determine variant-specific class based on difficulty
+	// Gold (normal), Teal (hard), Grey (locked/unsolved)
 	const variantClass = isLocked
 		? styles.locked
-		: isSolved
-			? styles.gold
-			: styles.puzzleInfo;
+		: solvedDifficulty === DIFFICULTY.HARD
+			? styles.special // Teal for hard
+			: solvedDifficulty === DIFFICULTY.NORMAL || isSolved // Legacy support
+				? styles.gold // Gold for normal
+				: styles.puzzleInfo; // Grey for unsolved
 
 	return (
 		<div

@@ -48,7 +48,7 @@ const ADJACENCY_MAPS = {
  * Check if two positions are adjacent on a grid of given size
  * @param {number} index1 - First position index
  * @param {number} index2 - Second position index
- * @param {number} size - Grid size (3 or 4)
+ * @param {number} size - Grid size (2, 3, or 4)
  * @returns {boolean} True if positions are adjacent
  */
 export function isAdjacent(index1, index2, size) {
@@ -62,7 +62,7 @@ export function isAdjacent(index1, index2, size) {
 /**
  * Get all adjacent positions for a given position
  * @param {number} index - Position index
- * @param {number} size - Grid size (3 or 4)
+ * @param {number} size - Grid size (2, 3, or 4)
  * @returns {number[]} Array of adjacent position indices
  */
 function getAdjacentIndices(index, size) {
@@ -71,7 +71,7 @@ function getAdjacentIndices(index, size) {
 
 /**
  * Calculate responsive grid size based on viewport
- * @param {number} gridSize - Grid size (3 or 4)
+ * @param {number} gridSize - Grid size (2, 3, or 4)
  * @returns {number} Grid size in pixels
  */
 export function calcBoardSizePx(gridSize) {
@@ -85,7 +85,7 @@ export function calcBoardSizePx(gridSize) {
 
 /**
  * Get the solved state for a grid of given size
- * @param {number} size - Grid size (3 or 4)
+ * @param {number} size - Grid size (2, 3, or 4)
  * @returns {Array} Array of tile values with null as last element
  */
 export function getSolvedState(size) {
@@ -127,7 +127,7 @@ export function checkWin(tiles, solvedState) {
 /**
  * Generate a scrambled puzzle by making random valid moves
  * Always ensures the gap ends up in the bottom-right corner
- * @param {number} size - Grid size (3 or 4)
+ * @param {number} size - Grid size (2, 3, or 4)
  * @param {number} numMoves - Number of random moves to make (default 100)
  * @returns {Array} Scrambled tiles array with gap in bottom-right
  */
@@ -186,7 +186,7 @@ export function scramblePuzzle(size, numMoves = 100) {
  * Get tile index from arrow key direction for keyboard controls
  * @param {number} gapIndex - Current gap index
  * @param {string} direction - Arrow key direction
- * @param {number} size - Grid size (3 or 4)
+ * @param {number} size - Grid size (2, 3, or 4)
  * @returns {number|null} Tile index that should move, or null if invalid
  */
 export function getTileIndexFromDirection(gapIndex, direction, size) {
