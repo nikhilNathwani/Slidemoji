@@ -7,7 +7,6 @@ import SettingsDialog from "./components/dialogs/SettingsDialog";
 import StatsDialog from "./components/dialogs/StatsDialog";
 import ArchiveDialog from "./components/dialogs/ArchiveDialog";
 import { getLatestPuzzleId } from "./utils/puzzleUtils";
-import { DIFFICULTY, getDifficultySize } from "./constants";
 import { useAuth } from "./hooks/useAuth";
 import { useUser } from "./hooks/useUser";
 import { usePuzzle } from "./hooks/usePuzzle";
@@ -41,33 +40,12 @@ function App() {
 	// Fetch user data
 	const { data: userData, isLoading: isLoadingUser } = useUser(user?.uid);
 
-	// Fetch both puzzle difficulties
-	const { data: normalPuzzle, isLoading: isLoadingNormal } = usePuzzle(
-		puzzleId,
-		getDifficultySize(DIFFICULTY.NORMAL),
-	);
-	const { data: hardPuzzle, isLoading: isLoadingHard } = usePuzzle(
-		puzzleId,
-		getDifficultySize(DIFFICULTY.HARD),
-	);
-
-	// Construct puzzle metadata
-	const puzzleMetadata =
-		normalPuzzle && hardPuzzle
-			? {
-					id: puzzleId,
-					emoji: normalPuzzle.emoji,
-					emojiName: normalPuzzle.emojiName,
-					initialGrids: {
-						normal: normalPuzzle.initialGrid,
-						hard: hardPuzzle.initialGrid,
-					},
-				}
-			: null;
+	// Fetch puzzle (returns both difficulty grids in one call)
+	const { data: puzzleMetadata, isLoading: isLoadingPuzzle } =
+		usePuzzle(puzzleId);
 
 	// Manage game state (loading/saving)
 	const [gameState, setGameState] = useGameState({
-		puzzleId,
 		puzzleMetadata,
 		userData,
 	});
@@ -79,8 +57,7 @@ function App() {
 	const [showArchiveDialog, setShowArchiveDialog] = useState(false);
 
 	const isLoading =
-		isLoadingNormal ||
-		isLoadingHard ||
+		isLoadingPuzzle ||
 		(user && isLoadingUser) ||
 		!gameState ||
 		!puzzleMetadata;

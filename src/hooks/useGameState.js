@@ -3,7 +3,7 @@
  *
  * Manages game state including loading, saving, and difficulty switching.
  *
- * const [gameState, setGameState] = useGameState({ puzzleId, puzzleMetadata, userData })
+ * const [gameState, setGameState] = useGameState({ puzzleMetadata, userData })
  *
  * Returns:
  * - gameState: { normal: grid, hard: grid, currentDifficulty }
@@ -34,7 +34,8 @@ import {
 import { getSolvedState, checkWin } from "../utils/gridHelpers";
 import { convertGridFromFirestore } from "../utils/puzzleUtils";
 
-export function useGameState({ puzzleId, puzzleMetadata, userData }) {
+export function useGameState({ puzzleMetadata, userData }) {
+	const puzzleId = puzzleMetadata?.id;
 	const { user } = useAuth();
 	const {
 		saveStartToFirestore,
