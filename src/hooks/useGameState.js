@@ -22,7 +22,6 @@ import {
 	DIFFICULTY,
 	DEFAULT_DIFFICULTY,
 	getDifficultySize,
-	getDifficultyFromGrid,
 } from "../constants";
 import { useAuth } from "./useAuth";
 import { useFirestoreMutations } from "./useFirestoreMutations";
@@ -170,8 +169,8 @@ export function useGameState({ puzzleMetadata, userData }) {
 
 		// Mode 2: Grid update
 		if (grid) {
-			// Infer difficulty from grid length
-			const difficulty = getDifficultyFromGrid(grid);
+			// Use current difficulty (grid updates are always for the active difficulty)
+			const difficulty = gameState.currentDifficulty;
 			const isSolved = checkWin(grid);
 
 			console.log("[useGameState] Grid update:", {
@@ -187,22 +186,25 @@ export function useGameState({ puzzleMetadata, userData }) {
 			// If solved, also save trophy
 			if (isSolved) {
 				saveSolvedPuzzle(difficulty);
-				setGameStateInternal((prev) => ({
-					...prev,
-					[difficulty]: grid,
-					currentDifficulty: difficulty,
-				}));
 			}
-		},
-		[
-			user,
-			gameState,
-			puzzleMetadata,
-			puzzleId,
-			saveGameStateToFirestore,
-			saveSolvedPuzzleToFirestore,
-		],
-	);
+
+			// Update React state
+			setGameStateInternal((prev) => ({
+				...prev,
+				[difficulty]: grid,
+				currentDifficulty: difficulty,
+			}));
+		}
+	},
+	[
+		user,
+		gameState,
+		puzzleMetadata,
+		puzzleId,
+		saveGameStateToFirestore,
+		saveSolvedPuzzleToFirestore,
+	],
+);
 
 	return [gameState, setGameState];
 }
