@@ -6,7 +6,7 @@
  */
 
 import { getLocalCompletion, clearLocalProgress } from "./localStorage";
-import { saveGameCompletion } from "../backend/database";
+import { saveSolvedPuzzle } from "../backend/database";
 import { DIFFICULTY } from "../constants";
 
 /**
@@ -29,12 +29,12 @@ export async function migrateLocalStorageToFirestore(userId, currentPuzzleId) {
 	const migrations = [];
 	if (localCompletion[DIFFICULTY.NORMAL]) {
 		migrations.push(
-			saveGameCompletion(userId, currentPuzzleId, DIFFICULTY.NORMAL),
+			saveSolvedPuzzle(userId, currentPuzzleId, DIFFICULTY.NORMAL),
 		);
 	}
 	if (localCompletion[DIFFICULTY.HARD]) {
 		migrations.push(
-			saveGameCompletion(userId, currentPuzzleId, DIFFICULTY.HARD),
+			saveSolvedPuzzle(userId, currentPuzzleId, DIFFICULTY.HARD),
 		);
 	}
 

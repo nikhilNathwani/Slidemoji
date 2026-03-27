@@ -237,16 +237,17 @@ export async function saveGameStart(
 }
 
 /**
- * Save game state on every move (auto-save for resume)
+ * Save game state (in-progress or restart)
  *
- * Called after each tile movement to persist progress.
- * Uses Firestore's dot notation to update nested fields efficiently.
+ * Stores the current grid state in Firestore when:
+ * 1. User makes a move (in-progress game)
+ * 2. User restarts puzzle (resets to initial state)
  *
  * @param {string} userId - Firebase Auth user ID
  * @param {number} puzzleId - Puzzle number (1-365)
  * @param {Object} gameData - { grid: Array, difficulty: string }
  */
-export async function saveGameMove(userId, puzzleId, gameData) {
+export async function saveGameState(userId, puzzleId, gameData) {
 	if (!userId) {
 		throw new Error("User ID is required");
 	}
@@ -272,13 +273,13 @@ export async function saveGameMove(userId, puzzleId, gameData) {
 }
 
 /**
- * Save completion when puzzle is won (trophy tracking)
+ * Save solved puzzle (trophy tracking)
  *
  * Called when user solves a puzzle.
  *
  * What it does:
- * 1. Marks puzzle as solved in solvedPuzzles[puzzleId][difficulty] = true
- * 2. Clears the game from gameState[puzzleId][difficulty] (puzzle is done at this difficulty)
+ * - Marks puzzle as solved in solvedPuzzles[puzzleId][difficulty] = true
+ * - Does NOT clear gameState (grid is kept for display/history)
  *
  * Trophy System:
  * - Each puzzle completion tracks both difficulties separately: { DIFFICULTY.NORMAL: true, DIFFICULTY.HARD: true }
@@ -291,7 +292,7 @@ export async function saveGameMove(userId, puzzleId, gameData) {
  * @param {string} difficulty - Difficulty level (DIFFICULTY.NORMAL or DIFFICULTY.HARD)
  * @returns {Promise<Object>} Updated stats
  */
-export async function saveGameCompletion(userId, puzzleId, difficulty) {
+export async function saveSolvedPuzzle(userId, puzzleId, difficulty) {
 	if (!userId) {
 		throw new Error("User ID is required");
 	}
@@ -302,7 +303,6 @@ export async function saveGameCompletion(userId, puzzleId, difficulty) {
 			throw new Error("User data not found");
 		}
 
-		let gameState = userData.gameState || {};
 		let stats = userData.stats
 			? { ...userData.stats }
 			: { solvedPuzzles: {} };
@@ -320,20 +320,9 @@ export async function saveGameCompletion(userId, puzzleId, difficulty) {
 		// Mark this specific difficulty as completed
 		stats.solvedPuzzles[puzzleId][difficulty] = true;
 
-		// Clear this specific difficulty game from gameState
-		// Structure: gameState[puzzleId][difficulty]
-		if (gameState[puzzleId]) {
-			delete gameState[puzzleId][difficulty];
-			// If no difficulties remaining for this puzzle, delete the puzzle entry
-			if (Object.keys(gameState[puzzleId]).length === 0) {
-				delete gameState[puzzleId];
-			}
-		}
-
-		// Save to Firestore
+		// Save to Firestore (keep gameState intact - no need to delete solved grids)
 		const userDocRef = doc(db, "users", userId);
 		await updateDoc(userDocRef, {
-			gameState: Object.keys(gameState).length > 0 ? gameState : null,
 			stats,
 			updatedAt: serverTimestamp(),
 		});

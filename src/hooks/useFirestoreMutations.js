@@ -15,7 +15,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "./useAuth";
 import { useCallback } from "react";
-import { saveGameMove, saveGameCompletion } from "../backend/database";
+import { saveGameState, saveSolvedPuzzle } from "../backend/database";
 import { addPuzzleSolve } from "../utils/statsHelpers";
 
 export function useFirestoreMutations() {
@@ -27,8 +27,8 @@ export function useFirestoreMutations() {
 	const gameStateMutation = useMutation({
 		mutationFn: ({ puzzleId, grid, difficulty }) => {
 			if (!user?.uid) return Promise.resolve();
-			// saveGameMove handles both initial grids and in-progress grids
-			return saveGameMove(user.uid, puzzleId, { grid, difficulty });
+			// saveGameState handles both initial grids and in-progress grids
+			return saveGameState(user.uid, puzzleId, { grid, difficulty });
 		},
 		onMutate: ({ puzzleId, grid, difficulty }) => {
 			// Optimistic update: update cache immediately for instant UI update
@@ -63,7 +63,7 @@ export function useFirestoreMutations() {
 	const solvedPuzzleMutation = useMutation({
 		mutationFn: ({ puzzleId, difficulty }) => {
 			if (!user?.uid) return Promise.resolve();
-			return saveGameCompletion(user.uid, puzzleId, difficulty);
+			return saveSolvedPuzzle(user.uid, puzzleId, difficulty);
 		},
 		onMutate: ({ puzzleId, difficulty }) => {
 			// Optimistic update: add solve to cache immediately for instant UI update

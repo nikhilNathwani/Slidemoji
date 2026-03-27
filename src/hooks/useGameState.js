@@ -42,23 +42,18 @@ export function useGameState({ puzzleMetadata, userData }) {
 		if (!puzzleMetadata?.initialGrids) return null;
 
 		const savedGameState = userData?.gameState?.[puzzleId];
-		const solvedPuzzles = userData?.stats?.solvedPuzzles?.[puzzleId];
 		const localCompletion = getLocalCompletion(puzzleId);
 
 		// Helper: Get saved grid for a difficulty
 		const getSavedGrid = (diff) => {
-			// Solved in Firestore?
-			if (user && solvedPuzzles?.[diff]) {
-				return getSolvedState(getDifficultySize(diff));
-			}
-			// Solved in localStorage (needs migration if signed in)?
-			if (localCompletion?.[diff]) {
-				return getSolvedState(getDifficultySize(diff));
-			}
-			// In-progress in Firestore?
+			// Check Firestore gameState first (includes both in-progress and solved)
 			const savedGrid = savedGameState?.[diff];
 			if (savedGrid && Array.isArray(savedGrid)) {
 				return convertGridFromFirestore(savedGrid);
+			}
+			// Fallback: Solved in localStorage but not in Firestore? Generate solved state
+			if (localCompletion?.[diff]) {
+				return getSolvedState(getDifficultySize(diff));
 			}
 			return null;
 		};
@@ -69,7 +64,7 @@ export function useGameState({ puzzleMetadata, userData }) {
 			localCompletion?.currentDifficulty ||
 			DEFAULT_DIFFICULTY;
 
-		return {
+		const result = {
 			normal:
 				getSavedGrid(DIFFICULTY.NORMAL) ||
 				puzzleMetadata.initialGrids.normal,
@@ -78,18 +73,34 @@ export function useGameState({ puzzleMetadata, userData }) {
 				puzzleMetadata.initialGrids.hard,
 			currentDifficulty: loadedDifficulty,
 		};
+
+		console.log('[useGameState] loadedGameState computed:', {
+			puzzleId,
+			user: user?.uid || 'anonymous',
+			loadedDifficulty,
+			hasNormalGrid: !!savedGameState?.[DIFFICULTY.NORMAL],
+			hasHardGrid: !!savedGameState?.[DIFFICULTY.HARD],
+			hasLocalCompletion: !!localCompletion,
+		});
+
+		return result;
 	}, [puzzleMetadata, userData, puzzleId, user]);
 
 	// Track the last puzzle/user combo we initialized for
 	const initKeyRef = useRef(null);
 	const currentInitKey = `${puzzleId}-${user?.uid || "anon"}`;
 
-	// Local state for game (can be updated independently via setGameState)
+	// Component state for game (can be updated independently via setGameState)
 	const [gameState, setGameStateInternal] = useState(null);
 
 	// Initialize or reinitialize when puzzle/user changes
 	useEffect(() => {
 		if (loadedGameState && initKeyRef.current !== currentInitKey) {
+			console.log('[useGameState] Initializing state:', {
+				currentInitKey,
+				prevInitKey: initKeyRef.current,
+				loadedGameState,
+			});
 			// Valid use of setState in effect: synchronizing with async external data (Firestore)
 			// biome-ignore lint/correctness/useHookAtTopLevel: setState in effect is necessary for async data synchronization
 			setGameStateInternal(loadedGameState);
@@ -108,19 +119,18 @@ export function useGameState({ puzzleMetadata, userData }) {
 
 			// Mode 1: Difficulty switch (no grid provided)
 			if (newDifficulty && !grid) {
-				// Persist to Firestore if signed in
+				console.log('[useGameState] Difficulty switch:', { newDifficulty, currentGameState: gameState });
+				// Persist current grid for new difficulty to Firestore if signed in
 				if (user) {
-					const gridToSave = gameState?.[newDifficulty];
-					if (gridToSave) {
-						saveGameStateToFirestore({
-							puzzleId,
-							grid: gridToSave,
-							difficulty: newDifficulty,
-						});
-					}
+					const gridForDifficulty = gameState?.[newDifficulty] || puzzleMetadata.initialGrids[newDifficulty];
+					saveGameStateToFirestore({
+						puzzleId,
+						grid: gridForDifficulty,
+						difficulty: newDifficulty,
+					});
 				}
 
-				// Update local state
+				// Update React state
 				setGameStateInternal((prev) => ({
 					...prev,
 					currentDifficulty: newDifficulty,
@@ -132,24 +142,11 @@ export function useGameState({ puzzleMetadata, userData }) {
 			if (grid) {
 				// Infer difficulty from grid length
 				const difficulty = getDifficultyFromGrid(grid);
+				const isSolved = checkWin(grid);
 
-				// Infer action from grid state
-				const isSolvedGrid = checkWin(grid);
+				console.log('[useGameState] Grid update:', { difficulty, isSolved, puzzleId });
 
-				// Save to Firestore/localStorage based on action
-				if (isSolvedGrid) {
-				// Grid is solved → save to solvedPuzzles[puzzleId][difficulty]
-				if (user) {
-					saveSolvedPuzzleToFirestore({
-						puzzleId,
-						difficulty,
-					});
-				} else {
-					// Signed out: save to localStorage for trophy display
-					saveLocalSolvedPuzzle(puzzleId, difficulty);
-				}
-			} else {
-				// Grid is in progress or restarted → save to gameState[puzzleId][difficulty]
+				// Always save grid state to Firestore if signed in
 				if (user) {
 					saveGameStateToFirestore({
 						puzzleId,
@@ -157,26 +154,37 @@ export function useGameState({ puzzleMetadata, userData }) {
 						difficulty,
 					});
 				}
-				// Signed-out users don't persist non-solved grids (incentive to sign in)
-		}
 
-		// Update React state (not localStorage - that's handled above for signed-out users)
-		setGameStateInternal((prev) => ({
-			...prev,
-			[difficulty]: grid,
-			currentDifficulty: difficulty, // Track last-played difficulty
-		}));
-	}
-	},
-	[
-		user,
-		gameState,
-		puzzleMetadata,
-		puzzleId,
-		saveGameStateToFirestore,
-		saveSolvedPuzzleToFirestore,
-	],
-);
+				// If solved, also save trophy
+				if (isSolved) {
+					if (user) {
+						saveSolvedPuzzleToFirestore({
+							puzzleId,
+							difficulty,
+						});
+					} else {
+						// Signed out: save to localStorage for trophy display
+						saveLocalSolvedPuzzle(puzzleId, difficulty);
+					}
+				}
 
-return [gameState, setGameState];
+				// Update React state
+				setGameStateInternal((prev) => ({
+					...prev,
+					[difficulty]: grid,
+					currentDifficulty: difficulty,
+				}));
+			}
+		},
+		[
+			user,
+			gameState,
+			puzzleMetadata,
+			puzzleId,
+			saveGameStateToFirestore,
+			saveSolvedPuzzleToFirestore,
+		],
+	);
+
+	return [gameState, setGameState];
 }
