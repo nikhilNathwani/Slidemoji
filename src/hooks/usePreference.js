@@ -24,14 +24,13 @@
 
 import { useEffect, useMemo, useCallback } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
-import { db } from "../backend/firebaseConfig";
 import { useAuth } from "./useAuth";
 import { useUser } from "./useUser";
 import {
 	getAnonymousPreference,
 	setAnonymousPreference,
 } from "../storage/anonymous";
+import { updateUserPreferencesToFirestore } from "../storage/firestore";
 
 export function usePreference(key, defaultValue, options = {}) {
 	// Merge with defaults
@@ -91,12 +90,9 @@ export function usePreference(key, defaultValue, options = {}) {
 
 			// If signed in, also save to Firestore
 			if (user) {
-				const userDocRef = doc(db, "users", user.uid);
-				const updates = {
-					[`preferences.${key}`]: newValue,
-					updatedAt: serverTimestamp(),
-				};
-				await updateDoc(userDocRef, updates);
+				await updateUserPreferencesToFirestore(user.uid, {
+					[key]: newValue,
+				});
 			}
 		},
 		// Optimistic update: UI updates IMMEDIATELY

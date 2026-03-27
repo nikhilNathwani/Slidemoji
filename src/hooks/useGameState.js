@@ -20,16 +20,14 @@
 
 import { useMemo, useCallback } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
-import { db } from "../backend/firebaseConfig";
 import { DIFFICULTY, DEFAULT_DIFFICULTY } from "../constants";
 import { useAuth } from "./useAuth";
 import {
 	getAnonymousGameState,
 	saveAnonymousGameState,
 } from "../storage/anonymous";
+import { saveGameStateToFirestore } from "../storage/firestore";
 import { convertGridFromStorage } from "../utils/puzzleUtils";
-import { checkWin } from "../utils/gridHelpers";
 
 export function useGameState({ puzzleMetadata, userData }) {
 	const puzzleId = puzzleMetadata?.id;
@@ -83,24 +81,11 @@ export function useGameState({ puzzleMetadata, userData }) {
 	const mutation = useMutation({
 		mutationFn: async ({ grid, difficulty }) => {
 			if (user) {
-				// Signed-in: Save to Firestore
-				// Offline persistence will queue this if offline
-				const userDocRef = doc(db, "users", user.uid);
-				const firestoreGrid = grid.map((v) => (v === null ? 0 : v));
-				const isSolved = checkWin(grid);
-
-				const updateData = {
-					[`gameState.${puzzleId}.${difficulty}`]: firestoreGrid,
-					[`gameState.${puzzleId}.currentDifficulty`]: difficulty,
-					updatedAt: serverTimestamp(),
-				};
-
-				if (isSolved) {
-					updateData[`gameState.${puzzleId}.solved.${difficulty}`] =
-						true;
-				}
-
-				await updateDoc(userDocRef, updateData);
+				// Signed-in: Save to Firestore (offline persistence queues if offline)
+				await saveGameStateToFirestore(user.uid, puzzleId, {
+					grid,
+					difficulty,
+				});
 			} else {
 				// Anonymous: Save to localStorage (instant)
 				saveAnonymousGameState(puzzleId, difficulty, grid);
