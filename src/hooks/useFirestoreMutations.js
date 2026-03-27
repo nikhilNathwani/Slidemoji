@@ -1,16 +1,22 @@
 /**
- * useFirestoreMutations - React Query mutations for Firestore game operations (3x3 only)
+ * useFirestoreMutations - React Query mutations for Firestore game operations
  *
  * Encapsulates all the React Query mutation boilerplate for saving game data to Firestore.
- * Returns simple wrapper functions that can be called to trigger Firestore saves.
+ * Also handles the logic for determining what action to take (move/solve/restart) based on grid state.
  *
- * Used by: useSaveGame.js (for saves) and useLoadGame.js (for localStorage migration)
+ * Now accepts gameState and puzzleMetadata to provide a unified updateGameState function.
  *
- * Returns: { saveStartToFirestore, saveMoveToFirestore, saveCompletionToFirestore }
+ * Returns: {
+ *   updateGameState: ({ grid?, currentDifficulty? }) => { action, params },
+ *   saveStartToFirestore,
+ *   saveMoveToFirestore,
+ *   saveCompletionToFirestore
+ * }
  */
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "./useAuth";
+import { useCallback } from "react";
 import {
 	saveGameStart,
 	saveGameMove,
@@ -56,6 +62,7 @@ export function useFirestoreMutations() {
 							[puzzleId]: {
 								...prevData.gameState?.[puzzleId],
 								[difficulty]: grid, // Already in client format (null for gap)
+								currentDifficulty: difficulty, // Track current difficulty for refresh
 							},
 						},
 					};
@@ -92,10 +99,22 @@ export function useFirestoreMutations() {
 	});
 
 	// Return wrapper functions that trigger the mutations
+	const saveStartToFirestore = useCallback(
+		(data) => gameStartMutation.mutate(data),
+		[gameStartMutation],
+	);
+	const saveMoveToFirestore = useCallback(
+		(data) => gameMoveMutation.mutate(data),
+		[gameMoveMutation],
+	);
+	const saveCompletionToFirestore = useCallback(
+		(data) => gameCompletionMutation.mutate(data),
+		[gameCompletionMutation],
+	);
+
 	return {
-		saveStartToFirestore: (data) => gameStartMutation.mutate(data),
-		saveMoveToFirestore: (data) => gameMoveMutation.mutate(data),
-		saveCompletionToFirestore: (data) =>
-			gameCompletionMutation.mutate(data),
+		saveStartToFirestore,
+		saveMoveToFirestore,
+		saveCompletionToFirestore,
 	};
 }

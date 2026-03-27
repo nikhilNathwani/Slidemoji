@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 import LandingPage from "./components/landing/LandingPage";
 import Header from "./components/Header";
@@ -12,6 +12,7 @@ import { useUser } from "./hooks/useUser";
 import { usePuzzle } from "./hooks/usePuzzle";
 import { usePreference } from "./hooks/usePreference";
 import { useGameState } from "./hooks/useGameState";
+import { cleanupOldPuzzleData } from "./utils/localStorage";
 
 // App-level preference defaults
 const DEFAULT_DARK_MODE = false;
@@ -22,6 +23,11 @@ function App() {
 	const { user } = useAuth();
 
 	const [puzzleId, setPuzzleId] = useState(() => getLatestPuzzleId());
+
+	// Clean up old puzzle data from localStorage on mount
+	useEffect(() => {
+		cleanupOldPuzzleData(puzzleId);
+	}, [puzzleId]);
 
 	// Synced preferences (localStorage for signed-out, Firestore for signed-in)
 	const [darkMode, setDarkMode] = usePreference(
@@ -101,9 +107,14 @@ function App() {
 
 			<Game
 				key={`${puzzleId}-${gameState.currentDifficulty}`}
-				puzzleMetadata={puzzleMetadata}
-				grid={gameState[gameState.currentDifficulty]}
-				difficulty={gameState.currentDifficulty}
+				puzzleId={puzzleId}
+				emoji={puzzleMetadata.emoji}
+				emojiName={puzzleMetadata.emojiName}
+				initialGrid={
+					puzzleMetadata.initialGrids[gameState.currentDifficulty]
+				}
+				currentGrid={gameState[gameState.currentDifficulty]}
+				currentDifficulty={gameState.currentDifficulty}
 				setGameState={setGameState}
 				hasNumbersShown={showNumbers}
 				hasSoundEnabled={soundEnabled}

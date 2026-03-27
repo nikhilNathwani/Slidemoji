@@ -15,6 +15,36 @@
 
 import { DIFFICULTY } from "../constants";
 
+/**
+ * Clean up old puzzle data from localStorage
+ * Only keeps data for the current puzzle ID (today's puzzle)
+ * Call this on app initialization
+ */
+export const cleanupOldPuzzleData = (currentPuzzleId) => {
+	const keysToRemove = [];
+
+	// Scan all localStorage keys
+	for (let i = 0; i < localStorage.length; i++) {
+		const key = localStorage.key(i);
+		if (key && key.startsWith("signedOutProgress_")) {
+			const puzzleId = parseInt(key.replace("signedOutProgress_", ""));
+			// Remove if not current puzzle
+			if (puzzleId !== currentPuzzleId) {
+				keysToRemove.push(key);
+			}
+		}
+	}
+
+	// Remove old entries
+	keysToRemove.forEach((key) => localStorage.removeItem(key));
+
+	if (keysToRemove.length > 0) {
+		console.log(
+			`[localStorage] Cleaned up ${keysToRemove.length} old puzzle entries`,
+		);
+	}
+};
+
 // ===== Game Completion Storage =====
 
 // Get localStorage key for signed-out progress

@@ -9,9 +9,12 @@ import { useAuth } from "../../hooks/useAuth";
 import { checkWin } from "../../utils/gridHelpers";
 
 function Game({
-	puzzleMetadata, // { id, emoji, emojiName, initialGrids: { normal, hard } }
-	grid, // Current grid array
-	difficulty, // Current difficulty ("normal"|"hard")
+	puzzleId, // Puzzle ID number
+	emoji, // Puzzle emoji
+	emojiName, // Emoji name (e.g., "Jack-O-Lantern")
+	initialGrid, // Initial grid for current difficulty
+	currentGrid, // Current grid array
+	currentDifficulty, // Current difficulty ("normal"|"hard")
 	setGameState, // Function to update game state: setGameState({ grid?, currentDifficulty? })
 	hasNumbersShown,
 	hasSoundEnabled,
@@ -19,9 +22,6 @@ function Game({
 	isAppDialogOpen = false,
 }) {
 	const { user } = useAuth();
-
-	// Extract data from puzzleMetadata
-	const puzzleId = puzzleMetadata.id;
 
 	// Dialog state
 	const [showRestartDialog, setShowRestartDialog] = useState(false);
@@ -48,7 +48,7 @@ function Game({
 	const handleRestartConfirm = () => {
 		setShowRestartDialog(false);
 		setGameState({
-			grid: puzzleMetadata.initialGrids[difficulty],
+			grid: initialGrid,
 		});
 	};
 
@@ -58,16 +58,16 @@ function Game({
 				<div className={styles.trophyContainer}>
 					<Trophy
 						trophyNum={String(puzzleId).padStart(3, "0")}
-						trophyEmoji={puzzleMetadata.emoji}
-						trophyName={puzzleMetadata.emojiName}
-						isSolved={checkWin(grid)}
-						difficulty={difficulty}
+						trophyEmoji={emoji}
+						trophyName={emojiName}
+						isSolved={checkWin(currentGrid)}
+						difficulty={currentDifficulty}
 					/>
 				</div>
 				<Grid
-					grid={grid}
-					emoji={puzzleMetadata.emoji}
-					hasNumbersShown={hasNumbersShown && !checkWin(grid)}
+					grid={currentGrid}
+					emoji={emoji}
+					hasNumbersShown={hasNumbersShown && !checkWin(currentGrid)}
 					hasSoundEnabled={hasSoundEnabled}
 					onMove={handleMove}
 					onWin={handleSolve}
@@ -76,7 +76,7 @@ function Game({
 
 				<div className={styles.restartContainer}>
 					<GameActionButton
-						isSolved={checkWin(grid)}
+						isSolved={checkWin(currentGrid)}
 						user={user}
 						onOpenStats={onOpenStats}
 						onRestart={handleRestartClick}
@@ -93,8 +93,10 @@ function Game({
 			<WinDialog
 				isOpen={showWinDialog}
 				onClose={() => setShowWinDialog(false)}
-				puzzleMetadata={puzzleMetadata}
-				difficulty={difficulty}
+				puzzleId={puzzleId}
+				emoji={emoji}
+				emojiName={emojiName}
+				difficulty={currentDifficulty}
 			/>
 		</>
 	);

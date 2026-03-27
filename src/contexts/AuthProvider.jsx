@@ -3,6 +3,7 @@
  *
  * Wraps the entire app to provide global access to user authentication state.
  * Listens to Firebase auth changes and automatically updates when user signs in/out.
+ * Also handles localStorage to Firestore migration when users sign in.
  *
  * Usage: Wrap your app in main.jsx:
  *   <AuthProvider>
@@ -20,7 +21,8 @@ import {
 	signOut as firebaseSignOut,
 } from "../backend";
 import { AuthContext } from "./authContext";
-
+import { migrateLocalStorageToFirestore } from "../utils/migrationHelpers";
+import { getLatestPuzzleId } from "../utils/puzzleUtils";
 /**
  * AuthProvider component - manages authentication state for the entire app
  *
@@ -65,6 +67,25 @@ export default function AuthProvider({ children }) {
 		try {
 			setLoading(true);
 			const firebaseUser = await firebaseSignIn();
+
+			// Migrate localStorage data to Firestore after successful sign-in
+			// Only migrate current puzzle (today's puzzle) to avoid retroactive trophies
+			if (firebaseUser?.uid) {
+				try {
+					const currentPuzzleId = getLatestPuzzleId();
+					await migrateLocalStorageToFirestore(
+						firebaseUser.uid,
+						currentPuzzleId,
+					);
+				} catch (migrationError) {
+					console.error(
+						"[Migration] Failed to migrate localStorage:",
+						migrationError,
+					);
+					// Don't throw - sign-in was successful even if migration failed
+				}
+			}
+
 			// User state will be set by onAuthChange listener above
 			// No need to call setUser here - listener will handle it
 			return firebaseUser;
