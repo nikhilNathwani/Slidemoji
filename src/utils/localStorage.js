@@ -80,6 +80,24 @@ export const getLocalCompletion = (puzzleId) => {
 	return parsed;
 };
 
+// Save signed-out grid state to localStorage (in-progress or solved)
+// Stores the actual grid so signing in preserves progress
+export const saveLocalGameState = (puzzleId, difficulty, grid) => {
+	const existing = getLocalCompletion(puzzleId);
+
+	localStorage.setItem(
+		getLocalStorageKey(puzzleId),
+		JSON.stringify({
+			...existing,
+			currentDifficulty: difficulty,
+			grids: {
+				...existing?.grids,
+				[difficulty]: grid,
+			},
+		}),
+	);
+};
+
 // Save signed-out solved puzzle to localStorage
 // Tracks both difficulties separately and remembers current difficulty
 export const saveLocalSolvedPuzzle = (puzzleId, difficulty) => {

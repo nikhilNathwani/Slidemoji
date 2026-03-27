@@ -14,8 +14,7 @@ export {
 	getUserData,
 	createUserData,
 	updateUserPreferences,
-	saveGameStart,
-	saveGameMove,
-	saveGameCompletion,
+	saveGameState,
+	saveSolvedPuzzle,
 	cleanupOldGames,
 } from "./database";
