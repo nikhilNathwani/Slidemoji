@@ -26,7 +26,10 @@ import {
 } from "../constants";
 import { useAuth } from "./useAuth";
 import { useFirestoreMutations } from "./useFirestoreMutations";
-import { getLocalCompletion, saveLocalSolvedPuzzle } from "../utils/localStorage";
+import {
+	getLocalCompletion,
+	saveLocalSolvedPuzzle,
+} from "../utils/localStorage";
 import { getSolvedState, checkWin } from "../utils/gridHelpers";
 import { convertGridFromFirestore } from "../utils/puzzleUtils";
 
@@ -135,44 +138,30 @@ export function useGameState({ puzzleMetadata, userData }) {
 						: puzzleMetadata.initialGrids.hard;
 
 				// Infer action from grid state
-				const isInitialGrid =
-					JSON.stringify(grid) === JSON.stringify(initialGrid);
-				const isSolvedGrid = checkWin(grid);
+			const isSolvedGrid = checkWin(grid);
 
-				// Save to Firestore/localStorage based on action
-				if (isInitialGrid) {
-					// Grid matches initial state → restart
-					// Save to gameState[puzzleId][difficulty]
-					if (user) {
-						saveGameStateToFirestore({
-							puzzleId,
-							grid: initialGrid,
-							difficulty,
-						});
-					}
-					// Signed-out users don't persist restarts
-				} else if (isSolvedGrid) {
-					// Grid is solved → save to solvedPuzzles[puzzleId][difficulty]
-					if (user) {
-						saveSolvedPuzzleToFirestore({
-							puzzleId,
-							difficulty,
-						});
-					} else {
-						// Signed out: save to localStorage for trophy display
-						saveLocalSolvedPuzzle(puzzleId, difficulty);
-					}
+			// Save to Firestore/localStorage based on action
+			if (isSolvedGrid) {
+				// Grid is solved → save to solvedPuzzles[puzzleId][difficulty]
+				if (user) {
+					saveSolvedPuzzleToFirestore({
+						puzzleId,
+						difficulty,
+					});
 				} else {
-					// Grid is in progress → save to gameState[puzzleId][difficulty]
-					if (user) {
-						saveGameStateToFirestore({
-							puzzleId,
-							grid,
-							difficulty,
-						});
-					}
-					// Signed-out users don't persist moves (incentive to sign in)
+					// Signed out: save to localStorage for trophy display
+					saveLocalSolvedPuzzle(puzzleId, difficulty);
 				}
+			} else {
+				// Grid is in progress or restarted → save to gameState[puzzleId][difficulty]
+				if (user) {
+					saveGameStateToFirestore({
+						puzzleId,
+						grid,
+						difficulty,
+					});
+				}
+				// Signed-out users don't persist non-solved grids (incentive to sign in)
 
 				// Update React state (not localStorage - that's handled above for signed-out users)
 				setGameStateInternal((prev) => ({
