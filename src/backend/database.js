@@ -182,66 +182,21 @@ export async function updateUserPreferences(userId, preferences) {
  * @param {string} difficulty - Difficulty level (DIFFICULTY.NORMAL or DIFFICULTY.HARD)
  * @returns {Promise<Object>} Updated gameState and stats
  */
-export async function saveGameStart(
-	userId,
-	puzzleId,
-	initialGrid,
-	difficulty = DEFAULT_DIFFICULTY,
-) {
-	if (!userId) {
-		throw new Error("User ID is required");
-	}
-	if (!initialGrid || !Array.isArray(initialGrid)) {
-		throw new Error("Initial grid is required and must be an array");
-	}
-
-	try {
-		const userData = await getUserData(userId);
-		if (!userData) {
-			throw new Error("User data not found");
-		}
-
-		let gameState = userData.gameState || {};
-		// Ensure stats structure exists (in case user data was corrupted/deleted)
-		let stats = userData.stats
-			? { ...userData.stats }
-			: { solvedPuzzles: {} };
-		if (!stats.solvedPuzzles) {
-			stats.solvedPuzzles = {};
-		}
-
-		// Convert client format (null as gap) to Firestore format (0 as gap)
-		const firestoreGrid = initialGrid.map((v) => (v === null ? 0 : v));
-
-		// Initialize game state for this puzzle at this difficulty
-		// Structure: gameState[puzzleId][difficulty] = Array (grid directly)
-		// Also track currentDifficulty to determine which difficulty to show on next load
-		if (!gameState[puzzleId]) {
-			gameState[puzzleId] = {};
-		}
-		gameState[puzzleId][difficulty] = firestoreGrid;
-		gameState[puzzleId].currentDifficulty = difficulty;
-
-		// Save to Firestore
-		const userDocRef = doc(db, "users", userId);
-		await updateDoc(userDocRef, {
-			gameState,
-			updatedAt: serverTimestamp(),
-		});
-
-		return { gameState };
-	} catch (error) {
-		console.error("Error starting puzzle:", error);
-		throw error;
-	}
-}
-
 /**
  * Save game state (in-progress or restart)
  *
  * Stores the current grid state in Firestore when:
  * 1. User makes a move (in-progress game)
  * 2. User restarts puzzle (resets to initial state)
+ *
+ * Structure in Firestore:
+ * gameState[puzzleId] = {
+ *   normal: [grid array],
+ *   hard: [grid array],
+ *   currentDifficulty: "normal" | "hard"
+ * }
+ *
+ * Note: Uses dot notation for efficient updates (only updates the specific fields)
  *
  * @param {string} userId - Firebase Auth user ID
  * @param {number} puzzleId - Puzzle number (1-365)

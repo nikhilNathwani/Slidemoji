@@ -124,27 +124,37 @@ export function useGameState({ puzzleMetadata, userData }) {
 		({ grid, currentDifficulty: newDifficulty }) => {
 			if (!puzzleMetadata?.initialGrids) return;
 
+			// Helper: Save grid to Firestore or localStorage based on auth status
+			const saveGrid = (difficulty, gridToSave) => {
+				if (user) {
+					saveGameStateToFirestore({ puzzleId, grid: gridToSave, difficulty });
+				} else {
+					saveLocalGameState(puzzleId, difficulty, gridToSave);
+				}
+			};
+
+			// Helper: Save trophy to Firestore or localStorage based on auth status
+			const saveTrophy = (difficulty) => {
+				if (user) {
+					saveSolvedPuzzleToFirestore({ puzzleId, difficulty });
+				} else {
+					saveLocalSolvedPuzzle(puzzleId, difficulty);
+				}
+			};
+
 			// Mode 1: Difficulty switch (no grid provided)
 			if (newDifficulty && !grid) {
 				console.log("[useGameState] Difficulty switch:", {
 					newDifficulty,
 					currentGameState: gameState,
 				});
-				
+
 				const gridForDifficulty =
 					gameState?.[newDifficulty] ||
 					puzzleMetadata.initialGrids[newDifficulty];
-				
+
 				// Persist current grid for new difficulty
-				if (user) {
-					saveGameStateToFirestore({
-						puzzleId,
-						grid: gridForDifficulty,
-						difficulty: newDifficulty,
-					});
-				} else {
-					saveLocalGameState(puzzleId, newDifficulty, gridForDifficulty);
-				}
+				saveGrid(newDifficulty, gridForDifficulty);
 
 				// Update React state
 				setGameStateInternal((prev) => ({
@@ -167,20 +177,12 @@ export function useGameState({ puzzleMetadata, userData }) {
 					isSignedIn: !!user,
 				});
 
-				// Always save grid state (both signed-in and signed-out)
-				if (user) {
-					saveGameStateToFirestore({ puzzleId, grid, difficulty });
-				} else {
-					saveLocalGameState(puzzleId, difficulty, grid);
-				}
+				// Always save grid state
+				saveGrid(difficulty, grid);
 
 				// If solved, also save trophy
 				if (isSolved) {
-					if (user) {
-						saveSolvedPuzzleToFirestore({ puzzleId, difficulty });
-					} else {
-						saveLocalSolvedPuzzle(puzzleId, difficulty);
-					}
+					saveTrophy(difficulty);
 				}
 
 				// Update React state
