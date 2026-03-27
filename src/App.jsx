@@ -7,8 +7,10 @@ import SettingsDialog from "./components/dialogs/SettingsDialog";
 import StatsDialog from "./components/dialogs/StatsDialog";
 import ArchiveDialog from "./components/dialogs/ArchiveDialog";
 import { getLatestPuzzleId } from "./utils/puzzleUtils";
+import { DIFFICULTY, getDifficultySize } from "./constants";
 import { useAuth } from "./hooks/useAuth";
 import { useUser } from "./hooks/useUser";
+import { usePuzzle } from "./hooks/usePuzzle";
 import { usePreference } from "./hooks/usePreference";
 import { useGameState } from "./hooks/useGameState";
 
@@ -39,12 +41,36 @@ function App() {
 	// Fetch user data
 	const { data: userData, isLoading: isLoadingUser } = useUser(user?.uid);
 
-	// Load and manage game state (fetches puzzles, handles loading/saving)
-	const { gameState, setGameState, puzzleMetadata, isLoading: isLoadingGame } =
-		useGameState({
-			puzzleId,
-			userData,
-		});
+	// Fetch both puzzle difficulties
+	const { data: normalPuzzle, isLoading: isLoadingNormal } = usePuzzle(
+		puzzleId,
+		getDifficultySize(DIFFICULTY.NORMAL),
+	);
+	const { data: hardPuzzle, isLoading: isLoadingHard } = usePuzzle(
+		puzzleId,
+		getDifficultySize(DIFFICULTY.HARD),
+	);
+
+	// Construct puzzle metadata
+	const puzzleMetadata =
+		normalPuzzle && hardPuzzle
+			? {
+					id: puzzleId,
+					emoji: normalPuzzle.emoji,
+					emojiName: normalPuzzle.emojiName,
+					initialGrids: {
+						normal: normalPuzzle.initialGrid,
+						hard: hardPuzzle.initialGrid,
+					},
+				}
+			: null;
+
+	// Manage game state (loading/saving)
+	const [gameState, setGameState] = useGameState({
+		puzzleId,
+		puzzleMetadata,
+		userData,
+	});
 
 	// Show Page / Dialog
 	const [showLandingPage, setShowLandingPage] = useState(true);
@@ -52,7 +78,12 @@ function App() {
 	const [showStatsDialog, setShowStatsDialog] = useState(false);
 	const [showArchiveDialog, setShowArchiveDialog] = useState(false);
 
-	const isLoading = isLoadingGame || (user && isLoadingUser);
+	const isLoading =
+		isLoadingNormal ||
+		isLoadingHard ||
+		(user && isLoadingUser) ||
+		!gameState ||
+		!puzzleMetadata;
 
 	if (showLandingPage) {
 		return (
