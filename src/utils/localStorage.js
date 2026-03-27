@@ -80,9 +80,9 @@ export const getLocalCompletion = (puzzleId) => {
 	return parsed;
 };
 
-// Save signed-out completion to localStorage
+// Save signed-out solved puzzle to localStorage
 // Tracks both difficulties separately and remembers current difficulty
-export const saveLocalCompletion = (puzzleId, difficulty) => {
+export const saveLocalSolvedPuzzle = (puzzleId, difficulty) => {
 	const existing = getLocalCompletion(puzzleId);
 
 	localStorage.setItem(

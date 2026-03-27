@@ -2,50 +2,32 @@
  * useFirestoreMutations - React Query mutations for Firestore game operations
  *
  * Encapsulates all the React Query mutation boilerplate for saving game data to Firestore.
- * Also handles the logic for determining what action to take (move/solve/restart) based on grid state.
- *
- * Now accepts gameState and puzzleMetadata to provide a unified updateGameState function.
+ * Function names mirror Firestore schema fields:
+ * - saveGameStateToFirestore → updates gameState[puzzleId]
+ * - saveSolvedPuzzleToFirestore → updates solvedPuzzles[puzzleId] + clears gameState
  *
  * Returns: {
- *   updateGameState: ({ grid?, currentDifficulty? }) => { action, params },
- *   saveStartToFirestore,
- *   saveMoveToFirestore,
- *   saveCompletionToFirestore
+ *   saveGameStateToFirestore, // Handles both start and move (both update gameState)
+ *   saveSolvedPuzzleToFirestore
  * }
  */
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "./useAuth";
 import { useCallback } from "react";
-import {
-	saveGameStart,
-	saveGameMove,
-	saveGameCompletion,
-} from "../backend/database";
+import { saveGameMove, saveGameCompletion } from "../backend/database";
 import { addPuzzleSolve } from "../utils/statsHelpers";
 
 export function useFirestoreMutations() {
 	const { user } = useAuth();
 	const queryClient = useQueryClient();
 
-	// React Query mutation for starting/restarting puzzles
-	const gameStartMutation = useMutation({
-		mutationFn: ({ puzzleId, initialGrid, difficulty }) => {
-			if (!user?.uid) return Promise.resolve();
-			return saveGameStart(user.uid, puzzleId, initialGrid, difficulty);
-		},
-		onError: (error) => {
-			console.error("Error starting puzzle:", error);
-		},
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["user", user?.uid] });
-		},
-	});
-
-	// React Query mutation for saving game state after moves
-	const gameMoveMutation = useMutation({
+	// React Query mutation for saving game state (handles both start and move)
+	// Both operations update gameState[puzzleId][difficulty]
+	const gameStateMutation = useMutation({
 		mutationFn: ({ puzzleId, grid, difficulty }) => {
 			if (!user?.uid) return Promise.resolve();
+			// saveGameMove handles both initial grids and in-progress grids
 			return saveGameMove(user.uid, puzzleId, { grid, difficulty });
 		},
 		onMutate: ({ puzzleId, grid, difficulty }) => {
@@ -76,8 +58,9 @@ export function useFirestoreMutations() {
 		},
 	});
 
-	// React Query mutation for saving completions
-	const gameCompletionMutation = useMutation({
+	// React Query mutation for saving solved puzzles
+	// Updates solvedPuzzles[puzzleId][difficulty] and clears gameState[puzzleId][difficulty]
+	const solvedPuzzleMutation = useMutation({
 		mutationFn: ({ puzzleId, difficulty }) => {
 			if (!user?.uid) return Promise.resolve();
 			return saveGameCompletion(user.uid, puzzleId, difficulty);
@@ -99,22 +82,17 @@ export function useFirestoreMutations() {
 	});
 
 	// Return wrapper functions that trigger the mutations
-	const saveStartToFirestore = useCallback(
-		(data) => gameStartMutation.mutate(data),
-		[gameStartMutation],
+	const saveGameStateToFirestore = useCallback(
+		(data) => gameStateMutation.mutate(data),
+		[gameStateMutation],
 	);
-	const saveMoveToFirestore = useCallback(
-		(data) => gameMoveMutation.mutate(data),
-		[gameMoveMutation],
-	);
-	const saveCompletionToFirestore = useCallback(
-		(data) => gameCompletionMutation.mutate(data),
-		[gameCompletionMutation],
+	const saveSolvedPuzzleToFirestore = useCallback(
+		(data) => solvedPuzzleMutation.mutate(data),
+		[solvedPuzzleMutation],
 	);
 
 	return {
-		saveStartToFirestore,
-		saveMoveToFirestore,
-		saveCompletionToFirestore,
+		saveGameStateToFirestore,
+		saveSolvedPuzzleToFirestore,
 	};
 }

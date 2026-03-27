@@ -10,7 +10,7 @@ import { saveGameCompletion } from "../backend/database";
 import { DIFFICULTY } from "../constants";
 
 /**
- * Migrate localStorage completions to Firestore for the current puzzle only
+ * Migrate localStorage solved puzzles to Firestore for the current puzzle only
  *
  * Only migrates today's puzzle to avoid retroactive trophy awards.
  * localStorage cleanup ensures only current puzzle exists anyway.
