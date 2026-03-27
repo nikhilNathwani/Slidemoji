@@ -125,67 +125,68 @@ export function useGameState({ puzzleMetadata, userData }) {
 			if (!puzzleMetadata?.initialGrids) return;
 
 			// Helper: Save grid to Firestore or localStorage based on auth status
-			const saveGrid = (difficulty, gridToSave) => {
-				if (user) {
-					saveGameStateToFirestore({ puzzleId, grid: gridToSave, difficulty });
-				} else {
-					saveLocalGameState(puzzleId, difficulty, gridToSave);
-				}
-			};
-
-			// Helper: Save trophy to Firestore or localStorage based on auth status
-			const saveTrophy = (difficulty) => {
-				if (user) {
-					saveSolvedPuzzleToFirestore({ puzzleId, difficulty });
-				} else {
-					saveLocalSolvedPuzzle(puzzleId, difficulty);
-				}
-			};
-
-			// Mode 1: Difficulty switch (no grid provided)
-			if (newDifficulty && !grid) {
-				console.log("[useGameState] Difficulty switch:", {
-					newDifficulty,
-					currentGameState: gameState,
-				});
-
-				const gridForDifficulty =
-					gameState?.[newDifficulty] ||
-					puzzleMetadata.initialGrids[newDifficulty];
-
-				// Persist current grid for new difficulty
-				saveGrid(newDifficulty, gridForDifficulty);
-
-				// Update React state
-				setGameStateInternal((prev) => ({
-					...prev,
-					currentDifficulty: newDifficulty,
-				}));
-				return;
-			}
-
-			// Mode 2: Grid update
-			if (grid) {
-				// Infer difficulty from grid length
-				const difficulty = getDifficultyFromGrid(grid);
-				const isSolved = checkWin(grid);
-
-				console.log("[useGameState] Grid update:", {
-					difficulty,
-					isSolved,
+		const saveGameState = (difficulty, grid) => {
+			if (user) {
+				saveGameStateToFirestore({
 					puzzleId,
-					isSignedIn: !!user,
+					grid,
+					difficulty,
 				});
+			} else {
+				saveLocalGameState(puzzleId, difficulty, grid);
+			}
+		};
 
-				// Always save grid state
-				saveGrid(difficulty, grid);
+		// Helper: Save trophy to Firestore or localStorage based on auth status
+		const saveSolvedPuzzle = (difficulty) => {
+			if (user) {
+				saveSolvedPuzzleToFirestore({ puzzleId, difficulty });
+			} else {
+				saveLocalSolvedPuzzle(puzzleId, difficulty);
+			}
+		};
 
-				// If solved, also save trophy
-				if (isSolved) {
-					saveTrophy(difficulty);
-				}
+		// Mode 1: Difficulty switch (no grid provided)
+		if (newDifficulty && !grid) {
+			console.log("[useGameState] Difficulty switch:", {
+				newDifficulty,
+				currentGameState: gameState,
+			});
 
-				// Update React state
+			// Persist current grid for new difficulty (inline fallback to initial)
+			saveGameState(
+				newDifficulty,
+				gameState?.[newDifficulty] ||
+					puzzleMetadata.initialGrids[newDifficulty],
+			);
+
+			// Update React state
+			setGameStateInternal((prev) => ({
+				...prev,
+				currentDifficulty: newDifficulty,
+			}));
+			return;
+		}
+
+		// Mode 2: Grid update
+		if (grid) {
+			// Infer difficulty from grid length
+			const difficulty = getDifficultyFromGrid(grid);
+			const isSolved = checkWin(grid);
+
+			console.log("[useGameState] Grid update:", {
+				difficulty,
+				isSolved,
+				puzzleId,
+				isSignedIn: !!user,
+			});
+
+			// Always save grid state
+			saveGameState(difficulty, grid);
+
+			// If solved, also save trophy
+			if (isSolved) {
+				saveSolvedPuzzle(difficulty);
 				setGameStateInternal((prev) => ({
 					...prev,
 					[difficulty]: grid,
