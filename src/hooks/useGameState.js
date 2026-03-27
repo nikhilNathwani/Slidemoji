@@ -1,16 +1,18 @@
 /**
  * useGameState - Unified hook for game state loading and saving
  *
- * Combines game state loading and saving into a single hook with a useState-like API:
+ * Combines puzzle fetching, game state loading, and saving into a single self-contained hook.
  *
- * const [gameState, setGameState] = useGameState({ puzzleId, normalPuzzle, hardPuzzle, userData, currentDifficulty })
+ * const { gameState, setGameState, puzzleMetadata, isLoading } = useGameState({ puzzleId, userData })
  *
- * gameState: { normal: grid, hard: grid, currentDifficulty }
- * setGameState: ({ grid?, currentDifficulty? }) => void
- *   - setGameState({ grid }) - Updates grid (infers difficulty from length) and saves move/restart/solve
- *   - setGameState({ currentDifficulty }) - Switches which difficulty is displayed
+ * Returns:
+ * - gameState: { normal: grid, hard: grid, currentDifficulty }
+ * - setGameState: ({ grid?, currentDifficulty? }) => void
+ * - puzzleMetadata: { id, emoji, emojiName, initialGrids: { normal, hard } }
+ * - isLoading: boolean
  *
  * This hook:
+ * - Fetches both puzzle difficulties
  * - Loads saved game state from Firestore or localStorage
  * - Checks for solved puzzles
  * - Handles migrations from localStorage to Firestore
@@ -21,10 +23,12 @@
 import { useState, useMemo, useEffect } from "react";
 import {
 	DIFFICULTY,
+	DEFAULT_DIFFICULTY,
 	getDifficultySize,
 	getDifficultyFromGrid,
 } from "../constants";
 import { useAuth } from "./useAuth";
+import { usePuzzle } from "./usePuzzle";
 import { useFirestoreMutations } from "./useFirestoreMutations";
 import {
 	getLocalCompletion,
@@ -34,19 +38,37 @@ import {
 import { getSolvedState, checkWin } from "../utils/gridHelpers";
 import { convertGridFromFirestore } from "../utils/puzzleUtils";
 
-export function useGameState({
-	puzzleId,
-	normalPuzzle,
-	hardPuzzle,
-	userData,
-	currentDifficulty,
-}) {
+export function useGameState({ puzzleId, userData }) {
 	const { user } = useAuth();
 	const {
 		saveStartToFirestore,
 		saveMoveToFirestore,
 		saveCompletionToFirestore,
 	} = useFirestoreMutations();
+
+	// Fetch both puzzle difficulties
+	const { data: normalPuzzle, isLoading: isLoadingNormal } = usePuzzle(
+		puzzleId,
+		getDifficultySize(DIFFICULTY.NORMAL),
+	);
+	const { data: hardPuzzle, isLoading: isLoadingHard } = usePuzzle(
+		puzzleId,
+		getDifficultySize(DIFFICULTY.HARD),
+	);
+
+	// Construct puzzle metadata
+	const puzzleMetadata = useMemo(() => {
+		if (!normalPuzzle || !hardPuzzle) return null;
+		return {
+			id: puzzleId,
+			emoji: normalPuzzle.emoji,
+			emojiName: normalPuzzle.emojiName,
+			initialGrids: {
+				normal: normalPuzzle.initialGrid,
+				hard: hardPuzzle.initialGrid,
+			},
+		};
+	}, [puzzleId, normalPuzzle, hardPuzzle]);
 
 	// Compute initial state from Firestore/localStorage (only on mount or when data changes)
 	const initialGameStateData = useMemo(() => {
@@ -113,14 +135,14 @@ export function useGameState({
 			gameState: {
 				normal: normalState.grid,
 				hard: hardState.grid,
-				currentDifficulty,
+				currentDifficulty: DEFAULT_DIFFICULTY,
 			},
 			shouldMigrateInternal: {
 				normal: normalState.shouldMigrate,
 				hard: hardState.shouldMigrate,
 			},
 		};
-	}, [normalPuzzle, hardPuzzle, userData, puzzleId, currentDifficulty, user]);
+	}, [normalPuzzle, hardPuzzle, userData, puzzleId, user]);
 
 	// Use state to maintain current grid values (updates immediately on moves)
 	// Initialize directly from computed data - no need for sync effect
@@ -304,5 +326,8 @@ export function useGameState({
 		saveStartToFirestore,
 	]);
 
-	return [gameState, setGameState];
+	// Loading state
+	const isLoading = isLoadingNormal || isLoadingHard || !gameState || !puzzleMetadata;
+
+	return { gameState, setGameState, puzzleMetadata, isLoading };
 }
