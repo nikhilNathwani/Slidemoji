@@ -13,7 +13,10 @@ import {
 	onAuthStateChanged,
 } from "firebase/auth";
 import { auth } from "./firebaseConfig";
-import { getUserData, createUserData } from "./database";
+import {
+	getUserDataFromFirestore,
+	createUserDataInFirestore,
+} from "../storage";
 
 // Google OAuth provider for Firebase Authentication
 const googleProvider = new GoogleAuthProvider();
@@ -38,9 +41,9 @@ export async function signInWithGoogle() {
 		const user = result.user;
 
 		// First-time users: Create Firestore document with default preferences and stats
-		const userData = await getUserData(user.uid);
+		const userData = await getUserDataFromFirestore(user.uid);
 		if (!userData) {
-			await createUserData(user.uid, {
+			await createUserDataInFirestore(user.uid, {
 				email: user.email,
 				displayName: user.displayName,
 			});

@@ -16,12 +16,12 @@ export function getLatestPuzzleId() {
 }
 
 /**
- * Convert grid array from Firestore format to client format
- * Firestore uses 0 for gap, client uses null for gap
- * @param {Array} grid - Grid array from Firestore
+ * Convert grid array from storage format (0 for gap) to client format (null for gap)
+ * Works for both Firestore and localStorage (both use 0 for gap now)
+ * @param {Array} grid - Grid array from storage
  * @returns {Array|null} Grid array with gaps as null, or null if invalid input
  */
-export function convertGridFromFirestore(grid) {
+export function convertGridFromStorage(grid) {
 	if (!grid || !Array.isArray(grid)) return null;
 	return grid.map((v) => (v === 0 ? null : v));
 }
@@ -46,12 +46,10 @@ export function convertPuzzleFromFirestore(puzzleMetadata, gridSize = 3) {
 		// Load the grid for the requested size
 		const gridKey = gridSize.toString();
 		if (converted[gridKey]) {
-			converted.initialGrid = convertGridFromFirestore(
-				converted[gridKey],
-			);
+			converted.initialGrid = convertGridFromStorage(converted[gridKey]);
 		} else {
 			// Fallback to 3x3 if requested size doesn't exist
-			converted.initialGrid = convertGridFromFirestore(converted["3"]);
+			converted.initialGrid = convertGridFromStorage(converted["3"]);
 		}
 		// Keep original fields for reference
 		converted.grid3x3 = converted["3"];
@@ -59,7 +57,7 @@ export function convertPuzzleFromFirestore(puzzleMetadata, gridSize = 3) {
 	}
 	// Handle new schema: puzzle.initialGrid (backward compatibility)
 	else if (converted.initialGrid) {
-		converted.initialGrid = convertGridFromFirestore(converted.initialGrid);
+		converted.initialGrid = convertGridFromStorage(converted.initialGrid);
 	}
 
 	return converted;

@@ -12,8 +12,8 @@
  */
 
 import { useQuery } from "@tanstack/react-query";
-import { getUserData } from "../backend/database";
-import { convertGridFromFirestore } from "../utils/puzzleUtils";
+import { getUserDataFromFirestore } from "../storage";
+import { convertGridFromStorage } from "../utils/puzzleUtils";
 
 export function useUser(userId) {
 	return useQuery({
@@ -29,7 +29,7 @@ export function useUser(userId) {
 
 			// Fetch from Firestore
 			try {
-				const data = await getUserData(userId);
+				const data = await getUserDataFromFirestore(userId);
 
 				// Convert saved game grids from Firestore format (0 for gap) to client format (null for gap)
 				// Structure: gameState[puzzleId][difficulty] = Array (grid directly)
@@ -40,7 +40,7 @@ export function useUser(userId) {
 								data.gameState[puzzleId][difficulty];
 							if (Array.isArray(savedGrid)) {
 								data.gameState[puzzleId][difficulty] =
-									convertGridFromFirestore(savedGrid);
+									convertGridFromStorage(savedGrid);
 							}
 						}
 					}

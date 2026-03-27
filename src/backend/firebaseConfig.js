@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { initializeFirestore, persistentLocalCache } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
 // Firebase configuration from environment variables
@@ -24,8 +24,11 @@ if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialize Firebase services
-export const db = getFirestore(app);
+// Initialize Firestore with offline persistence
+// This enables automatic offline caching and sync for signed-in users
+export const db = initializeFirestore(app, {
+	localCache: persistentLocalCache(),
+});
 export const auth = getAuth(app);
 
 export default app;

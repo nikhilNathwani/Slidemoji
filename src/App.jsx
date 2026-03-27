@@ -12,7 +12,8 @@ import { useUser } from "./hooks/useUser";
 import { usePuzzle } from "./hooks/usePuzzle";
 import { usePreference } from "./hooks/usePreference";
 import { useGameState } from "./hooks/useGameState";
-import { cleanupOldPuzzleData } from "./utils/localStorage";
+import { cleanupOldPuzzleData } from "./storage";
+import { useMemo } from "react";
 
 // App-level preference defaults
 const DEFAULT_DARK_MODE = false;
@@ -45,6 +46,20 @@ function App() {
 
 	// Fetch user data
 	const { data: userData, isLoading: isLoadingUser } = useUser(user?.uid);
+
+	// Compute solvedPuzzles from gameState for backward compatibility with components
+	const solvedPuzzles = useMemo(() => {
+		if (!userData?.gameState) return {};
+		return Object.entries(userData.gameState).reduce(
+			(acc, [puzzleId, state]) => {
+				if (state?.solved) {
+					acc[puzzleId] = state.solved;
+				}
+				return acc;
+			},
+			{},
+		);
+	}, [userData]);
 
 	// Fetch puzzle (returns both difficulty grids in one call)
 	const { data: puzzleMetadata, isLoading: isLoadingPuzzle } =
@@ -135,13 +150,13 @@ function App() {
 				onDifficultyChange={(diff) =>
 					setGameState({ currentDifficulty: diff })
 				}
-				isPuzzleSolved={!!userData?.stats?.solvedPuzzles?.[puzzleId]}
+				isPuzzleSolved={!!solvedPuzzles?.[puzzleId]}
 			/>
 
 			<ArchiveDialog
 				isOpen={showArchiveDialog}
 				onClose={() => setShowArchiveDialog(false)}
-				solvedPuzzles={userData?.stats?.solvedPuzzles}
+				solvedPuzzles={solvedPuzzles}
 				currentPuzzleId={puzzleId}
 				onPuzzleSelect={setPuzzleId}
 			/>
@@ -149,7 +164,7 @@ function App() {
 			<StatsDialog
 				isOpen={showStatsDialog}
 				onClose={() => setShowStatsDialog(false)}
-				solvedPuzzles={userData?.stats?.solvedPuzzles}
+				solvedPuzzles={solvedPuzzles}
 				currentPuzzleId={puzzleId}
 			/>
 		</div>

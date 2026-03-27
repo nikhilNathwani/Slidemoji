@@ -8,13 +8,3 @@ export {
 	onAuthChange,
 	getCurrentUser,
 } from "./auth";
-
-// Database functions
-export {
-	getUserData,
-	createUserData,
-	updateUserPreferences,
-	saveGameState,
-	saveSolvedPuzzle,
-	cleanupOldGames,
-} from "./database";

@@ -21,7 +21,7 @@ import {
 	signOut as firebaseSignOut,
 } from "../backend";
 import { AuthContext } from "./authContext";
-import { migrateLocalStorageToFirestore } from "../utils/migrationHelpers";
+import { migrateLocalStorageToFirestore } from "../storage";
 import { getLatestPuzzleId } from "../utils/puzzleUtils";
 /**
  * AuthProvider component - manages authentication state for the entire app
