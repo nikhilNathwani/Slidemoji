@@ -213,29 +213,28 @@ export async function mergeAnonymousDataToGoogle(
 
 		// If no anonymous data, nothing to merge
 		if (!anonymousData || !anonymousData.gameState) {
-			console.log(
-				"[Firestore] No anonymous data to merge, skipping",
-			);
+			console.log("[Firestore] No anonymous data to merge, skipping");
 			return;
 		}
 
 		const googleDocRef = doc(db, "users", googleUserId);
 
-		// Case 1: Google user has no Firestore document yet (first time signing in with this Google account)
-		if (!googleData) {
+		// Note: First-time Google sign-in (no Firestore doc) is handled in auth.js try block.
+		// This function is ONLY called when linkWithCredential fails (credential-already-in-use).
+		// That means Google account already exists with data.
+		if (!googleData || !googleData.gameState) {
 			console.log(
-				"[Firestore] Creating new Google account with anonymous data",
+				"[Firestore] Google user has no gameState, copying all anonymous data",
 			);
-			await setDoc(googleDocRef, {
-				...anonymousData,
-				uid: googleUserId, // Update to Google UID
-				isAnonymous: false,
+			// Google user exists but has no game data - copy everything from anonymous
+			await updateDoc(googleDocRef, {
+				gameState: anonymousData.gameState,
 				updatedAt: serverTimestamp(),
 			});
 			return;
 		}
 
-		// Case 2: Google user has existing data - smart merge
+		// Google user has existing game data - smart merge (don't overwrite)
 		console.log("[Firestore] Merging puzzle data intelligently");
 
 		// Merge gameState: Google's puzzles + anonymous's new puzzles

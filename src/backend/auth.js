@@ -134,8 +134,8 @@ export async function signInWithGoogle() {
 
 		return user;
 	} catch (error) {
-		// Special case: User already has a Google account
-		// Can't link anonymous account, need to merge data manually
+		// Special case: User already has a Google account (can't link)
+		// This is a normal scenario - e.g. user got signed out and is signing back in
 		if (
 			error.code === "auth/credential-already-in-use" ||
 			error.code === "auth/email-already-in-use"
@@ -147,12 +147,48 @@ export async function signInWithGoogle() {
 			try {
 				const anonymousUserId = currentUser.uid;
 
-				// Sign out anonymous user (don't wait for new anonymous user)
+				// Don't sign out yet! We need access to anonymous data.
+				// Instead, get the existing Google user from the error
+				const existingCredential = error.customData?._tokenResponse;
+				if (!existingCredential) {
+					// Fallback: Sign out and sign in again
+					// This risks popup blocker but is rare
+					await firebaseSignOut(auth);
+					const result = await signInWithPopup(auth, googleProvider);
+					const googleUser = result.user;
+
+					// Merge anonymous user's data into Google user's account
+					const { mergeAnonymousDataToGoogle } =
+						await import("./firestore.js");
+					await mergeAnonymousDataToGoogle(
+						anonymousUserId,
+						googleUser.uid,
+					);
+
+					console.log(
+						"[Auth] Successfully merged and signed in:",
+						googleUser.uid,
+					);
+					return googleUser;
+				}
+
+				// Use the existing credential from the error (avoids second popup)
+				console.log(
+					"[Auth] Using credential from error to avoid popup blocker",
+				);
+				const googleCredential =
+					GoogleAuthProvider.credential(existingCredential.idToken);
+
+				// Sign out anonymous user
 				await firebaseSignOut(auth);
 
-				// Sign in with existing Google account
-				// Use signInWithRedirect to avoid popup blocker after failed linkWithCredential
-				const result = await signInWithPopup(auth, googleProvider);
+				// Sign in with the credential from the error
+				const { signInWithCredential } =
+					await import("firebase/auth");
+				const result = await signInWithCredential(
+					auth,
+					googleCredential,
+				);
 				const googleUser = result.user;
 
 				// Merge anonymous user's data into Google user's account

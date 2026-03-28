@@ -131,3 +131,26 @@ export async function batchSavePuzzles(puzzles) {
 		throw error;
 	}
 }
+
+/**
+ * Extract solved puzzles from user data
+ * Returns an object with puzzleId as key and solved difficulties as value
+ * Example: { 87: { normal: true, hard: true }, 86: { normal: true } }
+ *
+ * @param {Object} userData - User data from Firestore
+ * @returns {Object} Solved puzzles object
+ */
+export function getSolvedPuzzlesFromUserData(userData) {
+	if (!userData?.gameState) return {};
+
+	const solvedPuzzles = {};
+
+	// Iterate through all puzzles in gameState
+	for (const [puzzleId, puzzleData] of Object.entries(userData.gameState)) {
+		if (puzzleData?.solved) {
+			solvedPuzzles[puzzleId] = puzzleData.solved;
+		}
+	}
+
+	return solvedPuzzles;
+}

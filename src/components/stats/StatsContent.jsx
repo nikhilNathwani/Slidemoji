@@ -17,14 +17,7 @@ function StatsContent({ showTitle = false, solvedPuzzles, currentPuzzleId }) {
 			{/* Anonymous users: Show sign-in upsell */}
 			{!user || user.isAnonymous ? (
 				<div className={styles.statsSignin}>
-					{/* Show trophy count even for anonymous users (motivating!) */}
-					{showTitle && (
-						<TrophyCaseTitle
-							numEarnedTrophies={numEarnedTrophies}
-							numTotalTrophies={numTotalPuzzles}
-							isDialogHeader={false}
-						/>
-					)}
+						{/* Don't show trophy title here - "Save Your Trophies" is the header */}
 					<h3 className={styles.statsSigninTitle}>
 						Save Your Trophies
 					</h3>

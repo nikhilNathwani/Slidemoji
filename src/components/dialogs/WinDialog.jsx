@@ -3,6 +3,9 @@ import Trophy from "../common/Trophy";
 import StatsContent from "../stats/StatsContent";
 import styles from "./WinDialog.module.css";
 import { FontAwesomeIcon } from "../../utils/icons";
+import { useAuth } from "../../hooks/useAuth";
+import { useUser } from "../../hooks/useUser";
+import { getSolvedPuzzlesFromUserData } from "../../utils/puzzleUtils";
 
 function WinDialog({
 	isOpen,
@@ -12,6 +15,9 @@ function WinDialog({
 	emojiName,
 	difficulty,
 }) {
+	const { user } = useAuth();
+	const { data: userData } = useUser(user?.uid);
+	const solvedPuzzles = getSolvedPuzzlesFromUserData(userData);
 	const handleShare = () => {
 		const paddedId = String(puzzleId).padStart(3, "0");
 		const shareText = `Slidemoji #${paddedId} 
@@ -50,7 +56,11 @@ Play at slidemoji.vercel.app`;
 
 				<div className={styles.winDivider}></div>
 
-				<StatsContent showTitle={true} />
+				<StatsContent
+					showTitle={true}
+					solvedPuzzles={solvedPuzzles}
+					currentPuzzleId={puzzleId}
+				/>
 			</div>
 		</Dialog>
 	);
