@@ -3,8 +3,18 @@ export { default as app, db, auth } from "./firebaseConfig";
 
 // Authentication functions
 export {
+	signInAnonymouslyIfNeeded,
 	signInWithGoogle,
 	signOut,
 	onAuthChange,
 	getCurrentUser,
 } from "./auth";
+
+// Firestore database operations
+export {
+	getFirestoreUserData,
+	createFirestoreUserData,
+	updateFirestoreUserProfile,
+	updateFirestorePreferences,
+	saveFirestoreGameState,
+} from "./firestore";

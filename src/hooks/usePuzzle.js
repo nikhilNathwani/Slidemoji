@@ -1,8 +1,8 @@
 /**
- * usePuzzle - Custom hook for fetching puzzle data from Firestore
+ * usePuzzle - Fetch puzzle data from Firestore
  *
- * Wraps TanStack Query to provide puzzle definition (emoji, initial grids for both difficulties).
- * Automatically caches puzzles (same puzzle used by all users, so caching is great!).
+ * Simple hook for fetching puzzle definition (emoji, initial grids for both difficulties).
+ * Firestore offline persistence handles caching automatically.
  *
  * @param {number} puzzleId - Puzzle ID to fetch
  * @returns {Object} { data: { id, emoji, emojiName, initialGrids: { normal, hard } }, isLoading, error }
@@ -11,29 +11,41 @@
  *   const { data: puzzleMetadata, isLoading } = usePuzzle(puzzleId);
  */
 
-import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
 import {
 	getPuzzleById,
 	convertPuzzleFromFirestore,
 } from "../utils/puzzleUtils";
 
 export function usePuzzle(puzzleId) {
-	return useQuery({
-		// Unique cache key for this puzzle
-		queryKey: ["puzzle", puzzleId],
+	const [data, setData] = useState(null);
+	const [isLoading, setIsLoading] = useState(true);
+	const [error, setError] = useState(null);
 
-		// Fetch function
-		queryFn: async () => {
-			try {
-				const data = await getPuzzleById(puzzleId);
-				if (!data) return null;
+	useEffect(() => {
+		if (!puzzleId) {
+			setData(null);
+			setIsLoading(false);
+			return;
+		}
+
+		setIsLoading(true);
+		setError(null);
+
+		getPuzzleById(puzzleId)
+			.then((puzzleData) => {
+				if (!puzzleData) {
+					setData(null);
+					setIsLoading(false);
+					return;
+				}
 
 				// Convert both grid sizes (fetch once, return both)
-				const normalPuzzle = convertPuzzleFromFirestore(data, 3);
-				const hardPuzzle = convertPuzzleFromFirestore(data, 4);
+				const normalPuzzle = convertPuzzleFromFirestore(puzzleData, 3);
+				const hardPuzzle = convertPuzzleFromFirestore(puzzleData, 4);
 
 				// Return both grids in a unified format
-				return {
+				setData({
 					id: puzzleId,
 					emoji: normalPuzzle.emoji,
 					emojiName: normalPuzzle.emojiName,
@@ -41,17 +53,15 @@ export function usePuzzle(puzzleId) {
 						normal: normalPuzzle.initialGrid,
 						hard: hardPuzzle.initialGrid,
 					},
-				};
-			} catch (error) {
-				console.error("Error loading puzzle:", error);
-				throw error; // Let React Query handle retry logic
-			}
-		},
+				});
+				setIsLoading(false);
+			})
+			.catch((err) => {
+				console.error("[usePuzzle] Error loading puzzle:", err);
+				setError(err);
+				setIsLoading(false);
+			});
+	}, [puzzleId]);
 
-		// Only fetch if we have a valid puzzle ID
-		enabled: !!puzzleId,
-
-		// Cache puzzle for 24 hours (puzzles never change once published)
-		staleTime: 24 * 60 * 60 * 1000,
-	});
+	return { data, isLoading, error };
 }

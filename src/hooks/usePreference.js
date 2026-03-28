@@ -1,13 +1,12 @@
 /**
- * usePreference - Manage preferences that sync between localStorage and Firestore
+ * usePreference - Manage user preferences with Firestore real-time sync
  *
- * Uses React Query for automatic reactivity and optimistic updates.
- * Firestore offline persistence handles sync automatically.
+ * Uses Firestore's onSnapshot for real-time updates (no React Query needed).
+ * Everyone uses Firestore (anonymous or Google via Firebase Anonymous Auth).
  *
  * @param {string} key - The preference key (e.g., 'darkMode', 'soundEnabled', 'difficulty')
  * @param {*} defaultValue - The default value if no saved preference exists
  * @param {Object} options - Optional configuration
- * @param {boolean} [options.persistForSignedOut=true] - Whether signed-out users should see their localStorage value
  * @param {string} [options.contextKey=null] - Optional key to scope this preference (e.g., puzzleId for daily reset)
  * @returns {[any, Function]} - [currentValue, setValue] tuple (like useState)
  *
@@ -15,119 +14,93 @@
  *   // Normal preference (persists for everyone)
  *   const [darkMode, setDarkMode] = usePreference('darkMode', false);
  *
- *   // Ephemeral for signed-out users (always shows default, but localStorage used as Firestore fallback for signed-in)
- *   const [gridSize, setGridSize] = usePreference('gridSize', 3, { persistForSignedOut: false });
- *
  *   // Context-scoped (e.g., resets to default for each new puzzle)
  *   const [showNumbers, setShowNumbers] = usePreference('showNumbers', true, { contextKey: puzzleId });
  */
 
-import { useEffect, useMemo, useCallback } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useAuth } from "./useAuth";
-import { useUser } from "./useUser";
+import { useState, useEffect, useCallback } from "react";
 import {
-	getAnonymousPreference,
-	setAnonymousPreference,
-} from "../storage/anonymous";
-import { updateUserPreferencesToFirestore } from "../storage/firestore";
+	doc,
+	onSnapshot,
+	updateDoc,
+	serverTimestamp,
+} from "firebase/firestore";
+import { db } from "../backend/firebaseConfig";
+import { useAuth } from "./useAuth";
 
 export function usePreference(key, defaultValue, options = {}) {
-	// Merge with defaults
-	const { persistForSignedOut = true, contextKey = null } = options;
-
+	const { contextKey = null } = options;
 	const { user } = useAuth();
-	const { data: userData } = useUser(user?.uid);
-	const queryClient = useQueryClient();
+	const [value, setValue] = useState(defaultValue);
+	const [loading, setLoading] = useState(true);
 
 	// If contextKey is provided, scope the storage key (e.g., showNumbers_123 for puzzle 123)
 	const storageKey = contextKey ? `${key}_${contextKey}` : key;
 
-	// Derive the current value based on sign-in state and options
-	// React Query handles reactivity automatically
-	const value = useMemo(() => {
-		// Signed-in: Use Firestore > localStorage > default
-		if (user && userData?.preferences?.[key] !== undefined) {
-			return userData.preferences[key];
-		}
-		if (user) {
-			// Fallback when loading: read from localStorage
-			return getAnonymousPreference(storageKey, defaultValue);
-		}
-
-		// Signed-out: Check persistForSignedOut flag
-		if (persistForSignedOut) {
-			return getAnonymousPreference(storageKey, defaultValue);
-		} else {
-			return defaultValue; // Ephemeral: always show default
-		}
-	}, [key, userData, user, defaultValue, persistForSignedOut, storageKey]);
-
-	// Sync Firestore → localStorage when signed-in user data loads
-	// This ensures cross-device sync: if you change settings on device A,
-	// then sign in on device B, localStorage on B gets updated so when you
-	// sign out, you keep the settings from device A.
+	// Subscribe to user's Firestore document for real-time updates
 	useEffect(() => {
-		if (user && userData?.preferences?.[key] !== undefined) {
-			const firestoreValue = userData.preferences[key];
-			const currentLocalValue = getAnonymousPreference(
-				storageKey,
-				defaultValue,
-			);
-			// Only update if different (avoid unnecessary writes)
-			if (firestoreValue !== currentLocalValue) {
-				setAnonymousPreference(storageKey, firestoreValue);
-			}
+		if (!user?.uid) {
+			setLoading(false);
+			return;
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [user, userData?.preferences?.[key], key, storageKey, defaultValue]);
 
-	// Mutation for saving preferences with optimistic updates
-	const mutation = useMutation({
-		mutationFn: async (newValue) => {
-			// Always save to localStorage (for fallback and anonymous users)
-			setAnonymousPreference(storageKey, newValue);
+		const userDocRef = doc(db, "users", user.uid);
 
-			// If signed in, also save to Firestore
-			if (user) {
-				await updateUserPreferencesToFirestore(user.uid, {
-					[key]: newValue,
+		// Real-time subscription to Firestore
+		const unsubscribe = onSnapshot(
+			userDocRef,
+			(docSnap) => {
+				if (!docSnap.exists()) {
+					setValue(defaultValue);
+					setLoading(false);
+					return;
+				}
+
+				const userData = docSnap.data();
+				const preferenceValue = userData?.preferences?.[storageKey];
+
+				setValue(
+					preferenceValue !== undefined
+						? preferenceValue
+						: defaultValue,
+				);
+				setLoading(false);
+			},
+			(error) => {
+				console.error(
+					"[usePreference] Error subscribing to preference:",
+					error,
+				);
+				setValue(defaultValue);
+				setLoading(false);
+			},
+		);
+
+		return () => unsubscribe();
+	}, [user?.uid, storageKey, defaultValue]);
+
+	// Setter that saves to Firestore
+	const setPreference = useCallback(
+		async (newValue) => {
+			if (!user?.uid) return;
+
+			const userDocRef = doc(db, "users", user.uid);
+
+			try {
+				await updateDoc(userDocRef, {
+					[`preferences.${storageKey}`]: newValue,
+					updatedAt: serverTimestamp(),
 				});
+			} catch (error) {
+				console.error(
+					"[usePreference] Error saving preference:",
+					error,
+				);
+				throw error;
 			}
 		},
-		// Optimistic update: UI updates IMMEDIATELY
-		onMutate: async (newValue) => {
-			if (user) {
-				// Cancel any outgoing refetches
-				await queryClient.cancelQueries({
-					queryKey: ["userData", user.uid],
-				});
-
-				// Optimistically update the userData cache
-				queryClient.setQueryData(["userData", user.uid], (oldData) => {
-					if (!oldData) return oldData;
-					return {
-						...oldData,
-						preferences: {
-							...(oldData.preferences || {}),
-							[key]: newValue,
-						},
-					};
-				});
-			}
-			// For anonymous users, localStorage.setItem is synchronous,
-			// so the next render will pick up the new value automatically
-		},
-		// If mutation fails, React Query will automatically refetch
-	});
-
-	// Update function
-	const setValue = useCallback(
-		(newValue) => {
-			mutation.mutate(newValue);
-		},
-		[mutation],
+		[user?.uid, storageKey],
 	);
 
-	return [value, setValue];
+	return [value, setPreference, loading];
 }

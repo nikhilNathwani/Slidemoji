@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import "./App.css";
 import LandingPage from "./components/landing/LandingPage";
 import Header from "./components/Header";
@@ -12,8 +12,6 @@ import { useUser } from "./hooks/useUser";
 import { usePuzzle } from "./hooks/usePuzzle";
 import { usePreference } from "./hooks/usePreference";
 import { useGameState } from "./hooks/useGameState";
-import { cleanupOldPuzzleData } from "./storage";
-import { useMemo } from "react";
 
 // App-level preference defaults
 const DEFAULT_DARK_MODE = false;
@@ -25,12 +23,7 @@ function App() {
 
 	const [puzzleId, setPuzzleId] = useState(() => getLatestPuzzleId());
 
-	// Clean up old puzzle data from localStorage on mount
-	useEffect(() => {
-		cleanupOldPuzzleData(puzzleId);
-	}, [puzzleId]);
-
-	// Synced preferences (localStorage for signed-out, Firestore for signed-in)
+	// Synced preferences (Firestore for everyone)
 	const [darkMode, setDarkMode] = usePreference(
 		"darkMode",
 		DEFAULT_DARK_MODE,
@@ -44,8 +37,8 @@ function App() {
 		DEFAULT_SHOW_NUMBERS,
 	);
 
-	// Fetch user data
-	const { data: userData, isLoading: isLoadingUser } = useUser(user?.uid);
+	// Fetch user data (real-time from Firestore)
+	const { data: userData, loading: isLoadingUser } = useUser(user?.uid);
 
 	// Compute solvedPuzzles from gameState for backward compatibility with components
 	const solvedPuzzles = useMemo(() => {
@@ -65,10 +58,9 @@ function App() {
 	const { data: puzzleMetadata, isLoading: isLoadingPuzzle } =
 		usePuzzle(puzzleId);
 
-	// Manage game state (loading/saving)
-	const [gameState, setGameState] = useGameState({
+	// Manage game state (real-time updates from Firestore)
+	const [gameState, setGameState, isLoadingGameState] = useGameState({
 		puzzleMetadata,
-		userData,
 	});
 
 	// Show Page / Dialog
@@ -79,21 +71,30 @@ function App() {
 
 	const isLoading =
 		isLoadingPuzzle ||
-		(user && isLoadingUser) ||
+		isLoadingGameState ||
+		isLoadingUser ||
 		!gameState ||
 		!puzzleMetadata;
 
 	// Dev helper: Set grid to one move away from solved
 	const setAlmostSolved = () => {
-		if (!gameState || !puzzleMetadata) return;
+		if (!gameState || !puzzleMetadata) {
+			console.log("[Dev] Can't set almost solved - missing data");
+			return;
+		}
 
 		const currentDiff = gameState.currentDifficulty;
-		const size = puzzleMetadata.initialGrids[currentDiff].length;
+		const currentGrid = gameState[currentDiff];
+		if (!currentGrid) {
+			console.log("[Dev] Can't set almost solved - no current grid");
+			return;
+		}
+
+		const size = currentGrid.length;
 
 		// Create solved grid: [1, 2, 3, ..., n-1, null]
-		const almostSolvedGrid = Array.from(
-			{ length: size },
-			(_, i) => (i === size - 1 ? null : i + 1),
+		const almostSolvedGrid = Array.from({ length: size }, (_, i) =>
+			i === size - 1 ? null : i + 1,
 		);
 
 		// Swap last two tiles before gap to make it one move away
@@ -105,6 +106,7 @@ function App() {
 			];
 		}
 
+		console.log("[Dev] Setting almost solved grid:", almostSolvedGrid);
 		setGameState({ grid: almostSolvedGrid });
 	};
 

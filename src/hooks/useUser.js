@@ -1,68 +1,57 @@
 /**
- * useUser - Custom hook for fetching user data from Firestore
+ * useUser - Get user data from Firestore with real-time updates
  *
- * Wraps TanStack Query to provide user preferences, stats, and game state.
- * Automatically caches and refetches when needed.
+ * Uses Firestore's onSnapshot for real-time updates (no React Query needed).
+ * Everyone uses Firestore (anonymous or Google via Firebase Anonymous Auth).
  *
- * @param {string|null} userId - User ID from Firebase Auth, or null if not signed in
- * @returns {Object} { userData, isLoading, error }
- *
- * Usage:
- *   const { userData, isLoading } = useUser(user?.uid);
+ * @param {string} userId - Firebase user ID
+ * @returns {Object} - { data, loading, error }
  */
 
-import { useQuery } from "@tanstack/react-query";
-import { getUserDataFromFirestore } from "../storage";
-import { convertGridFromStorage } from "../utils/puzzleUtils";
+import { useState, useEffect } from "react";
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "../backend/firebaseConfig";
 
 export function useUser(userId) {
-	return useQuery({
-		// Unique cache key for this user's data
-		queryKey: ["user", userId],
+	const [data, setData] = useState(null);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(null);
 
-		// Fetch function
-		queryFn: async () => {
-			// If no user, return empty object (anonymous play)
-			if (!userId) {
-				return {};
-			}
+	useEffect(() => {
+		if (!userId) {
+			setData(null);
+			setLoading(false);
+			return;
+		}
 
-			// Fetch from Firestore
-			try {
-				const data = await getUserDataFromFirestore(userId);
+		setLoading(true);
+		setError(null);
 
-				// Convert saved game grids from Firestore format (0 for gap) to client format (null for gap)
-				// Structure: gameState[puzzleId][difficulty] = Array (grid directly)
-				if (data?.gameState) {
-					for (const puzzleId in data.gameState) {
-						for (const difficulty in data.gameState[puzzleId]) {
-							const savedGrid =
-								data.gameState[puzzleId][difficulty];
-							if (Array.isArray(savedGrid)) {
-								data.gameState[puzzleId][difficulty] =
-									convertGridFromStorage(savedGrid);
-							}
-						}
-					}
+		const userDocRef = doc(db, "users", userId);
+
+		// Real-time subscription to Firestore
+		const unsubscribe = onSnapshot(
+			userDocRef,
+			(docSnap) => {
+				if (!docSnap.exists()) {
+					setData(null);
+					setLoading(false);
+					return;
 				}
 
-				return data;
-			} catch (error) {
-				console.error("[AUTH] Error loading user data:", error);
-				console.error("[AUTH] Error details:", {
-					message: error.message,
-					code: error.code,
-					stack: error.stack,
-				});
-				// Return empty object so grid doesn't stay stuck on "Loading..."
-				return {};
-			}
-		},
+				const userData = docSnap.data();
+				setData(userData);
+				setLoading(false);
+			},
+			(err) => {
+				console.error("[useUser] Error subscribing to user data:", err);
+				setError(err);
+				setLoading(false);
+			},
+		);
 
-		// Always enabled (even for anonymous users, we return {})
-		enabled: true,
+		return () => unsubscribe();
+	}, [userId]);
 
-		// Cache user data for 10 minutes (rarely changes)
-		staleTime: 10 * 60 * 1000,
-	});
+	return { data, loading, error };
 }

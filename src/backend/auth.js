@@ -1,57 +1,142 @@
 /**
  * Authentication Module
  *
- * Handles Google Sign-In and user session management.
- * When a user signs in for the first time, this module automatically
- * creates their user document with default preferences and stats.
+ * Handles Firebase Anonymous Auth + Google Sign-In
+ *
+ * Flow:
+ * 1. Anonymous users are auto-signed in on first visit (get temporary user ID)
+ * 2. Their data saves to Firestore with offline IndexedDB persistence
+ * 3. When they click "Sign in with Google", we link the anonymous account
+ *    with their Google account using Firebase's linkWithCredential
+ * 4. All their data is automatically preserved (no migration needed!)
+ *
+ * This eliminates dual storage (localStorage vs Firestore) - everyone uses Firestore.
  */
 
 import {
 	GoogleAuthProvider,
+	signInAnonymously,
 	signInWithPopup,
+	linkWithCredential,
 	signOut as firebaseSignOut,
 	onAuthStateChanged,
 } from "firebase/auth";
 import { auth } from "./firebaseConfig";
 import {
-	getUserDataFromFirestore,
-	createUserDataInFirestore,
-} from "../storage";
+	getFirestoreUserData,
+	createFirestoreUserData,
+	updateFirestoreUserProfile,
+} from "./firestore";
 
 // Google OAuth provider for Firebase Authentication
 const googleProvider = new GoogleAuthProvider();
 
 /**
- * Sign in with Google using a popup window
+ * Sign in anonymously (called automatically on app load)
+ * Creates a temporary Firebase user ID so anonymous users can save to Firestore
+ * @returns {Promise<User>} Anonymous Firebase user
+ */
+export async function signInAnonymouslyIfNeeded() {
+	// If already signed in (anonymous or Google), do nothing
+	if (auth.currentUser) {
+		return auth.currentUser;
+	}
+
+	try {
+		const result = await signInAnonymously(auth);
+		console.log("[Auth] Signed in anonymously:", result.user.uid);
+
+		// Create user document with default data for anonymous users
+		const userData = await getFirestoreUserData(result.user.uid);
+		if (!userData) {
+			await createFirestoreUserData(result.user.uid, {
+				isAnonymous: true,
+			});
+		}
+
+		return result.user;
+	} catch (error) {
+		console.error("[Auth] Error signing in anonymously:", error);
+		throw error;
+	}
+}
+
+/**
+ * Sign in with Google (upgrades anonymous account if applicable)
  *
  * Flow:
- * 1. Opens Google OAuth popup
- * 2. User selects their Google account
- * 3. Firebase authenticates and returns user object
- * 4. Check if user exists in Firestore database
- * 5. If new user, create their Firestore document with default data
+ * 1. If user is currently anonymous, link their Google account to preserve data
+ * 2. If user is not signed in or already has Google account, regular sign-in
+ * 3. Update Firestore document with Google profile info
+ *
+ * Firebase automatically preserves all data when linking anonymous → Google
  *
  * @returns {Promise<User>} Firebase user object
  * @throws {Error} If sign-in fails or popup is blocked
  */
 export async function signInWithGoogle() {
 	try {
-		// Open Google sign-in popup
+		const currentUser = auth.currentUser;
+
+		// Case 1: Upgrading anonymous account to Google account
+		if (currentUser && currentUser.isAnonymous) {
+			console.log("[Auth] Upgrading anonymous account to Google");
+
+			// Get Google credential from popup
+			const result = await signInWithPopup(auth, googleProvider);
+			const credential = GoogleAuthProvider.credentialFromResult(result);
+
+			// Link the Google credential to the anonymous account
+			// This preserves all data (user ID stays the same!)
+			const linkedUser = await linkWithCredential(
+				currentUser,
+				credential,
+			);
+
+			// Update Firestore document with Google profile info
+			await updateFirestoreUserProfile(linkedUser.user.uid, {
+				email: linkedUser.user.email,
+				displayName: linkedUser.user.displayName,
+				photoURL: linkedUser.user.photoURL,
+				isAnonymous: false,
+			});
+
+			console.log(
+				"[Auth] Successfully upgraded to Google:",
+				linkedUser.user.uid,
+			);
+			return linkedUser.user;
+		}
+
+		// Case 2: Regular Google sign-in (not anonymous)
 		const result = await signInWithPopup(auth, googleProvider);
 		const user = result.user;
 
-		// First-time users: Create Firestore document with default preferences and stats
-		const userData = await getUserDataFromFirestore(user.uid);
+		// First-time Google users: Create Firestore document
+		const userData = await getFirestoreUserData(user.uid);
 		if (!userData) {
-			await createUserDataInFirestore(user.uid, {
+			await createFirestoreUserData(user.uid, {
 				email: user.email,
 				displayName: user.displayName,
+				photoURL: user.photoURL,
+				isAnonymous: false,
 			});
 		}
 
 		return user;
 	} catch (error) {
-		console.error("Error signing in with Google:", error);
+		// Special case: User already has a Google account
+		if (error.code === "auth/credential-already-in-use") {
+			console.log(
+				"[Auth] User already has Google account, signing in normally",
+			);
+			// Sign out anonymous user and sign in with Google
+			await firebaseSignOut(auth);
+			const result = await signInWithPopup(auth, googleProvider);
+			return result.user;
+		}
+
+		console.error("[Auth] Error signing in with Google:", error);
 		throw error;
 	}
 }

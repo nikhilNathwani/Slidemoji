@@ -2,8 +2,13 @@
  * AuthProvider - React Context provider for authentication state
  *
  * Wraps the entire app to provide global access to user authentication state.
- * Listens to Firebase auth changes and automatically updates when user signs in/out.
- * Also handles localStorage to Firestore migration when users sign in.
+ * Uses Firebase Anonymous Auth to automatically sign in all users (anonymous or Google).
+ * This eliminates dual storage - everyone uses Firestore with IndexedDB offline persistence.
+ *
+ * Flow:
+ * 1. App loads → auto sign-in anonymously (if not already signed in)
+ * 2. User clicks "Sign in with Google" → links anonymous account to Google (data preserved!)
+ * 3. All data always in Firestore, no localStorage needed
  *
  * Usage: Wrap your app in main.jsx:
  *   <AuthProvider>
@@ -11,29 +16,29 @@
  *   </AuthProvider>
  *
  * Then access auth state anywhere using useAuth() hook:
- *   const { user, signIn, signOut, loading } = useAuth();
+ *   const { user, signIn, signOut, loading, isAnonymous } = useAuth();
  */
 
 import { useState, useEffect } from "react";
 import {
 	onAuthChange,
+	signInAnonymouslyIfNeeded,
 	signInWithGoogle as firebaseSignIn,
 	signOut as firebaseSignOut,
 } from "../backend";
 import { AuthContext } from "./authContext";
-import { migrateLocalStorageToFirestore } from "../storage";
-import { getLatestPuzzleId } from "../utils/puzzleUtils";
 /**
  * AuthProvider component - manages authentication state for the entire app
  *
  * State:
- * - user: Current user object { uid, email, displayName, photoURL } or null
+ * - user: Current user object { uid, email, displayName, photoURL, isAnonymous } or null
  * - loading: True while checking initial auth state or during sign-in/out
  *
  * Functions:
- * - signIn(): Opens Google sign-in popup
- * - signOut(): Signs out current user
- * - isAuthenticated: Computed boolean (!!user)
+ * - signIn(): Opens Google sign-in popup (links to anonymous account if applicable)
+ * - signOut(): Signs out current user (creates new anonymous user automatically)
+ * - isAuthenticated: Boolean (true if signed in with Google, false if anonymous)
+ * - isAnonymous: Boolean (true if anonymous, false if Google)
  */
 export default function AuthProvider({ children }) {
 	const [user, setUser] = useState(null);
@@ -42,21 +47,31 @@ export default function AuthProvider({ children }) {
 	useEffect(() => {
 		// Listen for auth state changes from Firebase
 		// This fires immediately with current state, then on any auth changes
-		// Also detects sign-in/out in other tabs (Firebase handles this automatically!)
-		const unsubscribe = onAuthChange((firebaseUser) => {
+		const unsubscribe = onAuthChange(async (firebaseUser) => {
 			if (firebaseUser) {
-				// User is signed in - extract relevant data
+				// User is signed in (anonymous or Google)
 				setUser({
 					uid: firebaseUser.uid,
 					email: firebaseUser.email,
 					displayName: firebaseUser.displayName,
-					photoURL: firebaseUser.photoURL, // Google profile picture
+					photoURL: firebaseUser.photoURL,
+					isAnonymous: firebaseUser.isAnonymous,
 				});
+				setLoading(false);
 			} else {
-				// User is signed out
-				setUser(null);
+				// No user - auto sign in anonymously
+				try {
+					await signInAnonymouslyIfNeeded();
+					// onAuthChange will fire again with the new anonymous user
+				} catch (error) {
+					console.error(
+						"[Auth] Failed to sign in anonymously:",
+						error,
+					);
+					setUser(null);
+					setLoading(false);
+				}
 			}
-			setLoading(false); // Auth state is now known
 		});
 
 		// Cleanup: unsubscribe from auth listener when component unmounts
@@ -66,31 +81,12 @@ export default function AuthProvider({ children }) {
 	const signIn = async () => {
 		try {
 			setLoading(true);
+			// Sign in with Google (automatically links anonymous account if applicable)
 			const firebaseUser = await firebaseSignIn();
-
-			// Migrate localStorage data to Firestore after successful sign-in
-			// Only migrate current puzzle (today's puzzle) to avoid retroactive trophies
-			if (firebaseUser?.uid) {
-				try {
-					const currentPuzzleId = getLatestPuzzleId();
-					await migrateLocalStorageToFirestore(
-						firebaseUser.uid,
-						currentPuzzleId,
-					);
-				} catch (migrationError) {
-					console.error(
-						"[Migration] Failed to migrate localStorage:",
-						migrationError,
-					);
-					// Don't throw - sign-in was successful even if migration failed
-				}
-			}
-
 			// User state will be set by onAuthChange listener above
-			// No need to call setUser here - listener will handle it
 			return firebaseUser;
 		} catch (error) {
-			console.error("Sign in error:", error);
+			console.error("[Auth] Sign in error:", error);
 			setLoading(false);
 			throw error;
 		}
@@ -100,9 +96,10 @@ export default function AuthProvider({ children }) {
 		try {
 			setLoading(true);
 			await firebaseSignOut();
-			// User state will be cleared by onAuthChange listener
+			// After sign-out, onAuthChange will detect no user and auto-create new anonymous user
+			// User state will be updated by onAuthChange listener
 		} catch (error) {
-			console.error("Sign out error:", error);
+			console.error("[Auth] Sign out error:", error);
 			setLoading(false);
 			throw error;
 		}
@@ -110,11 +107,12 @@ export default function AuthProvider({ children }) {
 
 	// Context value exposed to all children via useAuth() hook
 	const value = {
-		user, // Current user object or null
+		user, // Current user object (always exists - either anonymous or Google)
 		loading, // True during auth operations
-		signIn, // Function to sign in with Google
-		signOut, // Function to sign out
-		isAuthenticated: !!user, // Convenience boolean
+		signIn, // Function to sign in with Google (links anonymous account)
+		signOut, // Function to sign out (creates new anonymous user)
+		isAuthenticated: user && !user.isAnonymous, // True if signed in with Google
+		isAnonymous: user?.isAnonymous ?? true, // True if anonymous user
 	};
 
 	return (

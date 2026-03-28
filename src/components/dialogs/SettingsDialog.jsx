@@ -94,7 +94,8 @@ function SettingsDialog({
 							<button
 								onClick={() => {
 									onAlmostSolve();
-									onClose();
+									// Delay closing so user sees the grid update
+									setTimeout(() => onClose(), 300);
 								}}
 								className={styles.devButton}
 							>

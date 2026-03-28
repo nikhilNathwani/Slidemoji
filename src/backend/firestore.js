@@ -18,7 +18,7 @@ import { db } from "../backend/firebaseConfig";
  * @param {string} userId - Firebase Auth user ID (uid)
  * @returns {Promise<Object|null>} User data object or null if not found
  */
-export async function getUserDataFromFirestore(userId) {
+export async function getFirestoreUserData(userId) {
 	if (!userId) {
 		throw new Error("User ID is required");
 	}
@@ -41,10 +41,10 @@ export async function getUserDataFromFirestore(userId) {
  * Create initial user data in Firestore (first-time sign-in)
  *
  * @param {string} userId - Firebase Auth user ID (uid)
- * @param {Object} userData - User info from Google Auth (email, displayName)
+ * @param {Object} userData - User info from Google Auth (email, displayName, isAnonymous, photoURL)
  * @returns {Promise<Object>} The created user data
  */
-export async function createUserDataInFirestore(userId, userData = {}) {
+export async function createFirestoreUserData(userId, userData = {}) {
 	if (!userId) {
 		throw new Error("User ID is required");
 	}
@@ -55,6 +55,11 @@ export async function createUserDataInFirestore(userId, userData = {}) {
 			uid: userId,
 			email: userData.email || null,
 			displayName: userData.displayName || null,
+			photoURL: userData.photoURL || null,
+			isAnonymous:
+				userData.isAnonymous !== undefined
+					? userData.isAnonymous
+					: false,
 			createdAt: serverTimestamp(),
 			updatedAt: serverTimestamp(),
 			preferences: {
@@ -73,12 +78,35 @@ export async function createUserDataInFirestore(userId, userData = {}) {
 }
 
 /**
+ * Update user profile in Firestore (when upgrading anonymous to Google)
+ *
+ * @param {string} userId - Firebase Auth user ID (uid)
+ * @param {Object} profileData - Profile info { email, displayName, photoURL, isAnonymous }
+ */
+export async function updateFirestoreUserProfile(userId, profileData) {
+	if (!userId) {
+		throw new Error("User ID is required");
+	}
+
+	try {
+		const userDocRef = doc(db, "users", userId);
+		await updateDoc(userDocRef, {
+			...profileData,
+			updatedAt: serverTimestamp(),
+		});
+	} catch (error) {
+		console.error("[Firestore] Error updating user profile:", error);
+		throw error;
+	}
+}
+
+/**
  * Update user preferences in Firestore
  *
  * @param {string} userId - Firebase Auth user ID (uid)
  * @param {Object} preferences - Preferences object { darkMode: boolean, etc }
  */
-export async function updateUserPreferencesToFirestore(userId, preferences) {
+export async function updateFirestorePreferences(userId, preferences) {
 	if (!userId) {
 		throw new Error("User ID is required");
 	}
@@ -117,7 +145,7 @@ export async function updateUserPreferencesToFirestore(userId, preferences) {
  * @param {number} puzzleId - Puzzle ID
  * @param {Object} gameData - { grid: Array<number|null>, difficulty: string }
  */
-export async function saveGameStateToFirestore(userId, puzzleId, gameData) {
+export async function saveFirestoreGameState(userId, puzzleId, gameData) {
 	if (!userId) {
 		throw new Error("User ID is required");
 	}

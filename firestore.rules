@@ -1,0 +1,48 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function: Check if user is authenticated (anonymous or Google)
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function: Check if user owns the document
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Users collection - each user can only access their own document
+    match /users/{userId} {
+      // Read: User can only read their own document
+      allow read: if isOwner(userId);
+      
+      // Create: User can only create their own document (on first sign-in)
+      allow create: if isOwner(userId) && 
+                       request.resource.data.uid == request.auth.uid;
+      
+      // Update: User can only update their own document
+      // Also prevent changing the uid field
+      allow update: if isOwner(userId) && 
+                       request.resource.data.uid == resource.data.uid;
+      
+      // Delete: Users cannot delete their own documents (we don't have delete functionality)
+      allow delete: if false;
+    }
+    
+    // Puzzles collection - read-only for all authenticated users
+    match /puzzles/{puzzleId} {
+      // Anyone can read puzzles (they're the same for everyone)
+      allow read: if isAuthenticated();
+      
+      // Only admins can write puzzles (managed via Firebase Console or scripts)
+      allow write: if false;
+    }
+    
+    // Deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

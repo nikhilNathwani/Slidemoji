@@ -1,155 +1,173 @@
 /**
  * useGameState - Unified hook for game state loading and saving
  *
- * Manages game state using React Query for automatic caching, optimistic updates,
- * and reactivity. Firestore offline persistence handles sync automatically.
+ * Uses Firestore's onSnapshot for real-time updates (no React Query needed).
+ * Everyone uses Firestore (anonymous or Google via Firebase Anonymous Auth).
  *
- * const [gameState, setGameState] = useGameState({ puzzleMetadata, userData })
+ * const [gameState, setGameState] = useGameState({ puzzleMetadata })
  *
  * Returns:
  * - gameState: { normal: grid, hard: grid, currentDifficulty }
  * - setGameState: ({ grid?, currentDifficulty? }) => void
  *
  * This hook:
- * - Uses React Query for caching and optimistic updates (no manual useState hacks)
- * - Routes to Firestore (signed-in) or localStorage (anonymous) automatically
- * - Firestore offline persistence handles offline sync automatically
- * - Handles migrations from localStorage to Firestore
- * - Initializes fresh puzzles
+ * - Uses Firestore onSnapshot for real-time updates
+ * - Automatic offline support via Firestore IndexedDB persistence
+ * - No caching layer needed - Firestore SDK handles everything
+ * - Eliminates dual storage and if(user) branching
  */
 
-import { useMemo, useCallback } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState, useEffect, useCallback } from "react";
+import {
+	doc,
+	onSnapshot,
+	updateDoc,
+	serverTimestamp,
+} from "firebase/firestore";
+import { db } from "../backend/firebaseConfig";
 import { DIFFICULTY, DEFAULT_DIFFICULTY } from "../constants";
 import { useAuth } from "./useAuth";
-import {
-	getAnonymousGameState,
-	saveAnonymousGameState,
-} from "../storage/anonymous";
-import { saveGameStateToFirestore } from "../storage/firestore";
 import { convertGridFromStorage } from "../utils/puzzleUtils";
 
-export function useGameState({ puzzleMetadata, userData }) {
+export function useGameState({ puzzleMetadata }) {
 	const puzzleId = puzzleMetadata?.id;
 	const { user } = useAuth();
-	const queryClient = useQueryClient();
+	const [gameState, setGameStateInternal] = useState(null);
+	const [loading, setLoading] = useState(true);
 
-	// Compute game state from puzzleMetadata and userData
-	// React Query will handle caching and reactivity automatically
-	const gameState = useMemo(() => {
-		if (!puzzleMetadata?.initialGrids) return null;
-
-		// Wait for userData to load if user is signed in
-		if (user && userData === undefined) {
-			return null;
+	// Subscribe to user's Firestore document for real-time updates
+	useEffect(() => {
+		if (!user?.uid || !puzzleMetadata?.initialGrids) {
+			setLoading(false);
+			return;
 		}
 
-		// Get saved state - route based on auth
-		let savedGameState;
-		if (user) {
-			// Signed-in: Use Firestore (via userData from React Query)
-			savedGameState = userData?.gameState?.[puzzleId];
-		} else {
-			// Anonymous: Use localStorage
-			savedGameState = getAnonymousGameState(puzzleId);
-		}
+		setLoading(true);
 
-		// Helper: Get saved grid for a difficulty
-		const getSavedGrid = (diff) => {
-			const grid = savedGameState?.[diff];
-			if (!grid || !Array.isArray(grid)) return null;
-			// Convert 0 to null for internal representation
-			return convertGridFromStorage(grid);
-		};
+		const userDocRef = doc(db, "users", user.uid);
 
-		// Current difficulty: saved > default
-		const currentDifficulty =
-			savedGameState?.currentDifficulty || DEFAULT_DIFFICULTY;
+		// Real-time subscription to Firestore
+		const unsubscribe = onSnapshot(
+			userDocRef,
+			(docSnap) => {
+				if (!docSnap.exists()) {
+					// No user data yet - use initial grids
+					setGameStateInternal({
+						normal: puzzleMetadata.initialGrids.normal,
+						hard: puzzleMetadata.initialGrids.hard,
+						currentDifficulty: DEFAULT_DIFFICULTY,
+					});
+					setLoading(false);
+					return;
+				}
 
-		return {
-			normal:
-				getSavedGrid(DIFFICULTY.NORMAL) ||
-				puzzleMetadata.initialGrids.normal,
-			hard:
-				getSavedGrid(DIFFICULTY.HARD) ||
-				puzzleMetadata.initialGrids.hard,
-			currentDifficulty,
-		};
-	}, [puzzleMetadata, userData, puzzleId, user]);
+				const userData = docSnap.data();
+				const savedGameState = userData?.gameState?.[puzzleId];
 
-	// Mutation for saving game state with optimistic updates
-	const mutation = useMutation({
-		mutationFn: async ({ grid, difficulty }) => {
-			if (user) {
-				// Signed-in: Save to Firestore (offline persistence queues if offline)
-				await saveGameStateToFirestore(user.uid, puzzleId, {
-					grid,
-					difficulty,
+				// Helper: Get saved grid for a difficulty
+				const getSavedGrid = (diff) => {
+					const grid = savedGameState?.[diff];
+					if (!grid || !Array.isArray(grid)) return null;
+					// Convert 0 to null for internal representation
+					return convertGridFromStorage(grid);
+				};
+
+				// Current difficulty: saved > default
+				const currentDifficulty =
+					savedGameState?.currentDifficulty || DEFAULT_DIFFICULTY;
+
+				setGameStateInternal({
+					normal:
+						getSavedGrid(DIFFICULTY.NORMAL) ||
+						puzzleMetadata.initialGrids.normal,
+					hard:
+						getSavedGrid(DIFFICULTY.HARD) ||
+						puzzleMetadata.initialGrids.hard,
+					currentDifficulty,
 				});
-			} else {
-				// Anonymous: Save to localStorage (instant)
-				saveAnonymousGameState(puzzleId, difficulty, grid);
-			}
-		},
-		// Optimistic update: UI updates IMMEDIATELY before network call
-		onMutate: async ({ grid, difficulty }) => {
-			// Cancel any outgoing refetches (so they don't overwrite our optimistic update)
-			await queryClient.cancelQueries({
-				queryKey: ["userData", user?.uid],
-			});
-
-			// This will cause gameState (computed from userData) to update immediately
-			// triggering a re-render with the new grid
-			if (user) {
-				// For signed-in users, optimistically update the userData cache
-				queryClient.setQueryData(["userData", user.uid], (oldData) => {
-					if (!oldData) return oldData;
-					const firestoreGrid = grid.map((v) => (v === null ? 0 : v));
-					return {
-						...oldData,
-						gameState: {
-							...(oldData.gameState || {}),
-							[puzzleId]: {
-								...(oldData.gameState?.[puzzleId] || {}),
-								[difficulty]: firestoreGrid,
-								currentDifficulty: difficulty,
-							},
-						},
-					};
+				setLoading(false);
+			},
+			(error) => {
+				console.error(
+					"[useGameState] Error subscribing to game state:",
+					error,
+				);
+				// Fallback to initial grids on error
+				setGameStateInternal({
+					normal: puzzleMetadata.initialGrids.normal,
+					hard: puzzleMetadata.initialGrids.hard,
+					currentDifficulty: DEFAULT_DIFFICULTY,
 				});
-			}
-			// For anonymous users, saveAnonymousGameState is synchronous,
-			// so the next render will pick up the new value automatically
-		},
-		// If mutation fails, React Query will automatically refetch
-		// to restore correct state (no manual rollback needed)
-	});
+				setLoading(false);
+			},
+		);
 
-	// Setter that handles game logic
+		return () => unsubscribe();
+	}, [user?.uid, puzzleId, puzzleMetadata]);
+
+	// Setter that saves to Firestore
 	const setGameState = useCallback(
-		({ grid, currentDifficulty: newDifficulty }) => {
-			if (!puzzleMetadata?.initialGrids || !gameState) return;
-
-			// Case 1: Difficulty switch (no grid provided)
-			if (newDifficulty && !grid) {
-				const gridToSave =
-					gameState[newDifficulty] ||
-					puzzleMetadata.initialGrids[newDifficulty];
-				mutation.mutate({
-					grid: gridToSave,
-					difficulty: newDifficulty,
-				});
+		async ({ grid, currentDifficulty: newDifficulty }) => {
+			if (!user?.uid || !puzzleMetadata?.initialGrids || !gameState)
 				return;
-			}
 
-			// Case 2: Grid update (move made)
-			if (grid) {
-				const difficulty = gameState.currentDifficulty;
-				mutation.mutate({ grid, difficulty });
+			const userDocRef = doc(db, "users", user.uid);
+
+			try {
+				// Case 1: Difficulty switch (no grid provided)
+				if (newDifficulty && !grid) {
+					const gridToSave =
+						gameState[newDifficulty] ||
+						puzzleMetadata.initialGrids[newDifficulty];
+
+					// Convert null to 0 for Firestore
+					const firestoreGrid = gridToSave.map((v) =>
+						v === null ? 0 : v,
+					);
+
+					await updateDoc(userDocRef, {
+						[`gameState.${puzzleId}.currentDifficulty`]:
+							newDifficulty,
+						[`gameState.${puzzleId}.${newDifficulty}`]:
+							firestoreGrid,
+						updatedAt: serverTimestamp(),
+					});
+					return;
+				}
+
+				// Case 2: Grid update (move made)
+				if (grid) {
+					const difficulty = gameState.currentDifficulty;
+
+					// Convert null to 0 for Firestore
+					const firestoreGrid = grid.map((v) => (v === null ? 0 : v));
+
+					// Check if puzzle is solved
+					const { checkWin } =
+						await import("../utils/gridHelpers.js");
+					const isSolved = checkWin(grid);
+
+					const updates = {
+						[`gameState.${puzzleId}.${difficulty}`]: firestoreGrid,
+						[`gameState.${puzzleId}.currentDifficulty`]: difficulty,
+						updatedAt: serverTimestamp(),
+					};
+
+					// If solved, update solved field
+					if (isSolved) {
+						updates[`gameState.${puzzleId}.solved.${difficulty}`] =
+							true;
+					}
+
+					await updateDoc(userDocRef, updates);
+				}
+			} catch (error) {
+				console.error("[useGameState] Error saving game state:", error);
+				throw error;
 			}
 		},
-		[mutation, gameState, puzzleMetadata],
+		[user?.uid, gameState, puzzleMetadata, puzzleId],
 	);
 
-	return [gameState, setGameState];
+	return [gameState, setGameState, loading];
 }
