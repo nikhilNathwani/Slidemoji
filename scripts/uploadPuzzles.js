@@ -10,6 +10,7 @@
 
 import { initializeApp } from "firebase/app";
 import { getFirestore, doc, setDoc } from "firebase/firestore";
+import { getAuth, signInAnonymously } from "firebase/auth";
 import { readFileSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
@@ -80,6 +81,7 @@ console.log("Firebase config loaded successfully ✓\n");
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
 /**
  * Scramble puzzle grid - creates a solvable random configuration
@@ -204,6 +206,11 @@ async function uploadAllPuzzles() {
 	console.log(`🎨 Using ${emojiCalendar.length} emojis from calendar\n`);
 
 	try {
+		// Sign in anonymously to get through security rules
+		console.log("🔐 Signing in anonymously...");
+		await signInAnonymously(auth);
+		console.log("✅ Signed in successfully\n");
+
 		// Generate and upload puzzles in batches to avoid overwhelming Firestore
 		const batchSize = 10;
 

@@ -92,19 +92,13 @@ function App() {
 
 		const size = currentGrid.length;
 
-		// Create solved grid: [1, 2, 3, ..., n-1, null]
-		const almostSolvedGrid = Array.from({ length: size }, (_, i) =>
-			i === size - 1 ? null : i + 1,
-		);
-
-		// Swap last two tiles before gap to make it one move away
-		// From [1, 2, 3, 4, 5, 6, 7, 8, null] to [1, 2, 3, 4, 5, 6, 8, 7, null]
-		if (size > 2) {
-			[almostSolvedGrid[size - 2], almostSolvedGrid[size - 3]] = [
-				almostSolvedGrid[size - 3],
-				almostSolvedGrid[size - 2],
-			];
-		}
+		// Create almost-solved grid: [1, 2, 3, 4, 5, 6, 7, null, 8]
+		// Gap in second-to-last position, one move away from solved
+		const almostSolvedGrid = Array.from({ length: size }, (_, i) => {
+			if (i === size - 2) return null; // Gap in second-to-last position
+			if (i === size - 1) return size - 1; // Last tile goes in last position
+			return i + 1; // Everything else in order: 1, 2, 3, ...
+		});
 
 		console.log("[Dev] Setting almost solved grid:", almostSolvedGrid);
 		setGameState({ grid: almostSolvedGrid });

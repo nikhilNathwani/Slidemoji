@@ -40,6 +40,7 @@ export function usePreference(key, defaultValue, options = {}) {
 	// Subscribe to user's Firestore document for real-time updates
 	useEffect(() => {
 		if (!user?.uid) {
+			setValue(defaultValue);
 			setLoading(false);
 			return;
 		}

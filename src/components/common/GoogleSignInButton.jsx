@@ -25,10 +25,12 @@ function GoogleSignInButton({ isCondensed = false }) {
 	const handleClick = async () => {
 		try {
 			setIsProcessing(true);
-			if (user) {
-				await signOut(); // User is signed in, sign them out
+			// Anonymous users should "Sign in" (upgrade to Google)
+			// Only Google users should "Sign out"
+			if (user && !user.isAnonymous) {
+				await signOut(); // Signed in with Google, sign them out
 			} else {
-				await signIn(); // User is signed out, sign them in
+				await signIn(); // Anonymous or signed out, sign them in with Google
 			}
 		} catch (error) {
 			console.error("Authentication error:", error);
@@ -43,11 +45,12 @@ function GoogleSignInButton({ isCondensed = false }) {
 		: styles.googleSignInButton;
 
 	const isDisabled = loading || isProcessing;
+	const isSignedInWithGoogle = user && !user.isAnonymous;
 	const buttonText = isCondensed
-		? user
+		? isSignedInWithGoogle
 			? "Sign out"
 			: "Sign in"
-		: user
+		: isSignedInWithGoogle
 			? "Sign out"
 			: "Sign in with Google";
 
@@ -56,8 +59,8 @@ function GoogleSignInButton({ isCondensed = false }) {
 			className={className}
 			onClick={handleClick}
 			disabled={isDisabled}
-			aria-label={user ? "Sign Out" : "Sign In"}
-			title={user ? "Sign Out" : "Sign In with Google"}
+			aria-label={isSignedInWithGoogle ? "Sign Out" : "Sign In"}
+			title={isSignedInWithGoogle ? "Sign Out" : "Sign In with Google"}
 			style={{ opacity: isDisabled ? 0.6 : 1 }}
 		>
 			<img

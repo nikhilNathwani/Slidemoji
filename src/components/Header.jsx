@@ -57,7 +57,7 @@ function Header({ onSettingsClick, onStatsClick, onArchiveClick }) {
 				>
 					<FontAwesomeIcon icon="cog" />
 				</button>
-				{user ? (
+				{user && !user.isAnonymous ? (
 					<div className={styles.accountContainer} ref={menuRef}>
 						<button
 							className={styles.avatarButton}

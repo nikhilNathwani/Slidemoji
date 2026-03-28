@@ -14,8 +14,8 @@ function StatsContent({ showTitle = false, solvedPuzzles, currentPuzzleId }) {
 
 	return (
 		<div className={styles.statsContent}>
-			{/* Not signed in: Show sign-in upsell only */}
-			{!user ? (
+			{/* Anonymous users: Show sign-in upsell */}
+			{!user || user.isAnonymous ? (
 				<div className={styles.statsSignin}>
 					<h3 className={styles.statsSigninTitle}>
 						Save Your Trophies
