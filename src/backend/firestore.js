@@ -240,21 +240,69 @@ export async function mergeAnonymousDataToGoogle(
 		// Merge gameState: Google's puzzles + anonymous's new puzzles
 		const mergedGameState = { ...googleData.gameState }; // Start with Google's data
 
-		// Add anonymous puzzles that Google doesn't have
-		for (const [puzzleId, puzzleData] of Object.entries(
+		// Merge anonymous puzzles at the DIFFICULTY level (not puzzle level)
+		for (const [puzzleId, anonymousPuzzleData] of Object.entries(
 			anonymousData.gameState || {},
 		)) {
 			if (!mergedGameState[puzzleId]) {
-				// Google doesn't have this puzzle - add anonymous's data
-				mergedGameState[puzzleId] = puzzleData;
+				// Google doesn't have this puzzle at all - add anonymous's data
+				mergedGameState[puzzleId] = anonymousPuzzleData;
 				console.log(
-					`[Firestore] Added anonymous progress for puzzle ${puzzleId}`,
+					`[Firestore] Added anonymous puzzle ${puzzleId} (new puzzle)`,
 				);
 			} else {
-				// Both have this puzzle - keep Google's data
-				console.log(
-					`[Firestore] Kept Google's existing data for puzzle ${puzzleId}`,
-				);
+				// Both have this puzzle - merge at difficulty level
+				const googlePuzzleData = mergedGameState[puzzleId];
+
+				// Merge normal difficulty
+				if (anonymousPuzzleData.normal && !googlePuzzleData.normal) {
+					mergedGameState[puzzleId].normal = anonymousPuzzleData.normal;
+					console.log(
+						`[Firestore] Added anonymous normal difficulty for puzzle ${puzzleId}`,
+					);
+				}
+
+				// Merge hard difficulty
+				if (anonymousPuzzleData.hard && !googlePuzzleData.hard) {
+					mergedGameState[puzzleId].hard = anonymousPuzzleData.hard;
+					console.log(
+						`[Firestore] Added anonymous hard difficulty for puzzle ${puzzleId}`,
+					);
+				}
+
+				// Merge solved status at difficulty level
+				if (anonymousPuzzleData.solved) {
+					if (!googlePuzzleData.solved) {
+						mergedGameState[puzzleId].solved = {};
+					}
+					if (
+						anonymousPuzzleData.solved.normal &&
+						!googlePuzzleData.solved?.normal
+					) {
+						mergedGameState[puzzleId].solved.normal = true;
+						console.log(
+							`[Firestore] Added anonymous normal trophy for puzzle ${puzzleId}`,
+						);
+					}
+					if (
+						anonymousPuzzleData.solved.hard &&
+						!googlePuzzleData.solved?.hard
+					) {
+						mergedGameState[puzzleId].solved.hard = true;
+						console.log(
+							`[Firestore] Added anonymous hard trophy for puzzle ${puzzleId}`,
+						);
+					}
+				}
+
+				// Update currentDifficulty if anonymous has progress and Google doesn't
+				if (
+					anonymousPuzzleData.currentDifficulty &&
+					!googlePuzzleData.currentDifficulty
+				) {
+					mergedGameState[puzzleId].currentDifficulty =
+						anonymousPuzzleData.currentDifficulty;
+				}
 			}
 		}
 

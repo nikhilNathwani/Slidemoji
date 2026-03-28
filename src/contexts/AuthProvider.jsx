@@ -57,7 +57,11 @@ export default function AuthProvider({ children }) {
 					photoURL: firebaseUser.photoURL,
 					isAnonymous: firebaseUser.isAnonymous,
 				});
-				setLoading(false);
+				// Only set loading to false if we're not already showing content
+				// This prevents loading flicker when signing out and creating new anonymous user
+				if (loading) {
+					setLoading(false);
+				}
 			} else {
 				// No user - auto sign in anonymously
 				try {
@@ -76,7 +80,7 @@ export default function AuthProvider({ children }) {
 
 		// Cleanup: unsubscribe from auth listener when component unmounts
 		return () => unsubscribe();
-	}, []);
+	}, [loading]);
 
 	const signIn = async () => {
 		try {

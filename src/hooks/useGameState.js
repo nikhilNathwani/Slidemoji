@@ -160,6 +160,13 @@ export function useGameState({ puzzleMetadata }) {
 					}
 
 					await updateDoc(userDocRef, updates);
+
+					// Clean up old trophies for anonymous users (only keep today's puzzle)
+					if (user.isAnonymous) {
+						const { cleanupAnonymousTrophies } =
+							await import("../backend/firestore.js");
+						await cleanupAnonymousTrophies(user.uid, puzzleId);
+					}
 				}
 			} catch (error) {
 				console.error("[useGameState] Error saving game state:", error);
