@@ -8,6 +8,7 @@ export {
 	signOut,
 	onAuthChange,
 	getCurrentUser,
+	isSignedIn,
 } from "./auth";
 
 // Firestore database operations

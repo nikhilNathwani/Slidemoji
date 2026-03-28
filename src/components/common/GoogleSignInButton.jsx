@@ -27,7 +27,7 @@ function GoogleSignInButton({ isCondensed = false }) {
 			setIsProcessing(true);
 			// Anonymous users should "Sign in" (upgrade to Google)
 			// Only Google users should "Sign out"
-			if (user && !user.isAnonymous) {
+			if (user?.isAnonymous === false) {
 				await signOut(); // Signed in with Google, sign them out
 			} else {
 				await signIn(); // Anonymous or signed out, sign them in with Google
@@ -45,7 +45,7 @@ function GoogleSignInButton({ isCondensed = false }) {
 		: styles.googleSignInButton;
 
 	const isDisabled = loading || isProcessing;
-	const isSignedInWithGoogle = user && !user.isAnonymous;
+	const isSignedInWithGoogle = user?.isAnonymous === false;
 	const buttonText = isCondensed
 		? isSignedInWithGoogle
 			? "Sign out"

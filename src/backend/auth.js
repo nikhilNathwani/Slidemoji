@@ -32,6 +32,15 @@ import {
 const googleProvider = new GoogleAuthProvider();
 
 /**
+ * Check if user is signed in with Google (not anonymous)
+ * @param {Object} user - Firebase user object
+ * @returns {boolean} True if signed in with Google, false if anonymous or null
+ */
+export function isSignedIn(user) {
+	return user?.isAnonymous === false;
+}
+
+/**
  * Sign in anonymously (called automatically on app load)
  * Creates a temporary Firebase user ID so anonymous users can save to Firestore
  * @returns {Promise<User>} Anonymous Firebase user
@@ -75,9 +84,9 @@ export async function signInAnonymouslyIfNeeded() {
  * @throws {Error} If sign-in fails or popup is blocked
  */
 export async function signInWithGoogle() {
-	try {
-		const currentUser = auth.currentUser;
+	const currentUser = auth.currentUser; // Get this at the top so it's in scope for catch block
 
+	try {
 		// Case 1: Upgrading anonymous account to Google account
 		if (currentUser && currentUser.isAnonymous) {
 			console.log("[Auth] Upgrading anonymous account to Google");

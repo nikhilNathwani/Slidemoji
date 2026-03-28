@@ -180,3 +180,97 @@ export async function saveFirestoreGameState(userId, puzzleId, gameData) {
 		throw error;
 	}
 }
+
+/**
+ * Merge anonymous user's data into Google user's account
+ * Smart merge: Don't overwrite Google's existing puzzle data, only add new puzzles
+ *
+ * Strategy:
+ * - Keep all of Google user's existing puzzle progress (puzzles 1-86)
+ * - Add anonymous user's progress for puzzles Google doesn't have (puzzle 87)
+ * - If both have data for same puzzle: Keep Google's data (signed-in takes precedence)
+ * - Merge preferences: Keep Google's preferences (signed-in takes precedence)
+ *
+ * @param {string} anonymousUserId - UID of anonymous user (data source)
+ * @param {string} googleUserId - UID of Google user (merge destination)
+ */
+export async function mergeAnonymousDataToGoogle(
+	anonymousUserId,
+	googleUserId,
+) {
+	if (!anonymousUserId || !googleUserId) {
+		throw new Error("Both user IDs are required for merge");
+	}
+
+	console.log(
+		`[Firestore] Merging anonymous data (${anonymousUserId}) into Google account (${googleUserId})`,
+	);
+
+	try {
+		// Get both users' data
+		const anonymousData = await getFirestoreUserData(anonymousUserId);
+		const googleData = await getFirestoreUserData(googleUserId);
+
+		// If no anonymous data, nothing to merge
+		if (!anonymousData || !anonymousData.gameState) {
+			console.log(
+				"[Firestore] No anonymous data to merge, skipping",
+			);
+			return;
+		}
+
+		const googleDocRef = doc(db, "users", googleUserId);
+
+		// Case 1: Google user has no Firestore document yet (first time signing in with this Google account)
+		if (!googleData) {
+			console.log(
+				"[Firestore] Creating new Google account with anonymous data",
+			);
+			await setDoc(googleDocRef, {
+				...anonymousData,
+				uid: googleUserId, // Update to Google UID
+				isAnonymous: false,
+				updatedAt: serverTimestamp(),
+			});
+			return;
+		}
+
+		// Case 2: Google user has existing data - smart merge
+		console.log("[Firestore] Merging puzzle data intelligently");
+
+		// Merge gameState: Google's puzzles + anonymous's new puzzles
+		const mergedGameState = { ...googleData.gameState }; // Start with Google's data
+
+		// Add anonymous puzzles that Google doesn't have
+		for (const [puzzleId, puzzleData] of Object.entries(
+			anonymousData.gameState || {},
+		)) {
+			if (!mergedGameState[puzzleId]) {
+				// Google doesn't have this puzzle - add anonymous's data
+				mergedGameState[puzzleId] = puzzleData;
+				console.log(
+					`[Firestore] Added anonymous progress for puzzle ${puzzleId}`,
+				);
+			} else {
+				// Both have this puzzle - keep Google's data
+				console.log(
+					`[Firestore] Kept Google's existing data for puzzle ${puzzleId}`,
+				);
+			}
+		}
+
+		// Update Google user's document with merged data
+		// Keep Google's preferences (signed-in takes precedence)
+		await updateDoc(googleDocRef, {
+			gameState: mergedGameState,
+			updatedAt: serverTimestamp(),
+		});
+
+		console.log(
+			"[Firestore] Successfully merged anonymous data into Google account",
+		);
+	} catch (error) {
+		console.error("[Firestore] Error merging anonymous data:", error);
+		throw error;
+	}
+}

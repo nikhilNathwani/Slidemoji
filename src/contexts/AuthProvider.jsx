@@ -111,7 +111,7 @@ export default function AuthProvider({ children }) {
 		loading, // True during auth operations
 		signIn, // Function to sign in with Google (links anonymous account)
 		signOut, // Function to sign out (creates new anonymous user)
-		isAuthenticated: user && !user.isAnonymous, // True if signed in with Google
+		isAuthenticated: user?.isAnonymous === false, // True if signed in with Google
 		isAnonymous: user?.isAnonymous ?? true, // True if anonymous user
 	};
 
