@@ -16,6 +16,7 @@ function SettingsDialog({
 	difficulty,
 	onDifficultyChange,
 	isPuzzleSolved = false,
+	onAlmostSolve,
 }) {
 	return (
 		<Dialog isOpen={isOpen} onClose={onClose} title="Settings">
@@ -84,6 +85,25 @@ function SettingsDialog({
 					/>
 				</div>
 				<div className={styles.settingsDivider}></div>
+				{process.env.NODE_ENV === "development" && onAlmostSolve && (
+					<>
+						<div className={styles.settingsItem}>
+							<label className={styles.settingsLabel}>
+								Dev Tools
+							</label>
+							<button
+								onClick={() => {
+									onAlmostSolve();
+									onClose();
+								}}
+								className={styles.devButton}
+							>
+								Set Almost Solved
+							</button>
+						</div>
+						<div className={styles.settingsDivider}></div>
+					</>
+				)}
 				<div className={styles.settingsActions}>
 					<a
 						href="mailto:nnathwani36@gmail.com?subject=Slidemoji%20Feedback"

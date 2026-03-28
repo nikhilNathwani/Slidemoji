@@ -83,6 +83,31 @@ function App() {
 		!gameState ||
 		!puzzleMetadata;
 
+	// Dev helper: Set grid to one move away from solved
+	const setAlmostSolved = () => {
+		if (!gameState || !puzzleMetadata) return;
+
+		const currentDiff = gameState.currentDifficulty;
+		const size = puzzleMetadata.initialGrids[currentDiff].length;
+
+		// Create solved grid: [1, 2, 3, ..., n-1, null]
+		const almostSolvedGrid = Array.from(
+			{ length: size },
+			(_, i) => (i === size - 1 ? null : i + 1),
+		);
+
+		// Swap last two tiles before gap to make it one move away
+		// From [1, 2, 3, 4, 5, 6, 7, 8, null] to [1, 2, 3, 4, 5, 6, 8, 7, null]
+		if (size > 2) {
+			[almostSolvedGrid[size - 2], almostSolvedGrid[size - 3]] = [
+				almostSolvedGrid[size - 3],
+				almostSolvedGrid[size - 2],
+			];
+		}
+
+		setGameState({ grid: almostSolvedGrid });
+	};
+
 	if (showLandingPage) {
 		return (
 			<div className="app light-theme">
@@ -151,6 +176,7 @@ function App() {
 					setGameState({ currentDifficulty: diff })
 				}
 				isPuzzleSolved={!!solvedPuzzles?.[puzzleId]}
+				onAlmostSolve={setAlmostSolved}
 			/>
 
 			<ArchiveDialog

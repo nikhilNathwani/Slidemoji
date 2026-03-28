@@ -117,3 +117,25 @@
 .actionButton:active {
 	opacity: 0.7;
 }
+
+.devButton {
+	padding: 10px 16px;
+	border-radius: 8px;
+	border: 2px solid #ef4444;
+	background-color: var(--surface-secondary);
+	color: #ef4444;
+	font-size: var(--text-sm);
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	text-align: center;
+}
+
+.devButton:hover {
+	background-color: #ef4444;
+	color: white;
+}
+
+.devButton:active {
+	opacity: 0.7;
+}
