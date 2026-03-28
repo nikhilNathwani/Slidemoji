@@ -176,15 +176,15 @@ export async function signInWithGoogle() {
 				console.log(
 					"[Auth] Using credential from error to avoid popup blocker",
 				);
-				const googleCredential =
-					GoogleAuthProvider.credential(existingCredential.idToken);
+				const googleCredential = GoogleAuthProvider.credential(
+					existingCredential.idToken,
+				);
 
 				// Sign out anonymous user
 				await firebaseSignOut(auth);
 
 				// Sign in with the credential from the error
-				const { signInWithCredential } =
-					await import("firebase/auth");
+				const { signInWithCredential } = await import("firebase/auth");
 				const result = await signInWithCredential(
 					auth,
 					googleCredential,

@@ -256,7 +256,8 @@ export async function mergeAnonymousDataToGoogle(
 
 				// Merge normal difficulty
 				if (anonymousPuzzleData.normal && !googlePuzzleData.normal) {
-					mergedGameState[puzzleId].normal = anonymousPuzzleData.normal;
+					mergedGameState[puzzleId].normal =
+						anonymousPuzzleData.normal;
 					console.log(
 						`[Firestore] Added anonymous normal difficulty for puzzle ${puzzleId}`,
 					);
@@ -319,5 +320,66 @@ export async function mergeAnonymousDataToGoogle(
 	} catch (error) {
 		console.error("[Firestore] Error merging anonymous data:", error);
 		throw error;
+	}
+}
+
+/**
+ * Clean up old trophies for anonymous users (only keep today's puzzle)
+ * This motivates users to sign in to save their trophies permanently.
+ *
+ * Call this after saving anonymous user's game state.
+ *
+ * @param {string} userId - Anonymous user ID
+ * @param {number} currentPuzzleId - Today's puzzle ID
+ */
+export async function cleanupAnonymousTrophies(userId, currentPuzzleId) {
+	if (!userId) {
+		throw new Error("User ID is required");
+	}
+
+	try {
+		const userData = await getFirestoreUserData(userId);
+		if (!userData?.gameState || !userData.isAnonymous) {
+			// Not anonymous or no data - skip cleanup
+			return;
+		}
+
+		// Check if there are any old puzzles to clean up
+		const puzzleIds = Object.keys(userData.gameState);
+		const oldPuzzleIds = puzzleIds.filter(
+			(id) => parseInt(id) !== currentPuzzleId,
+		);
+
+		if (oldPuzzleIds.length === 0) {
+			// No old puzzles to clean up
+			return;
+		}
+
+		console.log(
+			`[Firestore] Cleaning up ${oldPuzzleIds.length} old puzzles for anonymous user`,
+		);
+
+		// Remove old puzzle data
+		const userDocRef = doc(db, "users", userId);
+		const updates = {
+			updatedAt: serverTimestamp(),
+		};
+
+		// Delete old puzzle fields
+		const { deleteField } = await import("firebase/firestore");
+		for (const puzzleId of oldPuzzleIds) {
+			updates[`gameState.${puzzleId}`] = deleteField();
+		}
+
+		await updateDoc(userDocRef, updates);
+		console.log(
+			`[Firestore] Cleaned up old puzzles: ${oldPuzzleIds.join(", ")}`,
+		);
+	} catch (error) {
+		console.error(
+			"[Firestore] Error cleaning up anonymous trophies:",
+			error,
+		);
+		// Don't throw - cleanup is not critical
 	}
 }
