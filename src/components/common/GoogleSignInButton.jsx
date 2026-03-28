@@ -54,6 +54,20 @@ function GoogleSignInButton({ isCondensed = false }) {
 			? "Sign out"
 			: "Sign in with Google";
 
+	// Show loading spinner or button content
+	const buttonContent = isProcessing ? (
+		<span>Loading...</span>
+	) : (
+		<>
+			<img
+				src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+				alt="Google"
+				className={styles.googleIcon}
+			/>
+			{buttonText}
+		</>
+	);
+
 	return (
 		<button
 			className={className}
@@ -61,14 +75,8 @@ function GoogleSignInButton({ isCondensed = false }) {
 			disabled={isDisabled}
 			aria-label={isSignedInWithGoogle ? "Sign Out" : "Sign In"}
 			title={isSignedInWithGoogle ? "Sign Out" : "Sign In with Google"}
-			style={{ opacity: isDisabled ? 0.6 : 1 }}
 		>
-			<img
-				src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-				alt="Google"
-				className={styles.googleIcon}
-			/>
-			{buttonText}
+			{buttonContent}
 		</button>
 	);
 }

@@ -126,14 +126,44 @@ export async function signInWithGoogle() {
 		return user;
 	} catch (error) {
 		// Special case: User already has a Google account
-		if (error.code === "auth/credential-already-in-use") {
+		// Can't link anonymous account, need to merge data manually
+		if (
+			error.code === "auth/credential-already-in-use" ||
+			error.code === "auth/email-already-in-use"
+		) {
 			console.log(
-				"[Auth] User already has Google account, signing in normally",
+				"[Auth] Google account already exists, merging data...",
 			);
-			// Sign out anonymous user and sign in with Google
-			await firebaseSignOut(auth);
-			const result = await signInWithPopup(auth, googleProvider);
-			return result.user;
+
+			try {
+				const anonymousUserId = currentUser.uid;
+
+				// Sign out anonymous user (don't wait for new anonymous user)
+				await firebaseSignOut(auth);
+
+				// Sign in with existing Google account
+				// Use signInWithRedirect to avoid popup blocker after failed linkWithCredential
+				const result = await signInWithPopup(auth, googleProvider);
+				const googleUser = result.user;
+
+				// Merge anonymous user's data into Google user's account
+				const { mergeAnonymousDataToGoogle } =
+					await import("./firestore.js");
+				await mergeAnonymousDataToGoogle(
+					anonymousUserId,
+					googleUser.uid,
+				);
+
+				console.log(
+					"[Auth] Successfully merged and signed in:",
+					googleUser.uid,
+				);
+				return googleUser;
+			} catch (mergeError) {
+				console.error("[Auth] Error during merge:", mergeError);
+				// Re-throw the merge error
+				throw mergeError;
+			}
 		}
 
 		console.error("[Auth] Error signing in with Google:", error);

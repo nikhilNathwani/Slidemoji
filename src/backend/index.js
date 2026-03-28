@@ -17,4 +17,5 @@ export {
 	updateFirestoreUserProfile,
 	updateFirestorePreferences,
 	saveFirestoreGameState,
+	mergeAnonymousDataToGoogle,
 } from "./firestore";
