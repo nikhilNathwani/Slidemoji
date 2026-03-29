@@ -86,7 +86,7 @@ const auth = getAuth(app);
 /**
  * Scramble puzzle grid - creates a solvable random configuration
  * Ensures the gap always ends up in the bottom-right corner
- * Grid uses 1-8 for tiles and 0 for gap (Firestore format)
+ * Grid uses 1-8 for tiles and 0 for gap (app + Firestore format)
  * (Same logic as src/utils/gridHelpers.js)
  */
 function scramblePuzzle(size) {
@@ -176,8 +176,8 @@ function generatePuzzle(puzzleId) {
 		date: dateString,
 		emoji: emoji,
 		emojiName: name,
-		3: scramblePuzzle(3),
-		4: scramblePuzzle(4),
+		normal: scramblePuzzle(3),
+		hard: scramblePuzzle(4),
 	};
 }
 

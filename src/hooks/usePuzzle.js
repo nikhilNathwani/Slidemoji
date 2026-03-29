@@ -1,7 +1,7 @@
 /**
  * usePuzzle - Fetch puzzle data from Firestore
  *
- * Simple hook for fetching puzzle definition (emoji, initial grids for both difficulties).
+ * Simple hook for fetching puzzle definition (emoji, initial grids for both difficulties, 0-gap).
  * Firestore offline persistence handles caching automatically.
  *
  * @param {number} puzzleId - Puzzle ID to fetch
@@ -12,31 +12,29 @@
  */
 
 import { useState, useEffect } from "react";
-import {
-	getPuzzleById,
-	convertPuzzleFromFirestore,
-} from "../utils/puzzleUtils";
+import { convertPuzzleFromFirestore } from "../utils/puzzleUtils";
+import { getFirestorePuzzleById } from "../firebase/firestore/puzzle";
 
 export function usePuzzle(puzzleId) {
-	const [data, setData] = useState(null);
-	const [isLoading, setIsLoading] = useState(true);
-	const [error, setError] = useState(null);
+	const [state, setState] = useState({
+		puzzleId: null,
+		data: null,
+		error: null,
+	});
 
 	useEffect(() => {
 		if (!puzzleId) {
-			setData(null);
-			setIsLoading(false);
 			return;
 		}
 
-		setIsLoading(true);
-		setError(null);
-
-		getPuzzleById(puzzleId)
+		getFirestorePuzzleById(puzzleId)
 			.then((puzzleData) => {
 				if (!puzzleData) {
-					setData(null);
-					setIsLoading(false);
+					setState({
+						puzzleId,
+						data: null,
+						error: null,
+					});
 					return;
 				}
 
@@ -45,23 +43,37 @@ export function usePuzzle(puzzleId) {
 				const hardPuzzle = convertPuzzleFromFirestore(puzzleData, 4);
 
 				// Return both grids in a unified format
-				setData({
-					id: puzzleId,
-					emoji: normalPuzzle.emoji,
-					emojiName: normalPuzzle.emojiName,
-					initialGrids: {
-						normal: normalPuzzle.initialGrid,
-						hard: hardPuzzle.initialGrid,
+				setState({
+					puzzleId,
+					data: {
+						id: puzzleId,
+						emoji: normalPuzzle.emoji,
+						emojiName: normalPuzzle.emojiName,
+						initialGrids: {
+							normal: normalPuzzle.initialGrid,
+							hard: hardPuzzle.initialGrid,
+						},
 					},
+					error: null,
 				});
-				setIsLoading(false);
 			})
 			.catch((err) => {
 				console.error("[usePuzzle] Error loading puzzle:", err);
-				setError(err);
-				setIsLoading(false);
+				setState({
+					puzzleId,
+					data: null,
+					error: err,
+				});
 			});
 	}, [puzzleId]);
 
-	return { data, isLoading, error };
+	if (!puzzleId) {
+		return { data: null, isLoading: false, error: null };
+	}
+
+	if (state.puzzleId !== puzzleId) {
+		return { data: null, isLoading: true, error: null };
+	}
+
+	return { data: state.data, isLoading: false, error: state.error };
 }

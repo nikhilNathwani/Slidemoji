@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import styles from "./Header.module.css";
 import GoogleSignInButton from "./common/GoogleSignInButton";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "../contexts/auth";
 import { FontAwesomeIcon } from "../utils/icons";
 
 function Header({ onSettingsClick, onStatsClick, onArchiveClick }) {

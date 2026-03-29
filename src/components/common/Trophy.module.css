@@ -6,17 +6,17 @@
 	--trophy-mini-width-mobile: 60px;
 	--trophy-mini-height-mobile: 75px;
 
-	/* Gold Trophy (Normal 3x3) */
-	--trophy-gold-base: #fbbf24;
-	--trophy-gold-highlight: #fcd34d;
-	--trophy-gold-number: #78350f;
-	--trophy-gold-shadow: rgba(251, 191, 36, 0.4);
+	/* Normal Trophy (3x3) */
+	--trophy-normal-base: #fbbf24;
+	--trophy-normal-highlight: #fcd34d;
+	--trophy-normal-number: #78350f;
+	--trophy-normal-shadow: rgba(251, 191, 36, 0.4);
 
-	/* Teal Trophy (Hard 4x4) */
-	--trophy-teal-base: #14b8a6;
-	--trophy-teal-highlight: #5eead4;
-	--trophy-teal-number: #0d5e56; /* Darker for better readability */
-	--trophy-teal-shadow: rgba(20, 184, 166, 0.4);
+	/* Hard Trophy (4x4) */
+	--trophy-hard-base: #60a5fa;
+	--trophy-hard-highlight: #bfdbfe;
+	--trophy-hard-number: #1e3a8a;
+	--trophy-hard-shadow: rgba(96, 165, 250, 0.45);
 }
 
 /* Base Trophy Styles */
@@ -75,21 +75,37 @@
 	box-shadow: none;
 }
 
-/* Variant: Gold Trophy (3x3 Normal) */
-.trophy.gold {
+/* Variant: Normal Trophy (3x3) */
+.trophy.normal {
 	background: linear-gradient(
 		135deg,
-		var(--trophy-gold-base) 0%,
-		var(--trophy-gold-highlight) 50%,
-		var(--trophy-gold-base) 100%
+		var(--trophy-normal-base) 0%,
+		var(--trophy-normal-highlight) 50%,
+		var(--trophy-normal-base) 100%
 	);
 	box-shadow:
-		0 4px 8px var(--trophy-gold-shadow),
+		0 4px 8px var(--trophy-normal-shadow),
 		inset 0 1px 0 rgba(255, 255, 255, 0.5),
 		inset 0 -1px 0 rgba(0, 0, 0, 0.15);
 }
 
-.trophy.gold::before {
+/* Variant: Hard Trophy (4x4) */
+.trophy.hard {
+	background: linear-gradient(
+		135deg,
+		var(--trophy-hard-base) 0%,
+		var(--trophy-hard-highlight) 50%,
+		var(--trophy-hard-base) 100%
+	);
+	box-shadow:
+		0 4px 8px var(--trophy-hard-shadow),
+		inset 0 1px 0 rgba(255, 255, 255, 0.5),
+		inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+}
+
+/* Shimmer overlay for earned trophies */
+.trophy.normal::before,
+.trophy.hard::before {
 	content: "";
 	position: absolute;
 	top: 0;
@@ -104,72 +120,11 @@
 	);
 }
 
-/* Mini trophy - hover animation (no reverse on unhover) */
-.trophy.gold.trophyMini:hover::before {
+/* Hover shimmer: left-to-right once on hover for all earned trophies */
+.trophy.normal:hover::before,
+.trophy.hard:hover::before {
 	left: 100%;
 	transition: left 0.5s ease;
-}
-
-/* Regular trophy - looping animation */
-.trophy.gold:not(.trophyMini)::before {
-	animation: shine 3s ease-in-out infinite;
-}
-
-@keyframes shine {
-	0% {
-		left: -100%;
-	}
-	50% {
-		left: 100%;
-	}
-	100% {
-		left: 100%;
-	}
-}
-
-/* Variant: Special Trophy (4x4 Hard) - Electric Teal */
-.trophy.special {
-	background: linear-gradient(
-		135deg,
-		var(--trophy-teal-base) 0%,
-		var(--trophy-teal-highlight) 50%,
-		var(--trophy-teal-base) 100%
-	);
-	box-shadow:
-		0 4px 8px var(--trophy-teal-shadow),
-		inset 0 1px 0 rgba(255, 255, 255, 0.5),
-		inset 0 -1px 0 rgba(0, 0, 0, 0.15);
-}
-
-.trophy.special::before {
-	content: "";
-	position: absolute;
-	top: 0;
-	left: -100%;
-	width: 100%;
-	height: 100%;
-	background: linear-gradient(
-		90deg,
-		transparent,
-		rgba(255, 255, 255, 0.5),
-		transparent
-	);
-	transition: left 0.5s ease;
-}
-
-/* Mini special trophy - hover animation */
-.trophy.special.trophyMini:hover::before {
-	left: 100%;
-}
-
-/* Regular special trophy - looping animation */
-.trophy.special:not(.trophyMini)::before {
-	animation: shine 3s ease-in-out infinite;
-}
-
-/* Regular special trophy - looping animation */
-.trophy.special:not(.trophyMini)::before {
-	animation: shine 3s ease-in-out infinite;
 }
 
 /* Number Display */
@@ -180,19 +135,19 @@
 }
 
 /* Variant-specific number colors */
-.trophy.gold .number {
+.trophy.normal .number {
 	transition:
 		color 0.8s ease,
 		text-shadow 0.8s ease;
-	color: var(--trophy-gold-number);
+	color: var(--trophy-normal-number);
 	text-shadow: 0 1px 1px rgba(255, 255, 255, 0.4);
 }
 
-.trophy.special .number {
+.trophy.hard .number {
 	transition:
 		color 0.8s ease,
 		text-shadow 0.8s ease;
-	color: var(--trophy-teal-number);
+	color: var(--trophy-hard-number);
 	text-shadow: 0 1px 1px rgba(255, 255, 255, 0.4);
 }
 
@@ -251,19 +206,19 @@
 }
 
 /* Variant-specific name colors */
-.trophy.gold .name {
+.trophy.normal .name {
 	transition:
 		color 0.8s ease,
 		text-shadow 0.8s ease;
-	color: #78350f;
+	color: var(--trophy-normal-number);
 	text-shadow: 0 1px 1px rgba(255, 255, 255, 0.3);
 }
 
-.trophy.special .name {
+.trophy.hard .name {
 	transition:
 		color 0.8s ease,
 		text-shadow 0.8s ease;
-	color: #0f766e;
+	color: var(--trophy-hard-number);
 	text-shadow: 0 1px 1px rgba(255, 255, 255, 0.3);
 }
 

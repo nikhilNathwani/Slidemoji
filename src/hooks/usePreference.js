@@ -18,79 +18,28 @@
  *   const [showNumbers, setShowNumbers] = usePreference('showNumbers', true, { contextKey: puzzleId });
  */
 
-import { useState, useEffect, useCallback } from "react";
-import {
-	doc,
-	onSnapshot,
-	updateDoc,
-	serverTimestamp,
-} from "firebase/firestore";
-import { db } from "../backend/firebaseConfig";
-import { useAuth } from "./useAuth";
+import { useCallback } from "react";
+import { updateFirestorePreferences } from "../firebase/firestore/preference";
+import { useAuth } from "../contexts/auth";
+import { useUserDoc } from "../contexts/userDoc";
 
 export function usePreference(key, defaultValue, options = {}) {
 	const { contextKey = null } = options;
 	const { user } = useAuth();
-	const [value, setValue] = useState(defaultValue);
-	const [loading, setLoading] = useState(true);
+	const { userData, loading: userDocLoading } = useUserDoc();
+	const userId = user?.uid || null;
 
 	// If contextKey is provided, scope the storage key (e.g., showNumbers_123 for puzzle 123)
 	const storageKey = contextKey ? `${key}_${contextKey}` : key;
 
-	// Subscribe to user's Firestore document for real-time updates
-	useEffect(() => {
-		if (!user?.uid) {
-			setValue(defaultValue);
-			setLoading(false);
-			return;
-		}
-
-		const userDocRef = doc(db, "users", user.uid);
-
-		// Real-time subscription to Firestore
-		const unsubscribe = onSnapshot(
-			userDocRef,
-			(docSnap) => {
-				if (!docSnap.exists()) {
-					setValue(defaultValue);
-					setLoading(false);
-					return;
-				}
-
-				const userData = docSnap.data();
-				const preferenceValue = userData?.preferences?.[storageKey];
-
-				setValue(
-					preferenceValue !== undefined
-						? preferenceValue
-						: defaultValue,
-				);
-				setLoading(false);
-			},
-			(error) => {
-				console.error(
-					"[usePreference] Error subscribing to preference:",
-					error,
-				);
-				setValue(defaultValue);
-				setLoading(false);
-			},
-		);
-
-		return () => unsubscribe();
-	}, [user?.uid, storageKey, defaultValue]);
-
 	// Setter that saves to Firestore
 	const setPreference = useCallback(
 		async (newValue) => {
-			if (!user?.uid) return;
-
-			const userDocRef = doc(db, "users", user.uid);
+			if (!userId) return;
 
 			try {
-				await updateDoc(userDocRef, {
-					[`preferences.${storageKey}`]: newValue,
-					updatedAt: serverTimestamp(),
+				await updateFirestorePreferences(userId, {
+					[storageKey]: newValue,
 				});
 			} catch (error) {
 				console.error(
@@ -100,8 +49,15 @@ export function usePreference(key, defaultValue, options = {}) {
 				throw error;
 			}
 		},
-		[user?.uid, storageKey],
+		[userId, storageKey],
 	);
 
-	return [value, setPreference, loading];
+	const preferenceValue = userData?.preferences?.[storageKey];
+	const effectiveValue =
+		userId && preferenceValue !== undefined
+			? preferenceValue
+			: defaultValue;
+	const loading = userId ? userDocLoading : false;
+
+	return [effectiveValue, setPreference, loading];
 }

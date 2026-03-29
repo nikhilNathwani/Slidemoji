@@ -86,19 +86,19 @@ export function calcBoardSizePx(gridSize) {
 /**
  * Get the solved state for a grid of given size
  * @param {number} size - Grid size (2, 3, or 4)
- * @returns {Array} Array of tile values with null as last element
+ * @returns {Array} Array of tile values with 0 as last element
  */
 export function getSolvedState(size) {
-	return [...Array(size * size - 1)].map((_, i) => i + 1).concat(null);
+	return [...Array(size * size - 1)].map((_, i) => i + 1).concat(0);
 }
 
 /**
- * Find the index of the gap (null tile) in the tiles array
+ * Find the index of the gap tile (0) in the tiles array
  * @param {Array} tiles - Array of tile values
  * @returns {number} Index of the gap
  */
 export function getGapIndex(tiles) {
-	return tiles.indexOf(null);
+	return tiles.indexOf(0);
 }
 
 /**
@@ -116,15 +116,15 @@ export function swapTiles(tiles, index1, index2) {
 
 /**
  * Check if the current grid state is solved
- * Grid is solved if elements are monotonically increasing with gap (null) at the end
+ * Grid is solved if elements are monotonically increasing with gap (0) at the end
  * @param {Array} tiles - Current tiles array
  * @returns {boolean} True if grid is solved
  */
 export function checkWin(tiles) {
-	if (!tiles || tiles.length === 0) return false;
+	if (!Array.isArray(tiles) || tiles.length === 0) return false;
 
 	// Gap must be in the last position
-	if (tiles[tiles.length - 1] !== null) return false;
+	if (tiles[tiles.length - 1] !== 0) return false;
 
 	// All other elements must be strictly monotonically increasing (1, 2, 3, ...)
 	for (let i = 0; i < tiles.length - 1; i++) {
@@ -132,6 +132,68 @@ export function checkWin(tiles) {
 	}
 
 	return true;
+}
+
+/**
+ * Check if two grids are identical (element-by-element comparison)
+ * @param {Array|null|undefined} left - First grid
+ * @param {Array|null|undefined} right - Second grid
+ * @returns {boolean} True if both are arrays with identical contents
+ */
+export function areGridsEqual(left, right) {
+	if (!Array.isArray(left) || !Array.isArray(right)) return false;
+	if (left.length !== right.length) return false;
+	return left.every((val, i) => val === right[i]);
+}
+
+/**
+ * Choose which grid to use during anonymous-to-Google account merge.
+ * For a given puzzle+difficulty, determine if we should keep anonymous or use Google grid.
+ *
+ * Logic:
+ * 1. If anonymous is solved, keep anonymous (guaranteed most progressed)
+ * 2. If anonymous is initial (untouched), use google (guaranteed at least as progressed)
+ * 3. If anonymous is in-progress:
+ *    - If google is initial, keep anonymous (in-progress beats untouched)
+ *    - Otherwise use google (google is in-progress or solved, both beat anonymous in-progress)
+ *
+ * @param {Array|null|undefined} anonymousGrid - Grid from anonymous account
+ * @param {Array|null|undefined} googleGrid - Grid from Google account
+ * @param {Array|null|undefined} initialGrid - Puzzle's initial/scrambled state
+ * @returns {Array|null} The chosen grid (anonymous or google)
+ */
+export function chooseGridForMerge(anonymousGrid, googleGrid, initialGrid) {
+	// Validate inputs upfront
+	const hasAnonymousGrid = Array.isArray(anonymousGrid);
+	const hasGoogleGrid = Array.isArray(googleGrid);
+	const hasInitialGrid = Array.isArray(initialGrid);
+
+	// Case 1: Anonymous is solved → use anonymous (best progress)
+	if (hasAnonymousGrid && checkWin(anonymousGrid)) {
+		return anonymousGrid;
+	}
+
+	// Case 2: Anonymous is initial (untouched) → use google
+	if (
+		hasAnonymousGrid &&
+		hasInitialGrid &&
+		areGridsEqual(anonymousGrid, initialGrid)
+	) {
+		return googleGrid;
+	}
+
+	// Case 3: Anonymous is in-progress
+	// If google is initial, keep anonymous (in-progress beats untouched)
+	if (
+		hasGoogleGrid &&
+		hasInitialGrid &&
+		areGridsEqual(googleGrid, initialGrid)
+	) {
+		return anonymousGrid;
+	}
+
+	// Default: use google (it's either in-progress, solved, or missing)
+	return googleGrid;
 }
 
 /**
@@ -155,7 +217,7 @@ export function scramblePuzzle(size, numMoves = 100) {
 
 		// Explicitly swap gap with random adjacent tile
 		const tileValue = tiles[randomMoveIndex];
-		tiles[randomMoveIndex] = null;
+		tiles[randomMoveIndex] = 0;
 		tiles[gapIndex] = tileValue;
 		gapIndex = randomMoveIndex;
 	}
@@ -184,7 +246,7 @@ export function scramblePuzzle(size, numMoves = 100) {
 
 		// Swap
 		const tileValue = tiles[nextIndex];
-		tiles[nextIndex] = null;
+		tiles[nextIndex] = 0;
 		tiles[gapIndex] = tileValue;
 		gapIndex = nextIndex;
 	}

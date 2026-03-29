@@ -135,29 +135,29 @@
 .puzzleItem.solved {
 	background: linear-gradient(
 		135deg,
-		var(--trophy-gold-base) 0%,
-		var(--trophy-gold-highlight) 50%,
-		var(--trophy-gold-base) 100%
+		var(--trophy-normal-base) 0%,
+		var(--trophy-normal-highlight) 50%,
+		var(--trophy-normal-base) 100%
 	);
-	border-color: var(--trophy-gold-base);
+	border-color: var(--trophy-normal-base);
 	box-shadow:
-		0 2px 6px var(--trophy-gold-shadow),
+		0 2px 6px var(--trophy-normal-shadow),
 		inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .puzzleItem.solved .puzzleNumber {
-	color: var(--trophy-gold-number);
+	color: var(--trophy-normal-number);
 	font-weight: 700;
 }
 
 .puzzleItem.solved .puzzleName {
-	color: var(--trophy-gold-number);
+	color: var(--trophy-normal-number);
 	font-weight: 600;
 }
 
 .puzzleItem.solved:hover:not(:disabled) {
 	box-shadow:
-		0 4px 12px var(--trophy-gold-shadow),
+		0 4px 12px var(--trophy-normal-shadow),
 		inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
@@ -198,7 +198,7 @@
 }
 
 .puzzleItem.solved .playIcon {
-	color: var(--trophy-gold-number);
+	color: var(--trophy-normal-number);
 }
 
 /* Today Badge */
@@ -209,7 +209,7 @@
 }
 
 .puzzleItem.solved .todayBadge {
-	color: var(--trophy-gold-number);
+	color: var(--trophy-normal-number);
 }
 
 /* Empty State */

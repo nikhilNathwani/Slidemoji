@@ -7,17 +7,22 @@ export {
 	signInWithGoogle,
 	signOut,
 	onAuthChange,
-	getCurrentUser,
-	isSignedIn,
+	shouldUseRedirectFlow,
 } from "./auth";
 
 // Firestore database operations
 export {
 	getFirestoreUserData,
-	createFirestoreUserData,
-	updateFirestoreUserProfile,
-	updateFirestorePreferences,
+	syncFirestoreUserData,
+	subscribeToFirestoreUserData,
+} from "./firestore/user";
+
+export { updateFirestorePreferences } from "./firestore/preference";
+
+export {
 	saveFirestoreGameState,
 	mergeAnonymousDataToGoogle,
 	cleanupAnonymousTrophies,
-} from "./firestore";
+} from "./firestore/gameState";
+
+export { getFirestorePuzzleById } from "./firestore/puzzle";

@@ -3,7 +3,6 @@ import Tile from "./Tile";
 import Gap from "./Gap";
 import {
 	isAdjacent,
-	getSolvedState,
 	getGapIndex,
 	swapTiles,
 	checkWin,
@@ -52,7 +51,7 @@ function Grid({
 				onWin();
 			}
 		},
-		[grid, gridSize, onMove, hasSoundEnabled, onWin],
+		[grid, onMove, hasSoundEnabled, onWin],
 	);
 
 	const handleTileSelect = useCallback(
@@ -116,7 +115,7 @@ function Grid({
 			}}
 		>
 			{grid.map((value, index) => {
-				const isGap = value === null;
+				const isGap = value === 0;
 
 				if (isGap) {
 					return <Gap key="gap" />;

@@ -1,171 +1,171 @@
 /**
  * useGameState - Unified hook for game state loading and saving
  *
- * Uses Firestore's onSnapshot for real-time updates (no React Query needed).
+ * Uses shared user-doc context for real-time updates.
  * Everyone uses Firestore (anonymous or Google via Firebase Anonymous Auth).
  *
  * const [gameState, setGameState] = useGameState({ puzzleMetadata })
  *
  * Returns:
  * - gameState: { normal: grid, hard: grid, currentDifficulty }
- * - setGameState: ({ grid?, currentDifficulty? }) => void
+ * - setGameState: ({ currentDifficulty?, normal?, hard? }) => void
  *
  * This hook:
- * - Uses Firestore onSnapshot for real-time updates
+ * - Reads from UserDocProvider's single Firestore onSnapshot stream
  * - Automatic offline support via Firestore IndexedDB persistence
  * - No caching layer needed - Firestore SDK handles everything
  * - Eliminates dual storage and if(user) branching
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useMemo, useCallback } from "react";
 import {
-	doc,
-	onSnapshot,
-	updateDoc,
-	serverTimestamp,
-} from "firebase/firestore";
-import { db } from "../backend/firebaseConfig";
+	saveFirestoreGameState,
+	cleanupAnonymousTrophies,
+} from "../firebase/firestore/gameState";
 import { DIFFICULTY, DEFAULT_DIFFICULTY } from "../constants";
-import { useAuth } from "./useAuth";
-import { convertGridFromStorage } from "../utils/puzzleUtils";
+import { useAuth } from "../contexts/auth";
+import { useUserDoc } from "../contexts/userDoc";
+
+import { chooseGridForMerge } from "../utils/gridHelpers";
+
+function composeGameState(preferredState, alternateState, initialGrids) {
+	if (!initialGrids) {
+		return preferredState || alternateState || null;
+	}
+
+	const normal = chooseGridForMerge(
+		alternateState?.normal,
+		preferredState?.normal,
+		initialGrids.normal,
+	);
+	const hard = chooseGridForMerge(
+		alternateState?.hard,
+		preferredState?.hard,
+		initialGrids.hard,
+	);
+
+	return {
+		normal: normal || initialGrids.normal,
+		hard: hard || initialGrids.hard,
+		currentDifficulty:
+			preferredState?.currentDifficulty ||
+			alternateState?.currentDifficulty ||
+			DEFAULT_DIFFICULTY,
+	};
+}
 
 export function useGameState({ puzzleMetadata }) {
 	const puzzleId = puzzleMetadata?.id;
-	const { user } = useAuth();
-	const [gameState, setGameStateInternal] = useState(null);
-	const [loading, setLoading] = useState(true);
+	const {
+		user,
+		isMerging,
+		mergeSnapshotGameState,
+		preferInitialAnonymousState,
+	} = useAuth();
+	const { userData, loading: userDocLoading } = useUserDoc();
+	const userId = user?.uid || null;
+	const isAnonymous = user?.isAnonymous === true;
 
-	// Subscribe to user's Firestore document for real-time updates
-	useEffect(() => {
-		if (!user?.uid || !puzzleMetadata?.initialGrids) {
-			setLoading(false);
-			return;
+	const persistedGameState = useMemo(() => {
+		if (!puzzleMetadata?.initialGrids) {
+			return null;
 		}
 
-		setLoading(true);
-
-		const userDocRef = doc(db, "users", user.uid);
-
-		// Real-time subscription to Firestore
-		const unsubscribe = onSnapshot(
-			userDocRef,
-			(docSnap) => {
-				if (!docSnap.exists()) {
-					// No user data yet - use initial grids
-					setGameStateInternal({
+		if (!userId) {
+			return preferInitialAnonymousState
+				? {
 						normal: puzzleMetadata.initialGrids.normal,
 						hard: puzzleMetadata.initialGrids.hard,
 						currentDifficulty: DEFAULT_DIFFICULTY,
-					});
-					setLoading(false);
-					return;
-				}
+					}
+				: null;
+		}
 
-				const userData = docSnap.data();
-				const savedGameState = userData?.gameState?.[puzzleId];
+		const savedGameState = userData?.gameState?.[puzzleId] || null;
+		if (!savedGameState) {
+			return {
+				normal: puzzleMetadata.initialGrids.normal,
+				hard: puzzleMetadata.initialGrids.hard,
+				currentDifficulty: DEFAULT_DIFFICULTY,
+			};
+		}
 
-				// Helper: Get saved grid for a difficulty
-				const getSavedGrid = (diff) => {
-					const grid = savedGameState?.[diff];
-					if (!grid || !Array.isArray(grid)) return null;
-					// Convert 0 to null for internal representation
-					return convertGridFromStorage(grid);
-				};
+		const getSavedGrid = (diff) => {
+			const grid = savedGameState?.[diff];
+			if (!grid || !Array.isArray(grid)) return null;
+			return grid;
+		};
 
-				// Current difficulty: saved > default
-				const currentDifficulty =
-					savedGameState?.currentDifficulty || DEFAULT_DIFFICULTY;
+		const currentDifficulty =
+			savedGameState?.currentDifficulty || DEFAULT_DIFFICULTY;
 
-				setGameStateInternal({
-					normal:
-						getSavedGrid(DIFFICULTY.NORMAL) ||
-						puzzleMetadata.initialGrids.normal,
-					hard:
-						getSavedGrid(DIFFICULTY.HARD) ||
-						puzzleMetadata.initialGrids.hard,
-					currentDifficulty,
-				});
-				setLoading(false);
-			},
-			(error) => {
-				console.error(
-					"[useGameState] Error subscribing to game state:",
-					error,
-				);
-				// Fallback to initial grids on error
-				setGameStateInternal({
-					normal: puzzleMetadata.initialGrids.normal,
-					hard: puzzleMetadata.initialGrids.hard,
-					currentDifficulty: DEFAULT_DIFFICULTY,
-				});
-				setLoading(false);
-			},
-		);
+		return {
+			normal:
+				getSavedGrid(DIFFICULTY.NORMAL) ||
+				puzzleMetadata.initialGrids.normal,
+			hard:
+				getSavedGrid(DIFFICULTY.HARD) ||
+				puzzleMetadata.initialGrids.hard,
+			currentDifficulty,
+		};
+	}, [
+		userId,
+		puzzleMetadata,
+		userData,
+		puzzleId,
+		preferInitialAnonymousState,
+	]);
 
-		return () => unsubscribe();
-	}, [user?.uid, puzzleId, puzzleMetadata]);
+	const gameState = useMemo(() => {
+		const activeMergePuzzleState = isMerging
+			? mergeSnapshotGameState?.[puzzleId]
+			: null;
 
-	// Setter that saves to Firestore
+		return activeMergePuzzleState
+			? composeGameState(
+					persistedGameState,
+					activeMergePuzzleState,
+					puzzleMetadata?.initialGrids,
+				)
+			: persistedGameState;
+	}, [
+		isMerging,
+		mergeSnapshotGameState,
+		puzzleId,
+		persistedGameState,
+		puzzleMetadata,
+	]);
+
+	// Setter that saves to Firestore via the shared firestore module
 	const setGameState = useCallback(
-		async ({ grid, currentDifficulty: newDifficulty }) => {
-			if (!user?.uid || !puzzleMetadata?.initialGrids || !gameState)
-				return;
-
-			const userDocRef = doc(db, "users", user.uid);
+		async ({ currentDifficulty, normal, hard }) => {
+			if (!userId || !puzzleMetadata?.initialGrids || !gameState) return;
 
 			try {
-				// Case 1: Difficulty switch (no grid provided)
-				if (newDifficulty && !grid) {
-					const gridToSave =
-						gameState[newDifficulty] ||
-						puzzleMetadata.initialGrids[newDifficulty];
+				const hasNormalUpdate = Array.isArray(normal);
+				const hasHardUpdate = Array.isArray(hard);
 
-					// Convert null to 0 for Firestore
-					const firestoreGrid = gridToSave.map((v) =>
-						v === null ? 0 : v,
-					);
-
-					await updateDoc(userDocRef, {
-						[`gameState.${puzzleId}.currentDifficulty`]:
-							newDifficulty,
-						[`gameState.${puzzleId}.${newDifficulty}`]:
-							firestoreGrid,
-						updatedAt: serverTimestamp(),
+				if (currentDifficulty && !hasNormalUpdate && !hasHardUpdate) {
+					// Difficulty switch: only persist the selected difficulty.
+					await saveFirestoreGameState(userId, puzzleId, {
+						currentDifficulty,
 					});
 					return;
 				}
 
-				// Case 2: Grid update (move made)
-				if (grid) {
-					const difficulty = gameState.currentDifficulty;
-
-					// Convert null to 0 for Firestore
-					const firestoreGrid = grid.map((v) => (v === null ? 0 : v));
-
-					// Check if puzzle is solved
-					const { checkWin } =
-						await import("../utils/gridHelpers.js");
-					const isSolved = checkWin(grid);
-
-					const updates = {
-						[`gameState.${puzzleId}.${difficulty}`]: firestoreGrid,
-						[`gameState.${puzzleId}.currentDifficulty`]: difficulty,
-						updatedAt: serverTimestamp(),
-					};
-
-					// If solved, update solved field
-					if (isSolved) {
-						updates[`gameState.${puzzleId}.solved.${difficulty}`] =
-							true;
-					}
-
-					await updateDoc(userDocRef, updates);
+				if (hasNormalUpdate || hasHardUpdate) {
+					// Grid update (move made or restart)
+					const nextDifficulty =
+						currentDifficulty || gameState.currentDifficulty;
+					await saveFirestoreGameState(userId, puzzleId, {
+						currentDifficulty: nextDifficulty,
+						normal,
+						hard,
+					});
 
 					// Clean up old trophies for anonymous users (only keep today's puzzle)
-					if (user.isAnonymous) {
-						const { cleanupAnonymousTrophies } =
-							await import("../backend/firestore.js");
-						await cleanupAnonymousTrophies(user.uid, puzzleId);
+					if (isAnonymous) {
+						await cleanupAnonymousTrophies(userId, puzzleId);
 					}
 				}
 			} catch (error) {
@@ -173,8 +173,12 @@ export function useGameState({ puzzleMetadata }) {
 				throw error;
 			}
 		},
-		[user?.uid, gameState, puzzleMetadata, puzzleId],
+		[userId, isAnonymous, gameState, puzzleMetadata, puzzleId],
 	);
+
+	const loading = preferInitialAnonymousState
+		? false
+		: !userId || userDocLoading;
 
 	return [gameState, setGameState, loading];
 }

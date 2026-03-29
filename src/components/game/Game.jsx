@@ -5,7 +5,7 @@ import Trophy from "../common/Trophy";
 import ConfirmRestartDialog from "../dialogs/ConfirmRestartDialog";
 import WinDialog from "../dialogs/WinDialog";
 import GameActionButton from "./GameActionButton";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "../../contexts/auth";
 import { checkWin } from "../../utils/gridHelpers";
 
 function Game({
@@ -15,11 +15,12 @@ function Game({
 	initialGrid, // Initial grid for current difficulty
 	currentGrid, // Current grid array
 	currentDifficulty, // Current difficulty ("normal"|"hard")
-	setGameState, // Function to update game state: setGameState({ grid?, currentDifficulty? })
+	setGameState, // Function to update game state: setGameState({ currentDifficulty?, normal?, hard? })
 	hasNumbersShown,
 	hasSoundEnabled,
 	onOpenStats,
 	isAppDialogOpen = false,
+	solvedPuzzles = {},
 }) {
 	const { user } = useAuth();
 
@@ -30,7 +31,7 @@ function Game({
 
 	// Auto-save after each move
 	const handleMove = (newGrid) => {
-		setGameState({ grid: newGrid });
+		setGameState({ [currentDifficulty]: newGrid });
 	};
 
 	// Handle puzzle solve
@@ -48,7 +49,7 @@ function Game({
 	const handleRestartConfirm = () => {
 		setShowRestartDialog(false);
 		setGameState({
-			grid: initialGrid,
+			[currentDifficulty]: initialGrid,
 		});
 	};
 
@@ -97,6 +98,7 @@ function Game({
 				emoji={emoji}
 				emojiName={emojiName}
 				difficulty={currentDifficulty}
+				solvedPuzzles={solvedPuzzles}
 			/>
 		</>
 	);

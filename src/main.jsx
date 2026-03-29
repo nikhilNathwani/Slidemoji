@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
 import "./App.css";
 import AuthProvider from "./contexts/AuthProvider.jsx";
+import UserDocProvider from "./contexts/UserDocProvider.jsx";
 import "./utils/icons.js"; // Initialize FontAwesome icon library
 
 // Prevent arrow keys from scrolling the page globally
@@ -23,7 +24,9 @@ window.addEventListener(
 ReactDOM.createRoot(document.getElementById("root")).render(
 	<React.StrictMode>
 		<AuthProvider>
-			<App />
+			<UserDocProvider>
+				<App />
+			</UserDocProvider>
 		</AuthProvider>
 	</React.StrictMode>,
 );

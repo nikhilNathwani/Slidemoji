@@ -19,14 +19,34 @@
  *   const { user, signIn, signOut, loading, isAnonymous } = useAuth();
  */
 
-import { useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
 	onAuthChange,
 	signInAnonymouslyIfNeeded,
 	signInWithGoogle as firebaseSignIn,
 	signOut as firebaseSignOut,
-} from "../backend";
-import { AuthContext } from "./authContext";
+	shouldUseRedirectFlow,
+} from "../firebase";
+import {
+	getFirestoreUserData,
+	syncFirestoreUserData,
+} from "../firebase/firestore/user";
+import { mergeAnonymousDataToGoogle } from "../firebase/firestore/gameState";
+import { AuthContext } from "./auth";
+
+const PENDING_MERGE_KEY = "pendingAnonymousMerge";
+
+// Sync the Firestore user document after an auth state change.
+// Creates the doc if it doesn't exist; updates profile fields for Google users.
+async function syncUserDoc(firebaseUser) {
+	try {
+		await syncFirestoreUserData(firebaseUser);
+		return true;
+	} catch (error) {
+		console.error("[AuthProvider] Error syncing user doc:", error);
+		return false;
+	}
+}
 /**
  * AuthProvider component - manages authentication state for the entire app
  *
@@ -43,13 +63,18 @@ import { AuthContext } from "./authContext";
 export default function AuthProvider({ children }) {
 	const [user, setUser] = useState(null);
 	const [loading, setLoading] = useState(true); // Start true while checking auth
+	const [isMerging, setIsMerging] = useState(false);
+	const [mergeSnapshotGameState, setMergeSnapshotGameState] = useState(null);
+	const [preferInitialAnonymousState, setPreferInitialAnonymousState] =
+		useState(false);
+	const authOpInFlightRef = useRef(false);
 
 	useEffect(() => {
 		// Listen for auth state changes from Firebase
 		// This fires immediately with current state, then on any auth changes
 		const unsubscribe = onAuthChange(async (firebaseUser) => {
 			if (firebaseUser) {
-				// User is signed in (anonymous or Google)
+				// Update UI immediately, then sync Firestore doc in background
 				setUser({
 					uid: firebaseUser.uid,
 					email: firebaseUser.email,
@@ -57,10 +82,35 @@ export default function AuthProvider({ children }) {
 					photoURL: firebaseUser.photoURL,
 					isAnonymous: firebaseUser.isAnonymous,
 				});
-				// Only set loading to false if we're not already showing content
-				// This prevents loading flicker when signing out and creating new anonymous user
-				if (loading) {
+				if (!authOpInFlightRef.current) {
 					setLoading(false);
+				}
+				syncUserDoc(firebaseUser);
+
+				// Complete pending merge after redirect-based auth flows.
+				const pendingRaw = sessionStorage.getItem(PENDING_MERGE_KEY);
+				if (pendingRaw) {
+					try {
+						const pending = JSON.parse(pendingRaw);
+						if (
+							pending?.anonymousUid &&
+							pending?.anonymousData &&
+							pending.anonymousUid !== firebaseUser.uid
+						) {
+							await mergeAnonymousDataToGoogle(
+								pending.anonymousUid,
+								firebaseUser.uid,
+								pending.anonymousData,
+							);
+						}
+					} catch (error) {
+						console.error(
+							"[AuthProvider] Error completing pending redirect merge:",
+							error,
+						);
+					} finally {
+						sessionStorage.removeItem(PENDING_MERGE_KEY);
+					}
 				}
 			} else {
 				// No user - auto sign in anonymously
@@ -73,39 +123,122 @@ export default function AuthProvider({ children }) {
 						error,
 					);
 					setUser(null);
-					setLoading(false);
+					if (!authOpInFlightRef.current) {
+						setLoading(false);
+					}
 				}
 			}
 		});
 
 		// Cleanup: unsubscribe from auth listener when component unmounts
 		return () => unsubscribe();
-	}, [loading]);
+	}, []); // Empty dependency array - only run once on mount
 
 	const signIn = async () => {
 		try {
+			authOpInFlightRef.current = true;
 			setLoading(true);
-			// Sign in with Google (automatically links anonymous account if applicable)
-			const firebaseUser = await firebaseSignIn();
-			// User state will be set by onAuthChange listener above
+			setIsMerging(false);
+			setPreferInitialAnonymousState(false);
+
+			// Pre-fetch anonymous data BEFORE auth state changes.
+			// signInWithPopup will change who is signed in, so we capture this now.
+			const anonymousUid = user?.isAnonymous ? user.uid : null;
+			const anonymousData = anonymousUid
+				? await getFirestoreUserData(anonymousUid)
+				: null;
+			const hasAnonymousGameState = !!anonymousData?.gameState;
+			if (hasAnonymousGameState) {
+				// Mark merge transition before auth user switch so UI can preserve current board.
+				setIsMerging(true);
+				setMergeSnapshotGameState(anonymousData.gameState);
+			}
+			console.log("[AuthProvider] signIn prefetch", {
+				anonymousUid,
+				hasAnonymousData: !!anonymousData,
+				hasAnonymousGameState: !!anonymousData?.gameState,
+			});
+
+			const useRedirect = shouldUseRedirectFlow();
+			if (useRedirect && anonymousUid && anonymousData) {
+				sessionStorage.setItem(
+					PENDING_MERGE_KEY,
+					JSON.stringify({ anonymousUid, anonymousData }),
+				);
+			}
+
+			const firebaseUser = await firebaseSignIn({
+				forceRedirect: useRedirect,
+			});
+			if (!firebaseUser) {
+				// Redirect flow started; browser will navigate away.
+				return null;
+			}
+
+			// Ensure the destination user doc exists before any merge writes.
+			// Without this, merge may race with auth-sync and fail with precondition errors.
+			await syncUserDoc(firebaseUser);
+
+			// If the UID changed, linkWithCredential failed (account already existed).
+			// Merge the anonymous user's data into the Google account.
+			if (
+				anonymousData &&
+				anonymousUid &&
+				firebaseUser.uid !== anonymousUid
+			) {
+				console.log(
+					"[AuthProvider] Merging anonymous data into Google account...",
+				);
+				await mergeAnonymousDataToGoogle(
+					anonymousUid,
+					firebaseUser.uid,
+					anonymousData,
+				);
+				console.log("[AuthProvider] Merge complete", {
+					anonymousUid,
+					googleUid: firebaseUser.uid,
+				});
+			} else {
+				console.log("[AuthProvider] Merge skipped", {
+					hasAnonymousData: !!anonymousData,
+					anonymousUid,
+					googleUid: firebaseUser?.uid,
+					sameUid: firebaseUser?.uid === anonymousUid,
+				});
+			}
+
 			return firebaseUser;
 		} catch (error) {
 			console.error("[Auth] Sign in error:", error);
+			setIsMerging(false);
+			setMergeSnapshotGameState(null);
 			setLoading(false);
 			throw error;
+		} finally {
+			authOpInFlightRef.current = false;
+			setIsMerging(false);
+			setMergeSnapshotGameState(null);
+			setLoading(false);
 		}
 	};
 
 	const signOut = async () => {
 		try {
+			authOpInFlightRef.current = true;
 			setLoading(true);
+			setPreferInitialAnonymousState(true);
+			// Clear user eagerly so user-scoped listeners unsubscribe before auth tokens rotate.
+			setUser(null);
 			await firebaseSignOut();
 			// After sign-out, onAuthChange will detect no user and auto-create new anonymous user
 			// User state will be updated by onAuthChange listener
 		} catch (error) {
 			console.error("[Auth] Sign out error:", error);
+			setPreferInitialAnonymousState(false);
 			setLoading(false);
 			throw error;
+		} finally {
+			authOpInFlightRef.current = false;
 		}
 	};
 
@@ -113,6 +246,9 @@ export default function AuthProvider({ children }) {
 	const value = {
 		user, // Current user object (always exists - either anonymous or Google)
 		loading, // True during auth operations
+		isMerging, // True while anonymous->Google merge is reconciling
+		preferInitialAnonymousState, // True after sign-out so anonymous view can render initial grid immediately
+		mergeSnapshotGameState, // Anonymous gameState snapshot while merge is in progress
 		signIn, // Function to sign in with Google (links anonymous account)
 		signOut, // Function to sign out (creates new anonymous user)
 		isAuthenticated: user?.isAnonymous === false, // True if signed in with Google

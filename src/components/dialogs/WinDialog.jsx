@@ -3,9 +3,6 @@ import Trophy from "../common/Trophy";
 import StatsContent from "../stats/StatsContent";
 import styles from "./WinDialog.module.css";
 import { FontAwesomeIcon } from "../../utils/icons";
-import { useAuth } from "../../hooks/useAuth";
-import { useUser } from "../../hooks/useUser";
-import { getSolvedPuzzlesFromUserData } from "../../utils/puzzleUtils";
 
 function WinDialog({
 	isOpen,
@@ -14,10 +11,8 @@ function WinDialog({
 	emoji,
 	emojiName,
 	difficulty,
+	solvedPuzzles = {},
 }) {
-	const { user } = useAuth();
-	const { data: userData } = useUser(user?.uid);
-	const solvedPuzzles = getSolvedPuzzlesFromUserData(userData);
 	const handleShare = () => {
 		const paddedId = String(puzzleId).padStart(3, "0");
 		const shareText = `Slidemoji #${paddedId} 

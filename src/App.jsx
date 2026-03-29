@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import "./App.css";
 import LandingPage from "./components/landing/LandingPage";
 import Header from "./components/Header";
@@ -7,11 +7,11 @@ import SettingsDialog from "./components/dialogs/SettingsDialog";
 import StatsDialog from "./components/dialogs/StatsDialog";
 import ArchiveDialog from "./components/dialogs/ArchiveDialog";
 import { getLatestPuzzleId } from "./utils/puzzleUtils";
-import { useAuth } from "./hooks/useAuth";
-import { useUser } from "./hooks/useUser";
+import { useAuth } from "./contexts/auth";
 import { usePuzzle } from "./hooks/usePuzzle";
 import { usePreference } from "./hooks/usePreference";
 import { useGameState } from "./hooks/useGameState";
+import { useSolvedPuzzles } from "./hooks/useSolvedPuzzles";
 
 // App-level preference defaults
 const DEFAULT_DARK_MODE = false;
@@ -19,11 +19,14 @@ const DEFAULT_SHOW_NUMBERS = true;
 const DEFAULT_SOUND_ENABLED = false;
 
 function App() {
-	const { user } = useAuth();
+	const { loading: isAuthLoading, isMerging } = useAuth();
 
+	// PUZZLE contains: id, emoji, emoji name, initialGrids (normal and hard)
 	const [puzzleId, setPuzzleId] = useState(() => getLatestPuzzleId());
+	const { data: puzzleMetadata, isLoading: isLoadingPuzzle } =
+		usePuzzle(puzzleId);
 
-	// Synced preferences (Firestore for everyone)
+	// PREFERENCES include: dark/light mode, sound on/off, show tile numbers on/off
 	const [darkMode, setDarkMode] = usePreference(
 		"darkMode",
 		DEFAULT_DARK_MODE,
@@ -37,31 +40,13 @@ function App() {
 		DEFAULT_SHOW_NUMBERS,
 	);
 
-	// Fetch user data (real-time from Firestore)
-	const { data: userData, loading: isLoadingUser } = useUser(user?.uid);
-
-	// Compute solvedPuzzles from gameState for backward compatibility with components
-	const solvedPuzzles = useMemo(() => {
-		if (!userData?.gameState) return {};
-		return Object.entries(userData.gameState).reduce(
-			(acc, [puzzleId, state]) => {
-				if (state?.solved) {
-					acc[puzzleId] = state.solved;
-				}
-				return acc;
-			},
-			{},
-		);
-	}, [userData]);
-
-	// Fetch puzzle (returns both difficulty grids in one call)
-	const { data: puzzleMetadata, isLoading: isLoadingPuzzle } =
-		usePuzzle(puzzleId);
-
-	// Manage game state (real-time updates from Firestore)
+	// GAME STATE is {currentDifficulty: normal|hard, normal:[normal_grid], hard:[hard_grid]}
 	const [gameState, setGameState, isLoadingGameState] = useGameState({
 		puzzleMetadata,
 	});
+
+	// SOLVED PUZZLES is a list of puzzles with a normal- and/or hard-solve
+	const { solvedPuzzles } = useSolvedPuzzles();
 
 	// Show Page / Dialog
 	const [showLandingPage, setShowLandingPage] = useState(true);
@@ -70,11 +55,13 @@ function App() {
 	const [showArchiveDialog, setShowArchiveDialog] = useState(false);
 
 	const isLoading =
-		isLoadingPuzzle ||
-		isLoadingGameState ||
-		isLoadingUser ||
-		!gameState ||
-		!puzzleMetadata;
+		isLoadingPuzzle || isLoadingGameState || !gameState || !puzzleMetadata;
+
+	// During auth transitions (notably Google -> anonymous), keep rendering existing
+	// game UI if we already have renderable state to avoid a flash to Loading text.
+	const shouldShowLoading =
+		isLoading &&
+		!((isAuthLoading || isMerging) && gameState && puzzleMetadata);
 
 	// Dev helper: Set grid to one move away from solved
 	const setAlmostSolved = () => {
@@ -92,16 +79,16 @@ function App() {
 
 		const size = currentGrid.length;
 
-		// Create almost-solved grid: [1, 2, 3, 4, 5, 6, 7, null, 8]
+		// Create almost-solved grid: [1, 2, 3, 4, 5, 6, 7, 0, 8]
 		// Gap in second-to-last position, one move away from solved
 		const almostSolvedGrid = Array.from({ length: size }, (_, i) => {
-			if (i === size - 2) return null; // Gap in second-to-last position
+			if (i === size - 2) return 0; // Gap in second-to-last position
 			if (i === size - 1) return size - 1; // Last tile goes in last position
 			return i + 1; // Everything else in order: 1, 2, 3, ...
 		});
 
 		console.log("[Dev] Setting almost solved grid:", almostSolvedGrid);
-		setGameState({ grid: almostSolvedGrid });
+		setGameState({ [currentDiff]: almostSolvedGrid });
 	};
 
 	if (showLandingPage) {
@@ -115,7 +102,7 @@ function App() {
 	// Wait for data to load before rendering Game
 	// For signed-in users, wait for both puzzle and user data
 	// For signed-out users, only wait for puzzle data
-	if (isLoading) {
+	if (shouldShowLoading) {
 		return (
 			<div className={`app ${darkMode ? "dark-theme" : "light-theme"}`}>
 				<Header
@@ -131,10 +118,7 @@ function App() {
 	}
 
 	return (
-		<div
-			key={`${user?.uid || "anonymous"}-${puzzleId}`}
-			className={`app ${darkMode ? "dark-theme" : "light-theme"}`}
-		>
+		<div className={`app ${darkMode ? "dark-theme" : "light-theme"}`}>
 			<Header
 				onSettingsClick={() => setShowSettingsDialog(true)}
 				onArchiveClick={() => setShowArchiveDialog(true)}
@@ -156,6 +140,7 @@ function App() {
 				hasSoundEnabled={soundEnabled}
 				onOpenStats={() => setShowStatsDialog(true)}
 				isAppDialogOpen={showSettingsDialog || showStatsDialog}
+				solvedPuzzles={solvedPuzzles}
 			/>
 
 			<SettingsDialog
