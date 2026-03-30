@@ -27,11 +27,22 @@ function Tile({
 	emojiSvgUrl,
 	hasNumbersShown,
 	isClickable,
+	isGap = false,
 	onPointerDown,
 	onTransitionEnd,
 }) {
 	const classNames = [styles.tile];
 	if (isClickable) classNames.push(styles.clickable);
+
+	if (isGap) {
+		return (
+			<motion.div
+				layout
+				transition={{ layout: { duration: 0.3, ease: "easeInOut" } }}
+				className="tile gap"
+			/>
+		);
+	}
 
 	return (
 		<motion.div

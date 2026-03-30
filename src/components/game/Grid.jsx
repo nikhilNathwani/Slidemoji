@@ -118,7 +118,7 @@ function Grid({
 				const isGap = value === 0;
 
 				if (isGap) {
-					return <Gap key="gap" />;
+					return <Tile key="gap" isGap={true} />;
 				}
 
 				const isClickable =
