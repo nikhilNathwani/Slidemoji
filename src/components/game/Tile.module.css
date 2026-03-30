@@ -47,3 +47,10 @@
 	-webkit-tap-highlight-color: transparent;
 	pointer-events: none;
 }
+
+/* Mobile Responsive */
+@media (max-width: 600px) {
+	.tile {
+		font-size: var(--text-2xl);
+	}
+}

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import "../../App.css";
+import styles from "./AnimatedTileGrid.module.css";
 
 // Simple 3x3 grid showing tile sliding animation
 function AnimatedTileGrid() {
@@ -57,11 +57,15 @@ function AnimatedTileGrid() {
 	}, []);
 
 	return (
-		<div className="animated-tile-grid">
+		<div className={styles.animatedTileGrid}>
 			{tiles.map((tile, index) => (
 				<div
 					key={index}
-					className={`animated-tile ${tile === 8 ? "gap" : ""}`}
+					className={
+						tile === 8
+							? styles.animatedTileGap
+							: styles.animatedTile
+					}
 				></div>
 			))}
 		</div>

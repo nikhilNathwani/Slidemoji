@@ -1,21 +1,18 @@
 import AnimatedTileGrid from "./AnimatedTileGrid";
-import LandingFooter from "./LandingFooter";
+import styles from "./LandingPage.module.css";
 import { getLatestPuzzleId } from "../../utils/puzzleUtils";
 
 function LandingPage({ onPlay }) {
-	const puzzleId = getLatestPuzzleId();
-	const puzzleNumber = String(puzzleId).padStart(3, "0");
-
 	return (
-		<div className="landing-page">
-			<div className="landing-content">
+		<div className={styles.landingPage}>
+			<div className={styles.landingContent}>
 				<AnimatedTileGrid />
-				<h1 className="landing-title">Slidemoji</h1>
-				<p className="landing-subtitle">
+				<h1 className={styles.landingTitle}>Slidemoji</h1>
+				<p className={styles.landingSubtitle}>
 					Slide the tiles to unscramble the daily emoji
 				</p>
 
-				<button className="play-button" onClick={onPlay}>
+				<button className={styles.playButton} onClick={onPlay}>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						viewBox="0 0 384 512"
@@ -30,8 +27,37 @@ function LandingPage({ onPlay }) {
 				</button>
 			</div>
 
-			<LandingFooter puzzleNumber={puzzleNumber} />
+			<LandingFooter />
 		</div>
+	);
+}
+
+function LandingFooter() {
+	const puzzleId = getLatestPuzzleId();
+	const puzzleNumber = String(puzzleId).padStart(3, "0");
+
+	// Get current date formatted as "February 23, 2026"
+	const currentDate = new Date().toLocaleDateString("en-US", {
+		month: "long",
+		day: "numeric",
+		year: "numeric",
+	});
+
+	return (
+		<footer className={styles.landingFooter}>
+			<div className={styles.footerDate}>{currentDate}</div>
+			<div className={styles.footerPuzzleNumber}>No. {puzzleNumber}</div>
+			<p>
+				Made by{" "}
+				<a
+					href="https://nikhilnathwani.com"
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					Nikhil Nathwani
+				</a>
+			</p>
+		</footer>
 	);
 }
 

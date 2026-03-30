@@ -1,0 +1,29 @@
+.animatedTileGrid {
+	display: grid;
+	grid-template-columns: repeat(3, 30px);
+	grid-template-rows: repeat(3, 30px);
+	gap: 3px;
+	padding: 8px;
+	background-color: var(--surface-primary);
+	border-radius: 8px;
+	border: 2px solid var(--border-secondary);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+	margin-bottom: 12px;
+}
+
+.animatedTile {
+	background-color: var(--surface-secondary);
+	border: 2px solid var(--border-primary);
+	border-radius: 4px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.3s ease;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.animatedTileGap {
+	background-color: transparent;
+	border: 2px solid transparent;
+	box-shadow: none;
+}

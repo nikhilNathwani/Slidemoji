@@ -12,8 +12,6 @@ import styles from "./Game.module.css";
  */
 function GameActionButton({ isSolved, isSignedIn, onOpenStats, onRestart }) {
 	// Signed out and solved - show sign-in upsell
-	console.log("padaroo", isSolved, isSignedIn);
-
 	if (isSolved && !isSignedIn) {
 		return (
 			<>

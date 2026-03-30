@@ -225,3 +225,10 @@
 .trophy.puzzleInfo .name {
 	color: var(--text-tertiary);
 }
+
+/* Mobile Responsive */
+@media (max-width: 600px) {
+	.trophy.puzzleInfo {
+		padding: 10px;
+	}
+}

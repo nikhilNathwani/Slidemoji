@@ -1,6 +1,5 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import Tile from "./Tile";
-import Gap from "./Gap";
 import {
 	isAdjacent,
 	getGapIndex,
