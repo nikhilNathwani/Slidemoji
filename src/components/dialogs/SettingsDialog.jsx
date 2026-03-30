@@ -1,5 +1,4 @@
 import Dialog from "./Dialog";
-import Toggle from "../common/Toggle";
 import styles from "./SettingsDialog.module.css";
 import { FontAwesomeIcon } from "../../utils/icons";
 import { DIFFICULTIES } from "../../constants";
@@ -130,6 +129,19 @@ function SettingsDialog({
 				</div>
 			</div>
 		</Dialog>
+	);
+}
+
+function Toggle({ isOn, onToggle, disabled = false }) {
+	return (
+		<button
+			className={`${styles.toggle} ${isOn ? styles.on : styles.off}`}
+			onClick={onToggle}
+			disabled={disabled}
+		>
+			<span className={styles.slider}></span>
+			<span className={styles.label}>{isOn ? "ON" : "OFF"}</span>
+		</button>
 	);
 }
 
