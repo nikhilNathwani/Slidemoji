@@ -1,7 +1,6 @@
 import TrophyCase from "../stats/TrophyCase";
 import TrophyCaseTitle from "../stats/TrophyCaseTitle";
-import GoogleSignInButton from "../common/GoogleSignInButton";
-import PrivacyNote from "../common/PrivacyNote";
+import SignInUpsell from "../common/SignInUpsell";
 import { useAuth } from "../../contexts/auth";
 import { getLatestPuzzleId } from "../../utils/puzzleUtils";
 import styles from "./StatsContent.module.css";
@@ -16,18 +15,7 @@ function StatsContent({ showTitle = false, solvedPuzzles, currentPuzzleId }) {
 		<div className={styles.statsContent}>
 			{/* Anonymous users: Show sign-in upsell */}
 			{!user || user.isAnonymous ? (
-				<div className={styles.statsSignin}>
-					{/* Don't show trophy title here - "Save Your Trophies" is the header */}
-					<h3 className={styles.statsSigninTitle}>
-						Save Your Trophies
-					</h3>
-					<p className={styles.statsDescription}>
-						Sign in to save your trophies across devices and
-						complete your collection!
-					</p>
-					<GoogleSignInButton />
-					<PrivacyNote />
-				</div>
+				<SignInUpsell />
 			) : (
 				<>
 					{showTitle && (
