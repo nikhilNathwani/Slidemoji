@@ -1,12 +1,27 @@
 import { FontAwesomeIcon } from "../../utils/icons";
 import GoogleSignInButton from "./GoogleSignInButton";
 import styles from "./SignInUpsell.module.css";
+import "../../App.css";
 
-function SignInUpsell() {
-	return (
+function SignInUpsell({ isCondensed = false }) {
+	return isCondensed ? (
+		<div className={styles.signInUpsell}>
+			<GoogleSignInButton />
+			<p className={styles.signInUpsellDescription}>
+				Sign in to save your trophies across devices and complete your
+				collection!
+			</p>
+		</div>
+	) : (
 		<div className={styles.signInUpsell}>
 			<h3 className={styles.signInUpsellTitle}>Save Your Trophies</h3>
-			<p className={styles.signInUpsellDescription}>
+			<p
+				className={
+					isCondensed
+						? styles.signInUpsellDescription
+						: styles.signInUpsellDescriptionLarge
+				}
+			>
 				Sign in to save your trophies across devices and complete your
 				collection!
 			</p>

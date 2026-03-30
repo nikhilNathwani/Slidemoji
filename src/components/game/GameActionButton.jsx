@@ -1,4 +1,4 @@
-import GoogleSignInButton from "../common/GoogleSignInButton";
+import SignInUpsell from "../common/SignInUpsell";
 import { FontAwesomeIcon } from "../../utils/icons";
 import styles from "./Game.module.css";
 
@@ -10,44 +10,16 @@ import styles from "./Game.module.css";
  * - View Trophies (when solved while signed in)
  * - Restart (when game is in progress)
  */
-function GameActionButton({ isSolved, user, onOpenStats, onRestart }) {
+function GameActionButton({ isSolved, isSignedIn, onOpenStats, onRestart }) {
 	// Signed out and solved - show sign-in upsell
-	if (isSolved && !user) {
+	console.log("padaroo", isSolved, isSignedIn);
+
+	if (isSolved && !isSignedIn) {
 		return (
-			<div
-				className={`${styles.restartContainer} ${styles.visible}`}
-				style={{
-					flexDirection: "column",
-					gap: "16px",
-					alignItems: "center",
-				}}
-			>
-				<div
-					style={{ textAlign: "center", maxWidth: "min(90%, 400px)" }}
-				>
-					<h3
-						style={{
-							fontSize: "var(--text-lg)",
-							color: "var(--text-primary)",
-							marginBottom: "8px",
-						}}
-					>
-						Save Your Trophies
-					</h3>
-					<p
-						style={{
-							fontSize: "var(--text-base)",
-							color: "var(--text-secondary)",
-							margin: 0,
-							lineHeight: 1.5,
-						}}
-					>
-						Sign in to save your trophies across devices and complete
-						your collection!
-					</p>
-				</div>
-				<GoogleSignInButton />
-			</div>
+			<>
+				<div style={{ height: 0.5 + "rem" }}></div>
+				<SignInUpsell isCondensed={true}></SignInUpsell>
+			</>
 		);
 	}
 

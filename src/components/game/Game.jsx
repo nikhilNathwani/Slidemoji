@@ -78,7 +78,7 @@ function Game({
 				<div className={styles.restartContainer}>
 					<GameActionButton
 						isSolved={checkWin(currentGrid)}
-						user={user}
+						isSignedIn={!user?.isAnonymous}
 						onOpenStats={onOpenStats}
 						onRestart={handleRestartClick}
 					/>
