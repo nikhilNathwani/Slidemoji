@@ -72,77 +72,109 @@ export async function signInAnonymouslyIfNeeded() {
  */
 export async function signInWithGoogle({ forceRedirect = false } = {}) {
 	const currentUser = auth.currentUser;
-	const useRedirect = forceRedirect || shouldUseRedirectFlow();
+	const useRedirect = forceRedirect;
 
 	try {
 		if (currentUser?.isAnonymous) {
 			console.log("[Auth] Upgrading anonymous account to Google");
-			if (useRedirect) {
-				await linkWithRedirect(currentUser, googleProvider);
-				return null;
+			try {
+				const linkedUser = await linkWithPopup(
+					currentUser,
+					googleProvider,
+				);
+				console.log(
+					"[Auth] Successfully upgraded to Google:",
+					linkedUser.user.uid,
+				);
+				return linkedUser.user;
+			} catch (error) {
+				if (
+					error.code === "auth/popup-blocked" ||
+					error.code === "auth/popup-closed-by-user"
+				) {
+					await linkWithRedirect(currentUser, googleProvider);
+					return null;
+				}
+				if (
+					error.code === "auth/credential-already-in-use" ||
+					error.code === "auth/email-already-in-use"
+				) {
+					// Use credential from error when available to avoid reopening popup repeatedly.
+					const existingCredential =
+						GoogleAuthProvider.credentialFromError(error);
+					let googleUser = null;
+
+					if (existingCredential) {
+						const result = await signInWithCredential(
+							auth,
+							existingCredential,
+						);
+						googleUser = result.user;
+					} else {
+						const result = await signInWithPopup(
+							auth,
+							googleProvider,
+						);
+						googleUser = result.user;
+					}
+
+					console.log(
+						"[Auth] Google account already existed:",
+						googleUser.uid,
+					);
+					return googleUser;
+				}
+				console.error(
+					"[Auth] Error signing in with Google (anonymous upgrade):",
+					error,
+				);
+				throw error;
 			}
-			const linkedUser = await linkWithPopup(currentUser, googleProvider);
-			console.log(
-				"[Auth] Successfully upgraded to Google:",
-				linkedUser.user.uid,
-			);
-			return linkedUser.user;
 		}
 
 		// Regular Google sign-in (user is not anonymous)
-		if (useRedirect) {
-			await signInWithRedirect(auth, googleProvider);
-			return null;
-		}
-		const result = await signInWithPopup(auth, googleProvider);
-		console.log("[Auth] Signed in with Google:", result.user.uid);
-		return result.user;
-	} catch (error) {
-		console.log("[Auth] Google sign-in error code:", error?.code);
-
-		// Link failed because account already exists. Sign in directly to Google account;
-		// caller is responsible for merging anonymous data into that account.
-		if (
-			error.code === "auth/credential-already-in-use" ||
-			error.code === "auth/email-already-in-use"
-		) {
-			if (useRedirect) {
+		try {
+			const result = await signInWithPopup(auth, googleProvider);
+			console.log("[Auth] Signed in with Google:", result.user.uid);
+			return result.user;
+		} catch (error) {
+			if (
+				error.code === "auth/popup-blocked" ||
+				error.code === "auth/popup-closed-by-user"
+			) {
 				await signInWithRedirect(auth, googleProvider);
 				return null;
 			}
+			if (
+				error.code === "auth/credential-already-in-use" ||
+				error.code === "auth/email-already-in-use"
+			) {
+				const existingCredential =
+					GoogleAuthProvider.credentialFromError(error);
+				let googleUser = null;
 
-			// Use credential from error when available to avoid reopening popup repeatedly.
-			const existingCredential =
-				GoogleAuthProvider.credentialFromError(error);
-			let googleUser = null;
+				if (existingCredential) {
+					const result = await signInWithCredential(
+						auth,
+						existingCredential,
+					);
+					googleUser = result.user;
+				} else {
+					const result = await signInWithPopup(auth, googleProvider);
+					googleUser = result.user;
+				}
 
-			if (existingCredential) {
-				const result = await signInWithCredential(
-					auth,
-					existingCredential,
+				console.log(
+					"[Auth] Google account already existed:",
+					googleUser.uid,
 				);
-				googleUser = result.user;
-			} else {
-				const result = await signInWithPopup(auth, googleProvider);
-				googleUser = result.user;
+				return googleUser;
 			}
-
-			console.log(
-				"[Auth] Google account already existed:",
-				googleUser.uid,
-			);
-			return googleUser;
+			console.error("[Auth] Error signing in with Google:", error);
+			throw error;
 		}
-
-		if (
-			error.code === "auth/popup-blocked" ||
-			error.code === "auth/popup-closed-by-user"
-		) {
-			await signInWithRedirect(auth, googleProvider);
-			return null;
-		}
-
-		console.error("[Auth] Error signing in with Google:", error);
+	} catch (error) {
+		console.error("[Auth] Error signing in with Google (outer):", error);
 		throw error;
 	}
 }
