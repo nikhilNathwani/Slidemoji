@@ -23,10 +23,10 @@ import {
 	deleteAnonymousPastGameState,
 } from "../firebase/firestore/gameState";
 import { DIFFICULTY, DEFAULT_DIFFICULTY } from "../constants";
-import { useAuth } from "../contexts/auth";
-import { useUserDoc } from "../contexts/userDoc";
+import { useAuth } from "./useAuth";
+import { useUserDoc } from "./useUserDoc";
 
-import { chooseGridForMerge } from "../utils/gridHelpers";
+import { chooseGridForMerge } from "../utils/accountMerge";
 
 function composeGameState(preferredState, alternateState, initialGrids) {
 	if (!initialGrids) {

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { subscribeToFirestoreUserData } from "../firebase/firestore/user";
-import { useAuth } from "./auth";
-import { UserDocContext } from "./userDoc";
+import { useAuth } from "../hooks/useAuth";
+import { UserDocContext } from "./UserDocContext";
 
 export default function UserDocProvider({ children }) {
 	const { user } = useAuth();

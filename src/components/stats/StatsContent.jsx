@@ -1,7 +1,7 @@
 import TrophyCase from "../stats/TrophyCase";
 import TrophyCaseTitle from "../stats/TrophyCaseTitle";
 import SignInUpsell from "../common/SignInUpsell";
-import { useAuth } from "../../contexts/auth";
+import { useAuth } from "../../hooks/useAuth";
 import { getLatestPuzzleId } from "../../utils/puzzleUtils";
 import styles from "./StatsContent.module.css";
 

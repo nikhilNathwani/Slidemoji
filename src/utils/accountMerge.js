@@ -1,5 +1,7 @@
 import { doc, runTransaction, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
+import { checkWin } from "./gridHelpers.js";
+
 // getPuzzleInitialGrids is needed for merge logic
 function getPuzzleInitialGrids(puzzleData) {
 	return {
@@ -81,7 +83,6 @@ export async function mergeAnonymousDataToGoogle(
 						anonymousGrid,
 						googleGrid,
 						initialGrid,
-						() => false, // TODO: pass actual checkWin if needed
 					);
 					console.log("[Firestore][Merge] Difficulty compare", {
 						puzzleId,
@@ -145,38 +146,49 @@ export async function mergeAnonymousDataToGoogle(
  * @param {Array} anonymousGrid
  * @param {Array} googleGrid
  * @param {Array} initialGrid
- * @param {Function} checkWin - function to check if a grid is solved
  * @returns {Array} The grid to keep
  */
-export function chooseGridForMerge(
-	anonymousGrid,
-	googleGrid,
-	initialGrid,
-	checkWin,
-) {
+export function chooseGridForMerge(anonymousGrid, googleGrid, initialGrid) {
 	// Validate inputs upfront
 	const hasAnonymousGrid = Array.isArray(anonymousGrid);
 	const hasGoogleGrid = Array.isArray(googleGrid);
 	const hasInitialGrid = Array.isArray(initialGrid);
 
-	// Case 1: Anonymous is solved → use anonymous (best progress)
-	if (hasAnonymousGrid && checkWin(anonymousGrid)) {
-		return anonymousGrid;
-	}
-	// Case 2: Anonymous is initial (untouched) → use google
-	if (
+	const isAnonymousSolved = hasAnonymousGrid && checkWin(anonymousGrid);
+	const isGoogleSolved = hasGoogleGrid && checkWin(googleGrid);
+	const isAnonymousInitial =
 		hasAnonymousGrid &&
 		hasInitialGrid &&
-		JSON.stringify(anonymousGrid) === JSON.stringify(initialGrid) &&
-		hasGoogleGrid
-	) {
+		JSON.stringify(anonymousGrid) === JSON.stringify(initialGrid);
+	const isGoogleInitial =
+		hasGoogleGrid &&
+		hasInitialGrid &&
+		JSON.stringify(googleGrid) === JSON.stringify(initialGrid);
+
+	// Case 1: Anonymous is solved → use anonymous (best progress)
+	if (isAnonymousSolved) {
+		return anonymousGrid;
+	}
+	// Case 2: Google is solved → use google
+	if (isGoogleSolved) {
 		return googleGrid;
 	}
-	// Case 3: Google is solved → use google
-	if (hasGoogleGrid && checkWin(googleGrid)) {
+	// Case 3: Prefer in-progress grid if the other is untouched (initial)
+	if (isGoogleInitial && hasAnonymousGrid && !isAnonymousInitial) {
+		return anonymousGrid;
+	}
+	if (isAnonymousInitial && hasGoogleGrid && !isGoogleInitial) {
 		return googleGrid;
 	}
-	// Default: prefer google if exists, else anonymous
+	// Case 4: Anonymous is initial (untouched) → use google
+	if (isAnonymousInitial && hasGoogleGrid) {
+		return googleGrid;
+	}
+	// Case 5: Google is initial (untouched) → use anonymous
+	if (isGoogleInitial && hasAnonymousGrid) {
+		return anonymousGrid;
+	}
+	// Default: prefer google if exists, else anonymous, else initial
 	if (hasGoogleGrid) return googleGrid;
 	if (hasAnonymousGrid) return anonymousGrid;
 	return initialGrid;

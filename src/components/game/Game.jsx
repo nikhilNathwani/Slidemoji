@@ -5,7 +5,7 @@ import Trophy from "../common/Trophy";
 import ConfirmRestartDialog from "../dialogs/ConfirmRestartDialog";
 import WinDialog from "../dialogs/WinDialog";
 import GameActionButton from "./GameActionButton";
-import { useAuth } from "../../contexts/auth";
+import { useAuth } from "../../hooks/useAuth";
 import { checkWin } from "../../utils/gridHelpers";
 
 function Game({

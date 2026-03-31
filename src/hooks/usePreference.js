@@ -20,8 +20,8 @@
 
 import { useCallback } from "react";
 import { updateFirestorePreferences } from "../firebase/firestore/preference";
-import { useAuth } from "../contexts/auth";
-import { useUserDoc } from "../contexts/userDoc";
+import { useAuth } from "./useAuth";
+import { useUserDoc } from "./useUserDoc";
 
 export function usePreference(key, defaultValue, options = {}) {
 	const { contextKey = null } = options;

@@ -13,7 +13,7 @@
  */
 
 import { useState } from "react";
-import { useAuth } from "../../contexts/auth";
+import { useAuth } from "../../hooks/useAuth";
 import styles from "./GoogleSignInButton.module.css";
 
 function GoogleSignInButton({ isCondensed = false }) {

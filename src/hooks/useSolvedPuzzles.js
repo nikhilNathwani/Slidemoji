@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useUserDoc } from "../contexts/userDoc";
+import { useUserDoc } from "./useUserDoc";
 import { DIFFICULTY } from "../constants";
 import { checkWin } from "../utils/gridHelpers";
 

@@ -32,7 +32,7 @@ import {
 	syncFirestoreUserData,
 } from "../firebase/firestore/user";
 import { mergeAnonymousDataToGoogle } from "../utils/accountMerge";
-import { AuthContext } from "./auth";
+import { AuthContext } from "./AuthContext";
 
 const PENDING_MERGE_KEY = "pendingAnonymousMerge";
 

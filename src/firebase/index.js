@@ -21,7 +21,6 @@ export { updateFirestorePreferences } from "./firestore/preference";
 
 export {
 	saveFirestoreGameState,
-	mergeAnonymousDataToGoogle,
 	deleteAnonymousPastGameState,
 } from "./firestore/gameState";
 
