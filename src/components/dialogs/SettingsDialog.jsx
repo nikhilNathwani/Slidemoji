@@ -106,14 +106,14 @@ function SettingsDialog({
 				)}
 				<div className={styles.settingsActions}>
 					<a
-						href="mailto:nnathwani36@gmail.com?subject=Slidemoji%20Feedback"
+						href="mailto:support.slidemoji@gmail.com?subject=Slidemoji%20Feedback"
 						className={`${styles.actionButton} ${styles.feedback}`}
 					>
 						<FontAwesomeIcon icon="comment" />
 						Give Feedback
 					</a>
 					<a
-						href={`mailto:nnathwani36@gmail.com?subject=Slidemoji%20Bug%20Report&body=${encodeURIComponent(
+						href={`mailto:support.slidemoji@gmail.com?subject=Slidemoji%20Bug%20Report&body=${encodeURIComponent(
 							"Please describe the issue you encountered:\n\n\n\n---\nDebug Information:\n" +
 								`User Agent: ${navigator.userAgent}\n` +
 								`Screen Size: ${window.innerWidth}x${window.innerHeight}\n` +
