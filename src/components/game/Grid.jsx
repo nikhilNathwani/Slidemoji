@@ -59,7 +59,7 @@ function Grid({
 			if (isSolved) return;
 
 			const gapIndex = getGapIndex(grid);
-			if (isAdjacent(gapIndex, tileIndex, gridSize)) {
+			if (isAdjacent(gridSize, gapIndex, tileIndex)) {
 				moveTile(tileIndex);
 			}
 		},
@@ -121,7 +121,7 @@ function Grid({
 				}
 
 				const isClickable =
-					!isSolved && isAdjacent(gapIndex, index, gridSize);
+					!isSolved && isAdjacent(gridSize, gapIndex, index);
 
 				return (
 					<Tile

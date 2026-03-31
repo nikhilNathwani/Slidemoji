@@ -1,7 +1,6 @@
 /**
  * Get the latest puzzle ID (today's puzzle number) based on start date
- * Cycles back to 1 after 365 puzzles
- * @returns {number} Puzzle ID (1-365)
+ * @returns {number} Puzzle ID
  */
 export function getLatestPuzzleId() {
 	const startDate = new Date("2026-01-01"); // First puzzle date
@@ -15,7 +14,7 @@ export function getLatestPuzzleId() {
 /**
  * Converts puzzle ID (integer) into formated string
  * E.g. 1 -> "#001", 24 -> "#024", 673 -> "#673"
- * @returns {number} Puzzle ID (1-365)
+ * @returns {number} Puzzle ID
  */
 export function getPaddedString(puzzleId) {
 	return `#${String(puzzleId).padStart(3, "0")}`;

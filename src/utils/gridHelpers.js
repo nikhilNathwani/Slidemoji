@@ -48,15 +48,17 @@ const ADJACENCY_MAPS = {
  * Check if two positions are adjacent on a grid of given size
  * @param {number} index1 - First position index
  * @param {number} index2 - Second position index
- * @param {number} size - Grid size (2, 3, or 4)
+ * @param {number} size - Grid size (3, or 4)
  * @returns {boolean} True if positions are adjacent
  */
-export function isAdjacent(index1, index2, size) {
-	const adjacencyMap = ADJACENCY_MAPS[size];
-	if (!adjacencyMap || !adjacencyMap[index1]) {
-		return false;
+export function isAdjacent(size, index1, index2) {
+	if (!(size in ADJACENCY_MAPS)) {
+		throw new Error(`Invalid grid size: ${size}`);
 	}
-	return adjacencyMap[index1].has(index2);
+	if (typeof index1 !== "number" || index1 < 0 || index1 >= size * size) {
+		throw new Error(`Invalid size-${size} grid index: ${index1}`);
+	}
+	return ADJACENCY_MAPS[size][index1].has(index2);
 }
 
 /**
@@ -66,6 +68,12 @@ export function isAdjacent(index1, index2, size) {
  * @returns {number[]} Array of adjacent position indices
  */
 function getAdjacentIndices(index, size) {
+	if (!(size in ADJACENCY_MAPS)) {
+		throw new Error(`Invalid grid size: ${size}`);
+	}
+	if (typeof index !== "number" || index < 0 || index >= size * size) {
+		throw new Error(`Invalid size-${size} grid index: ${index}`);
+	}
 	return Array.from(ADJACENCY_MAPS[size][index]);
 }
 
