@@ -1,1 +1,4 @@
-// ...existing content from firebase/firestore.indexes.json...
+{
+	"indexes": [],
+	"fieldOverrides": []
+}

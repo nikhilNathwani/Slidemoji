@@ -1,1 +1,87 @@
-// ...existing content from firebase/firestore.rules...
+service cloud.firestore {
+	match /databases/{database}/documents {
+    
+		// Helper function: Check if user is authenticated (anonymous or Google)
+		function isAuthenticated() {
+			return request.auth != null;
+		}
+    
+		// Helper function: Check if user owns the document
+		function isOwner(userId) {
+			return isAuthenticated() && request.auth.uid == userId;
+		}
+
+		// Helper: Validate preferences map shape (allow dynamic keys but enforce known booleans)
+		function isValidPreferences(preferences) {
+			return preferences is map &&
+						 (!('darkMode' in preferences) || preferences.darkMode is bool) &&
+						 (!('soundEnabled' in preferences) || preferences.soundEnabled is bool);
+		}
+
+		// Helper: Validate user document schema after write
+		function isValidUserDoc(userId) {
+			return request.resource.data.keys().hasOnly([
+							 'uid',
+							 'email',
+							 'displayName',
+							 'photoURL',
+							 'isAnonymous',
+							 'createdAt',
+							 'updatedAt',
+							 'preferences',
+							 'gameState'
+						 ]) &&
+						 request.resource.data.keys().hasAll([
+							 'uid',
+							 'isAnonymous',
+							 'createdAt',
+							 'updatedAt',
+							 'preferences'
+						 ]) &&
+						 request.resource.data.uid is string &&
+						 request.resource.data.uid == userId &&
+						 request.resource.data.isAnonymous is bool &&
+						 request.resource.data.createdAt is timestamp &&
+						 request.resource.data.updatedAt is timestamp &&
+						 (!('email' in request.resource.data) || request.resource.data.email == null || request.resource.data.email is string) &&
+						 (!('displayName' in request.resource.data) || request.resource.data.displayName == null || request.resource.data.displayName is string) &&
+						 (!('photoURL' in request.resource.data) || request.resource.data.photoURL == null || request.resource.data.photoURL is string) &&
+						 isValidPreferences(request.resource.data.preferences) &&
+						 (!('gameState' in request.resource.data) || request.resource.data.gameState == null || request.resource.data.gameState is map);
+		}
+    
+		// Users collection - each user can only access their own document
+		match /users/{userId} {
+			// Read: User can only read their own document
+			allow read: if isOwner(userId);
+      
+			// Create: User can only create their own document (on first sign-in)
+			allow create: if isOwner(userId) && 
+											 isValidUserDoc(userId);
+      
+			// Update: User can only update their own document
+			// Also prevent changing the uid field
+			allow update: if isOwner(userId) && 
+											 request.resource.data.uid == resource.data.uid &&
+											 request.resource.data.createdAt == resource.data.createdAt &&
+											 isValidUserDoc(userId);
+      
+			// Delete: Users cannot delete their own documents (we don't have delete functionality)
+			allow delete: if false;
+		}
+    
+		// Puzzles collection - read-only for all authenticated users
+		match /puzzles/{puzzleId} {
+			// Anyone can read puzzles (they're the same for everyone)
+			allow read: if isAuthenticated();
+      
+			// Only admins can write puzzles (managed via Firebase Console or scripts)
+			allow write: if false;
+		}
+    
+		// Deny all other access
+		match /{document=**} {
+			allow read, write: if false;
+		}
+	}
+}
