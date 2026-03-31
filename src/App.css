@@ -38,7 +38,6 @@ figcaption {
 	--dialog-bg: #1e1e1e;
 	--header-bg: #1a1a1a;
 	--header-border: rgba(255, 255, 255, 0.1);
-	--accent-primary: #3b82f6;
 }
 
 .light-theme {
@@ -58,7 +57,6 @@ figcaption {
 	--dialog-bg: #ffffff;
 	--header-bg: #ffffff;
 	--header-border: #e5e7eb;
-	--accent-primary: #2563eb;
 }
 
 :root {

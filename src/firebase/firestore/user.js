@@ -65,7 +65,8 @@ export async function syncFirestoreUserData(firebaseUser) {
 					email: firebaseUser.email || null,
 					displayName: firebaseUser.displayName || null,
 					photoURL: firebaseUser.photoURL || null,
-					isAnonymous: firebaseUser.isAnonymous ?? true,
+					isAnonymous:
+						firebaseUser.isAnonymous === false ? false : true,
 					createdAt: serverTimestamp(),
 					updatedAt: serverTimestamp(),
 					preferences: {
@@ -77,7 +78,7 @@ export async function syncFirestoreUserData(firebaseUser) {
 				return;
 			}
 
-			if (!firebaseUser.isAnonymous) {
+			if (firebaseUser.isAnonymous === false) {
 				transaction.update(userDocRef, {
 					email: firebaseUser.email || null,
 					displayName: firebaseUser.displayName || null,

@@ -73,6 +73,64 @@ export default function AuthProvider({ children }) {
 		// Listen for auth state changes from Firebase
 		// This fires immediately with current state, then on any auth changes
 		const unsubscribe = onAuthChange(async (firebaseUser) => {
+			const logObj = {
+				timestamp: new Date().toISOString(),
+				firebaseUser,
+				uid: firebaseUser?.uid,
+				email: firebaseUser?.email,
+				displayName: firebaseUser?.displayName,
+				photoURL: firebaseUser?.photoURL,
+				isAnonymous: firebaseUser?.isAnonymous,
+				providerData: firebaseUser?.providerData,
+				currentUrl: window.location.href,
+				pendingMerge: sessionStorage.getItem(PENDING_MERGE_KEY),
+			};
+			console.log("[AuthProvider] onAuthChange fired", logObj);
+			try {
+				// LocalStorage
+				const logs = JSON.parse(
+					localStorage.getItem("slidemoji_auth_logs") || "[]",
+				);
+				logs.push(logObj);
+				localStorage.setItem(
+					"slidemoji_auth_logs",
+					JSON.stringify(logs),
+				);
+			} catch (e) {
+				console.error(
+					"[AuthProvider] Failed to write auth log to localStorage",
+					e,
+				);
+			}
+			try {
+				// SessionStorage fallback
+				const sLogs = JSON.parse(
+					sessionStorage.getItem("slidemoji_auth_logs") || "[]",
+				);
+				sLogs.push(logObj);
+				sessionStorage.setItem(
+					"slidemoji_auth_logs",
+					JSON.stringify(sLogs),
+				);
+			} catch (e) {
+				console.error(
+					"[AuthProvider] Failed to write auth log to sessionStorage",
+					e,
+				);
+			}
+			try {
+				// Window fallback (for debugging)
+				if (typeof window !== "undefined") {
+					window.slidemoji_auth_logs =
+						window.slidemoji_auth_logs || [];
+					window.slidemoji_auth_logs.push(logObj);
+				}
+			} catch (e) {
+				console.error(
+					"[AuthProvider] Failed to write auth log to window",
+					e,
+				);
+			}
 			if (firebaseUser) {
 				// Update UI immediately, then sync Firestore doc in background
 				setUser({
@@ -92,6 +150,10 @@ export default function AuthProvider({ children }) {
 				if (pendingRaw) {
 					try {
 						const pending = JSON.parse(pendingRaw);
+						console.log(
+							"[AuthProvider] Found pending merge after redirect",
+							{ pending },
+						);
 						if (
 							pending?.anonymousUid &&
 							pending?.anonymousData &&
@@ -101,6 +163,9 @@ export default function AuthProvider({ children }) {
 								pending.anonymousUid,
 								firebaseUser.uid,
 								pending.anonymousData,
+							);
+							console.log(
+								"[AuthProvider] Merge after redirect complete",
 							);
 						}
 					} catch (error) {

@@ -25,12 +25,15 @@ function GoogleSignInButton({ isCondensed = false }) {
 	const handleClick = async () => {
 		try {
 			setIsProcessing(true);
-			// Anonymous users should "Sign in" (upgrade to Google)
-			// Only Google users should "Sign out"
 			if (user?.isAnonymous === false) {
-				await signOut(); // Signed in with Google, sign them out
+				await signOut();
 			} else {
-				await signIn(); // Anonymous or signed out, sign them in with Google
+				const result = await signIn();
+				// If signIn returns null, redirect started (mobile), so reset isProcessing immediately
+				if (result === null) {
+					setIsProcessing(false);
+					return;
+				}
 			}
 		} catch (error) {
 			console.error("Authentication error:", error);

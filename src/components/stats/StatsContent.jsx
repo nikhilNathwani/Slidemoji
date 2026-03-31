@@ -14,7 +14,7 @@ function StatsContent({ showTitle = false, solvedPuzzles, currentPuzzleId }) {
 	return (
 		<div className={styles.statsContent}>
 			{/* Anonymous users: Show sign-in upsell */}
-			{!user || user.isAnonymous ? (
+			{user?.isAnonymous !== false ? (
 				<SignInUpsell />
 			) : (
 				<>
