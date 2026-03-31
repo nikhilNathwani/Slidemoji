@@ -2,21 +2,21 @@
  * AuthProvider - React Context provider for authentication state
  *
  * Wraps the entire app to provide global access to user authentication state.
- * Uses Firebase Anonymous Auth to automatically sign in all users (anonymous or Google).
- * This eliminates dual storage - everyone uses Firestore with IndexedDB offline persistence.
- *
- * Flow:
- * 1. App loads → auto sign-in anonymously (if not already signed in)
- * 2. User clicks "Sign in with Google" → links anonymous account to Google (data preserved!)
- * 3. All data always in Firestore, no localStorage needed
- *
- * Usage: Wrap your app in main.jsx:
- *   <AuthProvider>
+ *  <AuthProvider>
  *     <App />
  *   </AuthProvider>
  *
  * Then access auth state anywhere using useAuth() hook:
  *   const { user, signIn, signOut, loading, isAnonymous } = useAuth();
+ *
+ * Uses Firebase Anonymous Auth to automatically sign in all users (anonymous or Google).
+ * ^This eliminates dual storage - everyone uses Firestore with IndexedDB offline persistence.
+ *
+ * Flow:
+ * 1. App loads → auto sign-in anonymously (if not already signed in)
+ * 2. User clicks "Sign in with Google" → links anonymous account to Google (data preserved)
+ *
+ *
  */
 
 import { useEffect, useRef, useState } from "react";
