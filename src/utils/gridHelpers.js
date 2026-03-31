@@ -155,56 +155,6 @@ export function areGridsEqual(left, right) {
 }
 
 /**
- * Choose which grid to use during anonymous-to-Google account merge.
- * For a given puzzle+difficulty, determine if we should keep anonymous or use Google grid.
- *
- * Logic:
- * 1. If anonymous is solved, keep anonymous (guaranteed most progressed)
- * 2. If anonymous is initial (untouched), use google (guaranteed at least as progressed)
- * 3. If anonymous is in-progress:
- *    - If google is initial, keep anonymous (in-progress beats untouched)
- *    - Otherwise use google (google is in-progress or solved, both beat anonymous in-progress)
- *
- * @param {Array|null|undefined} anonymousGrid - Grid from anonymous account
- * @param {Array|null|undefined} googleGrid - Grid from Google account
- * @param {Array|null|undefined} initialGrid - Puzzle's initial/scrambled state
- * @returns {Array|null} The chosen grid (anonymous or google)
- */
-export function chooseGridForMerge(anonymousGrid, googleGrid, initialGrid) {
-	// Validate inputs upfront
-	const hasAnonymousGrid = Array.isArray(anonymousGrid);
-	const hasGoogleGrid = Array.isArray(googleGrid);
-	const hasInitialGrid = Array.isArray(initialGrid);
-
-	// Case 1: Anonymous is solved → use anonymous (best progress)
-	if (hasAnonymousGrid && checkWin(anonymousGrid)) {
-		return anonymousGrid;
-	}
-
-	// Case 2: Anonymous is initial (untouched) → use google
-	if (
-		hasAnonymousGrid &&
-		hasInitialGrid &&
-		areGridsEqual(anonymousGrid, initialGrid)
-	) {
-		return googleGrid;
-	}
-
-	// Case 3: Anonymous is in-progress
-	// If google is initial, keep anonymous (in-progress beats untouched)
-	if (
-		hasGoogleGrid &&
-		hasInitialGrid &&
-		areGridsEqual(googleGrid, initialGrid)
-	) {
-		return anonymousGrid;
-	}
-
-	// Default: use google (it's either in-progress, solved, or missing)
-	return googleGrid;
-}
-
-/**
  * Generate a scrambled puzzle by making random valid moves
  * Always ensures the gap ends up in the bottom-right corner
  * @param {number} size - Grid size (2, 3, or 4)

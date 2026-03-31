@@ -1,6 +1,5 @@
-import { createContext, useContext } from "react";
-
-export const UserDocContext = createContext(null);
+import { useContext } from "react";
+import { UserDocContext } from "../contexts/UserDocContext";
 
 export function useUserDoc() {
 	const context = useContext(UserDocContext);

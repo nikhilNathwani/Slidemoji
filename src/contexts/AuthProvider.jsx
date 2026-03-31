@@ -31,7 +31,7 @@ import {
 	getFirestoreUserData,
 	syncFirestoreUserData,
 } from "../firebase/firestore/user";
-import { mergeAnonymousDataToGoogle } from "../firebase/firestore/gameState";
+import { mergeAnonymousDataToGoogle } from "../utils/accountMerge";
 import { AuthContext } from "./auth";
 
 const PENDING_MERGE_KEY = "pendingAnonymousMerge";

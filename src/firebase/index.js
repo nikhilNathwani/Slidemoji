@@ -22,7 +22,7 @@ export { updateFirestorePreferences } from "./firestore/preference";
 export {
 	saveFirestoreGameState,
 	mergeAnonymousDataToGoogle,
-	cleanupAnonymousTrophies,
+	deleteAnonymousPastGameState,
 } from "./firestore/gameState";
 
 export { getFirestorePuzzleById } from "./firestore/puzzle";

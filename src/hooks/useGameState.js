@@ -20,7 +20,7 @@
 import { useMemo, useCallback } from "react";
 import {
 	saveFirestoreGameState,
-	cleanupAnonymousTrophies,
+	deleteAnonymousPastGameState,
 } from "../firebase/firestore/gameState";
 import { DIFFICULTY, DEFAULT_DIFFICULTY } from "../constants";
 import { useAuth } from "../contexts/auth";
@@ -165,7 +165,7 @@ export function useGameState({ puzzleMetadata }) {
 
 					// Clean up old trophies for anonymous users (only keep today's puzzle)
 					if (isAnonymous) {
-						await cleanupAnonymousTrophies(userId, puzzleId);
+						await deleteAnonymousPastGameState(userId, puzzleId);
 					}
 				}
 			} catch (error) {

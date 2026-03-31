@@ -2,11 +2,9 @@ import {
 	doc,
 	updateDoc,
 	serverTimestamp,
-	runTransaction,
 	deleteField,
 } from "firebase/firestore";
 import { db } from "../firebaseConfig";
-import { chooseGridForMerge } from "../../utils/gridHelpers";
 import { getFirestoreUserData } from "./user";
 
 function getPuzzleInitialGrids(puzzleData) {
@@ -49,131 +47,9 @@ export async function saveFirestoreGameState(userId, puzzleId, gameData = {}) {
 	}
 }
 
-export async function mergeAnonymousDataToGoogle(
-	anonymousUserId,
-	googleUserId,
-	anonymousData,
-) {
-	if (!anonymousUserId || !googleUserId) {
-		throw new Error("Both user IDs are required for merge");
-	}
+// mergeAnonymousDataToGoogle has been moved to src/utils/accountMerge.js
 
-	console.log(
-		`[Firestore] Merging anonymous data (${anonymousUserId}) into Google account (${googleUserId})`,
-	);
-
-	try {
-		if (!anonymousData || !anonymousData.gameState) {
-			console.log("[Firestore] No anonymous data to merge, skipping");
-			return;
-		}
-
-		const googleDocRef = doc(db, "users", googleUserId);
-
-		await runTransaction(db, async (transaction) => {
-			const googleDoc = await transaction.get(googleDocRef);
-			const googleData = googleDoc.exists() ? googleDoc.data() : null;
-			const mergedGameState = { ...(googleData?.gameState || {}) };
-			console.log("[Firestore][Merge] Initial state", {
-				anonymousUserId,
-				googleUserId,
-				anonymousGameState: anonymousData.gameState,
-				googleGameState: googleData?.gameState || null,
-			});
-			console.log("[Firestore] Merging puzzle data intelligently");
-
-			for (const [puzzleId, anonymousPuzzleData] of Object.entries(
-				anonymousData.gameState || {},
-			)) {
-				const puzzleDocRef = doc(db, "puzzles", puzzleId.toString());
-				const puzzleDoc = await transaction.get(puzzleDocRef);
-				const initialGrids = getPuzzleInitialGrids(
-					puzzleDoc.exists() ? puzzleDoc.data() : null,
-				);
-				const anonymousPuzzle = anonymousPuzzleData || {};
-				console.log("[Firestore][Merge] Puzzle start", {
-					puzzleId,
-					anonymousPuzzleData: anonymousPuzzle,
-					googlePuzzleData: mergedGameState[puzzleId] || null,
-				});
-
-				if (!mergedGameState[puzzleId]) {
-					mergedGameState[puzzleId] = {
-						...anonymousPuzzle,
-					};
-					console.log(
-						"[Firestore][Merge] Puzzle copied (missing on Google)",
-						{
-							puzzleId,
-							resultPuzzleData: mergedGameState[puzzleId],
-						},
-					);
-					continue;
-				}
-
-				const googlePuzzleData = mergedGameState[puzzleId] || {};
-
-				for (const difficulty of ["normal", "hard"]) {
-					const anonymousGrid = anonymousPuzzle[difficulty];
-					const googleGrid = googlePuzzleData[difficulty];
-					const initialGrid = initialGrids[difficulty];
-					const mergedGrid = chooseGridForMerge(
-						anonymousGrid,
-						googleGrid,
-						initialGrid,
-					);
-					console.log("[Firestore][Merge] Difficulty compare", {
-						puzzleId,
-						difficulty,
-						anonymousGrid,
-						googleGrid,
-						initialGrid,
-						mergedGrid,
-					});
-
-					if (mergedGrid) {
-						googlePuzzleData[difficulty] = mergedGrid;
-					}
-				}
-
-				if (anonymousPuzzle.currentDifficulty) {
-					googlePuzzleData.currentDifficulty =
-						anonymousPuzzle.currentDifficulty;
-				}
-
-				mergedGameState[puzzleId] = googlePuzzleData;
-				console.log("[Firestore][Merge] Puzzle result", {
-					puzzleId,
-					resultPuzzleData: googlePuzzleData,
-				});
-			}
-
-			console.log("[Firestore][Merge] Final merged gameState", {
-				anonymousUserId,
-				googleUserId,
-				mergedGameState,
-			});
-
-			transaction.set(
-				googleDocRef,
-				{
-					gameState: mergedGameState,
-					updatedAt: serverTimestamp(),
-				},
-				{ merge: true },
-			);
-		});
-
-		console.log(
-			"[Firestore] Successfully merged anonymous data into Google account",
-		);
-	} catch (error) {
-		console.error("[Firestore] Error merging anonymous data:", error);
-		throw error;
-	}
-}
-
-export async function cleanupAnonymousTrophies(userId, currentPuzzleId) {
+export async function deleteAnonymousPastGameState(userId, currentPuzzleId) {
 	if (!userId) {
 		throw new Error("User ID is required");
 	}
