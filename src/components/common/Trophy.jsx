@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from "../../utils/icons";
 import { DIFFICULTY } from "../../constants";
 import styles from "./Trophy.module.css";
+import { getPaddedString } from "../../utils/puzzleUtils";
 
 function Trophy({
 	trophyNum,
@@ -12,10 +13,6 @@ function Trophy({
 	isSolved = false, // Whether the current difficulty is solved
 	difficulty = DIFFICULTY.NORMAL, // Current difficulty being played/viewed
 }) {
-	// Use provided emoji/name or local puzzle catalog data
-	const emoji = trophyEmoji;
-	const name = trophyName;
-
 	// Determine variant-specific class based on difficulty
 	// Normal, hard, or neutral (locked/unsolved)
 	const variantClass = isLocked
@@ -30,18 +27,16 @@ function Trophy({
 		<div
 			className={`${styles.trophy} ${variantClass} ${isMini && styles.trophyMini}`}
 		>
-			<div className={styles.number}>
-				#{String(trophyNum).padStart(3, "0")}
-			</div>
+			<div className={styles.number}>{getPaddedString(trophyNum)}</div>
 			{isLocked ? (
 				<div className={styles.lockIcon}>
 					<FontAwesomeIcon icon={isToday ? "unlock" : "lock"} />
 				</div>
 			) : (
-				<div className={styles.emoji}>{emoji}</div>
+				<div className={styles.emoji}>{trophyEmoji}</div>
 			)}
 			{!isMini && name && !isLocked && (
-				<div className={styles.name}>{name}</div>
+				<div className={styles.name}>{trophyName}</div>
 			)}
 		</div>
 	);

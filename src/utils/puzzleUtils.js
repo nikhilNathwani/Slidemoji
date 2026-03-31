@@ -13,6 +13,15 @@ export function getLatestPuzzleId() {
 }
 
 /**
+ * Converts puzzle ID (integer) into formated string
+ * E.g. 1 -> "#001", 24 -> "#024", 673 -> "#673"
+ * @returns {number} Puzzle ID (1-365)
+ */
+export function getPaddedString(puzzleId) {
+	return `#${String(puzzleId).padStart(3, "0")}`;
+}
+
+/**
  * Convert puzzle data from Firestore format to client format
  * Firestore and client both use 0 for gap
  *

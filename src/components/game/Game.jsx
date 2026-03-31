@@ -58,7 +58,7 @@ function Game({
 			<main className={styles.main}>
 				<div className={styles.trophyContainer}>
 					<Trophy
-						trophyNum={String(puzzleId).padStart(3, "0")}
+						trophyNum={puzzleId}
 						trophyEmoji={emoji}
 						trophyName={emojiName}
 						isSolved={checkWin(currentGrid)}
