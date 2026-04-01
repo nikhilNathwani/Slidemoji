@@ -6,7 +6,7 @@ function Dialog({ isOpen, onClose, title, children }) {
 
 	return (
 		<div className={styles.dialogOverlay} onClick={onClose}>
-			<FocusTrap focusTrapOptions={{ onDeactivate: onClose }}>
+			<FocusTrap focusTrapOptions={{ allowOutsideClick: true, onDeactivate: onClose }}>
 				<div
 					role="dialog"
 					aria-modal="true"
