@@ -12,7 +12,7 @@
 	box-sizing: border-box;
 	cursor: default;
 	/* Smooth border transition */
-	transition: border 0.3s ease;
+	transition: border-color 0.3s ease;
 	/* Static background styles for emoji tiles */
 	background-repeat: no-repeat;
 	background-origin: border-box;
@@ -36,6 +36,7 @@
 /* State: Clickable */
 .clickable {
 	cursor: pointer;
+	touch-action: manipulation;
 	-webkit-tap-highlight-color: transparent;
 }
 

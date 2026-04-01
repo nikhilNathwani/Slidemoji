@@ -17,27 +17,31 @@ import { useAuth } from "../../hooks/useAuth";
 import styles from "./GoogleSignInButton.module.css";
 
 function GoogleSignInButton({ isCondensed = false }) {
-	// Get auth state from context
 	const { user, signIn, signOut, loading } = useAuth();
-	// Local processing state for better UX (shows loading during click)
 	const [isProcessing, setIsProcessing] = useState(false);
+	const [errorMessage, setErrorMessage] = useState(null);
 
 	const handleClick = async () => {
 		try {
 			setIsProcessing(true);
+			setErrorMessage(null);
 			if (user?.isAnonymous === false) {
 				await signOut();
 			} else {
-				const result = await signIn();
-				// If signIn returns null, redirect started (mobile), so reset isProcessing immediately
-				if (result === null) {
-					setIsProcessing(false);
-					return;
-				}
+				await signIn();
 			}
 		} catch (error) {
-			console.error("Authentication error:", error);
-			// Could show error toast/message here
+			if (error.code === "auth/popup-blocked") {
+				setErrorMessage(
+					"Popup blocked — please allow popups for this site and try again.",
+				);
+			} else if (
+				error.code !== "auth/popup-closed-by-user" &&
+				error.code !== "auth/cancelled-popup-request"
+			) {
+				setErrorMessage("Sign-in failed. Please try again.");
+				console.error("Authentication error:", error);
+			}
 		} finally {
 			setIsProcessing(false);
 		}
@@ -72,15 +76,22 @@ function GoogleSignInButton({ isCondensed = false }) {
 	);
 
 	return (
-		<button
-			className={className}
-			onClick={handleClick}
-			disabled={isDisabled}
-			aria-label={isSignedInWithGoogle ? "Sign Out" : "Sign In"}
-			title={isSignedInWithGoogle ? "Sign Out" : "Sign In with Google"}
-		>
-			{buttonContent}
-		</button>
+		<>
+			<button
+				className={className}
+				onClick={handleClick}
+				disabled={isDisabled}
+				aria-label={isSignedInWithGoogle ? "Sign Out" : "Sign In"}
+				title={isSignedInWithGoogle ? "Sign Out" : "Sign In with Google"}
+			>
+				{buttonContent}
+			</button>
+			{errorMessage && (
+				<p className={styles.errorMessage} role="alert">
+					{errorMessage}
+				</p>
+			)}
+		</>
 	);
 }
 

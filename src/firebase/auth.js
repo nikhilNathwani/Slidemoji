@@ -66,6 +66,13 @@ export async function signInWithGoogle() {
 		const result = await signInWithPopup(auth, googleProvider);
 		return result.user;
 	} catch (error) {
+		if (error.code === "auth/popup-blocked") {
+			const friendly = new Error(
+				"Sign-in popup was blocked. Please allow popups for this site and try again.",
+			);
+			friendly.code = "auth/popup-blocked";
+			throw friendly;
+		}
 		console.error("[Auth] Error signing in with Google:", error);
 		throw error;
 	}
@@ -80,6 +87,13 @@ async function linkAnonymousWithGoogle(anonymousUser) {
 		const result = await linkWithPopup(anonymousUser, googleProvider);
 		return result.user;
 	} catch (error) {
+		if (error.code === "auth/popup-blocked") {
+			const friendly = new Error(
+				"Sign-in popup was blocked. Please allow popups for this site and try again.",
+			);
+			friendly.code = "auth/popup-blocked";
+			throw friendly;
+		}
 		if (
 			error.code === "auth/credential-already-in-use" ||
 			error.code === "auth/email-already-in-use"
