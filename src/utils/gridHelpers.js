@@ -244,3 +244,46 @@ export function getTileIndexFromDirection(gapIndex, direction, size) {
 
 	return target.row * size + target.col;
 }
+/**
+ * Choose which grid to keep when merging anonymous and Google accounts.
+ *
+ * Priority order (highest wins):
+ * 1. Solved grid — a completed puzzle always beats an in-progress one
+ * 2. In-progress grid — a grid with moves made beats an untouched initial grid
+ * 3. Google grid — if both are equal, prefer the Google account's data
+ * 4. Anonymous grid — use if Google has nothing
+ * 5. Initial grid — last resort fallback
+ *
+ * @param {Array} anonymousGrid
+ * @param {Array} googleGrid
+ * @param {Array} initialGrid
+ * @returns {Array} The grid to keep
+ */
+export function chooseGridForMerge(anonymousGrid, googleGrid, initialGrid) {
+	const hasAnonymousGrid = Array.isArray(anonymousGrid);
+	const hasGoogleGrid = Array.isArray(googleGrid);
+	const hasInitialGrid = Array.isArray(initialGrid);
+
+	const isAnonymousSolved = hasAnonymousGrid && checkWin(anonymousGrid);
+	const isGoogleSolved = hasGoogleGrid && checkWin(googleGrid);
+	const isAnonymousInitial =
+		hasAnonymousGrid &&
+		hasInitialGrid &&
+		anonymousGrid.length === initialGrid.length &&
+		JSON.stringify(anonymousGrid) === JSON.stringify(initialGrid);
+	const isGoogleInitial =
+		hasGoogleGrid &&
+		hasInitialGrid &&
+		googleGrid.length === initialGrid.length &&
+		JSON.stringify(googleGrid) === JSON.stringify(initialGrid);
+
+	if (isAnonymousSolved) return anonymousGrid;
+	if (isGoogleSolved) return googleGrid;
+	if (isGoogleInitial && hasAnonymousGrid && !isAnonymousInitial) return anonymousGrid;
+	if (isAnonymousInitial && hasGoogleGrid && !isGoogleInitial) return googleGrid;
+	if (isAnonymousInitial && hasGoogleGrid) return googleGrid;
+	if (isGoogleInitial && hasAnonymousGrid) return anonymousGrid;
+	if (hasGoogleGrid) return googleGrid;
+	if (hasAnonymousGrid) return anonymousGrid;
+	return initialGrid;
+}

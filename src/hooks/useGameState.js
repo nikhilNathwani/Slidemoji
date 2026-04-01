@@ -26,7 +26,7 @@ import { DIFFICULTY, DEFAULT_DIFFICULTY } from "../constants";
 import { useAuth } from "./useAuth";
 import { useUserDoc } from "./useUserDoc";
 
-import { chooseGridForMerge } from "../utils/accountMerge";
+import { chooseGridForMerge } from "../utils/gridHelpers";
 
 function composeGameState(preferredState, alternateState, initialGrids) {
 	if (!initialGrids) {

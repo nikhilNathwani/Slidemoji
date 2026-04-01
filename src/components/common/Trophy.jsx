@@ -2,6 +2,7 @@ import { FontAwesomeIcon } from "../../utils/icons";
 import { DIFFICULTY } from "../../constants";
 import styles from "./Trophy.module.css";
 import { formatPuzzleId } from "../../utils/puzzleUtils";
+import { usePuzzle } from "../../hooks/usePuzzle";
 
 function Trophy({
 	trophyNum,
@@ -13,6 +14,19 @@ function Trophy({
 	isSolved = false, // Whether the current difficulty is solved
 	difficulty = DIFFICULTY.NORMAL, // Current difficulty being played/viewed
 }) {
+	// Self-fetch emoji/name when not provided (trophy case displays).
+	// usePuzzle returns null when puzzleId is null, so no fetch for locked slots.
+	const puzzleId =
+		!trophyEmoji && !isLocked && trophyNum != null
+			? typeof trophyNum === "string"
+				? parseInt(trophyNum, 10)
+				: trophyNum
+			: null;
+	const { data: puzzleData } = usePuzzle(puzzleId);
+
+	const emoji = trophyEmoji || puzzleData?.emoji;
+	const name = trophyName || puzzleData?.emojiName;
+
 	// Determine variant-specific class based on difficulty
 	// Normal, hard, or neutral (locked/unsolved)
 	const variantClass = isLocked
@@ -33,10 +47,10 @@ function Trophy({
 					<FontAwesomeIcon icon={isToday ? "unlock" : "lock"} />
 				</div>
 			) : (
-				<div className={styles.emoji}>{trophyEmoji}</div>
+				<div className={styles.emoji}>{emoji}</div>
 			)}
 			{!isMini && name && !isLocked && (
-				<div className={styles.name}>{trophyName}</div>
+				<div className={styles.name}>{name}</div>
 			)}
 		</div>
 	);
