@@ -156,7 +156,9 @@ function App() {
 				onDifficultyChange={(diff) =>
 					setGameState({ currentDifficulty: diff })
 				}
-				isPuzzleSolved={!!solvedPuzzles?.[puzzleId]?.[gameState.currentDifficulty]}
+				isPuzzleSolved={
+					!!solvedPuzzles?.[puzzleId]?.[gameState.currentDifficulty]
+				}
 				onAlmostSolve={setAlmostSolved}
 			/>
 

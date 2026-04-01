@@ -29,7 +29,8 @@ service cloud.firestore {
 							 'createdAt',
 							 'updatedAt',
 							 'preferences',
-							 'gameState'
+						 'gameState',
+						 'isPremium'
 						 ]) &&
 						 request.resource.data.keys().hasAll([
 							 'uid',
@@ -47,7 +48,9 @@ service cloud.firestore {
 						 (!('displayName' in request.resource.data) || request.resource.data.displayName == null || request.resource.data.displayName is string) &&
 						 (!('photoURL' in request.resource.data) || request.resource.data.photoURL == null || request.resource.data.photoURL is string) &&
 						 isValidPreferences(request.resource.data.preferences) &&
-						 (!('gameState' in request.resource.data) || request.resource.data.gameState == null || request.resource.data.gameState is map);
+						 (!('gameState' in request.resource.data) || request.resource.data.gameState == null || request.resource.data.gameState is map) &&
+					 // isPremium is optional (may not exist on old docs), must be bool if present
+					 (!('isPremium' in request.resource.data) || request.resource.data.isPremium is bool);
 		}
     
 		// Users collection - each user can only access their own document
@@ -60,11 +63,12 @@ service cloud.firestore {
 											 isValidUserDoc(userId);
       
 			// Update: User can only update their own document
-			// Also prevent changing the uid field
+			// Also prevent changing the uid field, createdAt, or self-granting premium
 			allow update: if isOwner(userId) && 
-											 request.resource.data.uid == resource.data.uid &&
-											 request.resource.data.createdAt == resource.data.createdAt &&
-											 isValidUserDoc(userId);
+									 request.resource.data.uid == resource.data.uid &&
+									 request.resource.data.createdAt == resource.data.createdAt &&
+									 // Only Admin SDK (Stripe webhook) may grant premium; clients can only preserve it
+									 (!('isPremium' in request.resource.data) || request.resource.data.isPremium == false || (resource.data.isPremium == true && request.resource.data.isPremium == true)) &&
       
 			// Delete: Users cannot delete their own documents (we don't have delete functionality)
 			allow delete: if false;

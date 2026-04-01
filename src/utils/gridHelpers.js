@@ -279,8 +279,10 @@ export function chooseGridForMerge(anonymousGrid, googleGrid, initialGrid) {
 
 	if (isAnonymousSolved) return anonymousGrid;
 	if (isGoogleSolved) return googleGrid;
-	if (isGoogleInitial && hasAnonymousGrid && !isAnonymousInitial) return anonymousGrid;
-	if (isAnonymousInitial && hasGoogleGrid && !isGoogleInitial) return googleGrid;
+	if (isGoogleInitial && hasAnonymousGrid && !isAnonymousInitial)
+		return anonymousGrid;
+	if (isAnonymousInitial && hasGoogleGrid && !isGoogleInitial)
+		return googleGrid;
 	if (isAnonymousInitial && hasGoogleGrid) return googleGrid;
 	if (isGoogleInitial && hasAnonymousGrid) return anonymousGrid;
 	if (hasGoogleGrid) return googleGrid;

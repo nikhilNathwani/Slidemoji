@@ -74,6 +74,7 @@ export async function syncFirestoreUserData(firebaseUser) {
 						soundEnabled: true,
 					},
 					gameState: null,
+					isPremium: false,
 				});
 				return;
 			}
