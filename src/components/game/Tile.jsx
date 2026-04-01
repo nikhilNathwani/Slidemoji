@@ -34,11 +34,15 @@ function Tile({
 	const classNames = [styles.tile];
 	if (isClickable) classNames.push(styles.clickable);
 
+	const springTransition = {
+		layout: { type: "spring", stiffness: 400, damping: 35 },
+	};
+
 	if (isGap) {
 		return (
 			<motion.div
 				layout
-				transition={{ layout: { duration: 0.3, ease: "easeInOut" } }}
+				transition={springTransition}
 				className="tile gap"
 			/>
 		);
@@ -48,9 +52,7 @@ function Tile({
 		<motion.div
 			layoutId={`tile-${tileNumber}`}
 			layout
-			transition={{
-				layout: { duration: 0.3, ease: "easeOut" },
-			}}
+			transition={springTransition}
 			onLayoutAnimationComplete={onTransitionEnd}
 			className={classNames.join(" ")}
 			{...(isClickable && { onPointerDown })}
