@@ -23,6 +23,7 @@ function Game({
 	solvedPuzzles = {},
 }) {
 	const { user } = useAuth();
+	const isSolved = checkWin(currentGrid);
 
 	// Dialog state
 	const [showRestartDialog, setShowRestartDialog] = useState(false);
@@ -61,14 +62,14 @@ function Game({
 						trophyNum={puzzleId}
 						trophyEmoji={emoji}
 						trophyName={emojiName}
-						isSolved={checkWin(currentGrid)}
+						isSolved={isSolved}
 						difficulty={currentDifficulty}
 					/>
 				</div>
 				<Grid
 					grid={currentGrid}
 					emoji={emoji}
-					hasNumbersShown={hasNumbersShown && !checkWin(currentGrid)}
+					hasNumbersShown={hasNumbersShown && !isSolved}
 					hasSoundEnabled={hasSoundEnabled}
 					onMove={handleMove}
 					onWin={handleSolve}
@@ -77,7 +78,7 @@ function Game({
 
 				<div className={styles.restartContainer}>
 					<GameActionButton
-						isSolved={checkWin(currentGrid)}
+						isSolved={isSolved}
 						isSignedIn={user?.isAnonymous === false}
 						onOpenStats={onOpenStats}
 						onRestart={handleRestartClick}

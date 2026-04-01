@@ -2,7 +2,7 @@ import { doc, runTransaction, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
 import { checkWin } from "./gridHelpers.js";
 
-// getPuzzleInitialGrids is needed for merge logic
+// Extracts the initial (unsolved) grids from a Firestore puzzle document.
 function getPuzzleInitialGrids(puzzleData) {
 	return {
 		normal: puzzleData?.normal || null,
@@ -10,7 +10,6 @@ function getPuzzleInitialGrids(puzzleData) {
 	};
 }
 
-// Main merge function moved from gameState.js
 export async function mergeAnonymousDataToGoogle(
 	anonymousUserId,
 	googleUserId,
@@ -20,13 +19,8 @@ export async function mergeAnonymousDataToGoogle(
 		throw new Error("Both user IDs are required for merge");
 	}
 
-	console.log(
-		`[Firestore] Merging anonymous data (${anonymousUserId}) into Google account (${googleUserId})`,
-	);
-
 	try {
 		if (!anonymousData || !anonymousData.gameState) {
-			console.log("[Firestore] No anonymous data to merge, skipping");
 			return;
 		}
 
@@ -36,13 +30,6 @@ export async function mergeAnonymousDataToGoogle(
 			const googleDoc = await transaction.get(googleDocRef);
 			const googleData = googleDoc.exists() ? googleDoc.data() : null;
 			const mergedGameState = { ...(googleData?.gameState || {}) };
-			console.log("[Firestore][Merge] Initial state", {
-				anonymousUserId,
-				googleUserId,
-				anonymousGameState: anonymousData.gameState,
-				googleGameState: googleData?.gameState || null,
-			});
-			console.log("[Firestore] Merging puzzle data intelligently");
 
 			for (const [puzzleId, anonymousPuzzleData] of Object.entries(
 				anonymousData.gameState || {},
@@ -53,23 +40,9 @@ export async function mergeAnonymousDataToGoogle(
 					puzzleDoc.exists() ? puzzleDoc.data() : null,
 				);
 				const anonymousPuzzle = anonymousPuzzleData || {};
-				console.log("[Firestore][Merge] Puzzle start", {
-					puzzleId,
-					anonymousPuzzleData: anonymousPuzzle,
-					googlePuzzleData: mergedGameState[puzzleId] || null,
-				});
 
 				if (!mergedGameState[puzzleId]) {
-					mergedGameState[puzzleId] = {
-						...anonymousPuzzle,
-					};
-					console.log(
-						"[Firestore][Merge] Puzzle copied (missing on Google)",
-						{
-							puzzleId,
-							resultPuzzleData: mergedGameState[puzzleId],
-						},
-					);
+					mergedGameState[puzzleId] = { ...anonymousPuzzle };
 					continue;
 				}
 
@@ -84,14 +57,6 @@ export async function mergeAnonymousDataToGoogle(
 						googleGrid,
 						initialGrid,
 					);
-					console.log("[Firestore][Merge] Difficulty compare", {
-						puzzleId,
-						difficulty,
-						anonymousGrid,
-						googleGrid,
-						initialGrid,
-						mergedGrid,
-					});
 
 					if (mergedGrid) {
 						googlePuzzleData[difficulty] = mergedGrid;
@@ -104,17 +69,7 @@ export async function mergeAnonymousDataToGoogle(
 				}
 
 				mergedGameState[puzzleId] = googlePuzzleData;
-				console.log("[Firestore][Merge] Puzzle result", {
-					puzzleId,
-					resultPuzzleData: googlePuzzleData,
-				});
 			}
-
-			console.log("[Firestore][Merge] Final merged gameState", {
-				anonymousUserId,
-				googleUserId,
-				mergedGameState,
-			});
 
 			transaction.set(
 				googleDocRef,
@@ -125,10 +80,6 @@ export async function mergeAnonymousDataToGoogle(
 				{ merge: true },
 			);
 		});
-
-		console.log(
-			"[Firestore] Successfully merged anonymous data into Google account",
-		);
 	} catch (error) {
 		console.error("[Firestore] Error merging anonymous data:", error);
 		throw error;
@@ -143,6 +94,14 @@ export async function mergeAnonymousDataToGoogle(
 
 /**
  * Choose which grid to keep when merging anonymous and Google accounts.
+ *
+ * Priority order (highest wins):
+ * 1. Solved grid — a completed puzzle always beats an in-progress one
+ * 2. In-progress grid — a grid with moves made beats an untouched initial grid
+ * 3. Google grid — if both are equal, prefer the Google account's data
+ * 4. Anonymous grid — use if Google has nothing
+ * 5. Initial grid — last resort fallback
+ *
  * @param {Array} anonymousGrid
  * @param {Array} googleGrid
  * @param {Array} initialGrid
@@ -159,10 +118,12 @@ export function chooseGridForMerge(anonymousGrid, googleGrid, initialGrid) {
 	const isAnonymousInitial =
 		hasAnonymousGrid &&
 		hasInitialGrid &&
+		anonymousGrid.length === initialGrid.length &&
 		JSON.stringify(anonymousGrid) === JSON.stringify(initialGrid);
 	const isGoogleInitial =
 		hasGoogleGrid &&
 		hasInitialGrid &&
+		googleGrid.length === initialGrid.length &&
 		JSON.stringify(googleGrid) === JSON.stringify(initialGrid);
 
 	// Case 1: Anonymous is solved → use anonymous (best progress)

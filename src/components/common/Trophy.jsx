@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "../../utils/icons";
 import { DIFFICULTY } from "../../constants";
 import styles from "./Trophy.module.css";
-import { getPaddedString } from "../../utils/puzzleUtils";
+import { formatPuzzleId } from "../../utils/puzzleUtils";
 
 function Trophy({
 	trophyNum,
@@ -27,7 +27,7 @@ function Trophy({
 		<div
 			className={`${styles.trophy} ${variantClass} ${isMini && styles.trophyMini}`}
 		>
-			<div className={styles.number}>{getPaddedString(trophyNum)}</div>
+			<div className={styles.number}>{formatPuzzleId(trophyNum)}</div>
 			{isLocked ? (
 				<div className={styles.lockIcon}>
 					<FontAwesomeIcon icon={isToday ? "unlock" : "lock"} />

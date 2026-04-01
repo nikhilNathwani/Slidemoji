@@ -1,6 +1,6 @@
 import AnimatedTileGrid from "./AnimatedTileGrid";
 import styles from "./LandingPage.module.css";
-import { getLatestPuzzleId, getPaddedString } from "../../utils/puzzleUtils";
+import { getLatestPuzzleId, formatPuzzleId } from "../../utils/puzzleUtils";
 
 function LandingPage({ onPlay }) {
 	return (
@@ -34,7 +34,7 @@ function LandingPage({ onPlay }) {
 
 function LandingFooter() {
 	const puzzleId = getLatestPuzzleId();
-	const puzzleNumber = getPaddedString(puzzleId);
+	const puzzleNumber = formatPuzzleId(puzzleId);
 
 	// Get current date formatted as "February 23, 2026"
 	const currentDate = new Date().toLocaleDateString("en-US", {

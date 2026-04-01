@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Dialog from "./Dialog";
 import { usePuzzle } from "../../hooks/usePuzzle";
-import { getLatestPuzzleId, getPaddedString } from "../../utils/puzzleUtils";
+import { getLatestPuzzleId, formatPuzzleId } from "../../utils/puzzleUtils";
 import { FontAwesomeIcon } from "../../utils/icons";
 import styles from "./ArchiveDialog.module.css";
 
@@ -17,7 +17,7 @@ function PuzzleListItem({ puzzleNum, isSolved, onClick }) {
 			disabled={isLoading}
 		>
 			<div className={styles.puzzleNumber}>
-				{getPaddedString(puzzleNum)}
+				{formatPuzzleId(puzzleNum)}
 			</div>
 			<div className={styles.puzzleName}>
 				{isLoading ? (

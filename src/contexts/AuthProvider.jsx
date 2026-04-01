@@ -15,8 +15,6 @@
  * Flow:
  * 1. App loads → auto sign-in anonymously (if not already signed in)
  * 2. User clicks "Sign in with Google" → links anonymous account to Google (data preserved)
- *
- *
  */
 
 import { useEffect, useRef, useState } from "react";
@@ -25,16 +23,13 @@ import {
 	signInAnonymouslyIfNeeded,
 	signInWithGoogle as firebaseSignIn,
 	signOut as firebaseSignOut,
-	shouldUseRedirectFlow,
-} from "../firebase";
+} from "../firebase/auth";
 import {
 	getFirestoreUserData,
 	syncFirestoreUserData,
 } from "../firebase/firestore/user";
 import { mergeAnonymousDataToGoogle } from "../utils/accountMerge";
 import { AuthContext } from "./AuthContext";
-
-const PENDING_MERGE_KEY = "pendingAnonymousMerge";
 
 // Sync the Firestore user document after an auth state change.
 // Creates the doc if it doesn't exist; updates profile fields for Google users.
@@ -70,67 +65,7 @@ export default function AuthProvider({ children }) {
 	const authOpInFlightRef = useRef(false);
 
 	useEffect(() => {
-		// Listen for auth state changes from Firebase
-		// This fires immediately with current state, then on any auth changes
 		const unsubscribe = onAuthChange(async (firebaseUser) => {
-			const logObj = {
-				timestamp: new Date().toISOString(),
-				firebaseUser,
-				uid: firebaseUser?.uid,
-				email: firebaseUser?.email,
-				displayName: firebaseUser?.displayName,
-				photoURL: firebaseUser?.photoURL,
-				isAnonymous: firebaseUser?.isAnonymous,
-				providerData: firebaseUser?.providerData,
-				currentUrl: window.location.href,
-				pendingMerge: sessionStorage.getItem(PENDING_MERGE_KEY),
-			};
-			console.log("[AuthProvider] onAuthChange fired", logObj);
-			try {
-				// LocalStorage
-				const logs = JSON.parse(
-					localStorage.getItem("slidemoji_auth_logs") || "[]",
-				);
-				logs.push(logObj);
-				localStorage.setItem(
-					"slidemoji_auth_logs",
-					JSON.stringify(logs),
-				);
-			} catch (e) {
-				console.error(
-					"[AuthProvider] Failed to write auth log to localStorage",
-					e,
-				);
-			}
-			try {
-				// SessionStorage fallback
-				const sLogs = JSON.parse(
-					sessionStorage.getItem("slidemoji_auth_logs") || "[]",
-				);
-				sLogs.push(logObj);
-				sessionStorage.setItem(
-					"slidemoji_auth_logs",
-					JSON.stringify(sLogs),
-				);
-			} catch (e) {
-				console.error(
-					"[AuthProvider] Failed to write auth log to sessionStorage",
-					e,
-				);
-			}
-			try {
-				// Window fallback (for debugging)
-				if (typeof window !== "undefined") {
-					window.slidemoji_auth_logs =
-						window.slidemoji_auth_logs || [];
-					window.slidemoji_auth_logs.push(logObj);
-				}
-			} catch (e) {
-				console.error(
-					"[AuthProvider] Failed to write auth log to window",
-					e,
-				);
-			}
 			if (firebaseUser) {
 				// Update UI immediately, then sync Firestore doc in background
 				setUser({
@@ -144,41 +79,8 @@ export default function AuthProvider({ children }) {
 					setLoading(false);
 				}
 				syncUserDoc(firebaseUser);
-
-				// Complete pending merge after redirect-based auth flows.
-				const pendingRaw = sessionStorage.getItem(PENDING_MERGE_KEY);
-				if (pendingRaw) {
-					try {
-						const pending = JSON.parse(pendingRaw);
-						console.log(
-							"[AuthProvider] Found pending merge after redirect",
-							{ pending },
-						);
-						if (
-							pending?.anonymousUid &&
-							pending?.anonymousData &&
-							pending.anonymousUid !== firebaseUser.uid
-						) {
-							await mergeAnonymousDataToGoogle(
-								pending.anonymousUid,
-								firebaseUser.uid,
-								pending.anonymousData,
-							);
-							console.log(
-								"[AuthProvider] Merge after redirect complete",
-							);
-						}
-					} catch (error) {
-						console.error(
-							"[AuthProvider] Error completing pending redirect merge:",
-							error,
-						);
-					} finally {
-						sessionStorage.removeItem(PENDING_MERGE_KEY);
-					}
-				}
 			} else {
-				// No user - auto sign in anonymously
+				// No user — auto sign in anonymously
 				try {
 					await signInAnonymouslyIfNeeded();
 					// onAuthChange will fire again with the new anonymous user
@@ -195,9 +97,8 @@ export default function AuthProvider({ children }) {
 			}
 		});
 
-		// Cleanup: unsubscribe from auth listener when component unmounts
 		return () => unsubscribe();
-	}, []); // Empty dependency array - only run once on mount
+	}, []);
 
 	const signIn = async () => {
 		try {
@@ -212,33 +113,14 @@ export default function AuthProvider({ children }) {
 			const anonymousData = anonymousUid
 				? await getFirestoreUserData(anonymousUid)
 				: null;
-			const hasAnonymousGameState = !!anonymousData?.gameState;
-			if (hasAnonymousGameState) {
+
+			if (anonymousData?.gameState) {
 				// Mark merge transition before auth user switch so UI can preserve current board.
 				setIsMerging(true);
 				setMergeSnapshotGameState(anonymousData.gameState);
 			}
-			console.log("[AuthProvider] signIn prefetch", {
-				anonymousUid,
-				hasAnonymousData: !!anonymousData,
-				hasAnonymousGameState: !!anonymousData?.gameState,
-			});
 
-			const useRedirect = shouldUseRedirectFlow();
-			if (useRedirect && anonymousUid && anonymousData) {
-				sessionStorage.setItem(
-					PENDING_MERGE_KEY,
-					JSON.stringify({ anonymousUid, anonymousData }),
-				);
-			}
-
-			const firebaseUser = await firebaseSignIn({
-				forceRedirect: useRedirect,
-			});
-			if (!firebaseUser) {
-				// Redirect flow started; browser will navigate away.
-				return null;
-			}
+			const firebaseUser = await firebaseSignIn();
 
 			// Ensure the destination user doc exists before any merge writes.
 			// Without this, merge may race with auth-sync and fail with precondition errors.
@@ -246,38 +128,17 @@ export default function AuthProvider({ children }) {
 
 			// If the UID changed, linkWithCredential failed (account already existed).
 			// Merge the anonymous user's data into the Google account.
-			if (
-				anonymousData &&
-				anonymousUid &&
-				firebaseUser.uid !== anonymousUid
-			) {
-				console.log(
-					"[AuthProvider] Merging anonymous data into Google account...",
-				);
+			if (anonymousData && anonymousUid && firebaseUser.uid !== anonymousUid) {
 				await mergeAnonymousDataToGoogle(
 					anonymousUid,
 					firebaseUser.uid,
 					anonymousData,
 				);
-				console.log("[AuthProvider] Merge complete", {
-					anonymousUid,
-					googleUid: firebaseUser.uid,
-				});
-			} else {
-				console.log("[AuthProvider] Merge skipped", {
-					hasAnonymousData: !!anonymousData,
-					anonymousUid,
-					googleUid: firebaseUser?.uid,
-					sameUid: firebaseUser?.uid === anonymousUid,
-				});
 			}
 
 			return firebaseUser;
 		} catch (error) {
 			console.error("[Auth] Sign in error:", error);
-			setIsMerging(false);
-			setMergeSnapshotGameState(null);
-			setLoading(false);
 			throw error;
 		} finally {
 			authOpInFlightRef.current = false;
@@ -296,7 +157,6 @@ export default function AuthProvider({ children }) {
 			setUser(null);
 			await firebaseSignOut();
 			// After sign-out, onAuthChange will detect no user and auto-create new anonymous user
-			// User state will be updated by onAuthChange listener
 		} catch (error) {
 			console.error("[Auth] Sign out error:", error);
 			setPreferInitialAnonymousState(false);

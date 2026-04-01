@@ -7,7 +7,6 @@ export {
 	signInWithGoogle,
 	signOut,
 	onAuthChange,
-	shouldUseRedirectFlow,
 } from "./auth";
 
 // Firestore database operations

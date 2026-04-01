@@ -3,7 +3,7 @@ import Trophy from "../common/Trophy";
 import StatsContent from "../stats/StatsContent";
 import styles from "./WinDialog.module.css";
 import { FontAwesomeIcon } from "../../utils/icons";
-import { getPaddedString } from "../../utils/puzzleUtils";
+import { formatPuzzleId } from "../../utils/puzzleUtils";
 
 function WinDialog({
 	isOpen,
@@ -15,7 +15,7 @@ function WinDialog({
 	solvedPuzzles = {},
 }) {
 	const handleShare = () => {
-		const shareText = `Slidemoji #${getPaddedString(puzzleId)} 
+		const shareText = `Slidemoji #${formatPuzzleId(puzzleId)} 
 
 I unscrambled today's emoji! ${emoji}
 

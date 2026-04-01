@@ -7,13 +7,6 @@ import {
 import { db } from "../firebaseConfig";
 import { getFirestoreUserData } from "./user";
 
-function getPuzzleInitialGrids(puzzleData) {
-	return {
-		normal: puzzleData?.normal || null,
-		hard: puzzleData?.hard || null,
-	};
-}
-
 export async function saveFirestoreGameState(userId, puzzleId, gameData = {}) {
 	if (!userId) {
 		throw new Error("User ID is required");
@@ -69,10 +62,6 @@ export async function deleteAnonymousPastGameState(userId, currentPuzzleId) {
 			return;
 		}
 
-		console.log(
-			`[Firestore] Cleaning up ${oldPuzzleIds.length} old puzzles for anonymous user`,
-		);
-
 		const userDocRef = doc(db, "users", userId);
 		const updates = {
 			updatedAt: serverTimestamp(),
@@ -83,9 +72,6 @@ export async function deleteAnonymousPastGameState(userId, currentPuzzleId) {
 		}
 
 		await updateDoc(userDocRef, updates);
-		console.log(
-			`[Firestore] Cleaned up old puzzles: ${oldPuzzleIds.join(", ")}`,
-		);
 	} catch (error) {
 		console.error(
 			"[Firestore] Error cleaning up anonymous trophies:",
