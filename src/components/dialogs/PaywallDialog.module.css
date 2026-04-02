@@ -1,37 +1,64 @@
-.description {
-	margin: 0 0 1.5rem;
-	color: var(--color-text-secondary, #666);
-	font-size: 0.95rem;
+.content {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.tagline {
+	margin: 0;
+	color: var(--text-secondary);
+	font-size: var(--text-base);
 	line-height: 1.5;
+	text-align: center;
+}
+
+.featureList {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.featureList li {
+	color: var(--text-primary);
+	font-size: var(--text-base);
+	line-height: 1.4;
 }
 
 .checkoutButton {
 	width: 100%;
-	padding: 0.75rem 1.5rem;
-	background-color: var(--color-accent, #6366f1);
+	padding: 12px 24px;
+	background-color: var(--tile-correct);
 	color: #fff;
 	border: none;
-	border-radius: 8px;
-	font-size: 1rem;
+	border-radius: 10px;
+	font-size: var(--text-base);
 	font-weight: 600;
 	cursor: pointer;
+	touch-action: manipulation;
 	transition:
-		background-color 0.2s ease,
-		opacity 0.2s ease;
+		opacity 0.2s ease,
+		transform 0.15s ease;
 }
 
 .checkoutButton:hover:not(:disabled) {
-	background-color: var(--color-accent-hover, #4f46e5);
+	opacity: 0.88;
+}
+
+.checkoutButton:active:not(:disabled) {
+	transform: scale(0.97);
 }
 
 .checkoutButton:disabled {
-	opacity: 0.6;
+	opacity: 0.55;
 	cursor: not-allowed;
 }
 
 .error {
-	margin: 0.75rem 0 0;
-	color: var(--color-error, #dc2626);
-	font-size: 0.875rem;
+	margin: 0;
+	color: var(--tile-incorrect);
+	font-size: var(--text-sm);
 	text-align: center;
 }

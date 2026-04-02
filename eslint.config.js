@@ -6,6 +6,13 @@ import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
   globalIgnores(['dist']),
+  // API routes run in Vercel Node.js — give them Node globals (process, Buffer, etc.)
+  {
+    files: ['api/**/*.js'],
+    languageOptions: {
+      globals: { ...globals.node },
+    },
+  },
   {
     files: ['**/*.{js,jsx}'],
     extends: [

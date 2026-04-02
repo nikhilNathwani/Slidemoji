@@ -3,7 +3,13 @@ import StatsContent from "../stats/StatsContent";
 import TrophyCaseTitle from "../stats/TrophyCaseTitle";
 import { getLatestPuzzleId } from "../../utils/puzzleUtils";
 
-function StatsDialog({ isOpen, onClose, solvedPuzzles, currentPuzzleId }) {
+function StatsDialog({
+	isOpen,
+	onClose,
+	solvedPuzzles,
+	currentPuzzleId,
+	onUnlockArchiveClick,
+}) {
 	const numEarnedTrophies = Object.keys(solvedPuzzles || {}).length;
 
 	return (
@@ -22,6 +28,7 @@ function StatsDialog({ isOpen, onClose, solvedPuzzles, currentPuzzleId }) {
 				showTitle={false}
 				solvedPuzzles={solvedPuzzles}
 				currentPuzzleId={currentPuzzleId}
+				onUnlockArchiveClick={onUnlockArchiveClick}
 			/>
 		</Dialog>
 	);

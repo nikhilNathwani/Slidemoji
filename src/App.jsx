@@ -6,6 +6,7 @@ import Game from "./components/game/Game";
 import SettingsDialog from "./components/dialogs/SettingsDialog";
 import StatsDialog from "./components/dialogs/StatsDialog";
 import ArchiveDialog from "./components/dialogs/ArchiveDialog";
+import PaywallDialog from "./components/dialogs/PaywallDialog";
 import { getLatestPuzzleId } from "./utils/puzzleUtils";
 import { useAuth } from "./hooks/useAuth";
 import { usePuzzle } from "./hooks/usePuzzle";
@@ -49,10 +50,19 @@ function App() {
 	const { solvedPuzzles } = useSolvedPuzzles();
 
 	// Show Page / Dialog
-	const [showLandingPage, setShowLandingPage] = useState(true);
+	// Lazy initializer: skip landing page when returning from Stripe checkout.
+	const [showLandingPage, setShowLandingPage] = useState(() => {
+		const params = new URLSearchParams(window.location.search);
+		if (params.get("payment") === "success") {
+			window.history.replaceState({}, "", window.location.pathname);
+			return false;
+		}
+		return true;
+	});
 	const [showSettingsDialog, setShowSettingsDialog] = useState(false);
 	const [showStatsDialog, setShowStatsDialog] = useState(false);
 	const [showArchiveDialog, setShowArchiveDialog] = useState(false);
+	const [showPaywallDialog, setShowPaywallDialog] = useState(false);
 
 	const isLoading =
 		isLoadingPuzzle || isLoadingGameState || !gameState || !puzzleMetadata;
@@ -139,7 +149,9 @@ function App() {
 				hasNumbersShown={showNumbers}
 				hasSoundEnabled={soundEnabled}
 				onOpenStats={() => setShowStatsDialog(true)}
-				isAppDialogOpen={showSettingsDialog || showStatsDialog}
+				isAppDialogOpen={
+					showSettingsDialog || showStatsDialog || showPaywallDialog
+				}
 				solvedPuzzles={solvedPuzzles}
 			/>
 
@@ -175,6 +187,15 @@ function App() {
 				onClose={() => setShowStatsDialog(false)}
 				solvedPuzzles={solvedPuzzles}
 				currentPuzzleId={puzzleId}
+				onUnlockArchiveClick={() => {
+					setShowStatsDialog(false);
+					setShowPaywallDialog(true);
+				}}
+			/>
+
+			<PaywallDialog
+				isOpen={showPaywallDialog}
+				onClose={() => setShowPaywallDialog(false)}
 			/>
 		</div>
 	);

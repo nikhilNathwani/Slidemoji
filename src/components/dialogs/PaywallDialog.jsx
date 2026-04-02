@@ -2,31 +2,28 @@ import { useCheckout } from "../../hooks/useCheckout";
 import Dialog from "./Dialog";
 import styles from "./PaywallDialog.module.css";
 
-/**
- * PaywallDialog - shown when a user tries to access a premium feature.
- *
- * TODO: Replace the placeholder content with final copy and premium feature highlights.
- * TODO: Add pricing details once the Stripe product/price is configured.
- */
 function PaywallDialog({ isOpen, onClose }) {
 	const { startCheckout, isLoading, error } = useCheckout();
 
 	return (
-		<Dialog isOpen={isOpen} onClose={onClose} title="Go Premium">
+		<Dialog isOpen={isOpen} onClose={onClose} title="Unlock the Archive">
 			<div className={styles.content}>
-				{/* TODO: Add premium feature highlights here */}
-				<p className={styles.description}>
-					Unlock premium features to get the most out of Slidemoji.
+				<p className={styles.tagline}>
+					Every puzzle, every day — going all the way back.
 				</p>
+
+				<ul className={styles.featureList}>
+					<li>🗓️ Play any past puzzle from the full archive</li>
+					<li>🏆 Earn trophies for every missed puzzle</li>
+					<li>⭐ Complete your collection at your own pace</li>
+				</ul>
 
 				<button
 					className={styles.checkoutButton}
 					onClick={startCheckout}
 					disabled={isLoading}
 				>
-					{isLoading
-						? "Redirecting to checkout…"
-						: "Upgrade to Premium"}
+					{isLoading ? "Redirecting to checkout…" : "Unlock Archive"}
 				</button>
 
 				{error && (

@@ -29,3 +29,4 @@ firebase-debug*.log
 # Tutorial and progress files
 PROGRESS.md
 tutorial/
+.vercel

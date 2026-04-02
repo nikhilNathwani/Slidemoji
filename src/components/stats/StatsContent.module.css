@@ -98,6 +98,29 @@
 	margin: 0;
 }
 
+.unlockButton {
+	padding: 10px 28px;
+	background-color: var(--tile-correct);
+	color: #fff;
+	border: none;
+	border-radius: 10px;
+	font-size: var(--text-base);
+	font-weight: 600;
+	cursor: pointer;
+	touch-action: manipulation;
+	transition:
+		opacity 0.2s ease,
+		transform 0.15s ease;
+}
+
+.unlockButton:hover {
+	opacity: 0.88;
+}
+
+.unlockButton:active {
+	transform: scale(0.97);
+}
+
 .unlockArchiveButton {
 	margin-top: 8px;
 	padding: 14px 32px;
