@@ -29,6 +29,11 @@ export default async function handler(req, res) {
 		return res.status(500).json({ error: "Stripe is not configured" });
 	}
 
+	// Log key mode (test vs live) to help diagnose env var issues
+	console.log("[create-checkout-session] Key mode:", process.env.STRIPE_SECRET_KEY.slice(0, 9));
+	console.log("[create-checkout-session] Price ID:", process.env.STRIPE_PRICE_ID);
+	console.log("[create-checkout-session] uid:", uid);
+
 	const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 	try {
