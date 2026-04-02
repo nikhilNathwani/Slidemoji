@@ -24,7 +24,9 @@ function PaywallDialog({ isOpen, onClose }) {
 					onClick={startCheckout}
 					disabled={isLoading}
 				>
-					{isLoading ? "Redirecting to checkout…" : "Upgrade to Premium"}
+					{isLoading
+						? "Redirecting to checkout…"
+						: "Upgrade to Premium"}
 				</button>
 
 				{error && (

@@ -27,7 +27,10 @@ function getAdminDb() {
 				projectId: process.env.FIREBASE_PROJECT_ID,
 				clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
 				// Vercel stores private keys with escaped newlines; unescape them
-				privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
+				privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(
+					/\\n/g,
+					"\n",
+				),
 			}),
 		});
 	}
@@ -60,11 +63,14 @@ export default async function handler(req, res) {
 		event = stripe.webhooks.constructEvent(
 			rawBody,
 			signature,
-			process.env.STRIPE_WEBHOOK_SECRET
+			process.env.STRIPE_WEBHOOK_SECRET,
 		);
 	} catch (err) {
 		// Invalid signature — reject silently so we don't reveal internals
-		console.error("Stripe webhook signature verification failed:", err.message);
+		console.error(
+			"Stripe webhook signature verification failed:",
+			err.message,
+		);
 		return res.status(400).json({ error: "Webhook signature invalid" });
 	}
 
@@ -73,8 +79,12 @@ export default async function handler(req, res) {
 		const firebaseUid = session.metadata?.firebaseUid;
 
 		if (!firebaseUid) {
-			console.error("checkout.session.completed: missing firebaseUid in metadata");
-			return res.status(400).json({ error: "Missing firebaseUid in session metadata" });
+			console.error(
+				"checkout.session.completed: missing firebaseUid in metadata",
+			);
+			return res
+				.status(400)
+				.json({ error: "Missing firebaseUid in session metadata" });
 		}
 
 		const db = getAdminDb();
