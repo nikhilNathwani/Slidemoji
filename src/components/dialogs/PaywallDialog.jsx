@@ -4,39 +4,31 @@ import Dialog from "./Dialog";
 import styles from "./PaywallDialog.module.css";
 
 // Decorative preview — mimics real archive entries (hardcoded, not live data)
+// Static list that fades out at the bottom — creates "locked content" feel
 const PREVIEW_ITEMS = [
-	{ id: "001", name: "Top Hat", solved: true },
-	{ id: "002", name: "Basketball", solved: true },
-	{ id: "003", name: "Ocean Wave", solved: true },
-	{ id: "004", name: "Lion Face", solved: true },
-	{ id: "005", name: "Guitar", solved: false },
-	{ id: "006", name: "Pizza Slice", solved: false },
-	{ id: "007", name: "Crescent Moon", solved: false },
-	{ id: "008", name: "Hibiscus", solved: false },
+	{ id: "001", name: "Top Hat" },
+	{ id: "002", name: "Basketball" },
+	{ id: "003", name: "Ocean Wave" },
+	{ id: "004", name: "Lion Face" },
+	{ id: "005", name: "Guitar" },
+	{ id: "006", name: "Pizza Slice" },
+	{ id: "007", name: "Crescent Moon" },
+	{ id: "008", name: "Hibiscus" },
 ];
 
 function ArchivePreview() {
-	// Doubled for seamless CSS scroll loop
-	const doubled = [...PREVIEW_ITEMS, ...PREVIEW_ITEMS];
 	return (
 		<div className={styles.archivePreview}>
-			<div className={styles.archivePreviewTrack}>
-				{doubled.map((item, i) => (
-					<div
-						key={i}
-						className={`${styles.archivePreviewItem} ${
-							item.solved ? styles.previewSolved : ""
-						}`}
-					>
-						<span className={styles.previewId}>#{item.id}</span>
-						<span className={styles.previewName}>{item.name}</span>
-						<FontAwesomeIcon
-							icon={item.solved ? "check" : "play-circle"}
-							className={styles.previewIcon}
-						/>
-					</div>
-				))}
-			</div>
+			{PREVIEW_ITEMS.map((item) => (
+				<div key={item.id} className={styles.archivePreviewItem}>
+					<span className={styles.previewId}>#{item.id}</span>
+					<span className={styles.previewName}>{item.name}</span>
+					<FontAwesomeIcon
+						icon="play-circle"
+						className={styles.previewIcon}
+					/>
+				</div>
+			))}
 		</div>
 	);
 }
@@ -59,7 +51,7 @@ function PaywallDialog({ isOpen, onClose }) {
 				<div className={styles.priceHero}>
 					<span className={styles.price}>$3</span>
 					<span className={styles.priceNote}>
-						one-time purchase · no subscription
+						One-time purchase · No subscription
 					</span>
 				</div>
 
