@@ -12,7 +12,7 @@ function Header({ onSettingsClick, onStatsClick, onArchiveClick }) {
 	const { isPremium } = useSubscription();
 	const [showAccountMenu, setShowAccountMenu] = useState(false);
 	const [showArchiveBadge, setShowArchiveBadge] = useState(
-		() => isPremium && !localStorage.getItem(ARCHIVE_SEEN_KEY)
+		() => isPremium && !localStorage.getItem(ARCHIVE_SEEN_KEY),
 	);
 	const menuRef = useRef(null);
 
@@ -62,7 +62,10 @@ function Header({ onSettingsClick, onStatsClick, onArchiveClick }) {
 							<FontAwesomeIcon icon="clock-rotate-left" />
 						</button>
 						{showArchiveBadge && (
-							<span className={styles.newBadge} aria-hidden="true">
+							<span
+								className={styles.newBadge}
+								aria-hidden="true"
+							>
 								New
 							</span>
 						)}

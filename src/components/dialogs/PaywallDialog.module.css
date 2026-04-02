@@ -30,9 +30,9 @@
 .checkoutButton {
 	width: 100%;
 	padding: 12px 24px;
-	background-color: var(--color-cta);
-	color: #fff;
-	border: none;
+	background-color: var(--surface-primary);
+	color: var(--text-primary);
+	border: 1px solid var(--border-secondary);
 	border-radius: 10px;
 	font-size: var(--text-base);
 	font-weight: 600;
@@ -40,11 +40,13 @@
 	touch-action: manipulation;
 	transition:
 		background-color 0.2s ease,
+		border-color 0.2s ease,
 		transform 0.15s ease;
 }
 
 .checkoutButton:hover:not(:disabled) {
-	background-color: var(--color-cta-hover);
+	background-color: var(--surface-secondary);
+	border-color: var(--border-primary);
 }
 
 .checkoutButton:active:not(:disabled) {
