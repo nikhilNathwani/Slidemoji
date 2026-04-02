@@ -8,24 +8,40 @@ function PaywallDialog({ isOpen, onClose }) {
 	return (
 		<Dialog isOpen={isOpen} onClose={onClose} title="Unlock the Archive">
 			<div className={styles.content}>
-				<p className={styles.tagline}>
-					Every puzzle, every day — going all the way back.
-				</p>
+				<div className={styles.hero}>
+					<span className={styles.heroEmoji}>🗓️</span>
+					<p className={styles.heroText}>
+						Every puzzle, every day —<br />
+						<strong>going all the way back to day one.</strong>
+					</p>
+				</div>
 
 				<ul className={styles.featureList}>
-					<li>🗓️ Play any past puzzle from the full archive</li>
-					<li>🏆 Earn trophies for every missed puzzle</li>
-					<li>⭐ Complete your collection at your own pace</li>
+					<li>
+						<span className={styles.featureIcon}>🏆</span>
+						<span>Earn trophies for every puzzle you solve</span>
+					</li>
+					<li>
+						<span className={styles.featureIcon}>⭐</span>
+						<span>Complete your collection at your own pace</span>
+					</li>
+					<li>
+						<span className={styles.featureIcon}>♾️</span>
+						<span>1,000+ puzzles and counting — one unlock, forever</span>
+					</li>
 				</ul>
+
+				<div className={styles.priceRow}>
+					<span className={styles.price}>$3</span>
+					<span className={styles.priceNote}>one-time · no subscription</span>
+				</div>
 
 				<button
 					className={styles.checkoutButton}
 					onClick={startCheckout}
 					disabled={isLoading}
 				>
-					{isLoading
-						? "Redirecting to checkout…"
-						: "Unlock Archive — $3"}
+					{isLoading ? "Redirecting to checkout…" : "Unlock Archive"}
 				</button>
 
 				{error && (
