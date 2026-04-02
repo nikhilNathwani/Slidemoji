@@ -2,6 +2,16 @@ import { cert, getApps, initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 import Stripe from "stripe";
 
+// Vercel/Node.js: disable automatic body parsing so we get the raw bytes.
+// Stripe signature verification REQUIRES the raw unparsed body — if Vercel's
+// built-in body parser runs first, the stream is already consumed and
+// constructEvent() will throw a signature error even with the correct secret.
+export const config = {
+	api: {
+		bodyParser: false,
+	},
+};
+
 /**
  * POST /api/stripe-webhook
  *
