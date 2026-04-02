@@ -4,28 +4,16 @@
 	gap: 20px;
 }
 
-/* Hero block */
-.hero {
+/* Price hero — at the top, largest element */
+.priceHero {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 10px;
+	gap: 4px;
 	padding: 20px 16px;
 	background-color: var(--surface-secondary);
 	border-radius: 12px;
 	text-align: center;
-}
-
-.heroEmoji {
-	font-size: 2.5rem;
-	line-height: 1;
-}
-
-.heroText {
-	margin: 0;
-	color: var(--text-primary);
-	font-size: var(--text-base);
-	line-height: 1.5;
 }
 
 /* Feature list */
@@ -50,15 +38,6 @@
 .featureIcon {
 	flex-shrink: 0;
 	font-size: 1.1rem;
-}
-
-/* Price row */
-.priceRow {
-	display: flex;
-	align-items: baseline;
-	justify-content: center;
-	gap: 8px;
-	padding: 4px 0;
 }
 
 .price {
@@ -103,6 +82,13 @@
 .checkoutButton:disabled {
 	opacity: 0.55;
 	cursor: not-allowed;
+}
+
+.securityNote {
+	margin: 0;
+	font-size: var(--text-xs);
+	color: var(--text-secondary);
+	text-align: center;
 }
 
 .error {

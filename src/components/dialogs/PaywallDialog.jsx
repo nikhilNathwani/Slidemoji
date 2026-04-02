@@ -8,41 +8,35 @@ function PaywallDialog({ isOpen, onClose }) {
 	return (
 		<Dialog isOpen={isOpen} onClose={onClose} title="Unlock the Archive">
 			<div className={styles.content}>
-				<div className={styles.hero}>
-					<span className={styles.heroEmoji}>🗓️</span>
-					<p className={styles.heroText}>
-						Every puzzle, every day —<br />
-						<strong>going all the way back to day one.</strong>
-					</p>
+				<div className={styles.priceHero}>
+					<span className={styles.price}>$3</span>
+					<span className={styles.priceNote}>one-time · unlocks all past &amp; future puzzles</span>
 				</div>
 
 				<ul className={styles.featureList}>
 					<li>
-						<span className={styles.featureIcon}>🏆</span>
-						<span>Earn trophies for every puzzle you solve</span>
+						<span className={styles.featureIcon}>📅</span>
+						<span>Play any past puzzle, all the way back to day one</span>
 					</li>
 					<li>
-						<span className={styles.featureIcon}>⭐</span>
-						<span>Complete your collection at your own pace</span>
+						<span className={styles.featureIcon}>🏆</span>
+						<span>Complete your trophy collection on your own schedule</span>
 					</li>
 					<li>
 						<span className={styles.featureIcon}>♾️</span>
-						<span>1,000+ puzzles and counting — one unlock, forever</span>
+						<span>One payment, permanent access — no subscription ever</span>
 					</li>
 				</ul>
-
-				<div className={styles.priceRow}>
-					<span className={styles.price}>$3</span>
-					<span className={styles.priceNote}>one-time · no subscription</span>
-				</div>
 
 				<button
 					className={styles.checkoutButton}
 					onClick={startCheckout}
 					disabled={isLoading}
 				>
-					{isLoading ? "Redirecting to checkout…" : "Unlock Archive"}
+					{isLoading ? "Redirecting to checkout…" : "Continue to payment"}
 				</button>
+
+				<p className={styles.securityNote}>🔒 Secure payment via Stripe</p>
 
 				{error && (
 					<p role="alert" className={styles.error}>
