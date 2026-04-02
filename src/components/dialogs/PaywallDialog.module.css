@@ -2,7 +2,7 @@
 	display: flex;
 	flex-direction: column;
 	align-items: stretch;
-	gap: 28px;
+	gap: 24px;
 }
 
 .tagline {
@@ -13,14 +13,106 @@
 	color: var(--text-primary);
 }
 
-/* Price hero — $3 and "one-time payment" on the same line */
+/* Archive preview — decorative scrolling mini-list */
+.archivePreview {
+	position: relative;
+	overflow: hidden;
+	height: 132px; /* shows ~3 entries */
+	border-radius: 8px;
+	border: 1px solid var(--border-primary);
+	background: var(--surface-secondary);
+}
+
+/* Fade gradients top and bottom */
+.archivePreview::before,
+.archivePreview::after {
+	content: "";
+	position: absolute;
+	left: 0;
+	right: 0;
+	height: 28px;
+	z-index: 1;
+	pointer-events: none;
+}
+
+.archivePreview::before {
+	top: 0;
+	background: linear-gradient(
+		to bottom,
+		var(--surface-secondary),
+		transparent
+	);
+}
+
+.archivePreview::after {
+	bottom: 0;
+	background: linear-gradient(to top, var(--surface-secondary), transparent);
+}
+
+.archivePreviewTrack {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	padding: 4px;
+	animation: archiveScroll 14s linear infinite;
+}
+
+@keyframes archiveScroll {
+	0% {
+		transform: translateY(0);
+	}
+	100% {
+		transform: translateY(-50%);
+	}
+}
+
+.archivePreviewItem {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 10px;
+	height: 36px;
+	border-radius: 6px;
+	border: 1px solid var(--border-primary);
+	background: var(--surface-primary);
+}
+
+.previewId {
+	font-size: 12px;
+	font-weight: 700;
+	color: var(--text-secondary);
+	min-width: 34px;
+}
+
+.previewName {
+	flex: 1;
+	font-size: 12px;
+	color: var(--text-secondary);
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.previewIcon {
+	width: 10px !important;
+	color: var(--text-secondary);
+}
+
+.previewSolved .previewId {
+	color: var(--text-primary);
+}
+
+.previewSolved .previewIcon {
+	color: #22c55e;
+}
+
+/* Price hero — vertical stack */
 .priceHero {
 	display: flex;
-	flex-direction: row;
-	align-items: baseline;
-	justify-content: center;
-	gap: 10px;
-	padding: 28px 20px;
+	flex-direction: column;
+	align-items: center;
+	gap: 4px;
+	padding: 20px;
 	background-color: var(--surface-secondary);
 	border-radius: 12px;
 	text-align: center;
@@ -45,7 +137,7 @@
 	margin: 0;
 	display: flex;
 	flex-direction: column;
-	gap: 24px;
+	gap: 20px;
 }
 
 .featureList li {
@@ -56,7 +148,7 @@
 
 .featureIcon {
 	flex-shrink: 0;
-	width: 14px;
+	width: 14px !important;
 	margin-top: 3px; /* align with headline text cap height */
 	color: var(--text-secondary);
 }
@@ -118,6 +210,12 @@
 }
 
 .error {
+	margin: 0;
+	font-size: var(--text-sm);
+	color: #ef4444;
+	text-align: center;
+}
+
 	margin: 0;
 	color: var(--tile-incorrect);
 	font-size: var(--text-sm);

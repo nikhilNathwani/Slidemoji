@@ -85,42 +85,53 @@ function SettingsDialog({
 					/>
 				</div>
 				<div className={styles.settingsDivider}></div>
-				{process.env.NODE_ENV === "development" && onAlmostSolve && (
-					<>
-						<div className={styles.settingsItem}>
-							<label className={styles.settingsLabel}>
-								Dev Tools
-							</label>
-							<div style={{ display: "flex", gap: "8px", flexWrap: "wrap", justifyContent: "flex-end" }}>
-								<button
-									onClick={() => {
-										onAlmostSolve();
-										setTimeout(() => onClose(), 300);
+				{(import.meta.env.DEV ||
+					localStorage.getItem("slidemoji_dev_tools") === "true") &&
+					onAlmostSolve && (
+						<>
+							<div className={styles.settingsItem}>
+								<label className={styles.settingsLabel}>
+									Dev Tools
+								</label>
+								<div
+									style={{
+										display: "flex",
+										gap: "8px",
+										flexWrap: "wrap",
+										justifyContent: "flex-end",
 									}}
-									className={styles.devButton}
 								>
-									Almost Solved
-								</button>
-								<button
-									onClick={() => onTogglePremium?.(true)}
-									className={styles.devButton}
-								>
-									Grant Premium
-								</button>
-								<button
-									onClick={() => {
-										onTogglePremium?.(false);
-										localStorage.removeItem("slidemoji_archive_seen");
-									}}
-									className={styles.devButton}
-								>
-									Revoke Premium
-								</button>
+									<button
+										onClick={() => {
+											onAlmostSolve();
+											setTimeout(() => onClose(), 300);
+										}}
+										className={styles.devButton}
+									>
+										Almost Solved
+									</button>
+									<button
+										onClick={() => onTogglePremium?.(true)}
+										className={styles.devButton}
+									>
+										Grant Premium
+									</button>
+									<button
+										onClick={() => {
+											onTogglePremium?.(false);
+											localStorage.removeItem(
+												"slidemoji_archive_seen",
+											);
+										}}
+										className={styles.devButton}
+									>
+										Revoke Premium
+									</button>
+								</div>
 							</div>
-						</div>
-						<div className={styles.settingsDivider}></div>
-					</>
-				)}
+							<div className={styles.settingsDivider}></div>
+						</>
+					)}
 				<div className={styles.settingsActions}>
 					<a
 						href="mailto:support.slidemoji@gmail.com?subject=Slidemoji%20Feedback"

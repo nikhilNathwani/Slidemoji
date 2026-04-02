@@ -173,7 +173,9 @@ function App() {
 					!!solvedPuzzles?.[puzzleId]?.[gameState.currentDifficulty]
 				}
 				onAlmostSolve={setAlmostSolved}
-			onTogglePremium={(grant) => resetPremiumForDev(user?.uid, grant)}
+				onTogglePremium={(grant) =>
+					resetPremiumForDev(user?.uid, grant)
+				}
 			/>
 
 			<ArchiveDialog
