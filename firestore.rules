@@ -68,7 +68,7 @@ service cloud.firestore {
 									 request.resource.data.uid == resource.data.uid &&
 									 request.resource.data.createdAt == resource.data.createdAt &&
 									 // Only Admin SDK (Stripe webhook) may grant premium; clients can only preserve it
-									 (!('isPremium' in request.resource.data) || request.resource.data.isPremium == false || (resource.data.isPremium == true && request.resource.data.isPremium == true)) &&
+									 (!('isPremium' in request.resource.data) || request.resource.data.isPremium == false || (resource.data.isPremium == true && request.resource.data.isPremium == true));
       
 			// Delete: Users cannot delete their own documents (we don't have delete functionality)
 			allow delete: if false;

@@ -25,6 +25,10 @@ export default async function handler(req, res) {
 		return res.status(400).json({ error: "returnUrl is required" });
 	}
 
+	if (!process.env.STRIPE_SECRET_KEY) {
+		return res.status(500).json({ error: "Stripe is not configured" });
+	}
+
 	const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 	try {

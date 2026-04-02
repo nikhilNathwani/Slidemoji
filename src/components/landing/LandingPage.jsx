@@ -34,7 +34,7 @@ function LandingPage({ onPlay }) {
 
 function LandingFooter() {
 	const puzzleId = getLatestPuzzleId();
-	const puzzleNumber = formatPuzzleId(puzzleId);
+	const puzzleNumber = formatPuzzleId(puzzleId, { includeHash: false });
 
 	// Get current date formatted as "February 23, 2026"
 	const currentDate = new Date().toLocaleDateString("en-US", {

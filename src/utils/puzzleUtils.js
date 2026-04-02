@@ -15,10 +15,12 @@ export function getLatestPuzzleId() {
  * Formats a puzzle ID number into a display string.
  * E.g. 1 -> "#001", 24 -> "#024", 673 -> "#673"
  * @param {number} puzzleId
+ * @param {{ includeHash?: boolean }} options
  * @returns {string} Formatted puzzle ID
  */
-export function formatPuzzleId(puzzleId) {
-	return `#${String(puzzleId).padStart(3, "0")}`;
+export function formatPuzzleId(puzzleId, { includeHash = true } = {}) {
+	const padded = String(puzzleId).padStart(3, "0");
+	return includeHash ? `#${padded}` : padded;
 }
 
 /**

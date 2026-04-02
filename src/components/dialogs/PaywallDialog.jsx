@@ -23,7 +23,7 @@ function PaywallDialog({ isOpen, onClose }) {
 					onClick={startCheckout}
 					disabled={isLoading}
 				>
-					{isLoading ? "Redirecting to checkout…" : "Unlock Archive"}
+					{isLoading ? "Redirecting to checkout…" : "Unlock Archive — $3"}
 				</button>
 
 				{error && (

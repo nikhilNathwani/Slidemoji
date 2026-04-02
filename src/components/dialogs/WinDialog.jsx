@@ -15,7 +15,7 @@ function WinDialog({
 	solvedPuzzles = {},
 }) {
 	const handleShare = () => {
-		const shareText = `Slidemoji #${formatPuzzleId(puzzleId)} 
+		const shareText = `Slidemoji ${formatPuzzleId(puzzleId)} 
 
 I unscrambled today's emoji! ${emoji}
 
