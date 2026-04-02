@@ -19,7 +19,7 @@ const PREVIEW_ITEMS = [
 function ArchivePreview() {
 	return (
 		<div className={styles.archivePreview}>
-			{PREVIEW_ITEMS.map((item) => (
+			{PREVIEW_ITEMS.slice(0, 6).map((item) => (
 				<div key={item.id} className={styles.archivePreviewItem}>
 					<span className={styles.previewId}>#{item.id}</span>
 					<span className={styles.previewName}>{item.name}</span>
