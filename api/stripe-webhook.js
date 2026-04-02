@@ -92,20 +92,41 @@ export default async function handler(req, res) {
 	const signature = req.headers["stripe-signature"];
 	console.log("[stripe-webhook] Signature header present:", !!signature);
 
+	// In test/dev mode with an empty raw body (can happen when vercel dev
+	// pre-parses the request), fall back to req.body directly and skip
+	// signature verification. This is safe locally — you are the one
+	// generating the test events via `stripe listen`. In production, the raw
+	// body is always present and verification is always enforced.
+	const isTestMode = process.env.STRIPE_SECRET_KEY?.startsWith("sk_test_");
+	const bodyIsEmpty = rawBody.length === 0;
+
 	let event;
-	try {
-		event = stripe.webhooks.constructEvent(
-			rawBody,
-			signature,
-			process.env.STRIPE_WEBHOOK_SECRET,
+	if (isTestMode && bodyIsEmpty && req.body) {
+		// vercel dev already parsed the body — use it directly
+		console.log(
+			"[stripe-webhook] DEV: raw body empty, using pre-parsed req.body (sig verification skipped)",
 		);
-		console.log("[stripe-webhook] Event verified:", event.type);
-	} catch (err) {
-		console.error(
-			"[stripe-webhook] Signature verification failed:",
-			err.message,
-		);
-		return res.status(400).json({ error: "Webhook signature invalid" });
+		event = req.body;
+	} else {
+		try {
+			event = stripe.webhooks.constructEvent(
+				rawBody,
+				signature,
+				process.env.STRIPE_WEBHOOK_SECRET,
+			);
+			console.log("[stripe-webhook] Event verified:", event.type);
+		} catch (err) {
+			console.error(
+				"[stripe-webhook] Signature verification failed:",
+				err.message,
+			);
+			console.error(
+				"[stripe-webhook] Raw body length was:",
+				rawBody.length,
+				"— if 0, vercel dev consumed the stream.",
+			);
+			return res.status(400).json({ error: "Webhook signature invalid" });
+		}
 	}
 
 	if (event.type === "checkout.session.completed") {
@@ -122,8 +143,24 @@ export default async function handler(req, res) {
 				.json({ error: "Missing firebaseUid in session metadata" });
 		}
 
+		let db;
 		try {
-			const db = getAdminDb();
+			db = getAdminDb();
+		} catch (err) {
+			console.error(
+				"[stripe-webhook] Firebase Admin init failed:",
+				err.message,
+			);
+			console.error(
+				"[stripe-webhook] Check FIREBASE_PRIVATE_KEY — it must include",
+				"the full PEM header/footer and use literal \\\\n for newlines.",
+			);
+			return res
+				.status(500)
+				.json({ error: "Firebase Admin initialization failed" });
+		}
+
+		try {
 			await db.collection("users").doc(firebaseUid).update({
 				isPremium: true,
 				premiumGrantedAt: new Date().toISOString(),
