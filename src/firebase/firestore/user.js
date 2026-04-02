@@ -4,6 +4,7 @@ import {
 	serverTimestamp,
 	runTransaction,
 	onSnapshot,
+	updateDoc,
 } from "firebase/firestore";
 import { auth, db } from "../firebaseConfig";
 
@@ -46,6 +47,13 @@ export async function getFirestoreUserData(userId) {
 		console.error("[Firestore] Error getting user data:", error);
 		throw error;
 	}
+}
+
+// Dev-only: toggle isPremium on the current user doc for local testing
+export async function resetPremiumForDev(userId, isPremium) {
+	if (!userId) throw new Error("User ID is required");
+	const userDocRef = doc(db, "users", userId);
+	await updateDoc(userDocRef, { isPremium });
 }
 
 export async function syncFirestoreUserData(firebaseUser) {

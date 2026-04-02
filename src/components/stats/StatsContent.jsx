@@ -54,7 +54,8 @@ function StatsContent({
 									Puzzle Archive{" "}
 									<FontAwesomeIcon icon="clock-rotate-left" />
 								</strong>{" "}
-								button in the header to browse past puzzles.
+								button in the header to play past puzzles and
+								complete your trophy collection.
 							</p>
 						</div>
 					) : (

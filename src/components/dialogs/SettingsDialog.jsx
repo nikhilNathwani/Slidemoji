@@ -16,6 +16,7 @@ function SettingsDialog({
 	onDifficultyChange,
 	isPuzzleSolved = false,
 	onAlmostSolve,
+	onTogglePremium,
 }) {
 	return (
 		<Dialog isOpen={isOpen} onClose={onClose} title="Settings">
@@ -90,16 +91,32 @@ function SettingsDialog({
 							<label className={styles.settingsLabel}>
 								Dev Tools
 							</label>
-							<button
-								onClick={() => {
-									onAlmostSolve();
-									// Delay closing so user sees the grid update
-									setTimeout(() => onClose(), 300);
-								}}
-								className={styles.devButton}
-							>
-								Set Almost Solved
-							</button>
+							<div style={{ display: "flex", gap: "8px", flexWrap: "wrap", justifyContent: "flex-end" }}>
+								<button
+									onClick={() => {
+										onAlmostSolve();
+										setTimeout(() => onClose(), 300);
+									}}
+									className={styles.devButton}
+								>
+									Almost Solved
+								</button>
+								<button
+									onClick={() => onTogglePremium?.(true)}
+									className={styles.devButton}
+								>
+									Grant Premium
+								</button>
+								<button
+									onClick={() => {
+										onTogglePremium?.(false);
+										localStorage.removeItem("slidemoji_archive_seen");
+									}}
+									className={styles.devButton}
+								>
+									Revoke Premium
+								</button>
+							</div>
 						</div>
 						<div className={styles.settingsDivider}></div>
 					</>

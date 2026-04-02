@@ -9,13 +9,18 @@ function PaywallDialog({ isOpen, onClose }) {
 	return (
 		<Dialog isOpen={isOpen} onClose={onClose} title="Unlock the Archive">
 			<div className={styles.content}>
-				{/* Price — shown first so there are no surprises */}
+				{/* Tagline */}
+				<p className={styles.tagline}>
+					Every puzzle, back to day one.
+				</p>
+
+				{/* Price — upfront, no surprises */}
 				<div className={styles.priceHero}>
 					<span className={styles.price}>$3</span>
 					<span className={styles.priceNote}>one-time payment</span>
 				</div>
 
-				{/* Feature list — two clear benefits */}
+				{/* Feature list */}
 				<ul className={styles.featureList}>
 					<li>
 						<FontAwesomeIcon
@@ -27,7 +32,7 @@ function PaywallDialog({ isOpen, onClose }) {
 								Play any past puzzle
 							</strong>
 							<span className={styles.featureDetail}>
-								Every puzzle back to day one, playable any time
+								All puzzles back to day one, playable any time
 							</span>
 						</div>
 					</li>
@@ -41,8 +46,7 @@ function PaywallDialog({ isOpen, onClose }) {
 								Complete your trophy collection
 							</strong>
 							<span className={styles.featureDetail}>
-								Go back and solve what you missed, at your own
-								pace
+								Catch up on missed puzzles at your own pace
 							</span>
 						</div>
 					</li>
@@ -55,12 +59,12 @@ function PaywallDialog({ isOpen, onClose }) {
 				>
 					{isLoading
 						? "Redirecting to checkout…"
-						: "Continue to payment"}
+						: "Unlock for $3"}
 				</button>
 
 				<p className={styles.securityNote}>
 					<FontAwesomeIcon icon="shield-alt" /> Secure payment via
-					Stripe
+					Stripe · No subscription
 				</p>
 
 				{error && (

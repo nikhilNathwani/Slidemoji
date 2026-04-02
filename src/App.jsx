@@ -13,6 +13,7 @@ import { usePuzzle } from "./hooks/usePuzzle";
 import { usePreference } from "./hooks/usePreference";
 import { useGameState } from "./hooks/useGameState";
 import { useSolvedPuzzles } from "./hooks/useSolvedPuzzles";
+import { resetPremiumForDev } from "./firebase/firestore/user";
 
 // App-level preference defaults
 const DEFAULT_DARK_MODE = false;
@@ -20,7 +21,7 @@ const DEFAULT_SHOW_NUMBERS = true;
 const DEFAULT_SOUND_ENABLED = false;
 
 function App() {
-	const { loading: isAuthLoading, isMerging } = useAuth();
+	const { loading: isAuthLoading, isMerging, user } = useAuth();
 
 	// PUZZLE contains: id, emoji, emoji name, initialGrids (normal and hard)
 	const [puzzleId, setPuzzleId] = useState(() => getLatestPuzzleId());
@@ -172,6 +173,7 @@ function App() {
 					!!solvedPuzzles?.[puzzleId]?.[gameState.currentDifficulty]
 				}
 				onAlmostSolve={setAlmostSolved}
+			onTogglePremium={(grant) => resetPremiumForDev(user?.uid, grant)}
 			/>
 
 			<ArchiveDialog
