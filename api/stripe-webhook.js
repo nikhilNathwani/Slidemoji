@@ -50,13 +50,37 @@ function readRawBody(req) {
 }
 
 export default async function handler(req, res) {
+	console.log("[stripe-webhook] Request received:", req.method);
+
 	if (req.method !== "POST") {
 		return res.status(405).json({ error: "Method not allowed" });
 	}
 
+	// Diagnose missing env vars immediately — each one has a distinct log
+	const envStatus = {
+		STRIPE_SECRET_KEY: !!process.env.STRIPE_SECRET_KEY,
+		STRIPE_WEBHOOK_SECRET: !!process.env.STRIPE_WEBHOOK_SECRET,
+		FIREBASE_PROJECT_ID: !!process.env.FIREBASE_PROJECT_ID,
+		FIREBASE_CLIENT_EMAIL: !!process.env.FIREBASE_CLIENT_EMAIL,
+		FIREBASE_PRIVATE_KEY: !!process.env.FIREBASE_PRIVATE_KEY,
+	};
+	console.log("[stripe-webhook] Env vars present:", envStatus);
+	const missingVars = Object.entries(envStatus)
+		.filter(([, present]) => !present)
+		.map(([key]) => key);
+	if (missingVars.length > 0) {
+		console.error("[stripe-webhook] Missing env vars:", missingVars);
+		return res
+			.status(500)
+			.json({ error: `Missing env vars: ${missingVars.join(", ")}` });
+	}
+
 	const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 	const rawBody = await readRawBody(req);
+	console.log("[stripe-webhook] Raw body length:", rawBody.length);
+
 	const signature = req.headers["stripe-signature"];
+	console.log("[stripe-webhook] Signature header present:", !!signature);
 
 	let event;
 	try {
@@ -65,10 +89,10 @@ export default async function handler(req, res) {
 			signature,
 			process.env.STRIPE_WEBHOOK_SECRET,
 		);
+		console.log("[stripe-webhook] Event verified:", event.type);
 	} catch (err) {
-		// Invalid signature — reject silently so we don't reveal internals
 		console.error(
-			"Stripe webhook signature verification failed:",
+			"[stripe-webhook] Signature verification failed:",
 			err.message,
 		);
 		return res.status(400).json({ error: "Webhook signature invalid" });
@@ -77,25 +101,38 @@ export default async function handler(req, res) {
 	if (event.type === "checkout.session.completed") {
 		const session = event.data.object;
 		const firebaseUid = session.metadata?.firebaseUid;
+		console.log("[stripe-webhook] firebaseUid from metadata:", firebaseUid);
 
 		if (!firebaseUid) {
 			console.error(
-				"checkout.session.completed: missing firebaseUid in metadata",
+				"[stripe-webhook] Missing firebaseUid in session metadata",
 			);
 			return res
 				.status(400)
 				.json({ error: "Missing firebaseUid in session metadata" });
 		}
 
-		const db = getAdminDb();
-		await db.collection("users").doc(firebaseUid).update({
-			isPremium: true,
-			premiumGrantedAt: new Date().toISOString(),
-		});
-
-		console.log(`Premium granted to user ${firebaseUid}`);
+		try {
+			const db = getAdminDb();
+			await db.collection("users").doc(firebaseUid).update({
+				isPremium: true,
+				premiumGrantedAt: new Date().toISOString(),
+			});
+			console.log(
+				`[stripe-webhook] ✅ Premium granted to user ${firebaseUid}`,
+			);
+		} catch (err) {
+			console.error(
+				"[stripe-webhook] Firestore update failed:",
+				err.message,
+			);
+			return res
+				.status(500)
+				.json({ error: "Failed to update user record" });
+		}
+	} else {
+		console.log("[stripe-webhook] Unhandled event type:", event.type);
 	}
 
-	// Always return 200 — Stripe will retry if we return an error
 	return res.status(200).json({ received: true });
 }
