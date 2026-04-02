@@ -8,6 +8,7 @@
 		"dev:api": "vercel dev",
 		"dev:stripe": "stripe listen --forward-to localhost:3000/api/stripe-webhook",
 		"dev:payments": "concurrently --names \"vercel,stripe\" --prefix-colors \"blue,magenta\" \"vercel dev\" \"stripe listen --forward-to localhost:3000/api/stripe-webhook\"",
+		"import-firebase-key": "node scripts/import-firebase-key.js",
 		"build": "vite build",
 		"lint": "eslint .",
 		"test": "vitest run",
