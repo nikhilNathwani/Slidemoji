@@ -38,6 +38,8 @@ figcaption {
 	--dialog-bg: #1e1e1e;
 	--header-bg: #1a1a1a;
 	--header-border: rgba(255, 255, 255, 0.1);
+	--color-cta: #3b82f6;
+	--color-cta-hover: #2563eb;
 }
 
 .light-theme {
@@ -57,6 +59,8 @@ figcaption {
 	--dialog-bg: #ffffff;
 	--header-bg: #ffffff;
 	--header-border: #e5e7eb;
+	--color-cta: #2563eb;
+	--color-cta-hover: #1d4ed8;
 }
 
 :root {

@@ -12,6 +12,26 @@
 	backdrop-filter: blur(10px);
 }
 
+.archiveButtonWrapper {
+	position: relative;
+	display: inline-flex;
+}
+
+.newBadge {
+	position: absolute;
+	top: -4px;
+	right: -4px;
+	background-color: var(--color-cta);
+	color: #fff;
+	font-size: 9px;
+	font-weight: 700;
+	letter-spacing: 0.3px;
+	padding: 2px 5px;
+	border-radius: 6px;
+	pointer-events: none;
+	text-transform: uppercase;
+}
+
 .appTitle {
 	font-size: var(--text-2xl);
 	font-weight: 600;

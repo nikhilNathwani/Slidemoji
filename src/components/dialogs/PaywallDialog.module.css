@@ -30,7 +30,7 @@
 .checkoutButton {
 	width: 100%;
 	padding: 12px 24px;
-	background-color: var(--tile-correct);
+	background-color: var(--color-cta);
 	color: #fff;
 	border: none;
 	border-radius: 10px;
@@ -39,12 +39,12 @@
 	cursor: pointer;
 	touch-action: manipulation;
 	transition:
-		opacity 0.2s ease,
+		background-color 0.2s ease,
 		transform 0.15s ease;
 }
 
 .checkoutButton:hover:not(:disabled) {
-	opacity: 0.88;
+	background-color: var(--color-cta-hover);
 }
 
 .checkoutButton:active:not(:disabled) {
