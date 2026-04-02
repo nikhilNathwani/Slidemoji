@@ -1,6 +1,7 @@
 import TrophyCase from "../stats/TrophyCase";
 import TrophyCaseTitle from "../stats/TrophyCaseTitle";
 import SignInUpsell from "../common/SignInUpsell";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAuth } from "../../hooks/useAuth";
 import { useSubscription } from "../../hooks/useSubscription";
 import { getLatestPuzzleId } from "../../utils/puzzleUtils";
@@ -48,9 +49,12 @@ function StatsContent({
 					{isPremium ? (
 						<div className={styles.archiveSection}>
 							<p className={styles.archiveDescription}>
-								✅ Archive unlocked! Use the{" "}
-								<strong>clock button</strong> in the header to
-								browse past puzzles.
+								Archive unlocked! Use the{" "}
+								<strong>
+									Puzzle Archive{" "}
+									<FontAwesomeIcon icon="clock-rotate-left" />
+								</strong>{" "}
+								button in the header to browse past puzzles.
 							</p>
 						</div>
 					) : (
