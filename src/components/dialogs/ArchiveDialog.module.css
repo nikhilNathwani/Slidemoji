@@ -246,18 +246,17 @@
 	gap: 6px;
 }
 
-/* Gradient fade — covers bottom 120px, fading to surface so CTA text floats cleanly */
-/* Ends at 55% so the overlay text has solid background and is easy to read */
+/* Gradient fade — tall enough to fully cover items 3-4, solid by 40% so CTA text reads cleanly */
 .paywallOverlay {
 	position: absolute;
 	bottom: 0;
 	left: 0;
 	right: 0;
-	height: 120px;
+	height: 160px;
 	background: linear-gradient(
 		to bottom,
 		transparent,
-		var(--surface-primary) 55%
+		var(--surface-primary) 40%
 	);
 	pointer-events: none;
 }

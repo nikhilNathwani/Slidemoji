@@ -78,24 +78,10 @@ function PaywallView({ puzzleList }) {
 					/>
 					<div>
 						<div className={styles.featureHeadline}>
-							Play any past puzzle
-						</div>
-						<div className={styles.featureDetail}>
-							Back to day one — play at your own pace.
-						</div>
-					</div>
-				</li>
-				<li className={styles.featureItem}>
-					<FontAwesomeIcon
-						icon="check"
-						className={styles.featureIcon}
-					/>
-					<div>
-						<div className={styles.featureHeadline}>
 							Complete your trophy collection
 						</div>
 						<div className={styles.featureDetail}>
-							Earn trophies for every puzzle you solve on your own schedule.
+							Earn trophies for every puzzle, at your own pace.
 						</div>
 					</div>
 				</li>
