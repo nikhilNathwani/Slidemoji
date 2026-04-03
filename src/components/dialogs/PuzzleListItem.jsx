@@ -1,0 +1,39 @@
+import { usePuzzle } from "../../hooks/usePuzzle";
+import { formatPuzzleId } from "../../utils/puzzleUtils";
+import { FontAwesomeIcon } from "../../utils/icons";
+import styles from "./PuzzleListItem.module.css";
+
+function PuzzleListItem({ puzzleNum, isSolved, onClick, isLocked = false }) {
+	const { data: puzzleMetadata, isLoading } = usePuzzle(puzzleNum);
+
+	const variantClass = isLocked
+		? styles.locked
+		: isSolved
+			? styles.solved
+			: styles.unsolved;
+
+	return (
+		<button
+			className={`${styles.puzzleItem} ${variantClass}`}
+			onClick={() => !isLocked && onClick(puzzleNum)}
+			disabled={isLoading || isLocked}
+		>
+			<div className={styles.puzzleNumber}>
+				{formatPuzzleId(puzzleNum)}
+			</div>
+			<div className={styles.puzzleName}>
+				{isLoading ? (
+					<span className={styles.loading}>Loading...</span>
+				) : (
+					puzzleMetadata?.emojiName || "Unknown Puzzle"
+				)}
+			</div>
+			<FontAwesomeIcon
+				icon={isLocked ? "lock" : "play-circle"}
+				className={styles.playIcon}
+			/>
+		</button>
+	);
+}
+
+export default PuzzleListItem;

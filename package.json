@@ -12,9 +12,7 @@
 		"build": "vite build",
 		"lint": "eslint .",
 		"test": "vitest run",
-		"preview": "vite preview",
-		"migrate:remove-puzzle-date:dry": "node scripts/removePuzzleDateField.js --dry-run",
-		"migrate:remove-puzzle-date": "node scripts/removePuzzleDateField.js"
+		"preview": "vite preview"
 	},
 	"dependencies": {
 		"@fortawesome/fontawesome-svg-core": "^7.2.0",
