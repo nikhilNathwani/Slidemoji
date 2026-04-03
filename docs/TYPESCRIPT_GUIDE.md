@@ -420,14 +420,14 @@ The acceleration is real.
 
 No logic to reason about. Just add types to the exported values.
 
-| Done | File | Lines | Notes |
-| ---- | ---- | -----: | ----- |
-| ☐ | `src/contexts/AuthContext.js` | 3 | Single `createContext(null)` call — just add `<AuthContextValue \| null>` generic |
-| ☐ | `src/contexts/UserDocContext.js` | 3 | Same pattern as `AuthContext.js` |
-| ☐ | `src/firebase/index.js` | 26 | Re-exports only — likely needs zero changes to pass type-check |
-| ☐ | `src/firebase/firebaseConfig.js` | 34 | Firebase SDK init. Firebase types come from `firebase/app` automatically |
-| ☐ | `src/constants.js` | 44 | Exports primitives — TypeScript infers the types, no annotations required |
-| ☐ | `src/utils/icons.js` | 59 | FontAwesome icon exports — TypeScript infers from the imported icon values |
+| Done | File                             | Lines | Notes                                                                             |
+| ---- | -------------------------------- | ----: | --------------------------------------------------------------------------------- |
+| ☐    | `src/contexts/AuthContext.js`    |     3 | Single `createContext(null)` call — just add `<AuthContextValue \| null>` generic |
+| ☐    | `src/contexts/UserDocContext.js` |     3 | Same pattern as `AuthContext.js`                                                  |
+| ☐    | `src/firebase/index.js`          |    26 | Re-exports only — likely needs zero changes to pass type-check                    |
+| ☐    | `src/firebase/firebaseConfig.js` |    34 | Firebase SDK init. Firebase types come from `firebase/app` automatically          |
+| ☐    | `src/constants.js`               |    44 | Exports primitives — TypeScript infers the types, no annotations required         |
+| ☐    | `src/utils/icons.js`             |    59 | FontAwesome icon exports — TypeScript infers from the imported icon values        |
 
 ---
 
@@ -436,14 +436,14 @@ No logic to reason about. Just add types to the exported values.
 Pure functions with no React. Great for practicing function signatures.
 New concept: typing DOM APIs (`AudioContext`, `HTMLAudioElement`).
 
-| Done | File | Lines | Notes |
-| ---- | ---- | -----: | ----- |
-| ☐ | `src/utils/emoji.js` | 28 | String/array utilities. Add param/return types to each function |
-| ☐ | `src/firebase/firestore/preference.js` | 22 | Simple Firestore read/write. `Promise<void>` return types |
-| ☐ | `src/firebase/firestore/subscription.js` | 37 | Single Firestore read. Introduce your `UserDoc` interface here |
-| ☐ | `src/hooks/useAuth.js` | 10 | Tiny hook — just types the `useContext` return |
-| ☐ | `src/hooks/useUserDoc.js` | 10 | Same — one-liner hook, just types the `useContext` call |
-| ☐ | `src/hooks/useSubscription.js` | 21 | Reads `isPremium`. `useState<boolean>` |
+| Done | File                                     | Lines | Notes                                                           |
+| ---- | ---------------------------------------- | ----: | --------------------------------------------------------------- |
+| ☐    | `src/utils/emoji.js`                     |    28 | String/array utilities. Add param/return types to each function |
+| ☐    | `src/firebase/firestore/preference.js`   |    22 | Simple Firestore read/write. `Promise<void>` return types       |
+| ☐    | `src/firebase/firestore/subscription.js` |    37 | Single Firestore read. Introduce your `UserDoc` interface here  |
+| ☐    | `src/hooks/useAuth.js`                   |    10 | Tiny hook — just types the `useContext` return                  |
+| ☐    | `src/hooks/useUserDoc.js`                |    10 | Same — one-liner hook, just types the `useContext` call         |
+| ☐    | `src/hooks/useSubscription.js`           |    21 | Reads `isPremium`. `useState<boolean>`                          |
 
 ---
 
@@ -452,10 +452,10 @@ New concept: typing DOM APIs (`AudioContext`, `HTMLAudioElement`).
 Introduces typing Firestore SDK calls (`DocumentData`, `QuerySnapshot`).
 New concept: writing your shared `UserDoc` interface and sharing it across files.
 
-| Done | File | Lines | Notes |
-| ---- | ---- | -----: | ----- |
-| ☐ | `src/firebase/firestore/user.js` | 104 | Firestore user CRUD. Define `UserDoc` interface here (or in a `types.ts` file) |
-| ☐ | `src/firebase/firestore/gameState.js` | 81 | Game state CRUD. Introduces `GameState` interface with `Record<Difficulty, ...>` |
+| Done | File                                  | Lines | Notes                                                                            |
+| ---- | ------------------------------------- | ----: | -------------------------------------------------------------------------------- |
+| ☐    | `src/firebase/firestore/user.js`      |   104 | Firestore user CRUD. Define `UserDoc` interface here (or in a `types.ts` file)   |
+| ☐    | `src/firebase/firestore/gameState.js` |    81 | Game state CRUD. Introduces `GameState` interface with `Record<Difficulty, ...>` |
 
 ---
 
@@ -464,12 +464,12 @@ New concept: writing your shared `UserDoc` interface and sharing it across files
 Back on familiar hook territory, but with state that has real shape.
 New concept: `Record<K, V>` for grids keyed by difficulty.
 
-| Done | File | Lines | Notes |
-| ---- | ---- | -----: | ----- |
-| ☐ | `src/hooks/useSolvedPuzzles.js` | 31 | `useState<number[]>`. Reads solved puzzle IDs from Firestore |
-| ☐ | `src/hooks/useCheckout.js` | 60 | `fetch` call to Stripe API. `Promise<void>`, `useState<boolean>` for loading |
-| ☐ | `src/hooks/usePreference.js` | 74 | `PREFERENCE_DEFAULTS` map — good candidate for `Record<string, unknown>` |
-| ☐ | `src/hooks/useGameState.js` | 184 | **Next in sequence.** Introduces `Record<Difficulty, number[] \| null>`. See Section 10 |
+| Done | File                            | Lines | Notes                                                                                   |
+| ---- | ------------------------------- | ----: | --------------------------------------------------------------------------------------- |
+| ☐    | `src/hooks/useSolvedPuzzles.js` |    31 | `useState<number[]>`. Reads solved puzzle IDs from Firestore                            |
+| ☐    | `src/hooks/useCheckout.js`      |    60 | `fetch` call to Stripe API. `Promise<void>`, `useState<boolean>` for loading            |
+| ☐    | `src/hooks/usePreference.js`    |    74 | `PREFERENCE_DEFAULTS` map — good candidate for `Record<string, unknown>`                |
+| ☐    | `src/hooks/useGameState.js`     |   184 | **Next in sequence.** Introduces `Record<Difficulty, number[] \| null>`. See Section 10 |
 
 ---
 
@@ -478,12 +478,12 @@ New concept: `Record<K, V>` for grids keyed by difficulty.
 Real payoff tier. These files teach you how to type irregular, branchy logic.
 New concept: union types in complex conditionals, `HTMLAudioElement`.
 
-| Done | File | Lines | Notes |
-| ---- | ---- | -----: | ----- |
-| ☐ | `src/utils/sound.js` | 125 | DOM Audio APIs (`AudioContext`, `GainNode`). Nullable refs (`HTMLAudioElement \| null`) |
-| ☐ | `src/utils/accountMerge.js` | 112 | Complex merge logic. Good practice for `Promise<void>` chains and error union types |
-| ☐ | `src/utils/gridHelpers.js` | 291 | Largest utility file. Grid math — `number[][]`, `[row: number, col: number]` tuple types |
-| ☐ | `src/firebase/auth.js` | 144 | Auth functions: `signInWithGoogle`, `signOut`, etc. Firebase `User` type from SDK |
+| Done | File                        | Lines | Notes                                                                                    |
+| ---- | --------------------------- | ----: | ---------------------------------------------------------------------------------------- |
+| ☐    | `src/utils/sound.js`        |   125 | DOM Audio APIs (`AudioContext`, `GainNode`). Nullable refs (`HTMLAudioElement \| null`)  |
+| ☐    | `src/utils/accountMerge.js` |   112 | Complex merge logic. Good practice for `Promise<void>` chains and error union types      |
+| ☐    | `src/utils/gridHelpers.js`  |   291 | Largest utility file. Grid math — `number[][]`, `[row: number, col: number]` tuple types |
+| ☐    | `src/firebase/auth.js`      |   144 | Auth functions: `signInWithGoogle`, `signOut`, etc. Firebase `User` type from SDK        |
 
 ---
 
@@ -492,10 +492,10 @@ New concept: union types in complex conditionals, `HTMLAudioElement`.
 The hardest conceptual leap: typing React Context generics.
 New concept: `createContext<T>`, context value interfaces, Provider `value` prop types.
 
-| Done | File | Lines | Notes |
-| ---- | ---- | -----: | ----- |
-| ☐ | `src/contexts/UserDocProvider.jsx` | 59 | Simpler provider — good entry point for context typing |
-| ☐ | `src/contexts/AuthProvider.jsx` | 190 | Complex auth flow (anonymous → Google merge). Multiple state pieces to type |
+| Done | File                               | Lines | Notes                                                                       |
+| ---- | ---------------------------------- | ----: | --------------------------------------------------------------------------- |
+| ☐    | `src/contexts/UserDocProvider.jsx` |    59 | Simpler provider — good entry point for context typing                      |
+| ☐    | `src/contexts/AuthProvider.jsx`    |   190 | Complex auth flow (anonymous → Google merge). Multiple state pieces to type |
 
 ---
 
@@ -504,14 +504,14 @@ New concept: `createContext<T>`, context value interfaces, Provider `value` prop
 Pure presentational components. Mostly just adding prop interfaces.
 Pattern: `interface ComponentProps { ... }` + destructure in the function signature.
 
-| Done | File | Lines | Notes |
-| ---- | ---- | -----: | ----- |
-| ☐ | `src/components/stats/TrophyCaseTitle.jsx` | 23 | Almost no props — simplest component in the codebase |
-| ☐ | `src/components/dialogs/ConfirmRestartDialog.jsx` | 31 | One or two callback props (`onConfirm`, `onCancel`) |
-| ☐ | `src/components/dialogs/StatsDialog.jsx` | 30 | Wraps `StatsContent` — straightforward prop forwarding |
-| ☐ | `src/components/common/SignInUpsell.jsx` | 43 | Small UI component with a couple icon/text props |
-| ☐ | `src/components/game/GameActionButton.jsx` | 51 | Button with `onClick`, `label`, maybe `disabled` |
-| ☐ | `src/components/landing/LandingPage.jsx` | 64 | Intro screen — static layout, minimal props |
+| Done | File                                              | Lines | Notes                                                  |
+| ---- | ------------------------------------------------- | ----: | ------------------------------------------------------ |
+| ☐    | `src/components/stats/TrophyCaseTitle.jsx`        |    23 | Almost no props — simplest component in the codebase   |
+| ☐    | `src/components/dialogs/ConfirmRestartDialog.jsx` |    31 | One or two callback props (`onConfirm`, `onCancel`)    |
+| ☐    | `src/components/dialogs/StatsDialog.jsx`          |    30 | Wraps `StatsContent` — straightforward prop forwarding |
+| ☐    | `src/components/common/SignInUpsell.jsx`          |    43 | Small UI component with a couple icon/text props       |
+| ☐    | `src/components/game/GameActionButton.jsx`        |    51 | Button with `onClick`, `label`, maybe `disabled`       |
+| ☐    | `src/components/landing/LandingPage.jsx`          |    64 | Intro screen — static layout, minimal props            |
 
 ---
 
@@ -520,14 +520,14 @@ Pattern: `interface ComponentProps { ... }` + destructure in the function signat
 Components with internal state and/or hooks. Introduce `React.MouseEvent`,
 `React.ChangeEvent`, and event handler typing in context.
 
-| Done | File | Lines | Notes |
-| ---- | ---- | -----: | ----- |
-| ☐ | `src/components/dialogs/WinDialog.jsx` | 64 | Uses puzzle data — type the `PuzzleData` prop you already defined |
-| ☐ | `src/components/common/Trophy.jsx` | 59 | Fetches puzzle with `usePuzzle` — already typed, propagates cleanly |
-| ☐ | `src/components/game/Tile.jsx` | 67 | Grid tile — `number` value prop, `onClick` with position args |
-| ☐ | `src/components/stats/StatsContent.jsx` | 82 | Displays stats. `Record<Difficulty, number>` likely for per-difficulty counts |
-| ☐ | `src/components/landing/AnimatedTileGrid.jsx` | 75 | Framer Motion types: `Variants`, `AnimationControls` from `framer-motion` |
-| ☐ | `src/components/common/GoogleSignInButton.jsx` | 100 | Handles sign-in flow — `Promise`-returning onClick, loading state |
+| Done | File                                           | Lines | Notes                                                                         |
+| ---- | ---------------------------------------------- | ----: | ----------------------------------------------------------------------------- |
+| ☐    | `src/components/dialogs/WinDialog.jsx`         |    64 | Uses puzzle data — type the `PuzzleData` prop you already defined             |
+| ☐    | `src/components/common/Trophy.jsx`             |    59 | Fetches puzzle with `usePuzzle` — already typed, propagates cleanly           |
+| ☐    | `src/components/game/Tile.jsx`                 |    67 | Grid tile — `number` value prop, `onClick` with position args                 |
+| ☐    | `src/components/stats/StatsContent.jsx`        |    82 | Displays stats. `Record<Difficulty, number>` likely for per-difficulty counts |
+| ☐    | `src/components/landing/AnimatedTileGrid.jsx`  |    75 | Framer Motion types: `Variants`, `AnimationControls` from `framer-motion`     |
+| ☐    | `src/components/common/GoogleSignInButton.jsx` |   100 | Handles sign-in flow — `Promise`-returning onClick, loading state             |
 
 ---
 
@@ -536,33 +536,33 @@ Components with internal state and/or hooks. Introduce `React.MouseEvent`,
 Full-feature components with many hooks, branchy render logic, and sub-components.
 Save these for when Tier 1–8 feel comfortable.
 
-| Done | File | Lines | Notes |
-| ---- | ---- | -----: | ----- |
-| ☐ | `src/components/stats/TrophyCase.jsx` | 143 | Complex puzzle grid display. Array mapping with typed callbacks |
-| ☐ | `src/components/game/Grid.jsx` | 144 | Core game grid. Tile position math, move handlers — rich typing opportunity |
-| ☐ | `src/components/Header.jsx` | 114 | Navigation + dialog trigger buttons. Multiple callback props |
-| ☐ | `src/components/dialogs/SettingsDialog.jsx` | 170 | Settings + dev tools. Union types for preference keys |
-| ☐ | `src/components/dialogs/ArchiveDialog.jsx` | 228 | Largest component. Paywall state, archive list, embedded `PaywallView` sub-component |
-| ☐ | `src/components/game/Game.jsx` | 109 | Core game loop — uses `useGameState`, grid helpers, many props |
-| ☐ | `src/App.jsx` | 179 | Top-level layout, dialog orchestration, all state lifted here |
-| ☐ | `src/main.jsx` | 43 | Entry point + `Root` component. Dark mode + provider wrapping |
+| Done | File                                        | Lines | Notes                                                                                |
+| ---- | ------------------------------------------- | ----: | ------------------------------------------------------------------------------------ |
+| ☐    | `src/components/stats/TrophyCase.jsx`       |   143 | Complex puzzle grid display. Array mapping with typed callbacks                      |
+| ☐    | `src/components/game/Grid.jsx`              |   144 | Core game grid. Tile position math, move handlers — rich typing opportunity          |
+| ☐    | `src/components/Header.jsx`                 |   114 | Navigation + dialog trigger buttons. Multiple callback props                         |
+| ☐    | `src/components/dialogs/SettingsDialog.jsx` |   170 | Settings + dev tools. Union types for preference keys                                |
+| ☐    | `src/components/dialogs/ArchiveDialog.jsx`  |   228 | Largest component. Paywall state, archive list, embedded `PaywallView` sub-component |
+| ☐    | `src/components/game/Game.jsx`              |   109 | Core game loop — uses `useGameState`, grid helpers, many props                       |
+| ☐    | `src/App.jsx`                               |   179 | Top-level layout, dialog orchestration, all state lifted here                        |
+| ☐    | `src/main.jsx`                              |    43 | Entry point + `Root` component. Dark mode + provider wrapping                        |
 
 ---
 
 ### Summary
 
-| Tier | Files | Estimated Time |
-| ---- | -----: | -------------- |
-| 1 — Constants & Config | 6 | ~45 min |
-| 2 — Simple Utilities | 6 | ~2 hrs |
-| 3 — Firestore Modules | 2 | ~1 hr |
-| 4 — Hooks | 4 | ~2.5 hrs |
-| 5 — Complex Utilities | 4 | ~3 hrs |
-| 6 — Context Providers | 2 | ~2 hrs |
-| 7 — Simple Components | 6 | ~2.5 hrs |
-| 8 — Medium Components | 6 | ~4 hrs |
-| 9 — Complex Components | 8 | ~6 hrs |
-| **Total** | **44** | **~24 hrs** |
+| Tier                   |  Files | Estimated Time |
+| ---------------------- | -----: | -------------- |
+| 1 — Constants & Config |      6 | ~45 min        |
+| 2 — Simple Utilities   |      6 | ~2 hrs         |
+| 3 — Firestore Modules  |      2 | ~1 hr          |
+| 4 — Hooks              |      4 | ~2.5 hrs       |
+| 5 — Complex Utilities  |      4 | ~3 hrs         |
+| 6 — Context Providers  |      2 | ~2 hrs         |
+| 7 — Simple Components  |      6 | ~2.5 hrs       |
+| 8 — Medium Components  |      6 | ~4 hrs         |
+| 9 — Complex Components |      8 | ~6 hrs         |
+| **Total**              | **44** | **~24 hrs**    |
 
 After the 4 already completed (`puzzleUtils.ts`, `usePuzzle.ts`, `puzzle.ts`,
 `Dialog.tsx`), you have 44 to go. At 2–3 files per session that's 15–20 sessions.

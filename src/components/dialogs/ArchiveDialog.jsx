@@ -43,7 +43,7 @@ function PuzzleListItem({ puzzleNum, isSolved, onClick, isLocked = false }) {
 function PaywallView({ puzzleList }) {
 	const { startCheckout, isRedirecting, error } = useCheckout();
 	// Show earliest puzzles first (#001, #002...) — ascending order
-	const previewItems = [...puzzleList].reverse().slice(0, 6);
+	const previewItems = [...puzzleList].reverse().slice(0, 3);
 
 	return (
 		<div className={styles.paywallContent}>
@@ -61,13 +61,12 @@ function PaywallView({ puzzleList }) {
 					))}
 				</div>
 				<div className={styles.paywallOverlay} />
-				<div className={styles.paywallCta}>
-					<p className={styles.paywallCtaHeadline}>
-						Access every past Slidemoji puzzle.
-					</p>
-				</div>
 			</div>
-
+			<div className={styles.paywallCta}>
+				<p className={styles.paywallCtaHeadline}>
+					Access all past puzzles
+				</p>
+			</div>
 			<ul className={styles.featureList}>
 				<li className={styles.featureItem}>
 					<FontAwesomeIcon

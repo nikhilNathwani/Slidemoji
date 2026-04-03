@@ -225,7 +225,7 @@
 .paywallContent {
 	display: flex;
 	flex-direction: column;
-	gap: 20px;
+	/* gap: 20px; */
 	width: 352px;
 	max-width: calc(100vw - 88px);
 }
@@ -233,7 +233,7 @@
 /* Real puzzle list, clipped and faded at the bottom */
 .paywallListWrapper {
 	position: relative;
-	height: 280px;
+	/* height: 280px; */
 	overflow: hidden;
 }
 
@@ -241,6 +241,7 @@
 .paywallListWrapper .puzzleList {
 	overflow: hidden;
 	padding: 8px;
+	padding-bottom: 0;
 	gap: 6px;
 }
 
@@ -250,27 +251,23 @@
 	bottom: 0;
 	left: 0;
 	right: 0;
-	height: 160px;
-	background: linear-gradient(to bottom, transparent, var(--dialog-bg) 40%);
+	height: 50px;
+	background: linear-gradient(to bottom, transparent, var(--dialog-bg) 60%);
 	pointer-events: none;
 }
 
 /* CTA text overlaid at bottom of faded list */
 .paywallCta {
-	position: absolute;
-	bottom: 0;
-	left: 0;
-	right: 0;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	gap: 2px;
-	padding: 6px 16px 14px;
+	/* padding: 6px 16px 14px; */
 	text-align: center;
 }
 
 .paywallCtaHeadline {
-	font-size: var(--text-lg);
+	font-size: var(--text-3xl);
 	font-weight: 700;
 	color: var(--text-primary);
 	margin: 0;
@@ -282,6 +279,7 @@
 	color: var(--text-secondary);
 	font-weight: 500;
 	margin: 0;
+	margin-top: 8px;
 	text-align: center;
 }
 
@@ -289,8 +287,9 @@
 .featureList {
 	display: flex;
 	flex-direction: column;
-	gap: 16px;
+	gap: 24px;
 	width: 100%;
+	margin-top: 42px;
 }
 
 .featureItem {
@@ -322,6 +321,7 @@
 .unlockButton {
 	width: fit-content;
 	align-self: center;
+	margin-top: 42px;
 	padding: 12px 32px;
 	border-radius: 10px;
 	border: 1px solid var(--border-secondary);
@@ -345,12 +345,14 @@
 .securityNote {
 	font-size: var(--text-xs);
 	color: var(--text-tertiary);
-	margin: 0;
+	margin-top: 8px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	gap: 5px;
 	text-align: center;
+	position: relative;
+	bottom: 0px;
 }
 
 .error {
