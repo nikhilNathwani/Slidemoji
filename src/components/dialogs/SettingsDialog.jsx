@@ -1,24 +1,33 @@
 import Dialog from "./Dialog";
 import styles from "./SettingsDialog.module.css";
 import { FontAwesomeIcon } from "../../utils/icons";
-import { DIFFICULTIES } from "../../constants";
+import {
+	DIFFICULTIES,
+	DEFAULT_SHOW_NUMBERS,
+	DEFAULT_SOUND_ENABLED,
+} from "../../constants";
 import { useUserDoc } from "../../hooks/useUserDoc";
+import { usePreference } from "../../hooks/usePreference";
 
 function SettingsDialog({
 	isOpen,
 	onClose,
 	hasDarkMode,
 	onDarkModeChange,
-	hasNumbersShown,
-	onShowNumbersChange,
-	hasSoundEnabled,
-	onSoundEnabledChange,
 	difficulty,
 	onDifficultyChange,
 	isPuzzleSolved = false,
 	onAlmostSolve,
 	onTogglePremium,
 }) {
+	const [showNumbers, setShowNumbers] = usePreference(
+		"showNumbers",
+		DEFAULT_SHOW_NUMBERS,
+	);
+	const [soundEnabled, setSoundEnabled] = usePreference(
+		"soundEnabled",
+		DEFAULT_SOUND_ENABLED,
+	);
 	const { userData } = useUserDoc();
 	const isDevMode = import.meta.env.DEV || userData?.isDevMode === true;
 	return (
@@ -62,11 +71,11 @@ function SettingsDialog({
 						)}
 					</label>
 					<Toggle
-						isOn={hasNumbersShown}
+						isOn={showNumbers}
 						onToggle={
 							isPuzzleSolved
 								? undefined
-								: () => onShowNumbersChange(!hasNumbersShown)
+								: () => setShowNumbers(!showNumbers)
 						}
 						disabled={isPuzzleSolved}
 					/>
@@ -76,8 +85,8 @@ function SettingsDialog({
 						Sound Effects
 					</label>
 					<Toggle
-						isOn={hasSoundEnabled}
-						onToggle={() => onSoundEnabledChange(!hasSoundEnabled)}
+						isOn={soundEnabled}
+						onToggle={() => setSoundEnabled(!soundEnabled)}
 					/>
 				</div>
 				<div className={styles.settingsItem}>
@@ -142,7 +151,7 @@ function SettingsDialog({
 								`User Agent: ${navigator.userAgent}\n` +
 								`Screen Size: ${window.innerWidth}x${window.innerHeight}\n` +
 								`Dark Mode: ${hasDarkMode}\n` +
-								`Show Numbers: ${hasNumbersShown}\n` +
+								`Show Numbers: ${showNumbers}\n` +
 								`Timestamp: ${new Date().toISOString()}`,
 						)}`}
 						className={`${styles.actionButton} ${styles.report}`}

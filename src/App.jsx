@@ -13,11 +13,7 @@ import { usePreference } from "./hooks/usePreference";
 import { useGameState } from "./hooks/useGameState";
 import { useSolvedPuzzles } from "./hooks/useSolvedPuzzles";
 import { resetPremiumForDev } from "./firebase/firestore/user";
-
-// App-level preference defaults
-const DEFAULT_DARK_MODE = false;
-const DEFAULT_SHOW_NUMBERS = true;
-const DEFAULT_SOUND_ENABLED = false;
+import { DEFAULT_DARK_MODE } from "./constants";
 
 function App() {
 	const { loading: isAuthLoading, isMerging, user } = useAuth();
@@ -27,18 +23,11 @@ function App() {
 	const { data: puzzleMetadata, isLoading: isLoadingPuzzle } =
 		usePuzzle(puzzleId);
 
-	// PREFERENCES include: dark/light mode, sound on/off, show tile numbers on/off
+	// Dark mode is owned here because it controls the root <div> theme class.
+	// Sound and showNumbers are owned by Game and SettingsDialog respectively.
 	const [darkMode, setDarkMode] = usePreference(
 		"darkMode",
 		DEFAULT_DARK_MODE,
-	);
-	const [soundEnabled, setSoundEnabled] = usePreference(
-		"soundEnabled",
-		DEFAULT_SOUND_ENABLED,
-	);
-	const [showNumbers, setShowNumbers] = usePreference(
-		"showNumbers",
-		DEFAULT_SHOW_NUMBERS,
 	);
 
 	// GAME STATE is {currentDifficulty: normal|hard, normal:[normal_grid], hard:[hard_grid]}
@@ -145,8 +134,6 @@ function App() {
 				currentGrid={gameState[gameState.currentDifficulty]}
 				currentDifficulty={gameState.currentDifficulty}
 				setGameState={setGameState}
-				hasNumbersShown={showNumbers}
-				hasSoundEnabled={soundEnabled}
 				onOpenStats={() => setShowStatsDialog(true)}
 				isAppDialogOpen={
 					showSettingsDialog || showStatsDialog || showArchiveDialog
@@ -158,12 +145,8 @@ function App() {
 				isOpen={showSettingsDialog}
 				onClose={() => setShowSettingsDialog(false)}
 				hasDarkMode={darkMode}
-				hasNumbersShown={showNumbers}
-				hasSoundEnabled={soundEnabled}
-				difficulty={gameState.currentDifficulty}
-				onShowNumbersChange={setShowNumbers}
 				onDarkModeChange={setDarkMode}
-				onSoundEnabledChange={setSoundEnabled}
+				difficulty={gameState.currentDifficulty}
 				onDifficultyChange={(diff) =>
 					setGameState({ currentDifficulty: diff })
 				}

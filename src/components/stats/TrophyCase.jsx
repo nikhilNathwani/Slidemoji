@@ -5,11 +5,7 @@ import { getLatestPuzzleId } from "../../utils/puzzleUtils";
 import styles from "./TrophyCase.module.css";
 import { useState } from "react";
 
-function TrophyCase({
-	totalPuzzles = 12,
-	solvedPuzzles,
-	showTitle = true,
-}) {
+function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true }) {
 	const puzzleId = getLatestPuzzleId();
 	const TROPHIES_PER_PAGE = 12;
 	const totalPages = Math.ceil(totalPuzzles / TROPHIES_PER_PAGE);

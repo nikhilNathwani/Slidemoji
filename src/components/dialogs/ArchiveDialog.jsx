@@ -121,12 +121,7 @@ function PaywallView({ puzzleList }) {
 	);
 }
 
-function ArchiveDialog({
-	isOpen,
-	onClose,
-	solvedPuzzles,
-	onPuzzleSelect,
-}) {
+function ArchiveDialog({ isOpen, onClose, solvedPuzzles, onPuzzleSelect }) {
 	const { isPremium } = useSubscription();
 	const [filter, setFilter] = useState("all");
 	const todayPuzzleId = getLatestPuzzleId();

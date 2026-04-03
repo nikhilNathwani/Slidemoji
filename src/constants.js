@@ -37,6 +37,9 @@ export const DIFFICULTIES = [
 
 export const DEFAULT_DIFFICULTY = DIFFICULTY.NORMAL;
 export const DEFAULT_GRID_SIZE = 3;
+export const DEFAULT_DARK_MODE = false;
+export const DEFAULT_SHOW_NUMBERS = true;
+export const DEFAULT_SOUND_ENABLED = false;
 
 // Grid layout (used by gridHelpers.js)
 export const GRID_VIEWPORT_PADDING = 40; // Padding on each side of viewport

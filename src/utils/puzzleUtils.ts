@@ -1,9 +1,8 @@
 /**
  * Get the latest puzzle ID (today's puzzle number) based on start date.
  * Rolls over at local midnight by accounting for the user's timezone offset.
- * @returns {number} Puzzle ID
  */
-export function getLatestPuzzleId() {
+export function getLatestPuzzleId(): number {
 	const startDate = new Date("2026-01-01"); // First puzzle date (UTC midnight)
 	const now = new Date();
 	// Subtract timezone offset so the day boundary falls at local midnight,
@@ -20,26 +19,32 @@ export function getLatestPuzzleId() {
 /**
  * Formats a puzzle ID number into a display string.
  * E.g. 1 -> "#001", 24 -> "#024", 673 -> "#673"
- * @param {number} puzzleId
- * @param {{ includeHash?: boolean }} options
- * @returns {string} Formatted puzzle ID
  */
-export function formatPuzzleId(puzzleId, { includeHash = true } = {}) {
+export function formatPuzzleId(
+	puzzleId: number,
+	{ includeHash = true }: { includeHash?: boolean } = {},
+): string {
 	const padded = String(puzzleId).padStart(3, "0");
 	return includeHash ? `#${padded}` : padded;
 }
 
+interface PuzzleMetadata {
+	normal?: number[] | null;
+	hard?: number[] | null;
+	initialGrid?: number[] | null;
+	grid3x3?: number[] | null;
+	grid4x4?: number[] | null;
+	[key: string]: unknown;
+}
+
 /**
- * Convert puzzle data from Firestore format to client format
- * Firestore and client both use 0 for gap
- *
- * Uses normalized schema (puzzle.normal/puzzle.hard)
- *
- * @param {Object} puzzleMetadata - Puzzle data from Firestore
- * @param {number} gridSize - Grid size (3 or 4)
- * @returns {Object} Puzzle data with converted grid array for the specified size
+ * Convert puzzle data from Firestore format to client format.
+ * Firestore and client both use 0 for gap.
  */
-export function convertPuzzleFromFirestore(puzzleMetadata, gridSize = 3) {
+export function convertPuzzleFromFirestore(
+	puzzleMetadata: PuzzleMetadata | null | undefined,
+	gridSize = 3,
+): PuzzleMetadata | null {
 	if (!puzzleMetadata) return null;
 
 	const converted = { ...puzzleMetadata };

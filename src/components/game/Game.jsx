@@ -6,7 +6,9 @@ import ConfirmRestartDialog from "../dialogs/ConfirmRestartDialog";
 import WinDialog from "../dialogs/WinDialog";
 import GameActionButton from "./GameActionButton";
 import { useAuth } from "../../hooks/useAuth";
+import { usePreference } from "../../hooks/usePreference";
 import { checkWin } from "../../utils/gridHelpers";
+import { DEFAULT_SHOW_NUMBERS, DEFAULT_SOUND_ENABLED } from "../../constants";
 
 function Game({
 	puzzleId, // Puzzle ID number
@@ -16,12 +18,12 @@ function Game({
 	currentGrid, // Current grid array
 	currentDifficulty, // Current difficulty ("normal"|"hard")
 	setGameState, // Function to update game state: setGameState({ currentDifficulty?, normal?, hard? })
-	hasNumbersShown,
-	hasSoundEnabled,
 	onOpenStats,
 	isAppDialogOpen = false,
 	solvedPuzzles = {},
 }) {
+	const [showNumbers] = usePreference("showNumbers", DEFAULT_SHOW_NUMBERS);
+	const [soundEnabled] = usePreference("soundEnabled", DEFAULT_SOUND_ENABLED);
 	const { user } = useAuth();
 	const isSolved = checkWin(currentGrid);
 
@@ -69,8 +71,8 @@ function Game({
 				<Grid
 					grid={currentGrid}
 					emoji={emoji}
-					hasNumbersShown={hasNumbersShown && !isSolved}
-					hasSoundEnabled={hasSoundEnabled}
+					hasNumbersShown={showNumbers && !isSolved}
+					hasSoundEnabled={soundEnabled}
 					onMove={handleMove}
 					onWin={handleSolve}
 					isDialogOpen={isDialogOpen}
