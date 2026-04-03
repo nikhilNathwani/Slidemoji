@@ -9,7 +9,6 @@ import ArchiveDialog from "./components/dialogs/ArchiveDialog";
 import { getLatestPuzzleId } from "./utils/puzzleUtils";
 import { useAuth } from "./hooks/useAuth";
 import { usePuzzle } from "./hooks/usePuzzle";
-import { useDarkMode } from "./hooks/useDarkMode";
 import { useGameState } from "./hooks/useGameState";
 import { useSolvedPuzzles } from "./hooks/useSolvedPuzzles";
 import { resetPremiumForDev } from "./firebase/firestore/user";
@@ -21,10 +20,6 @@ function App() {
 	const [puzzleId, setPuzzleId] = useState(() => getLatestPuzzleId());
 	const { data: puzzleMetadata, isLoading: isLoadingPuzzle } =
 		usePuzzle(puzzleId);
-
-	// Dark mode: side effect (html class) applied inside useDarkMode.
-	// Sound and showNumbers are owned by Game and SettingsDialog respectively.
-	useDarkMode();
 
 	// GAME STATE is {currentDifficulty: normal|hard, normal:[normal_grid], hard:[hard_grid]}
 	const [gameState, setGameState, isLoadingGameState] = useGameState({

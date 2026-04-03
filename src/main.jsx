@@ -5,6 +5,7 @@ import "./App.css";
 import AuthProvider from "./contexts/AuthProvider.jsx";
 import UserDocProvider from "./contexts/UserDocProvider.jsx";
 import "./utils/icons.js"; // Initialize FontAwesome icon library
+import { useDarkMode } from "./hooks/useDarkMode";
 
 // Prevent arrow keys from scrolling the page globally
 window.addEventListener(
@@ -21,11 +22,16 @@ window.addEventListener(
 	{ passive: false },
 );
 
+function Root() {
+	useDarkMode();
+	return <App />;
+}
+
 ReactDOM.createRoot(document.getElementById("root")).render(
 	<React.StrictMode>
 		<AuthProvider>
 			<UserDocProvider>
-				<App />
+				<Root />
 			</UserDocProvider>
 		</AuthProvider>
 	</React.StrictMode>,
