@@ -2,6 +2,7 @@ import Dialog from "./Dialog";
 import styles from "./SettingsDialog.module.css";
 import { FontAwesomeIcon } from "../../utils/icons";
 import { DIFFICULTIES } from "../../constants";
+import { useUserDoc } from "../../hooks/useUserDoc";
 
 function SettingsDialog({
 	isOpen,
@@ -18,6 +19,8 @@ function SettingsDialog({
 	onAlmostSolve,
 	onTogglePremium,
 }) {
+	const { userData } = useUserDoc();
+	const isDevMode = import.meta.env.DEV || userData?.isDevMode === true;
 	return (
 		<Dialog isOpen={isOpen} onClose={onClose} title="Settings">
 			<div className={styles.settingsContent}>
@@ -85,8 +88,7 @@ function SettingsDialog({
 					/>
 				</div>
 				<div className={styles.settingsDivider}></div>
-				{(import.meta.env.DEV ||
-					localStorage.getItem("slidemoji_dev_tools") === "true") &&
+				{isDevMode &&
 					onAlmostSolve && (
 						<>
 							<div className={styles.settingsItem}>

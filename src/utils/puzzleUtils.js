@@ -1,12 +1,18 @@
 /**
- * Get the latest puzzle ID (today's puzzle number) based on start date
+ * Get the latest puzzle ID (today's puzzle number) based on start date.
+ * Rolls over at local midnight by accounting for the user's timezone offset.
  * @returns {number} Puzzle ID
  */
 export function getLatestPuzzleId() {
-	const startDate = new Date("2026-01-01"); // First puzzle date
-	const today = new Date();
+	const startDate = new Date("2026-01-01"); // First puzzle date (UTC midnight)
+	const now = new Date();
+	// Subtract timezone offset so the day boundary falls at local midnight,
+	// not UTC midnight. getTimezoneOffset() is positive for zones behind UTC (e.g.
+	// EST = +300) and negative for zones ahead (e.g. JST = -540).
+	const tzOffsetMs = now.getTimezoneOffset() * 60 * 1000;
 	const daysSinceStart = Math.floor(
-		(today - startDate) / (1000 * 60 * 60 * 24),
+		(now.getTime() - tzOffsetMs - startDate.getTime()) /
+			(1000 * 60 * 60 * 24),
 	);
 	return (daysSinceStart % 365) + 1; // Cycle after 365 puzzles
 }

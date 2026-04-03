@@ -17,6 +17,7 @@
 .archivePreview {
 	position: relative;
 	overflow: hidden;
+	height: 148px; /* shows ~3 full items + peek of 4th before fade */
 	border-radius: 8px;
 	border: 1px solid var(--border-primary);
 	background: var(--surface-secondary);
