@@ -12,7 +12,6 @@ import { usePuzzle } from "./hooks/usePuzzle";
 import { usePreference } from "./hooks/usePreference";
 import { useGameState } from "./hooks/useGameState";
 import { useSolvedPuzzles } from "./hooks/useSolvedPuzzles";
-import { useSubscription } from "./hooks/useSubscription";
 import { resetPremiumForDev } from "./firebase/firestore/user";
 
 // App-level preference defaults
@@ -49,8 +48,6 @@ function App() {
 
 	// SOLVED PUZZLES is a list of puzzles with a normal- and/or hard-solve
 	const { solvedPuzzles } = useSolvedPuzzles();
-
-	const { isPremium } = useSubscription();
 
 	// Show Page / Dialog
 	// Lazy initializer: skip landing page when returning from Stripe checkout.
@@ -191,16 +188,13 @@ function App() {
 				isOpen={showArchiveDialog}
 				onClose={() => setShowArchiveDialog(false)}
 				solvedPuzzles={solvedPuzzles}
-				currentPuzzleId={puzzleId}
 				onPuzzleSelect={setPuzzleId}
-				isPremium={isPremium}
 			/>
 
 			<StatsDialog
 				isOpen={showStatsDialog}
 				onClose={() => setShowStatsDialog(false)}
 				solvedPuzzles={solvedPuzzles}
-				currentPuzzleId={puzzleId}
 				onUnlockArchiveClick={() => {
 					setShowStatsDialog(false);
 					setShowArchiveDialog(true);

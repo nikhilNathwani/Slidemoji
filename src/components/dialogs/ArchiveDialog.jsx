@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Dialog from "./Dialog";
 import { usePuzzle } from "../../hooks/usePuzzle";
+import { useSubscription } from "../../hooks/useSubscription";
 import { getLatestPuzzleId, formatPuzzleId } from "../../utils/puzzleUtils";
 import { FontAwesomeIcon } from "../../utils/icons";
 import { useCheckout } from "../../hooks/useCheckout";
@@ -124,12 +125,12 @@ function ArchiveDialog({
 	isOpen,
 	onClose,
 	solvedPuzzles,
-	currentPuzzleId,
 	onPuzzleSelect,
-	isPremium,
 }) {
+	const { isPremium } = useSubscription();
 	const [filter, setFilter] = useState("all");
-	const totalPuzzles = getLatestPuzzleId();
+	const todayPuzzleId = getLatestPuzzleId();
+	const totalPuzzles = todayPuzzleId;
 
 	// Generate list of all puzzles (1 to current puzzle number)
 	const puzzleList = Array.from({ length: totalPuzzles }, (_, i) => {
@@ -137,7 +138,7 @@ function ArchiveDialog({
 		return {
 			puzzleNum,
 			isSolved: !!solvedPuzzles?.[puzzleNum],
-			isToday: puzzleNum === currentPuzzleId,
+			isToday: puzzleNum === todayPuzzleId,
 		};
 	}).reverse(); // Most recent first
 

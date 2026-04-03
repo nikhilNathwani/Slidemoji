@@ -10,7 +10,6 @@ import styles from "./StatsContent.module.css";
 function StatsContent({
 	showTitle = false,
 	solvedPuzzles,
-	currentPuzzleId,
 	onUnlockArchiveClick,
 }) {
 	const { user } = useAuth();
@@ -41,7 +40,6 @@ function StatsContent({
 						totalPuzzles={numTotalPuzzles}
 						solvedPuzzles={solvedPuzzles}
 						showTitle={false}
-						puzzleId={currentPuzzleId || getLatestPuzzleId()}
 					/>
 
 					{/* Archive section */}

@@ -7,7 +7,6 @@ function StatsDialog({
 	isOpen,
 	onClose,
 	solvedPuzzles,
-	currentPuzzleId,
 	onUnlockArchiveClick,
 }) {
 	const numEarnedTrophies = Object.keys(solvedPuzzles || {}).length;
@@ -27,7 +26,6 @@ function StatsDialog({
 			<StatsContent
 				showTitle={false}
 				solvedPuzzles={solvedPuzzles}
-				currentPuzzleId={currentPuzzleId}
 				onUnlockArchiveClick={onUnlockArchiveClick}
 			/>
 		</Dialog>
