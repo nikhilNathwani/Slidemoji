@@ -46,7 +46,7 @@ function PaywallView({ puzzleList }) {
 
 	return (
 		<div className={styles.paywallContent}>
-			{/* Real puzzle list clipped + faded, with price overlaid at bottom */}
+			{/* Real puzzle list clipped + faded, with CTA overlaid at bottom */}
 			<div className={styles.paywallListWrapper}>
 				<div className={styles.puzzleList}>
 					{previewItems.map((puzzle) => (
@@ -60,11 +60,13 @@ function PaywallView({ puzzleList }) {
 					))}
 				</div>
 				<div className={styles.paywallOverlay} />
-				<div className={styles.priceHero}>
-					<span className={styles.price}>$3</span>
-					<span className={styles.priceNote}>
+				<div className={styles.paywallCta}>
+					<p className={styles.paywallCtaHeadline}>
+						Access every past Slidemoji puzzle.
+					</p>
+					<p className={styles.paywallCtaNote}>
 						One-time purchase · No subscription
-					</span>
+					</p>
 				</div>
 			</div>
 
@@ -76,10 +78,10 @@ function PaywallView({ puzzleList }) {
 					/>
 					<div>
 						<div className={styles.featureHeadline}>
-							Every puzzle, forever
+							Play any past puzzle
 						</div>
 						<div className={styles.featureDetail}>
-							Play any past puzzle, any time.
+							Back to day one — play at your own pace.
 						</div>
 					</div>
 				</li>
@@ -90,10 +92,24 @@ function PaywallView({ puzzleList }) {
 					/>
 					<div>
 						<div className={styles.featureHeadline}>
-							Full trophy case
+							Complete your trophy collection
 						</div>
 						<div className={styles.featureDetail}>
-							Track solves across all difficulties.
+							Earn trophies for every puzzle you solve on your own schedule.
+						</div>
+					</div>
+				</li>
+				<li className={styles.featureItem}>
+					<FontAwesomeIcon
+						icon="check"
+						className={styles.featureIcon}
+					/>
+					<div>
+						<div className={styles.featureHeadline}>
+							Permanent access
+						</div>
+						<div className={styles.featureDetail}>
+							One payment unlocks the entire archive, forever.
 						</div>
 					</div>
 				</li>
