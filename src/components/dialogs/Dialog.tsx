@@ -1,12 +1,19 @@
 import { useEffect } from "react";
-import FocusTrap from "focus-trap-react";
+import { FocusTrap } from "focus-trap-react";
 import styles from "./Dialog.module.css";
 
-function Dialog({ isOpen, onClose, title, children }) {
+interface DialogProps {
+	isOpen: boolean;
+	onClose: () => void;
+	title: string;
+	children: React.ReactNode;
+}
+
+function Dialog({ isOpen, onClose, title, children }: DialogProps) {
 	// Handle Escape key independently -- FocusTrap only traps Tab focus.
 	useEffect(() => {
 		if (!isOpen) return;
-		const handleKeyDown = (e) => {
+		const handleKeyDown = (e: KeyboardEvent): void => {
 			if (e.key === "Escape") onClose();
 		};
 		document.addEventListener("keydown", handleKeyDown);
@@ -33,7 +40,10 @@ function Dialog({ isOpen, onClose, title, children }) {
 				>
 					<div className={styles.dialogHeader}>
 						<h2>{title}</h2>
-						<button className={styles.dialogClose} onClick={onClose}>
+						<button
+							className={styles.dialogClose}
+							onClick={onClose}
+						>
 							✕
 						</button>
 					</div>

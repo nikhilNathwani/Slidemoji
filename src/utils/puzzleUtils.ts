@@ -28,42 +28,21 @@ export function formatPuzzleId(
 	return includeHash ? `#${padded}` : padded;
 }
 
-interface PuzzleMetadata {
-	id?: number;
-	emoji?: string;
-	emojiName?: string;
-	normal?: number[] | null;
-	hard?: number[] | null;
-	[key: string]: unknown;
+/** Shape of a puzzle document as it lives in Firestore. */
+export interface FirestorePuzzle {
+	emoji: string;
+	emojiName: string;
+	normal: number[];
+	hard: number[];
 }
 
-/**
- * Convert puzzle data from Firestore format to client format.
- * Firestore and client both use 0 for gap.
- */
-export function convertPuzzleFromFirestore(
-	puzzleMetadata: PuzzleMetadata | null | undefined,
-	gridSize = 3,
-): PuzzleMetadata | null {
-	if (!puzzleMetadata) return null;
-
-	const converted = { ...puzzleMetadata };
-
-	const normalGrid = converted.normal;
-	const hardGrid = converted.hard;
-
-	if (normalGrid || hardGrid) {
-		if (gridSize === 4) {
-			converted.initialGrid = hardGrid || normalGrid;
-		} else {
-			converted.initialGrid = normalGrid || hardGrid;
-		}
-
-		// Keep these for callers that expect explicit difficulty grids
-		converted.normal = normalGrid || null;
-		converted.hard = hardGrid || null;
-		converted.grid3x3 = normalGrid || null;
-		converted.grid4x4 = hardGrid || null;
-	}
-	return converted;
+/** Shape of puzzle data returned by usePuzzle. */
+export interface PuzzleData {
+	id: number;
+	emoji: string;
+	emojiName: string;
+	initialGrids: {
+		normal: number[];
+		hard: number[];
+	};
 }

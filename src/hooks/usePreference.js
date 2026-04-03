@@ -8,7 +8,7 @@
  * @param {*} defaultValue - The default value if no saved preference exists
  * @param {Object} options - Optional configuration
  * @param {string} [options.contextKey=null] - Optional key to scope this preference (e.g., puzzleId for daily reset)
- * @returns {[any, Function]} - [currentValue, setValue] tuple (like useState)
+ * @returns {[any, Function]} - [preference, setPreference] tuple (like useState)
  *
  * Usage:
  *   // Normal preference (persists for everyone)
@@ -65,11 +65,10 @@ export function usePreference(key, defaultValue, options = {}) {
 	);
 
 	const preferenceValue = userData?.preferences?.[storageKey];
-	const effectiveValue =
+	const preference =
 		userId && preferenceValue !== undefined
 			? preferenceValue
 			: defaultValue;
-	const loading = userId ? userDocLoading : false;
 
-	return [effectiveValue, setPreference, loading];
+	return [preference, setPreference];
 }

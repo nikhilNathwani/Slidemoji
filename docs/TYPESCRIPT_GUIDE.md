@@ -41,11 +41,11 @@ TypeScript is the same idea, but inline:
 ```ts
 // TypeScript (your actual puzzleUtils.ts)
 export function formatPuzzleId(
-  puzzleId: number,
-  { includeHash = true }: { includeHash?: boolean } = {},
+	puzzleId: number,
+	{ includeHash = true }: { includeHash?: boolean } = {},
 ): string {
-  const padded = String(puzzleId).padStart(3, "0");
-  return includeHash ? `#${padded}` : padded;
+	const padded = String(puzzleId).padStart(3, "0");
+	return includeHash ? `#${padded}` : padded;
 }
 ```
 
@@ -59,44 +59,50 @@ immediately instead of producing `"#NaN"` silently at runtime.
 
 ## 2. Interfaces — Your First Real Type (`puzzleUtils.ts`)
 
-An `interface` names a shape. You've already written one:
+An `interface` names a shape. You have two in `puzzleUtils.ts`:
 
 ```ts
 // src/utils/puzzleUtils.ts
-interface PuzzleMetadata {
-  id?: number;
-  emoji?: string;
-  emojiName?: string;
-  normal?: number[] | null;
-  hard?: number[] | null;
-  [key: string]: unknown;
+
+// What a puzzle document looks like in Firestore
+export interface FirestorePuzzle {
+	emoji: string;
+	emojiName: string;
+	normal: number[]; // 3×3 grid tiles (0 = gap)
+	hard: number[]; // 4×4 grid tiles (0 = gap)
+}
+
+// What usePuzzle returns to the rest of the app
+export interface PuzzleData {
+	id: number;
+	emoji: string;
+	emojiName: string;
+	initialGrids: {
+		normal: number[];
+		hard: number[];
+	};
 }
 ```
 
-Breaking this down:
+Notice both are all-required (no `?`). This is intentional — every puzzle document
+in the dataset has all four fields, and `usePuzzle` only returns a full object or
+`null`. There is no in-between state.
 
-| Syntax | Meaning |
-|--------|---------|
-| `id?: number` | optional — may be `number` or `undefined` |
-| `number[] \| null` | array of numbers, OR null (two valid shapes) |
-| `[key: string]: unknown` | index signature — any other string key is allowed |
+**Two interfaces instead of one** — the old approach had a single `PuzzleMetadata`
+interface with everything optional and an `[key: string]: unknown` index signature
+("the I-give-up of TypeScript"). That was needed to allow runtime-added aliases
+(`initialGrid`, `grid3x3`, `grid4x4`) that an old conversion function used to attach.
+Those aliases are gone now. `usePuzzle` reads `puzzleData.normal` and `puzzleData.hard`
+directly — the only fields that actually live in Firestore.
 
-The index signature `[key: string]: unknown` is why TypeScript allows
-`converted.initialGrid = ...` later in `convertPuzzleFromFirestore`. Without it,
-TypeScript would reject any key not explicitly listed.
+**The `export` question:** Export an interface when another file needs to annotate
+variables or parameters with that type. Keep it unexported when it's only used within
+the same file. When in doubt, export it.
 
-**The `export` question:** This interface is `interface PuzzleMetadata` (not exported).
-That is intentional — it's an implementation detail of `puzzleUtils.ts`. If another
-file needs to annotate puzzle data, export it:
-
-```ts
-// Make it available to other files:
-export interface PuzzleMetadata { ... }
-```
-
-**Hands-on:** Open `puzzleUtils.ts`. Try removing the `?` from `id?: number` to make
-it required. Notice that `convertPuzzleFromFirestore`'s call site in `usePuzzle.js`
-would also need to be updated — TypeScript would tell you exactly where.
+**Hands-on:** Open `usePuzzle.ts` and hover over `state.data`. VS Code will show you
+`PuzzleData | null`. Then try adding a line `state.data.emoji` — TypeScript will
+underline it and tell you "Object is possibly 'null'". Add `if (!state.data) return;`
+above it and the error disappears. That's narrowing (Section 6).
 
 ---
 
@@ -113,7 +119,7 @@ type UserId = string | null;
 type LoadingState = "idle" | "loading" | "error" | "success";
 ```
 
-**In your code:** `usePreference.js` returns `[effectiveValue, setPreference, loading]`.
+**In your code:** `usePreference.js` returns `[preference, setPreference]`.
 In TypeScript, the return type of a generic preference hook would use union types to
 describe keys that can be `boolean | string | number`.
 
@@ -128,58 +134,45 @@ You use generics every time you call `useState`:
 
 ```ts
 // Without TypeScript, React infers the type from the initial value:
-const [count, setCount] = useState(0);       // TypeScript infers: number
-const [name, setName] = useState("");        // TypeScript infers: string
-const [data, setData] = useState(null);      // TypeScript infers: null ← PROBLEM
+const [count, setCount] = useState(0); // TypeScript infers: number
+const [name, setName] = useState(""); // TypeScript infers: string
+const [data, setData] = useState(null); // TypeScript infers: null ← PROBLEM
 ```
 
 The last one is a problem because TypeScript will refuse to let you set `data` to
 anything other than `null` later. Fix it with an explicit generic:
 
 ```ts
-import type { PuzzleMetadata } from "../utils/puzzleUtils";
+import type { PuzzleData } from "../utils/puzzleUtils";
 
-const [data, setData] = useState<PuzzleMetadata | null>(null);
+const [data, setData] = useState<PuzzleData | null>(null);
 // Now setData(fetchedPuzzle) works fine; TypeScript knows the full shape.
 ```
 
-**In your codebase — `usePuzzle.js` is the natural next file to convert to TypeScript.**
-It has a state object with three fields and a complex shape. Here's what that looks like:
+**Your codebase — `usePuzzle.ts` (already converted).** It uses a state object with
+three fields. Here's the actual code:
 
 ```ts
-// Current (JavaScript):
-const [state, setState] = useState({
-  puzzleId: null,
-  data: null,
-  error: null,
-});
-
-// Converted (TypeScript):
 interface PuzzleState {
-  puzzleId: number | null;
-  data: PuzzleResult | null;   // PuzzleResult = the object usePuzzle returns
-  error: Error | null;
-}
-
-interface PuzzleResult {
-  id: number;
-  emoji: string;
-  emojiName: string;
-  initialGrids: {
-    normal: number[] | null;
-    hard: number[] | null;
-  };
+	puzzleId: number | null;
+	data: PuzzleData | null;
+	error: Error | null;
 }
 
 const [state, setState] = useState<PuzzleState>({
-  puzzleId: null,
-  data: null,
-  error: null,
+	puzzleId: null,
+	data: null,
+	error: null,
 });
 ```
 
-TypeScript would now catch if you accidentally tried to read `state.data.emoji` without
-first checking that `state.data` is not null.
+`puzzleId` lives alongside `data` in state specifically so we can detect staleness:
+`state.puzzleId !== puzzleId` means the effect hasn't re-run yet → return
+`isLoading: true`. If we only stored `data | null`, we couldn't tell "loading" from
+"puzzle not found".
+
+TypeScript now catches `state.data.emoji` without a null check at the call site —
+exactly the kind of protection that was missing when `usePuzzle` was a `.js` file.
 
 ---
 
@@ -189,22 +182,25 @@ Every async function returns a `Promise`. TypeScript lets you annotate what the 
 resolves to:
 
 ```ts
-// Async function that returns a PuzzleMetadata or null:
-async function getFirestorePuzzleById(id: number): Promise<PuzzleMetadata | null> {
-  const docSnap = await getDoc(doc(db, "puzzles", id.toString()));
-  if (!docSnap.exists()) return null;
-  return docSnap.data() as PuzzleMetadata;
+// Async function that returns a FirestorePuzzle or null:
+async function getFirestorePuzzleById(
+	id: number,
+): Promise<FirestorePuzzle | null> {
+	const docSnap = await getDoc(doc(db, "puzzles", id.toString()));
+	if (!docSnap.exists()) return null;
+	return docSnap.data() as FirestorePuzzle;
 }
 ```
 
-The `as PuzzleMetadata` is a **type assertion** — you're telling TypeScript "trust me,
+The `as FirestorePuzzle` is a **type assertion** — you're telling TypeScript "trust me,
 this data matches this shape." It's fine to use at system boundaries (like a Firestore
-read) where TypeScript can't verify the shape. Don't use it to silence errors in your
-own logic.
+read) where TypeScript can't verify the shape at compile time. Note that `docSnap.data()`
+only runs after `docSnap.exists()` passes, so it can't be `undefined` here. Don't use
+`as` to silence errors in your own logic.
 
 **In your codebase:** `src/firebase/firestore/puzzle.js` (`getFirestorePuzzleById`)
-is the ideal file to annotate. It fetches from Firestore and returns raw data, which
-is exactly where type assertions belong.
+is the natural next conversion target. The call site in `usePuzzle.ts` already
+annotates the result as `FirestorePuzzle | null`.
 
 ---
 
@@ -213,13 +209,13 @@ is exactly where type assertions belong.
 TypeScript tracks what you've checked. After an `if` guard, it narrows the type:
 
 ```ts
-function processData(data: PuzzleResult | null) {
-  // Here: data is PuzzleResult | null
+function processData(data: PuzzleData | null) {
+	// Here: data is PuzzleData | null
 
-  if (!data) return;
+	if (!data) return;
 
-  // Here: TypeScript KNOWS data is PuzzleResult (null was ruled out above)
-  console.log(data.emoji); // ✓ — TypeScript is happy
+	// Here: TypeScript KNOWS data is PuzzleData (null was ruled out above)
+	console.log(data.emoji); // ✓ — TypeScript is happy
 }
 ```
 
@@ -231,21 +227,21 @@ features. You're already doing this in JavaScript — TypeScript just makes it e
 const preferenceValue = userData?.preferences?.[storageKey];
 //    ^ This is `unknown` until we narrow it
 
-const effectiveValue =
-  userId && preferenceValue !== undefined
-    ? preferenceValue   // narrowed: not undefined
-    : defaultValue;
+const preference =
+	userId && preferenceValue !== undefined
+		? preferenceValue // narrowed: not undefined
+		: defaultValue;
 ```
 
 ---
 
 ## 7. Type vs Interface — When to Use Each
 
-| `type` | `interface` |
-|--------|-------------|
-| Union types: `type Status = "idle" \| "loading"` | Object shapes you'll extend |
-| Utility types: `type Partial<T>` | Public API types (exported from a module) |
-| Simple aliases: `type UserId = string` | Classes that implement a contract |
+| `type`                                           | `interface`                               |
+| ------------------------------------------------ | ----------------------------------------- |
+| Union types: `type Status = "idle" \| "loading"` | Object shapes you'll extend               |
+| Utility types: `type Partial<T>`                 | Public API types (exported from a module) |
+| Simple aliases: `type UserId = string`           | Classes that implement a contract         |
 
 **Rule of thumb:** Use `interface` for objects/shapes. Use `type` for everything else.
 In practice, most of the time `interface` works fine.
@@ -257,26 +253,27 @@ In practice, most of the time `interface` works fine.
 TypeScript ships built-in "helper types" you'll use constantly:
 
 ```ts
-interface PuzzleMetadata {
-  id: number;
-  emoji: string;
-  normal: number[];
+interface FirestorePuzzle {
+	emoji: string;
+	emojiName: string;
+	normal: number[];
+	hard: number[];
 }
 
 // Partial<T> — makes all fields optional
-type PartialPuzzle = Partial<PuzzleMetadata>;
-// { id?: number; emoji?: string; normal?: number[] }
+type PartialPuzzle = Partial<FirestorePuzzle>;
+// { emoji?: string; emojiName?: string; normal?: number[]; hard?: number[] }
 
-// Required<T> — makes all fields required (opposite of Partial)
-type FullPuzzle = Required<PuzzleMetadata>;
+// Required<T> — makes all fields required (already is, but useful when you have optionals)
+type FullPuzzle = Required<FirestorePuzzle>;
 
 // Pick<T, K> — keep only specific fields
-type PuzzleDisplay = Pick<PuzzleMetadata, "emoji">;
+type PuzzleDisplay = Pick<FirestorePuzzle, "emoji">;
 // { emoji: string }
 
 // Omit<T, K> — drop specific fields
-type PuzzleWithoutId = Omit<PuzzleMetadata, "id">;
-// { emoji: string; normal: number[] }
+type PuzzleWithoutGrids = Omit<FirestorePuzzle, "normal" | "hard">;
+// { emoji: string; emojiName: string }
 
 // Record<K, V> — object with keys of type K and values of type V
 type ScoresByDifficulty = Record<"normal" | "hard", number>;
@@ -315,12 +312,12 @@ function Trophy({ puzzleId, isLocked }: TrophyProps) { ... }
 ```tsx
 // onClick — event is React.MouseEvent
 function handleClick(e: React.MouseEvent<HTMLButtonElement>) {
-  e.stopPropagation();
+	e.stopPropagation();
 }
 
 // onChange on an input — event is React.ChangeEvent
 function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-  setValue(e.target.value);
+	setValue(e.target.value);
 }
 ```
 
@@ -328,16 +325,43 @@ function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
 
 ```tsx
 interface DialogProps {
-  isOpen: boolean;
-  onClose: () => void;       // function with no args, returns nothing
-  title: string;
-  children: React.ReactNode; // anything React can render
+	isOpen: boolean;
+	onClose: () => void; // function with no args, returns nothing
+	title: string;
+	children: React.ReactNode; // anything React can render
 }
 ```
 
-**In your codebase:** `src/components/dialogs/Dialog.jsx` is the ideal first React
-component to convert. It has clear props (`isOpen`, `onClose`, `title`, `children`)
-and a controlled interface.
+**In your codebase:** `src/components/dialogs/Dialog.tsx` — completed. See notes below.
+
+### CSS Module Imports
+
+TypeScript doesn't know about `.css` files by default. The fix is `src/vite-env.d.ts`:
+
+```ts
+/// <reference types="vite/client" />
+```
+
+This one line pulls in Vite's built-in declarations: CSS modules, `import.meta.env`,
+asset imports, etc. Every Vite+TypeScript project needs this file.
+
+### Native DOM vs React Synthetic Events
+
+The guide's event handler examples use `React.KeyboardEvent` — but only for **JSX props**:
+
+```tsx
+// JSX prop → React synthetic event
+function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) { ... }
+<input onKeyDown={handleKeyDown} />
+
+// document.addEventListener → native DOM event
+function handleKeyDown(e: KeyboardEvent) { ... }
+document.addEventListener("keydown", handleKeyDown);
+```
+
+The rule: if you're attaching via a JSX attribute (`onKeyDown`, `onClick`), use
+`React.SomeEvent`. If you're calling a DOM API directly (`addEventListener`,
+`window.on...`), use the native `SomeEvent` without the `React.` prefix.
 
 ---
 
@@ -345,21 +369,21 @@ and a controlled interface.
 
 Here is the recommended order — each file introduces the next concept naturally:
 
-| Step | File | New Concepts |
-|------|------|-------------|
-| ✅ Done | `puzzleUtils.ts` | Interfaces, union types, optional fields, generics in function signatures |
-| 2 | `src/firebase/firestore/puzzle.js` | `Promise<T>`, type assertions (`as`), `async` return types |
-| 3 | `src/hooks/usePuzzle.js` | `useState<T>`, defining local interface types, `useEffect` cleanup types |
-| 4 | `src/components/dialogs/Dialog.jsx` | React prop interfaces, `React.ReactNode`, callback types `() => void` |
-| 5 | `src/hooks/useGameState.js` | `Record<K, V>`, complex state shapes, `useCallback` types |
-| 6 | `src/contexts/AuthProvider.jsx` | Context types, `createContext<T>`, Provider value types |
+| Step    | File                                   | New Concepts                                                                 |
+| ------- | -------------------------------------- | ---------------------------------------------------------------------------- |
+| ✅ Done | `puzzleUtils.ts`                       | Interfaces, required vs optional fields, multiple types for different layers |
+| ✅ Done | `src/hooks/usePuzzle.ts`               | `useState<T>`, local interface types, async call site annotation             |
+| ✅ Done | `src/firebase/firestore/puzzle.ts`     | `Promise<T>`, type assertions (`as`), `async` return types                   |
+| ✅ Done | `src/components/dialogs/Dialog.tsx`    | React prop interfaces, `React.ReactNode`, callback types `() => void`        |
+| 5       | `src/hooks/useGameState.js`            | `Record<K, V>`, complex state shapes, `useCallback` types                    |
+| 6       | `src/contexts/AuthProvider.jsx`        | Context types, `createContext<T>`, Provider value types                      |
 
 ---
 
 ## 11. When TypeScript Goes on Your Resume
 
-You can justify listing TypeScript under Frontend after completing steps 1-4 above.
-This is the threshold because by then you can:
+**You've hit the threshold.** Steps 1–4 are done. You can justify listing TypeScript
+under Frontend because you can:
 
 - Write interfaces and understand when to export them
 - Use `useState<T>`, `useEffect`, and `useCallback` with proper types in hooks
@@ -368,9 +392,11 @@ This is the threshold because by then you can:
 - Read and understand TypeScript errors rather than just dismissing them
 
 **What makes it resume-strong (not just checkbox)** is pairing it with something
-concrete: "Migrated core utilities and React hooks to TypeScript; introduced
-interfaces for Firestore data boundaries." That specificity is what a technical
-interviewer will follow up on.
+concrete: "Migrated core utilities and data-fetching hooks to TypeScript; defined
+`FirestorePuzzle` and `PuzzleData` interfaces at the Firestore boundary to enforce
+data shape across the app." That specificity is what a technical interviewer will
+follow up on — they'll ask what `FirestorePuzzle` describes, and you have a real
+answer.
 
 ---
 
@@ -393,7 +419,7 @@ function greet(name: string): string {
 const double = (x: number): number => x * 2;
 
 // Async
-async function fetchPuzzle(id: number): Promise<PuzzleMetadata | null> { ... }
+async function fetchPuzzle(id: number): Promise<FirestorePuzzle | null> { ... }
 
 // Interface
 interface User {
