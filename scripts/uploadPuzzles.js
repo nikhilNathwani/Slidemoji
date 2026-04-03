@@ -159,21 +159,12 @@ function scramblePuzzle(size) {
  * Generate a puzzle for a specific day
  */
 function generatePuzzle(puzzleId) {
-	// Calculate date (Jan 1, 2026 + (puzzleId - 1) days)
-	const startDate = new Date("2026-01-01");
-	const puzzleDate = new Date(startDate);
-	puzzleDate.setDate(puzzleDate.getDate() + (puzzleId - 1));
-
-	// Format as YYYY-MM-DD
-	const dateString = puzzleDate.toISOString().split("T")[0];
-
 	// Get emoji from calendar (cycles after 365)
 	const emojiIndex = (puzzleId - 1) % emojiCalendar.length;
 	const { emoji, name } = emojiCalendar[emojiIndex];
 
 	return {
 		id: puzzleId,
-		date: dateString,
 		emoji: emoji,
 		emojiName: name,
 		normal: scramblePuzzle(3),
@@ -188,7 +179,7 @@ async function uploadPuzzle(puzzle) {
 	const puzzleRef = doc(db, "puzzles", puzzle.id.toString());
 	await setDoc(puzzleRef, puzzle);
 	console.log(
-		`✓ Uploaded puzzle ${puzzle.id} (${puzzle.date}): ${puzzle.emoji} ${puzzle.emojiName}`,
+		`✓ Uploaded puzzle ${puzzle.id}: ${puzzle.emoji} ${puzzle.emojiName}`,
 	);
 }
 

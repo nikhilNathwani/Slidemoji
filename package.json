@@ -14,7 +14,9 @@
 		"test": "vitest run",
 		"preview": "vite preview",
 		"migrate:solved-cleanup:dry": "node scripts/removeLegacySolvedFields.js --dry-run",
-		"migrate:solved-cleanup": "node scripts/removeLegacySolvedFields.js"
+		"migrate:solved-cleanup": "node scripts/removeLegacySolvedFields.js",
+		"migrate:remove-puzzle-date:dry": "node scripts/removePuzzleDateField.js --dry-run",
+		"migrate:remove-puzzle-date": "node scripts/removePuzzleDateField.js"
 	},
 	"dependencies": {
 		"@fortawesome/fontawesome-svg-core": "^7.2.0",

@@ -4,7 +4,6 @@ import { FontAwesomeIcon } from "../../utils/icons";
 import { DIFFICULTIES } from "../../constants";
 import { useUserDoc } from "../../hooks/useUserDoc";
 import { usePreference } from "../../hooks/usePreference";
-import { useDarkMode } from "../../hooks/useDarkMode";
 
 function SettingsDialog({
 	isOpen,
@@ -17,7 +16,7 @@ function SettingsDialog({
 }) {
 	const [showNumbers, setShowNumbers] = usePreference("showNumbers");
 	const [soundEnabled, setSoundEnabled] = usePreference("soundEnabled");
-	const [darkMode, setDarkMode] = useDarkMode();
+	const [darkMode, setDarkMode] = usePreference("darkMode");
 	const { userData } = useUserDoc();
 	const isDevMode = import.meta.env.DEV || userData?.isDevMode === true;
 	return (
@@ -140,7 +139,7 @@ function SettingsDialog({
 							"Please describe the issue you encountered:\n\n\n\n---\nDebug Information:\n" +
 								`User Agent: ${navigator.userAgent}\n` +
 								`Screen Size: ${window.innerWidth}x${window.innerHeight}\n` +
-								`Dark Mode: ${hasDarkMode}\n` +
+								`Dark Mode: ${darkMode}\n` +
 								`Show Numbers: ${showNumbers}\n` +
 								`Timestamp: ${new Date().toISOString()}`,
 						)}`}

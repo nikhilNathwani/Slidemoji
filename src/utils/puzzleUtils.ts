@@ -30,7 +30,6 @@ export function formatPuzzleId(
 
 interface PuzzleMetadata {
 	id?: number;
-	date?: string;
 	emoji?: string;
 	emojiName?: string;
 	normal?: number[] | null;

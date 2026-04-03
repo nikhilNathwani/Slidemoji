@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
 import "./App.css";
 import AuthProvider from "./contexts/AuthProvider.jsx";
 import UserDocProvider from "./contexts/UserDocProvider.jsx";
 import "./utils/icons.js"; // Initialize FontAwesome icon library
-import { useDarkMode } from "./hooks/useDarkMode";
+import { usePreference } from "./hooks/usePreference";
 
 // Prevent arrow keys from scrolling the page globally
 window.addEventListener(
@@ -22,8 +22,13 @@ window.addEventListener(
 	{ passive: false },
 );
 
-function Root() {
-	useDarkMode();
+export function Root() {
+	const [darkMode] = usePreference("darkMode");
+	useEffect(() => {
+		const root = document.documentElement;
+		root.classList.toggle("dark-theme", darkMode);
+		root.classList.toggle("light-theme", !darkMode);
+	}, [darkMode]);
 	return <App />;
 }
 
