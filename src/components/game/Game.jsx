@@ -8,7 +8,6 @@ import GameActionButton from "./GameActionButton";
 import { useAuth } from "../../hooks/useAuth";
 import { usePreference } from "../../hooks/usePreference";
 import { checkWin } from "../../utils/gridHelpers";
-import { DEFAULT_SHOW_NUMBERS, DEFAULT_SOUND_ENABLED } from "../../constants";
 
 function Game({
 	puzzleId, // Puzzle ID number
@@ -22,8 +21,8 @@ function Game({
 	isAppDialogOpen = false,
 	solvedPuzzles = {},
 }) {
-	const [showNumbers] = usePreference("showNumbers", DEFAULT_SHOW_NUMBERS);
-	const [soundEnabled] = usePreference("soundEnabled", DEFAULT_SOUND_ENABLED);
+	const [showNumbers] = usePreference("showNumbers");
+	const [soundEnabled] = usePreference("soundEnabled");
 	const { user } = useAuth();
 	const isSolved = checkWin(currentGrid);
 

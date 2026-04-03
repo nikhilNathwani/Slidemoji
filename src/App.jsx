@@ -9,11 +9,10 @@ import ArchiveDialog from "./components/dialogs/ArchiveDialog";
 import { getLatestPuzzleId } from "./utils/puzzleUtils";
 import { useAuth } from "./hooks/useAuth";
 import { usePuzzle } from "./hooks/usePuzzle";
-import { usePreference } from "./hooks/usePreference";
+import { useDarkMode } from "./hooks/useDarkMode";
 import { useGameState } from "./hooks/useGameState";
 import { useSolvedPuzzles } from "./hooks/useSolvedPuzzles";
 import { resetPremiumForDev } from "./firebase/firestore/user";
-import { DEFAULT_DARK_MODE } from "./constants";
 
 function App() {
 	const { loading: isAuthLoading, isMerging, user } = useAuth();
@@ -23,12 +22,9 @@ function App() {
 	const { data: puzzleMetadata, isLoading: isLoadingPuzzle } =
 		usePuzzle(puzzleId);
 
-	// Dark mode is owned here because it controls the root <div> theme class.
+	// Dark mode: side effect (html class) applied inside useDarkMode.
 	// Sound and showNumbers are owned by Game and SettingsDialog respectively.
-	const [darkMode, setDarkMode] = usePreference(
-		"darkMode",
-		DEFAULT_DARK_MODE,
-	);
+	useDarkMode();
 
 	// GAME STATE is {currentDifficulty: normal|hard, normal:[normal_grid], hard:[hard_grid]}
 	const [gameState, setGameState, isLoadingGameState] = useGameState({
@@ -91,7 +87,7 @@ function App() {
 
 	if (showLandingPage) {
 		return (
-			<div className="app light-theme">
+			<div className="app">
 				<LandingPage onPlay={() => setShowLandingPage(false)} />
 			</div>
 		);
@@ -102,7 +98,7 @@ function App() {
 	// For signed-out users, only wait for puzzle data
 	if (shouldShowLoading) {
 		return (
-			<div className={`app ${darkMode ? "dark-theme" : "light-theme"}`}>
+			<div className="app">
 				<Header
 					onArchiveClick={() => setShowArchiveDialog(true)}
 					onSettingsClick={() => setShowSettingsDialog(true)}
@@ -116,7 +112,7 @@ function App() {
 	}
 
 	return (
-		<div className={`app ${darkMode ? "dark-theme" : "light-theme"}`}>
+		<div className="app">
 			<Header
 				onSettingsClick={() => setShowSettingsDialog(true)}
 				onArchiveClick={() => setShowArchiveDialog(true)}
@@ -144,8 +140,6 @@ function App() {
 			<SettingsDialog
 				isOpen={showSettingsDialog}
 				onClose={() => setShowSettingsDialog(false)}
-				hasDarkMode={darkMode}
-				onDarkModeChange={setDarkMode}
 				difficulty={gameState.currentDifficulty}
 				onDifficultyChange={(diff) =>
 					setGameState({ currentDifficulty: diff })

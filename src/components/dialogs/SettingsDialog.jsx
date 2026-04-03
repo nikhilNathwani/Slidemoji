@@ -1,33 +1,23 @@
 import Dialog from "./Dialog";
 import styles from "./SettingsDialog.module.css";
 import { FontAwesomeIcon } from "../../utils/icons";
-import {
-	DIFFICULTIES,
-	DEFAULT_SHOW_NUMBERS,
-	DEFAULT_SOUND_ENABLED,
-} from "../../constants";
+import { DIFFICULTIES } from "../../constants";
 import { useUserDoc } from "../../hooks/useUserDoc";
 import { usePreference } from "../../hooks/usePreference";
+import { useDarkMode } from "../../hooks/useDarkMode";
 
 function SettingsDialog({
 	isOpen,
 	onClose,
-	hasDarkMode,
-	onDarkModeChange,
 	difficulty,
 	onDifficultyChange,
 	isPuzzleSolved = false,
 	onAlmostSolve,
 	onTogglePremium,
 }) {
-	const [showNumbers, setShowNumbers] = usePreference(
-		"showNumbers",
-		DEFAULT_SHOW_NUMBERS,
-	);
-	const [soundEnabled, setSoundEnabled] = usePreference(
-		"soundEnabled",
-		DEFAULT_SOUND_ENABLED,
-	);
+	const [showNumbers, setShowNumbers] = usePreference("showNumbers");
+	const [soundEnabled, setSoundEnabled] = usePreference("soundEnabled");
+	const [darkMode, setDarkMode] = useDarkMode();
 	const { userData } = useUserDoc();
 	const isDevMode = import.meta.env.DEV || userData?.isDevMode === true;
 	return (
@@ -92,8 +82,8 @@ function SettingsDialog({
 				<div className={styles.settingsItem}>
 					<label className={styles.settingsLabel}>Dark Mode</label>
 					<Toggle
-						isOn={hasDarkMode}
-						onToggle={() => onDarkModeChange(!hasDarkMode)}
+						isOn={darkMode}
+						onToggle={() => setDarkMode(!darkMode)}
 					/>
 				</div>
 				<div className={styles.settingsDivider}></div>

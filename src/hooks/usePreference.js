@@ -22,8 +22,19 @@ import { useCallback } from "react";
 import { updateFirestorePreferences } from "../firebase/firestore/preference";
 import { useAuth } from "./useAuth";
 import { useUserDoc } from "./useUserDoc";
+import { DEFAULT_DIFFICULTY } from "../constants";
+
+// Defaults live here so callers never need to import or pass them.
+const PREFERENCE_DEFAULTS = {
+	darkMode: false,
+	soundEnabled: false,
+	showNumbers: true,
+	difficulty: DEFAULT_DIFFICULTY,
+};
 
 export function usePreference(key, defaultValue, options = {}) {
+	// Use the caller-supplied default, or fall back to the built-in default.
+	defaultValue = defaultValue ?? PREFERENCE_DEFAULTS[key];
 	const { contextKey = null } = options;
 	const { user } = useAuth();
 	const { userData, loading: userDocLoading } = useUserDoc();
