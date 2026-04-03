@@ -64,9 +64,6 @@ function PaywallView({ puzzleList }) {
 					<p className={styles.paywallCtaHeadline}>
 						Access every past Slidemoji puzzle.
 					</p>
-					<p className={styles.paywallCtaNote}>
-						One-time purchase · No subscription
-					</p>
 				</div>
 			</div>
 
@@ -108,6 +105,10 @@ function PaywallView({ puzzleList }) {
 			>
 				{isRedirecting ? "Redirecting…" : "Unlock for $3"}
 			</button>
+
+			<p className={styles.paywallCtaNote}>
+				One-time purchase · No subscription
+			</p>
 
 			{error && <p className={styles.error}>{error}</p>}
 

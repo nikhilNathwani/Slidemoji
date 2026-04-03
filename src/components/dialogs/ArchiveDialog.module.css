@@ -235,8 +235,6 @@
 	position: relative;
 	height: 280px;
 	overflow: hidden;
-	border-radius: 8px;
-	border: 1px solid var(--border-primary);
 }
 
 /* Override puzzleList scrolling inside the clipped wrapper */
@@ -276,7 +274,7 @@
 }
 
 .paywallCtaHeadline {
-	font-size: var(--text-base);
+	font-size: var(--text-lg);
 	font-weight: 700;
 	color: var(--text-primary);
 	margin: 0;
@@ -284,24 +282,25 @@
 }
 
 .paywallCtaNote {
-	font-size: var(--text-xs);
+	font-size: var(--text-sm);
 	color: var(--text-secondary);
 	font-weight: 500;
 	margin: 0;
+	text-align: center;
 }
 
 /* Feature list */
 .featureList {
 	display: flex;
 	flex-direction: column;
-	gap: 10px;
+	gap: 16px;
 	width: 100%;
 }
 
 .featureItem {
 	display: flex;
 	align-items: flex-start;
-	gap: 10px;
+	gap: 12px;
 }
 
 .featureIcon {
@@ -320,6 +319,7 @@
 .featureDetail {
 	font-size: var(--text-sm);
 	color: var(--text-secondary);
+	margin-top: 3px;
 }
 
 /* Unlock CTA button */
