@@ -41,10 +41,12 @@ function PuzzleListItem({ puzzleNum, isSolved, onClick, isLocked = false }) {
 
 function PaywallView({ puzzleList }) {
 	const { startCheckout, isRedirecting, error } = useCheckout();
-	const previewItems = puzzleList.slice(0, 6);
+	// Show earliest puzzles first (#001, #002...) — ascending order
+	const previewItems = [...puzzleList].reverse().slice(0, 6);
 
 	return (
 		<div className={styles.paywallContent}>
+			{/* Real puzzle list clipped + faded, with price overlaid at bottom */}
 			<div className={styles.paywallListWrapper}>
 				<div className={styles.puzzleList}>
 					{previewItems.map((puzzle) => (
@@ -58,62 +60,59 @@ function PaywallView({ puzzleList }) {
 					))}
 				</div>
 				<div className={styles.paywallOverlay} />
-			</div>
-
-			<div className={styles.paywallCta}>
 				<div className={styles.priceHero}>
 					<span className={styles.price}>$3</span>
 					<span className={styles.priceNote}>
 						One-time purchase · No subscription
 					</span>
 				</div>
-
-				<ul className={styles.featureList}>
-					<li className={styles.featureItem}>
-						<FontAwesomeIcon
-							icon="calendar"
-							className={styles.featureIcon}
-						/>
-						<div>
-							<div className={styles.featureHeadline}>
-								Every puzzle, forever
-							</div>
-							<div className={styles.featureDetail}>
-								Play any past puzzle, any time.
-							</div>
-						</div>
-					</li>
-					<li className={styles.featureItem}>
-						<FontAwesomeIcon
-							icon="trophy"
-							className={styles.featureIcon}
-						/>
-						<div>
-							<div className={styles.featureHeadline}>
-								Full trophy case
-							</div>
-							<div className={styles.featureDetail}>
-								Track solves across all difficulties.
-							</div>
-						</div>
-					</li>
-				</ul>
-
-				<button
-					className={styles.unlockButton}
-					onClick={startCheckout}
-					disabled={isRedirecting}
-				>
-					{isRedirecting ? "Redirecting…" : "Unlock for $3"}
-				</button>
-
-				{error && <p className={styles.error}>{error}</p>}
-
-				<p className={styles.securityNote}>
-					<FontAwesomeIcon icon="shield-alt" />
-					Secure payment via Stripe
-				</p>
 			</div>
+
+			<ul className={styles.featureList}>
+				<li className={styles.featureItem}>
+					<FontAwesomeIcon
+						icon="check"
+						className={styles.featureIcon}
+					/>
+					<div>
+						<div className={styles.featureHeadline}>
+							Every puzzle, forever
+						</div>
+						<div className={styles.featureDetail}>
+							Play any past puzzle, any time.
+						</div>
+					</div>
+				</li>
+				<li className={styles.featureItem}>
+					<FontAwesomeIcon
+						icon="check"
+						className={styles.featureIcon}
+					/>
+					<div>
+						<div className={styles.featureHeadline}>
+							Full trophy case
+						</div>
+						<div className={styles.featureDetail}>
+							Track solves across all difficulties.
+						</div>
+					</div>
+				</li>
+			</ul>
+
+			<button
+				className={styles.unlockButton}
+				onClick={startCheckout}
+				disabled={isRedirecting}
+			>
+				{isRedirecting ? "Redirecting…" : "Unlock for $3"}
+			</button>
+
+			{error && <p className={styles.error}>{error}</p>}
+
+			<p className={styles.securityNote}>
+				<FontAwesomeIcon icon="shield-alt" />
+				Secure payment via Stripe
+			</p>
 		</div>
 	);
 }
@@ -173,55 +172,55 @@ function ArchiveDialog({
 				<PaywallView puzzleList={puzzleList} />
 			) : (
 				<div className={styles.archiveContent}>
-				{/* Filter buttons */}
-				<div className={styles.filterBar}>
-					<button
-						className={`${styles.filterButton} ${filter === "all" ? styles.active : ""}`}
-						onClick={() => setFilter("all")}
-					>
-						<span>All</span>
-						<span className={styles.filterCount}>
-							({totalPuzzles})
-						</span>
-					</button>
-					<button
-						className={`${styles.filterButton} ${filter === "unsolved" ? styles.active : ""}`}
-						onClick={() => setFilter("unsolved")}
-					>
-						<span>Unsolved</span>
-						<span className={styles.filterCount}>
-							({numUnsolved})
-						</span>
-					</button>
-					<button
-						className={`${styles.filterButton} ${filter === "solved" ? styles.active : ""}`}
-						onClick={() => setFilter("solved")}
-					>
-						<span>Solved</span>
-						<span className={styles.filterCount}>
-							({numSolved})
-						</span>
-					</button>
-				</div>
-
-				{/* Puzzle list */}
-				<div className={styles.puzzleList}>
-					{filteredPuzzles.map((puzzle) => (
-						<PuzzleListItem
-							key={puzzle.puzzleNum}
-							puzzleNum={puzzle.puzzleNum}
-							isSolved={puzzle.isSolved}
-							onClick={handlePuzzleClick}
-						/>
-					))}
-				</div>
-
-				{filteredPuzzles.length === 0 && (
-					<div className={styles.emptyState}>
-						<p>No puzzles found</p>
+					{/* Filter buttons */}
+					<div className={styles.filterBar}>
+						<button
+							className={`${styles.filterButton} ${filter === "all" ? styles.active : ""}`}
+							onClick={() => setFilter("all")}
+						>
+							<span>All</span>
+							<span className={styles.filterCount}>
+								({totalPuzzles})
+							</span>
+						</button>
+						<button
+							className={`${styles.filterButton} ${filter === "unsolved" ? styles.active : ""}`}
+							onClick={() => setFilter("unsolved")}
+						>
+							<span>Unsolved</span>
+							<span className={styles.filterCount}>
+								({numUnsolved})
+							</span>
+						</button>
+						<button
+							className={`${styles.filterButton} ${filter === "solved" ? styles.active : ""}`}
+							onClick={() => setFilter("solved")}
+						>
+							<span>Solved</span>
+							<span className={styles.filterCount}>
+								({numSolved})
+							</span>
+						</button>
 					</div>
-				)}
-			</div>
+
+					{/* Puzzle list */}
+					<div className={styles.puzzleList}>
+						{filteredPuzzles.map((puzzle) => (
+							<PuzzleListItem
+								key={puzzle.puzzleNum}
+								puzzleNum={puzzle.puzzleNum}
+								isSolved={puzzle.isSolved}
+								onClick={handlePuzzleClick}
+							/>
+						))}
+					</div>
+
+					{filteredPuzzles.length === 0 && (
+						<div className={styles.emptyState}>
+							<p>No puzzles found</p>
+						</div>
+					)}
+				</div>
 			)}
 		</Dialog>
 	);
