@@ -26,7 +26,7 @@ import { DEFAULT_DIFFICULTY } from "../constants";
 
 // Defaults live here so callers never need to import or pass them.
 const PREFERENCE_DEFAULTS = {
-	darkMode: false,
+	darkMode: window.matchMedia?.("(prefers-color-scheme: dark)").matches ?? false,
 	soundEnabled: false,
 	showNumbers: true,
 	difficulty: DEFAULT_DIFFICULTY,

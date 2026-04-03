@@ -29,11 +29,12 @@ export function formatPuzzleId(
 }
 
 interface PuzzleMetadata {
+	id?: number;
+	date?: string;
+	emoji?: string;
+	emojiName?: string;
 	normal?: number[] | null;
 	hard?: number[] | null;
-	initialGrid?: number[] | null;
-	grid3x3?: number[] | null;
-	grid4x4?: number[] | null;
 	[key: string]: unknown;
 }
 
