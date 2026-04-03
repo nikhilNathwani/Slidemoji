@@ -2,26 +2,12 @@ import { useState, useRef, useEffect } from "react";
 import styles from "./Header.module.css";
 import GoogleSignInButton from "./common/GoogleSignInButton";
 import { useAuth } from "../hooks/useAuth";
-import { useSubscription } from "../hooks/useSubscription";
 import { FontAwesomeIcon } from "../utils/icons";
-
-const ARCHIVE_SEEN_KEY = "slidemoji_archive_seen";
 
 function Header({ onSettingsClick, onStatsClick, onArchiveClick }) {
 	const { user, signOut } = useAuth();
-	const { isPremium } = useSubscription();
 	const [showAccountMenu, setShowAccountMenu] = useState(false);
-	const [showArchiveBadge, setShowArchiveBadge] = useState(
-		() => isPremium && !localStorage.getItem(ARCHIVE_SEEN_KEY),
-	);
 	const menuRef = useRef(null);
-
-	// Show "New" badge when the user first becomes premium
-	useEffect(() => {
-		if (isPremium && !localStorage.getItem(ARCHIVE_SEEN_KEY)) {
-			setShowArchiveBadge(true);
-		}
-	}, [isPremium]);
 
 	// Close menu when clicking outside
 	useEffect(() => {
@@ -47,30 +33,14 @@ function Header({ onSettingsClick, onStatsClick, onArchiveClick }) {
 		<header className={styles.appHeader}>
 			<h1 className={styles.appTitle}>Slidemoji</h1>
 			<div className={styles.headerActions}>
-				{isPremium && (
-					<div className={styles.archiveButtonWrapper}>
-						<button
-							className={styles.iconButton}
-							onClick={() => {
-								localStorage.setItem(ARCHIVE_SEEN_KEY, "1");
-								setShowArchiveBadge(false);
-								onArchiveClick();
-							}}
-							aria-label="Archive"
-							title="Puzzle Archive"
-						>
-							<FontAwesomeIcon icon="clock-rotate-left" />
-						</button>
-						{showArchiveBadge && (
-							<span
-								className={styles.newBadge}
-								aria-hidden="true"
-							>
-								New
-							</span>
-						)}
-					</div>
-				)}
+				<button
+					className={styles.iconButton}
+					onClick={onArchiveClick}
+					aria-label="Puzzle Archive"
+					title="Puzzle Archive"
+				>
+					<FontAwesomeIcon icon="clock-rotate-left" />
+				</button>
 				<button
 					className={styles.iconButton}
 					onClick={onStatsClick}

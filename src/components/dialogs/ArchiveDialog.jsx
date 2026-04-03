@@ -3,18 +3,23 @@ import Dialog from "./Dialog";
 import { usePuzzle } from "../../hooks/usePuzzle";
 import { getLatestPuzzleId, formatPuzzleId } from "../../utils/puzzleUtils";
 import { FontAwesomeIcon } from "../../utils/icons";
+import { useCheckout } from "../../hooks/useCheckout";
 import styles from "./ArchiveDialog.module.css";
 
-function PuzzleListItem({ puzzleNum, isSolved, onClick }) {
+function PuzzleListItem({ puzzleNum, isSolved, onClick, isLocked = false }) {
 	const { data: puzzleMetadata, isLoading } = usePuzzle(puzzleNum);
 
-	const variantClass = isSolved ? styles.solved : styles.unsolved;
+	const variantClass = isLocked
+		? styles.locked
+		: isSolved
+			? styles.solved
+			: styles.unsolved;
 
 	return (
 		<button
 			className={`${styles.puzzleItem} ${variantClass}`}
-			onClick={() => onClick(puzzleNum)}
-			disabled={isLoading}
+			onClick={() => !isLocked && onClick(puzzleNum)}
+			disabled={isLoading || isLocked}
 		>
 			<div className={styles.puzzleNumber}>
 				{formatPuzzleId(puzzleNum)}
@@ -26,8 +31,90 @@ function PuzzleListItem({ puzzleNum, isSolved, onClick }) {
 					puzzleMetadata?.emojiName || "Unknown Puzzle"
 				)}
 			</div>
-			<FontAwesomeIcon icon="play-circle" className={styles.playIcon} />
+			<FontAwesomeIcon
+				icon={isLocked ? "lock" : "play-circle"}
+				className={styles.playIcon}
+			/>
 		</button>
+	);
+}
+
+function PaywallView({ puzzleList }) {
+	const { startCheckout, isRedirecting, error } = useCheckout();
+	const previewItems = puzzleList.slice(0, 6);
+
+	return (
+		<div className={styles.paywallContent}>
+			<div className={styles.paywallListWrapper}>
+				<div className={styles.puzzleList}>
+					{previewItems.map((puzzle) => (
+						<PuzzleListItem
+							key={puzzle.puzzleNum}
+							puzzleNum={puzzle.puzzleNum}
+							isSolved={puzzle.isSolved}
+							onClick={() => {}}
+							isLocked={true}
+						/>
+					))}
+				</div>
+				<div className={styles.paywallOverlay} />
+			</div>
+
+			<div className={styles.paywallCta}>
+				<div className={styles.priceHero}>
+					<span className={styles.price}>$3</span>
+					<span className={styles.priceNote}>
+						One-time purchase · No subscription
+					</span>
+				</div>
+
+				<ul className={styles.featureList}>
+					<li className={styles.featureItem}>
+						<FontAwesomeIcon
+							icon="calendar"
+							className={styles.featureIcon}
+						/>
+						<div>
+							<div className={styles.featureHeadline}>
+								Every puzzle, forever
+							</div>
+							<div className={styles.featureDetail}>
+								Play any past puzzle, any time.
+							</div>
+						</div>
+					</li>
+					<li className={styles.featureItem}>
+						<FontAwesomeIcon
+							icon="trophy"
+							className={styles.featureIcon}
+						/>
+						<div>
+							<div className={styles.featureHeadline}>
+								Full trophy case
+							</div>
+							<div className={styles.featureDetail}>
+								Track solves across all difficulties.
+							</div>
+						</div>
+					</li>
+				</ul>
+
+				<button
+					className={styles.unlockButton}
+					onClick={startCheckout}
+					disabled={isRedirecting}
+				>
+					{isRedirecting ? "Redirecting…" : "Unlock for $3"}
+				</button>
+
+				{error && <p className={styles.error}>{error}</p>}
+
+				<p className={styles.securityNote}>
+					<FontAwesomeIcon icon="shield-alt" />
+					Secure payment via Stripe
+				</p>
+			</div>
+		</div>
 	);
 }
 
@@ -37,6 +124,7 @@ function ArchiveDialog({
 	solvedPuzzles,
 	currentPuzzleId,
 	onPuzzleSelect,
+	isPremium,
 }) {
 	const [filter, setFilter] = useState("all");
 	const totalPuzzles = getLatestPuzzleId();
@@ -81,7 +169,10 @@ function ArchiveDialog({
 				</>
 			}
 		>
-			<div className={styles.archiveContent}>
+			{!isPremium ? (
+				<PaywallView puzzleList={puzzleList} />
+			) : (
+				<div className={styles.archiveContent}>
 				{/* Filter buttons */}
 				<div className={styles.filterBar}>
 					<button
@@ -131,6 +222,7 @@ function ArchiveDialog({
 					</div>
 				)}
 			</div>
+			)}
 		</Dialog>
 	);
 }

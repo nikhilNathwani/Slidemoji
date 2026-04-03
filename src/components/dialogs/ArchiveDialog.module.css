@@ -136,6 +136,16 @@
 	color: var(--text-secondary);
 }
 
+/* Locked puzzle (paywall preview) */
+.puzzleItem.locked {
+	opacity: 0.5;
+	cursor: default;
+}
+
+.puzzleItem.locked .playIcon {
+	opacity: 0.6;
+}
+
 /* Solved puzzle (gold gradient) */
 .puzzleItem.solved {
 	background: linear-gradient(
@@ -207,6 +217,153 @@
 }
 
 /* Empty State */
+/* ── Paywall mode ────────────────────────────────────────────────────────── */
+
+.paywallContent {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	width: 352px;
+	max-width: calc(100vw - 88px);
+}
+
+/* Real puzzle list, clipped and faded at the bottom */
+.paywallListWrapper {
+	position: relative;
+	height: 210px;
+	overflow: hidden;
+	border-radius: 8px;
+	border: 1px solid var(--border-primary);
+}
+
+/* Override puzzleList scrolling inside the clipped wrapper */
+.paywallListWrapper .puzzleList {
+	overflow: hidden;
+	padding: 8px;
+	gap: 6px;
+}
+
+/* Gradient fade — covers the bottom ~40% of the list */
+.paywallOverlay {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	height: 110px;
+	background: linear-gradient(
+		to bottom,
+		transparent,
+		var(--surface-primary) 90%
+	);
+	pointer-events: none;
+}
+
+/* Price hero */
+.paywallCta {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 16px;
+}
+
+.priceHero {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 6px;
+	padding: 16px 24px;
+	border-radius: 10px;
+	background: var(--border-primary);
+	width: 100%;
+}
+
+.price {
+	font-size: var(--text-4xl);
+	font-weight: 800;
+	color: var(--text-primary);
+	line-height: 1;
+}
+
+.priceNote {
+	font-size: var(--text-sm);
+	color: var(--text-secondary);
+	font-weight: 500;
+}
+
+/* Feature list */
+.featureList {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	width: 100%;
+}
+
+.featureItem {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+}
+
+.featureIcon {
+	color: var(--text-secondary);
+	font-size: var(--text-sm);
+	margin-top: 3px;
+	flex-shrink: 0;
+}
+
+.featureHeadline {
+	font-size: var(--text-base);
+	font-weight: 700;
+	color: var(--text-primary);
+}
+
+.featureDetail {
+	font-size: var(--text-sm);
+	color: var(--text-secondary);
+}
+
+/* Unlock CTA button */
+.unlockButton {
+	width: fit-content;
+	align-self: center;
+	padding: 12px 32px;
+	border-radius: 10px;
+	border: 1px solid var(--border-secondary);
+	background-color: var(--surface-primary);
+	color: var(--text-primary);
+	font-size: var(--text-lg);
+	font-weight: 700;
+	cursor: pointer;
+	transition: background-color 0.15s ease;
+}
+
+.unlockButton:hover:not(:disabled) {
+	background-color: var(--surface-tertiary);
+}
+
+.unlockButton:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+.securityNote {
+	font-size: var(--text-xs);
+	color: var(--text-tertiary);
+	margin: 0;
+	display: flex;
+	align-items: center;
+	gap: 5px;
+}
+
+.error {
+	font-size: var(--text-sm);
+	color: var(--color-error, #dc2626);
+	margin: 0;
+	text-align: center;
+}
+
+/* ── Empty state ──────────────────────────────────────────────────────────── */
+
 .emptyState {
 	display: flex;
 	align-items: center;

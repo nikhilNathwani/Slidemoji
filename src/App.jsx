@@ -6,13 +6,13 @@ import Game from "./components/game/Game";
 import SettingsDialog from "./components/dialogs/SettingsDialog";
 import StatsDialog from "./components/dialogs/StatsDialog";
 import ArchiveDialog from "./components/dialogs/ArchiveDialog";
-import PaywallDialog from "./components/dialogs/PaywallDialog";
 import { getLatestPuzzleId } from "./utils/puzzleUtils";
 import { useAuth } from "./hooks/useAuth";
 import { usePuzzle } from "./hooks/usePuzzle";
 import { usePreference } from "./hooks/usePreference";
 import { useGameState } from "./hooks/useGameState";
 import { useSolvedPuzzles } from "./hooks/useSolvedPuzzles";
+import { useSubscription } from "./hooks/useSubscription";
 import { resetPremiumForDev } from "./firebase/firestore/user";
 
 // App-level preference defaults
@@ -50,6 +50,8 @@ function App() {
 	// SOLVED PUZZLES is a list of puzzles with a normal- and/or hard-solve
 	const { solvedPuzzles } = useSolvedPuzzles();
 
+	const { isPremium } = useSubscription();
+
 	// Show Page / Dialog
 	// Lazy initializer: skip landing page when returning from Stripe checkout.
 	const [showLandingPage, setShowLandingPage] = useState(() => {
@@ -63,7 +65,6 @@ function App() {
 	const [showSettingsDialog, setShowSettingsDialog] = useState(false);
 	const [showStatsDialog, setShowStatsDialog] = useState(false);
 	const [showArchiveDialog, setShowArchiveDialog] = useState(false);
-	const [showPaywallDialog, setShowPaywallDialog] = useState(false);
 
 	const isLoading =
 		isLoadingPuzzle || isLoadingGameState || !gameState || !puzzleMetadata;
@@ -151,7 +152,7 @@ function App() {
 				hasSoundEnabled={soundEnabled}
 				onOpenStats={() => setShowStatsDialog(true)}
 				isAppDialogOpen={
-					showSettingsDialog || showStatsDialog || showPaywallDialog
+					showSettingsDialog || showStatsDialog || showArchiveDialog
 				}
 				solvedPuzzles={solvedPuzzles}
 			/>
@@ -173,9 +174,17 @@ function App() {
 					!!solvedPuzzles?.[puzzleId]?.[gameState.currentDifficulty]
 				}
 				onAlmostSolve={setAlmostSolved}
-				onTogglePremium={(grant) =>
-					resetPremiumForDev(user?.uid, grant)
-				}
+				onTogglePremium={(grant) => {
+					if (grant) {
+						fetch("/api/dev-grant-premium", {
+							method: "POST",
+							headers: { "Content-Type": "application/json" },
+							body: JSON.stringify({ uid: user?.uid }),
+						});
+					} else {
+						resetPremiumForDev(user?.uid, false);
+					}
+				}}
 			/>
 
 			<ArchiveDialog
@@ -184,6 +193,7 @@ function App() {
 				solvedPuzzles={solvedPuzzles}
 				currentPuzzleId={puzzleId}
 				onPuzzleSelect={setPuzzleId}
+				isPremium={isPremium}
 			/>
 
 			<StatsDialog
@@ -193,13 +203,8 @@ function App() {
 				currentPuzzleId={puzzleId}
 				onUnlockArchiveClick={() => {
 					setShowStatsDialog(false);
-					setShowPaywallDialog(true);
+					setShowArchiveDialog(true);
 				}}
-			/>
-
-			<PaywallDialog
-				isOpen={showPaywallDialog}
-				onClose={() => setShowPaywallDialog(false)}
 			/>
 		</div>
 	);

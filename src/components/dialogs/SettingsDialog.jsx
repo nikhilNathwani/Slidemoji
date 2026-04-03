@@ -88,52 +88,46 @@ function SettingsDialog({
 					/>
 				</div>
 				<div className={styles.settingsDivider}></div>
-				{isDevMode &&
-					onAlmostSolve && (
-						<>
-							<div className={styles.settingsItem}>
-								<label className={styles.settingsLabel}>
-									Dev Tools
-								</label>
-								<div
-									style={{
-										display: "flex",
-										gap: "8px",
-										flexWrap: "wrap",
-										justifyContent: "flex-end",
+				{isDevMode && onAlmostSolve && (
+					<>
+						<div className={styles.settingsItem}>
+							<label className={styles.settingsLabel}>
+								Dev Tools
+							</label>
+							<div
+								style={{
+									display: "flex",
+									gap: "8px",
+									flexWrap: "wrap",
+									justifyContent: "flex-end",
+								}}
+							>
+								<button
+									onClick={() => {
+										onAlmostSolve();
+										setTimeout(() => onClose(), 300);
 									}}
+									className={styles.devButton}
 								>
-									<button
-										onClick={() => {
-											onAlmostSolve();
-											setTimeout(() => onClose(), 300);
-										}}
-										className={styles.devButton}
-									>
-										Almost Solved
-									</button>
-									<button
-										onClick={() => onTogglePremium?.(true)}
-										className={styles.devButton}
-									>
-										Grant Premium
-									</button>
-									<button
-										onClick={() => {
-											onTogglePremium?.(false);
-											localStorage.removeItem(
-												"slidemoji_archive_seen",
-											);
-										}}
-										className={styles.devButton}
-									>
-										Revoke Premium
-									</button>
-								</div>
+									Almost Solved
+								</button>
+								<button
+									onClick={() => onTogglePremium?.(true)}
+									className={styles.devButton}
+								>
+									Grant Premium
+								</button>
+								<button
+									onClick={() => onTogglePremium?.(false)}
+									className={styles.devButton}
+								>
+									Revoke Premium
+								</button>
 							</div>
-							<div className={styles.settingsDivider}></div>
-						</>
-					)}
+						</div>
+						<div className={styles.settingsDivider}></div>
+					</>
+				)}
 				<div className={styles.settingsActions}>
 					<a
 						href="mailto:support.slidemoji@gmail.com?subject=Slidemoji%20Feedback"
