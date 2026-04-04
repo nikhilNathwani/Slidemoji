@@ -10,6 +10,10 @@ import {
 } from "../../utils/gridHelpers";
 import { createEmojiSvgUrl } from "../../utils/emoji";
 import { playTileMoveSound } from "../../utils/sound";
+import {
+	WIN_TILE_ANIM_START_DELAY_MS,
+	WIN_TILE_ANIM_STAGGER_MS,
+} from "../../utils/constants";
 import styles from "./Grid.module.css";
 
 function Grid({
@@ -27,6 +31,9 @@ function Grid({
 	const [gridSizePx, setGridSizePx] = useState(() =>
 		calcBoardSizePx(gridSize),
 	);
+
+	// Tracks whether the win happened interactively this session (not on page load)
+	const [isJustSolved, setIsJustSolved] = useState(false);
 
 	const emojiSvgUrl = useMemo(
 		() => (emoji ? createEmojiSvgUrl(emoji) : null),
@@ -47,6 +54,7 @@ function Grid({
 			}
 
 			if (checkWin(newGrid)) {
+				setIsJustSolved(true);
 				onWin();
 			}
 		},
@@ -131,6 +139,8 @@ function Grid({
 						emojiSvgUrl={emojiSvgUrl}
 						isClickable={isClickable}
 						hasNumbersShown={hasNumbersShown}
+						celebrating={isJustSolved}
+						celebrationDelay={WIN_TILE_ANIM_START_DELAY_MS + index * WIN_TILE_ANIM_STAGGER_MS}
 						{...(isClickable && {
 							onPointerDown: () => handleTileSelect(index),
 						})}

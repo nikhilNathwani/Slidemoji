@@ -109,7 +109,8 @@
 }
 
 .unlockButton:hover:not(:disabled) {
-	background-color: var(--surface-tertiary);
+	background-color: var(--surface-secondary);
+	border-color: var(--border-primary);
 }
 
 .unlockButton:disabled {

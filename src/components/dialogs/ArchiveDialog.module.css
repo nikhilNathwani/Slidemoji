@@ -41,7 +41,8 @@
 }
 
 .filterButton:hover {
-	background-color: var(--surface-tertiary);
+	background-color: var(--surface-primary);
+	border-color: var(--border-primary);
 }
 
 .filterButton.active {

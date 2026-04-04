@@ -30,9 +30,12 @@ function Tile({
 	isGap = false,
 	onPointerDown,
 	onTransitionEnd,
+	celebrating = false,
+	celebrationDelay = 0,
 }) {
 	const classNames = [styles.tile];
 	if (isClickable) classNames.push(styles.clickable);
+	if (celebrating) classNames.push(styles.celebrating);
 
 	const springTransition = {
 		layout: { type: "spring", stiffness: 400, damping: 35 },
@@ -56,7 +59,10 @@ function Tile({
 			onLayoutAnimationComplete={onTransitionEnd}
 			className={classNames.join(" ")}
 			{...(isClickable && { onPointerDown })}
-			style={getTileStyle(tileNumber, gridSize, emojiSvgUrl)}
+		style={{
+			...getTileStyle(tileNumber, gridSize, emojiSvgUrl),
+			...(celebrating && { animationDelay: `${celebrationDelay}ms` }),
+		}}
 			data-tile-number={tileNumber}
 		>
 			{hasNumbersShown && tileNumber ? tileNumber : ""}

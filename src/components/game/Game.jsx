@@ -8,6 +8,7 @@ import GameActionButton from "./GameActionButton";
 import { useAuth } from "../../hooks/useAuth";
 import { usePreference } from "../../hooks/usePreference";
 import { checkWin } from "../../utils/gridHelpers";
+import { WIN_DIALOG_DELAY_MS } from "../../utils/constants";
 
 function Game({
 	puzzleId, // Puzzle ID number
@@ -36,11 +37,9 @@ function Game({
 		setGameState({ [currentDifficulty]: newGrid });
 	};
 
-	// Handle puzzle solve
+	// Handle puzzle solve — delay dialog so the user can relish the solved state
 	const handleSolve = () => {
-		// Grid already saved the winning move via onMove, so grid is already solved
-		// setGameState with solved grid was already called in handleMove, no need to call again
-		setShowWinDialog(true);
+		setTimeout(() => setShowWinDialog(true), WIN_DIALOG_DELAY_MS);
 	};
 
 	// Handle restart

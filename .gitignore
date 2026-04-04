@@ -30,3 +30,6 @@ firebase-debug*.log
 PROGRESS.md
 tutorial/
 .vercel
+
+# Archived/dev assets
+public/favicon-archive/
