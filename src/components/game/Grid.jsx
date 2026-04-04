@@ -35,6 +35,11 @@ function Grid({
 	// Tracks whether the win happened interactively this session (not on page load)
 	const [isJustSolved, setIsJustSolved] = useState(false);
 
+	// Reset celebration when the puzzle goes back to unsolved (sign-out, restart, difficulty change)
+	useEffect(() => {
+		if (!isSolved) setIsJustSolved(false);
+	}, [isSolved]);
+
 	const emojiSvgUrl = useMemo(
 		() => (emoji ? createEmojiSvgUrl(emoji) : null),
 		[emoji],

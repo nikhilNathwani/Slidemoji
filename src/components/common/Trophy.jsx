@@ -14,6 +14,7 @@ function Trophy({
 	isToday = false, // Today's puzzle (not yet solved)
 	isSolved = false, // Whether the current difficulty is solved
 	difficulty = DIFFICULTY.NORMAL, // Current difficulty being played/viewed
+	justSolvedByMove = false, // True only when the user's own move just solved the puzzle
 }) {
 	// Self-fetch emoji/name when not provided (trophy case displays).
 	// usePuzzle returns null when puzzleId is null, so no fetch for locked slots.
@@ -28,31 +29,37 @@ function Trophy({
 	const emoji = trophyEmoji || puzzleData?.emoji;
 	const name = trophyName || puzzleData?.emojiName;
 
-	// Track previous isSolved to detect the moment of solve (not page-load state)
-	const prevIsSolvedRef = useRef(isSolved);
 	const [isCelebrating, setIsCelebrating] = useState(false);
 	// showTrophyStyle delays the visual trophy switch until the animation peak
 	const [showTrophyStyle, setShowTrophyStyle] = useState(isSolved);
 
+	// Celebration trigger: only fires when an actual move solved the puzzle.
+	// Using justSolvedByMove (false → true) avoids false replays on sign-in
+	// data reloads where isSolved can blip false → true without a real solve.
+	const prevJustSolvedByMoveRef = useRef(false);
 	useEffect(() => {
-		const wasJustSolved = !prevIsSolvedRef.current && isSolved;
-		prevIsSolvedRef.current = isSolved;
+		const isNewSolve =
+			!prevJustSolvedByMoveRef.current && justSolvedByMove;
+		prevJustSolvedByMoveRef.current = justSolvedByMove;
 
+		if (isMini || !isNewSolve) return;
+		setIsCelebrating(true);
+		// Switch to trophy style at the scale-1.12 peak (350ms start + 40% of 500ms = 550ms)
+		const timer = setTimeout(() => setShowTrophyStyle(true), 550);
+		return () => clearTimeout(timer);
+	}, [justSolvedByMove, isMini]);
+
+	// Trophy style: update on isSolved changes when not mid-celebration.
+	// Skips updates while justSolvedByMove is true to prevent auth-reload flickers.
+	useEffect(() => {
 		if (isMini) {
 			setShowTrophyStyle(isSolved);
 			return;
 		}
-
-		if (wasJustSolved) {
-			setIsCelebrating(true);
-			// Switch to trophy style at the scale-1.12 peak (350ms start + 40% of 500ms = 550ms)
-			const timer = setTimeout(() => setShowTrophyStyle(true), 550);
-			return () => clearTimeout(timer);
+		if (!justSolvedByMove) {
+			setShowTrophyStyle(isSolved);
 		}
-
-		// Handle restart (isSolved toggled back to false) or initial render
-		setShowTrophyStyle(isSolved);
-	}, [isSolved, isMini]);
+	}, [isSolved, justSolvedByMove, isMini]);
 
 	// Determine variant-specific class based on difficulty
 	// Normal, hard, or neutral (locked/unsolved)

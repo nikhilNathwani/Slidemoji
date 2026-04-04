@@ -4,10 +4,12 @@ import { getLatestPuzzleId, formatPuzzleId } from "../../utils/puzzleUtils";
 
 function LandingPage({ onPlay }) {
 	return (
-		<div className={styles.landingPage}>
+		<div className={`${styles.landingPage} light-theme`}>
 			<div className={styles.landingContent}>
 				<AnimatedTileGrid />
-				<h1 className={styles.landingTitle}>Slidem<span className={styles.titleEmoji}>😊</span>ji</h1>
+				<h1 className={styles.landingTitle}>
+					Slidem<span className={styles.titleEmoji}>😊</span>ji
+				</h1>
 				<p className={styles.landingSubtitle}>
 					Slide the tiles to unscramble the daily emoji
 				</p>

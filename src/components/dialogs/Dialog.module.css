@@ -49,23 +49,21 @@
 .dialogClose {
 	background: none;
 	border: none;
-	font-size: var(--text-base);
+	font-size: var(--text-lg);
 	color: var(--text-secondary);
 	cursor: pointer;
 	padding: 0;
-	width: 32px;
-	height: 32px;
+	width: 40px;
+	height: 40px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	border-radius: 6px;
-	transition:
-		background-color 0.2s,
-		color 0.2s;
+	transition: color 0.15s;
+	-webkit-tap-highlight-color: transparent;
 }
 
 .dialogClose:hover {
-	background-color: var(--surface-primary);
 	color: var(--text-primary);
 }
 

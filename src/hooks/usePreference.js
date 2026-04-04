@@ -47,6 +47,17 @@ export function usePreference(key, defaultValue, options = {}) {
 	// Setter that saves to Firestore
 	const setPreference = useCallback(
 		async (newValue) => {
+			// Always mirror to localStorage (non-contextKey prefs only) so the
+			// value survives sign-out / new-anonymous-user creation.
+			if (!contextKey) {
+				try {
+					localStorage.setItem(
+						`pref_${key}`,
+						JSON.stringify(newValue),
+					);
+				} catch {}
+			}
+
 			if (!userId) return;
 
 			try {
@@ -61,14 +72,22 @@ export function usePreference(key, defaultValue, options = {}) {
 				throw error;
 			}
 		},
-		[userId, storageKey],
+		[userId, storageKey, key, contextKey],
 	);
 
 	const preferenceValue = userData?.preferences?.[storageKey];
-	const preference =
-		userId && preferenceValue !== undefined
-			? preferenceValue
-			: defaultValue;
+
+	// Priority: Firestore (signed-in) → localStorage fallback → built-in default
+	const preference = (() => {
+		if (userId && preferenceValue !== undefined) return preferenceValue;
+		if (!contextKey) {
+			try {
+				const stored = localStorage.getItem(`pref_${key}`);
+				if (stored !== null) return JSON.parse(stored);
+			} catch {}
+		}
+		return defaultValue;
+	})();
 
 	return [preference, setPreference];
 }
