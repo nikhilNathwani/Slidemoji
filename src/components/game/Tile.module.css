@@ -47,10 +47,18 @@
 
 /* Win celebration animation */
 @keyframes tilePop {
-	0%   { transform: scale(1); }
-	40%  { transform: scale(1.12); }
-	70%  { transform: scale(0.96); }
-	100% { transform: scale(1); }
+	0% {
+		transform: scale(1);
+	}
+	40% {
+		transform: scale(1.12);
+	}
+	70% {
+		transform: scale(0.96);
+	}
+	100% {
+		transform: scale(1);
+	}
 }
 
 .celebrating {

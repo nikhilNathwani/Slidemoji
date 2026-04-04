@@ -140,7 +140,10 @@ function Grid({
 						isClickable={isClickable}
 						hasNumbersShown={hasNumbersShown}
 						celebrating={isJustSolved}
-						celebrationDelay={WIN_TILE_ANIM_START_DELAY_MS + index * WIN_TILE_ANIM_STAGGER_MS}
+						celebrationDelay={
+							WIN_TILE_ANIM_START_DELAY_MS +
+							index * WIN_TILE_ANIM_STAGGER_MS
+						}
 						{...(isClickable && {
 							onPointerDown: () => handleTileSelect(index),
 						})}

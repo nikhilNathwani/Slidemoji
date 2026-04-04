@@ -59,10 +59,10 @@ function Tile({
 			onLayoutAnimationComplete={onTransitionEnd}
 			className={classNames.join(" ")}
 			{...(isClickable && { onPointerDown })}
-		style={{
-			...getTileStyle(tileNumber, gridSize, emojiSvgUrl),
-			...(celebrating && { animationDelay: `${celebrationDelay}ms` }),
-		}}
+			style={{
+				...getTileStyle(tileNumber, gridSize, emojiSvgUrl),
+				...(celebrating && { animationDelay: `${celebrationDelay}ms` }),
+			}}
 			data-tile-number={tileNumber}
 		>
 			{hasNumbersShown && tileNumber ? tileNumber : ""}

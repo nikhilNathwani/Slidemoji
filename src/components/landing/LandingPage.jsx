@@ -7,7 +7,7 @@ function LandingPage({ onPlay }) {
 		<div className={styles.landingPage}>
 			<div className={styles.landingContent}>
 				<AnimatedTileGrid />
-				<h1 className={styles.landingTitle}>Slidemoji</h1>
+				<h1 className={styles.landingTitle}>Slidem<span className={styles.titleEmoji}>😊</span>ji</h1>
 				<p className={styles.landingSubtitle}>
 					Slide the tiles to unscramble the daily emoji
 				</p>
