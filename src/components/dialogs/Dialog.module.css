@@ -49,7 +49,7 @@
 .dialogClose {
 	background: none;
 	border: none;
-	font-size: var(--text-lg);
+	font-size: var(--text-xl);
 	color: var(--text-secondary);
 	cursor: pointer;
 	padding: 0;
