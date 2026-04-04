@@ -7,6 +7,12 @@
 	padding-block: 90px 40px;
 	padding-inline: 20px;
 	position: relative;
+	background: linear-gradient(
+		135deg,
+		var(--bg-gradient-start) 0%,
+		var(--bg-gradient-end) 100%
+	);
+	color: var(--text-primary);
 }
 
 .landingContent {
