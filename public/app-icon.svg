@@ -1,19 +1,29 @@
 <svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-  <!-- Grid background fills entire icon area (no outer margin) -->
-  <rect width="512" height="512" rx="45" ry="45" fill="#e7e7e7"/>
+  <defs>
+    <!-- Subtle glassy top-highlight, matching the OG image grid's inset sheen -->
+    <linearGradient id="gloss" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="white" stop-opacity="0.35"/>
+      <stop offset="50%" stop-color="white" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
 
-  <!-- Row 0 -->
-  <rect x="36" y="36" width="134" height="134" rx="22" fill="#ffffff" stroke="#d1d5db" stroke-width="2"/>
-  <rect x="189" y="36" width="134" height="134" rx="22" fill="#ffffff" stroke="#d1d5db" stroke-width="2"/>
-  <rect x="342" y="36" width="134" height="134" rx="22" fill="#ffffff" stroke="#d1d5db" stroke-width="2"/>
+  <!-- Grid background (darker for better contrast at tiny favicon sizes) -->
+  <rect width="512" height="512" rx="100" ry="100" fill="#d0d0d0"/>
+  <!-- Glassy top highlight -->
+  <rect width="512" height="512" rx="100" ry="100" fill="url(#gloss)"/>
+
+  <!-- Row 0 — padding=56, tile=120, gap=20 -->
+  <rect x="56" y="56" width="120" height="120" rx="20" fill="#ffffff" stroke="#c0c0c0" stroke-width="2"/>
+  <rect x="196" y="56" width="120" height="120" rx="20" fill="#ffffff" stroke="#c0c0c0" stroke-width="2"/>
+  <rect x="336" y="56" width="120" height="120" rx="20" fill="#ffffff" stroke="#c0c0c0" stroke-width="2"/>
 
   <!-- Row 1 -->
-  <rect x="36" y="189" width="134" height="134" rx="22" fill="#ffffff" stroke="#d1d5db" stroke-width="2"/>
-  <rect x="189" y="189" width="134" height="134" rx="22" fill="#ffffff" stroke="#d1d5db" stroke-width="2"/>
-  <rect x="342" y="189" width="134" height="134" rx="22" fill="#ffffff" stroke="#d1d5db" stroke-width="2"/>
+  <rect x="56" y="196" width="120" height="120" rx="20" fill="#ffffff" stroke="#c0c0c0" stroke-width="2"/>
+  <rect x="196" y="196" width="120" height="120" rx="20" fill="#ffffff" stroke="#c0c0c0" stroke-width="2"/>
+  <rect x="336" y="196" width="120" height="120" rx="20" fill="#ffffff" stroke="#c0c0c0" stroke-width="2"/>
 
   <!-- Row 2 — gap at bottom-right [2][2] -->
-  <rect x="36" y="342" width="134" height="134" rx="22" fill="#ffffff" stroke="#d1d5db" stroke-width="2"/>
-  <rect x="189" y="342" width="134" height="134" rx="22" fill="#ffffff" stroke="#d1d5db" stroke-width="2"/>
+  <rect x="56" y="336" width="120" height="120" rx="20" fill="#ffffff" stroke="#c0c0c0" stroke-width="2"/>
+  <rect x="196" y="336" width="120" height="120" rx="20" fill="#ffffff" stroke="#c0c0c0" stroke-width="2"/>
   <!-- [2][2] is the gap — intentionally empty -->
 </svg>

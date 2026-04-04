@@ -23,11 +23,11 @@
 .landingTitle {
 	font-family: "Fredoka", sans-serif;
 	font-size: var(--text-7xl);
-	font-weight: 600;
+	font-weight: 700;
 	color: var(--text-primary);
 	margin: 0;
 	line-height: 1.1;
-	letter-spacing: 1px;
+	letter-spacing: -1px;
 	text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.15);
 }
 
@@ -37,7 +37,9 @@
 }
 
 .landingSubtitle {
+	font-family: "Fredoka", sans-serif;
 	font-size: var(--text-3xl);
+	font-weight: 500;
 	color: var(--text-secondary);
 	margin: 0;
 	max-width: 400px;
