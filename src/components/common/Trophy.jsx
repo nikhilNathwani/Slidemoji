@@ -1,3 +1,4 @@
+import { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "../../utils/icons";
 import { DIFFICULTY } from "../../constants";
 import styles from "./Trophy.module.css";
@@ -27,11 +28,37 @@ function Trophy({
 	const emoji = trophyEmoji || puzzleData?.emoji;
 	const name = trophyName || puzzleData?.emojiName;
 
+	// Track previous isSolved to detect the moment of solve (not page-load state)
+	const prevIsSolvedRef = useRef(isSolved);
+	const [isCelebrating, setIsCelebrating] = useState(false);
+	// showTrophyStyle delays the visual trophy switch until the animation peak
+	const [showTrophyStyle, setShowTrophyStyle] = useState(isSolved);
+
+	useEffect(() => {
+		const wasJustSolved = !prevIsSolvedRef.current && isSolved;
+		prevIsSolvedRef.current = isSolved;
+
+		if (isMini) {
+			setShowTrophyStyle(isSolved);
+			return;
+		}
+
+		if (wasJustSolved) {
+			setIsCelebrating(true);
+			// Switch to trophy style at the scale-1.12 peak (350ms start + 40% of 500ms = 550ms)
+			const timer = setTimeout(() => setShowTrophyStyle(true), 550);
+			return () => clearTimeout(timer);
+		}
+
+		// Handle restart (isSolved toggled back to false) or initial render
+		setShowTrophyStyle(isSolved);
+	}, [isSolved, isMini]);
+
 	// Determine variant-specific class based on difficulty
 	// Normal, hard, or neutral (locked/unsolved)
 	const variantClass = isLocked
 		? styles.locked
-		: !isSolved
+		: !showTrophyStyle
 			? styles.puzzleInfo // Grey for unsolved
 			: difficulty === DIFFICULTY.HARD
 				? styles.hard
@@ -39,7 +66,8 @@ function Trophy({
 
 	return (
 		<div
-			className={`${styles.trophy} ${variantClass} ${isMini && styles.trophyMini}`}
+			className={`${styles.trophy} ${variantClass} ${isMini ? styles.trophyMini : ""} ${isCelebrating ? styles.celebrating : ""}`.trim()}
+			onAnimationEnd={() => setIsCelebrating(false)}
 		>
 			<div className={styles.number}>{formatPuzzleId(trophyNum)}</div>
 			{isLocked ? (

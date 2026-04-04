@@ -81,6 +81,7 @@
 
 /* Variant: Normal Trophy (3x3) */
 .trophy.normal {
+	border: 2px solid transparent;
 	background: linear-gradient(
 		135deg,
 		var(--trophy-normal-base) 0%,
@@ -95,6 +96,7 @@
 
 /* Variant: Hard Trophy (4x4) */
 .trophy.hard {
+	border: 2px solid transparent;
 	background: linear-gradient(
 		135deg,
 		var(--trophy-hard-base) 0%,
@@ -228,6 +230,28 @@
 
 .trophy.puzzleInfo .name {
 	color: var(--text-tertiary);
+}
+
+/* Win celebration animation */
+@keyframes trophyPop {
+	0% {
+		transform: scale(1);
+	}
+	40% {
+		transform: scale(1.12);
+	}
+	70% {
+		transform: scale(0.96);
+	}
+	100% {
+		transform: scale(1);
+	}
+}
+
+.celebrating {
+	animation: trophyPop 500ms ease both;
+	/* Delay matches WIN_TILE_ANIM_START_DELAY_MS in constants.js */
+	animation-delay: 350ms;
 }
 
 /* Mobile Responsive */

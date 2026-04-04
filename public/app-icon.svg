@@ -1,22 +1,22 @@
 <svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
   <!-- App icon background -->
-  <rect width="512" height="512" rx="115" ry="115" fill="#1a1a1a"/>
+  <rect width="512" height="512" rx="115" ry="115" fill="#f0f0f0"/>
 
   <!-- Grid container -->
-  <rect x="72" y="72" width="368" height="368" rx="28" fill="#3b3b3b"/>
+  <rect x="72" y="72" width="368" height="368" rx="28" fill="#e7e7e7"/>
 
   <!-- Row 0 -->
-  <rect x="92" y="92" width="102" height="102" rx="14" fill="rgba(255,255,255,0.14)" stroke="rgba(255,255,255,0.22)" stroke-width="2"/>
-  <rect x="205" y="92" width="102" height="102" rx="14" fill="rgba(255,255,255,0.14)" stroke="rgba(255,255,255,0.22)" stroke-width="2"/>
-  <rect x="318" y="92" width="102" height="102" rx="14" fill="rgba(255,255,255,0.14)" stroke="rgba(255,255,255,0.22)" stroke-width="2"/>
+  <rect x="92" y="92" width="102" height="102" rx="14" fill="#ffffff" stroke="#d1d5db" stroke-width="2"/>
+  <rect x="205" y="92" width="102" height="102" rx="14" fill="#ffffff" stroke="#d1d5db" stroke-width="2"/>
+  <rect x="318" y="92" width="102" height="102" rx="14" fill="#ffffff" stroke="#d1d5db" stroke-width="2"/>
 
   <!-- Row 1 -->
-  <rect x="92" y="205" width="102" height="102" rx="14" fill="rgba(255,255,255,0.14)" stroke="rgba(255,255,255,0.22)" stroke-width="2"/>
-  <rect x="205" y="205" width="102" height="102" rx="14" fill="rgba(255,255,255,0.14)" stroke="rgba(255,255,255,0.22)" stroke-width="2"/>
-  <rect x="318" y="205" width="102" height="102" rx="14" fill="rgba(255,255,255,0.14)" stroke="rgba(255,255,255,0.22)" stroke-width="2"/>
+  <rect x="92" y="205" width="102" height="102" rx="14" fill="#ffffff" stroke="#d1d5db" stroke-width="2"/>
+  <rect x="205" y="205" width="102" height="102" rx="14" fill="#ffffff" stroke="#d1d5db" stroke-width="2"/>
+  <rect x="318" y="205" width="102" height="102" rx="14" fill="#ffffff" stroke="#d1d5db" stroke-width="2"/>
 
   <!-- Row 2 — gap at bottom-right [2][2] -->
-  <rect x="92" y="318" width="102" height="102" rx="14" fill="rgba(255,255,255,0.14)" stroke="rgba(255,255,255,0.22)" stroke-width="2"/>
-  <rect x="205" y="318" width="102" height="102" rx="14" fill="rgba(255,255,255,0.14)" stroke="rgba(255,255,255,0.22)" stroke-width="2"/>
+  <rect x="92" y="318" width="102" height="102" rx="14" fill="#ffffff" stroke="#d1d5db" stroke-width="2"/>
+  <rect x="205" y="318" width="102" height="102" rx="14" fill="#ffffff" stroke="#d1d5db" stroke-width="2"/>
   <!-- [2][2] is the gap — intentionally empty -->
 </svg>

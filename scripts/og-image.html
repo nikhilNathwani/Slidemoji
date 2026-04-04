@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <!--
   OG Image Design Reference — Slidemoji
   ======================================
@@ -13,113 +13,113 @@
     6. Save as: public/og-image.png
 -->
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
+	<head>
+		<meta charset="UTF-8" />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap"
+			rel="stylesheet"
+		/>
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
 
-      body {
-        width: 1200px;
-        height: 630px;
-        overflow: hidden;
-        background: linear-gradient(135deg, #121212 0%, #1e1e1e 100%);
-        display: flex;
-        align-items: center;
-        font-family: "Fredoka", sans-serif;
-      }
+			body {
+				width: 1200px;
+				height: 630px;
+				overflow: hidden;
+				background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+				display: flex;
+				align-items: center;
+				font-family: "Fredoka", sans-serif;
+			}
 
-      /* ── Left column: tile grid ── */
-      .left {
-        width: 480px;
-        height: 630px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-      }
+			/* ── Left column: tile grid ── */
+			.left {
+				width: 340px;
+				height: 630px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				flex-shrink: 0;
+			}
 
-      .grid-container {
-        display: grid;
-        grid-template-columns: repeat(3, 96px);
-        grid-template-rows: repeat(3, 96px);
-        gap: 12px;
-        padding: 24px;
-        background: #3b3b3b;
-        border-radius: 28px;
-        border: 1.5px solid rgba(255, 255, 255, 0.08);
-        box-shadow:
-          0 12px 40px rgba(0, 0, 0, 0.6),
-          inset 0 1px 0 rgba(255, 255, 255, 0.06);
-      }
+			.grid-container {
+				display: grid;
+				grid-template-columns: repeat(3, 60px);
+				grid-template-rows: repeat(3, 60px);
+				gap: 8px;
+				padding: 16px;
+				background: #e7e7e7;
+				border-radius: 20px;
+				border: 1.5px solid rgba(0, 0, 0, 0.06);
+				box-shadow:
+					0 8px 24px rgba(0, 0, 0, 0.1),
+					inset 0 1px 0 rgba(255, 255, 255, 0.8);
+			}
 
-      .tile {
-        background: rgba(255, 255, 255, 0.13);
-        border: 1.5px solid rgba(255, 255, 255, 0.22);
-        border-radius: 14px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-      }
+			.tile {
+				background: #ffffff;
+				border: 1.5px solid #d1d5db;
+				border-radius: 10px;
+				box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+			}
 
-      .gap {
-        /* intentionally empty — the missing piece */
-      }
+			.gap {
+				/* intentionally empty — the missing piece */
+			}
 
-      /* ── Right column: text ── */
-      .right {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: center;
-        padding-left: 48px;
-        padding-right: 80px;
-      }
+			/* ── Right column: text ── */
+			.right {
+				flex: 1;
+				display: flex;
+				flex-direction: column;
+				align-items: flex-start;
+				justify-content: center;
+				padding-left: 40px;
+				padding-right: 80px;
+			}
 
-      .title {
-        font-size: 100px;
-        font-weight: 700;
-        color: #ffffff;
-        line-height: 1;
-        letter-spacing: -1px;
-      }
+			.title {
+				font-size: 110px;
+				font-weight: 700;
+				color: #1a1a1a;
+				line-height: 1;
+				letter-spacing: -2px;
+			}
 
-      .subtitle {
-        font-size: 30px;
-        font-weight: 500;
-        color: rgba(255, 255, 255, 0.45);
-        margin-top: 18px;
-        letter-spacing: 0.5px;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="left">
-      <div class="grid-container">
-        <!-- Row 0 -->
-        <div class="tile"></div>
-        <div class="tile"></div>
-        <div class="tile"></div>
-        <!-- Row 1 -->
-        <div class="tile"></div>
-        <div class="tile"></div>
-        <div class="tile"></div>
-        <!-- Row 2 — gap at bottom-right -->
-        <div class="tile"></div>
-        <div class="tile"></div>
-        <div class="gap"></div>
-      </div>
-    </div>
+			.subtitle {
+				font-size: 32px;
+				font-weight: 500;
+				color: #6b7280;
+				margin-top: 16px;
+				letter-spacing: 0.3px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="left">
+			<div class="grid-container">
+				<!-- Row 0 -->
+				<div class="tile"></div>
+				<div class="tile"></div>
+				<div class="tile"></div>
+				<!-- Row 1 -->
+				<div class="tile"></div>
+				<div class="tile"></div>
+				<div class="tile"></div>
+				<!-- Row 2 — gap at bottom-right -->
+				<div class="tile"></div>
+				<div class="tile"></div>
+				<div class="gap"></div>
+			</div>
+		</div>
 
-    <div class="right">
-      <div class="title">Slidemoji</div>
-      <div class="subtitle">A daily puzzle game.</div>
-    </div>
-  </body>
+		<div class="right">
+			<div class="title">Slidemoji</div>
+			<div class="subtitle">A daily puzzle game.</div>
+		</div>
+	</body>
 </html>
