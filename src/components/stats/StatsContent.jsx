@@ -11,9 +11,11 @@ function StatsContent({
 	showTitle = false,
 	solvedPuzzles,
 	onUnlockArchiveClick,
+	devIsPremium,
 }) {
 	const { user } = useAuth();
-	const { isPremium } = useSubscription();
+	const { isPremium: firestoreIsPremium } = useSubscription();
+	const isPremium = devIsPremium ?? firestoreIsPremium;
 
 	const numTotalPuzzles = getLatestPuzzleId();
 	const numEarnedTrophies = Object.keys(solvedPuzzles || {}).length;

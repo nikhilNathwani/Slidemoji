@@ -11,11 +11,9 @@ import { useAuth } from "./hooks/useAuth";
 import { usePuzzle } from "./hooks/usePuzzle";
 import { useGameState } from "./hooks/useGameState";
 import { useSolvedPuzzles } from "./hooks/useSolvedPuzzles";
-import { resetPremiumForDev } from "./firebase/firestore/user";
-import { auth } from "./firebase/firebaseConfig";
 
 function App() {
-	const { loading: isAuthLoading, isMerging, user } = useAuth();
+	const { loading: isAuthLoading, isMerging } = useAuth();
 
 	// PUZZLE contains: id, emoji, emoji name, initialGrids (normal and hard)
 	const [puzzleId, setPuzzleId] = useState(() => getLatestPuzzleId());
@@ -29,6 +27,9 @@ function App() {
 
 	// SOLVED PUZZLES is a list of puzzles with a normal- and/or hard-solve
 	const { solvedPuzzles } = useSolvedPuzzles();
+
+	// Dev-only: in-memory premium override (avoids Firestore write / race conditions)
+	const [devIsPremium, setDevIsPremium] = useState(null); // null = no override
 
 	// Show Page / Dialog
 	// Lazy initializer: skip landing page when returning from Stripe checkout.
@@ -144,20 +145,7 @@ function App() {
 					!!solvedPuzzles?.[puzzleId]?.[gameState.currentDifficulty]
 				}
 				onAlmostSolve={setAlmostSolved}
-				onTogglePremium={(grant) => {
-					// user?.uid may be transiently null during sign-out; fall back to Firebase directly
-					const uid = user?.uid ?? auth.currentUser?.uid;
-					if (!uid) return;
-					if (grant) {
-						fetch("/api/dev-grant-premium", {
-							method: "POST",
-							headers: { "Content-Type": "application/json" },
-							body: JSON.stringify({ uid }),
-						});
-					} else {
-						resetPremiumForDev(uid, false);
-					}
-				}}
+				onTogglePremium={(grant) => setDevIsPremium(grant ? true : null)}
 			/>
 
 			<ArchiveDialog
@@ -165,6 +153,7 @@ function App() {
 				onClose={() => setShowArchiveDialog(false)}
 				solvedPuzzles={solvedPuzzles}
 				onPuzzleSelect={setPuzzleId}
+				devIsPremium={devIsPremium}
 			/>
 
 			<StatsDialog
@@ -175,6 +164,7 @@ function App() {
 					setShowStatsDialog(false);
 					setShowArchiveDialog(true);
 				}}
+				devIsPremium={devIsPremium}
 			/>
 		</div>
 	);
