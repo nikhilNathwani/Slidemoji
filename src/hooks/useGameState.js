@@ -21,7 +21,7 @@ import { useMemo, useCallback, useEffect } from "react";
 import {
 	saveFirestoreGameState,
 	deleteAnonymousPastGameState,
-} from "../firebase/firestore/gameState";
+} from "../services/firestore/gameState";
 import { DIFFICULTY, DEFAULT_DIFFICULTY } from "../constants";
 import { useAuth } from "./useAuth";
 import { useUserDoc } from "./useUserDoc";

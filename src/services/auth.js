@@ -15,7 +15,7 @@
 
 import {
 	GoogleAuthProvider,
-	signInAnonymously,
+	signInAnonymously as firebaseSignInAnonymously,
 	signInWithPopup,
 	signInWithCredential,
 	linkWithPopup,
@@ -82,18 +82,9 @@ async function withPopupCloseDetection(firebasePopupFn) {
  * Creates a temporary Firebase user ID so anonymous users can save to Firestore
  * @returns {Promise<User>} Anonymous Firebase user
  */
-export async function signInAnonymouslyIfNeeded() {
-	if (auth.currentUser) {
-		return auth.currentUser;
-	}
-
-	try {
-		const result = await signInAnonymously(auth);
-		return result.user;
-	} catch (error) {
-		console.error("[Auth] Error signing in anonymously:", error);
-		throw error;
-	}
+export async function signInAnonymously() {
+	const result = await firebaseSignInAnonymously(auth);
+	return result.user;
 }
 
 /**
@@ -177,12 +168,7 @@ async function linkAnonymousWithGoogle(anonymousUser) {
  * @throws {Error} If sign-out fails
  */
 export async function signOut() {
-	try {
-		await firebaseSignOut(auth);
-	} catch (error) {
-		console.error("Error signing out:", error);
-		throw error;
-	}
+	await firebaseSignOut(auth);
 }
 
 /**

@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useMemo, useState } from "react";
-import { subscribeToFirestoreUserData } from "../firebase/firestore/user";
+import { subscribeToFirestoreUserData } from "../services/firestore/user";
 import { useAuth } from "../hooks/useAuth";
 import { UserDocContext, type UserData } from "./UserDocContext";
 
@@ -24,7 +24,7 @@ export default function UserDocProvider({ children }: { children: ReactNode }) {
 		}
 
 		const unsubscribe = subscribeToFirestoreUserData(userId, {
-			onData: (userData) => {
+			onData: (userData: unknown) => {
 				setState({
 					userId,
 					userData: userData as UserData | null,
@@ -49,7 +49,6 @@ export default function UserDocProvider({ children }: { children: ReactNode }) {
 
 	const value = useMemo(
 		() => ({
-			userId,
 			userData: state.userId === userId ? state.userData : null,
 			loading: !!userId && state.userId !== userId,
 			error: state.userId === userId ? state.error : null,

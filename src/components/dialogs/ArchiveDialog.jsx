@@ -7,7 +7,13 @@ import { getLatestPuzzleId } from "../../utils/puzzleUtils";
 import { FontAwesomeIcon } from "../../utils/icons";
 import styles from "./ArchiveDialog.module.css";
 
-function ArchiveDialog({ isOpen, onClose, solvedPuzzles, onPuzzleSelect, devIsPremium }) {
+function ArchiveDialog({
+	isOpen,
+	onClose,
+	solvedPuzzles,
+	onPuzzleSelect,
+	devIsPremium,
+}) {
 	const { isPremium: firestoreIsPremium } = useSubscription();
 	const isPremium = devIsPremium ?? firestoreIsPremium;
 	const [filter, setFilter] = useState("all");

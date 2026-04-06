@@ -97,4 +97,8 @@
 		margin: 0 20px;
 		max-width: calc(100% - 40px);
 	}
+
+	.dialogClose {
+		font-size: var(--text-xl);
+	}
 }

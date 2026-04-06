@@ -13,13 +13,12 @@ export interface UserData {
 		darkMode: boolean;
 		soundEnabled: boolean;
 	};
-	createdAt: unknown; // Firestore Timestamp — kept as unknown to avoid firebase dep
-	updatedAt: unknown;
+	createdAt?: unknown; // Firestore server timestamp — written by app, never read
+	updatedAt?: unknown;
 }
 
 /** Shape of the value provided by UserDocProvider and consumed by useUserDoc(). */
 export interface UseUserDocResult {
-	userId: string | null;
 	userData: UserData | null;
 	loading: boolean;
 	error: Error | null;

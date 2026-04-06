@@ -13,13 +13,13 @@ isMerging = status === 'merging'
 
 ## States
 
-| status          | What's happening                                             |
-|-----------------|--------------------------------------------------------------|
-| `initializing`  | App just mounted; waiting for Firebase to report a user      |
-| `ready`         | Normal idle state — user is available and fully loaded       |
-| `signing-in`    | Google sign-in popup is open; waiting for the user to pick an account |
-| `merging`       | Google account selected; anonymous game data being merged in |
-| `signing-out`   | Sign-out call in flight; user cleared eagerly                |
+| status         | What's happening                                                      |
+| -------------- | --------------------------------------------------------------------- |
+| `initializing` | App just mounted; waiting for Firebase to report a user               |
+| `ready`        | Normal idle state — user is available and fully loaded                |
+| `signing-in`   | Google sign-in popup is open; waiting for the user to pick an account |
+| `merging`      | Google account selected; anonymous game data being merged in          |
+| `signing-out`  | Sign-out call in flight; user cleared eagerly                         |
 
 ---
 
@@ -65,6 +65,7 @@ isMerging = status === 'merging'
 ## All Possible "Stories"
 
 ### Story 1 — App loads for the first time
+
 ```
 initializing
   → [Firebase reports no user]
@@ -75,6 +76,7 @@ initializing
 ```
 
 ### Story 2 — App loads, user was already signed in (returning visitor)
+
 ```
 initializing
   → [Firebase reports existing user (anonymous or Google)]
@@ -83,6 +85,7 @@ initializing
 ```
 
 ### Story 3 — Anonymous user signs in, no prior game data
+
 ```
 ready  (anonymous user)
   → signIn() called
@@ -93,6 +96,7 @@ ready  (anonymous user)
 ```
 
 ### Story 4 — Anonymous user signs in WITH game data (merge)
+
 ```
 ready  (anonymous user, has played some moves)
   → signIn() called
@@ -106,11 +110,13 @@ ready  (anonymous user, has played some moves)
 ```
 
 ### Story 5 — Returning Google user signs in (account already existed)
+
 Same as Story 3 or 4, but `firebaseSignIn()` internally hits
 `auth/credential-already-in-use`, uses the embedded credential to sign in, and
 AuthProvider detects the UID change and runs the merge.
 
 ### Story 6 — User closes the popup without signing in
+
 ```
 ready
   → signIn() called
@@ -121,6 +127,7 @@ ready
 ```
 
 ### Story 7 — Sign-in fails (network error, popup blocked, etc.)
+
 ```
 ready
   → signIn() called
@@ -131,6 +138,7 @@ ready
 ```
 
 ### Story 8 — User signs out
+
 ```
 ready  (Google user)
   → signOut() called
@@ -144,6 +152,7 @@ ready  (Google user)
 ```
 
 ### Story 9 — Sign-out fails
+
 ```
 ready
   → signOut() called
@@ -157,18 +166,18 @@ ready
 
 ## Actions Reference
 
-| Action                | Dispatched by        | Effect                                                     |
-|-----------------------|---------------------|------------------------------------------------------------|
-| `AUTH_READY`          | `onAuthChange`       | Sets `user`, transitions to `ready`                        |
-| `AUTH_USER_CHANGED`   | `onAuthChange`       | Updates `user` only; status unchanged (op is in flight)    |
-| `SIGN_IN_START`       | `signIn()`           | → `signing-in`, clears merge snapshot                      |
-| `MERGE_START`         | `signIn()`           | → `merging`, stores anonymous gameState snapshot           |
-| `SIGN_IN_SUCCESS`     | `signIn()`           | → `ready`, sets Google user                                |
-| `SIGN_IN_ABORTED`     | `signIn()` catch     | → `ready`, restores prior user, clears merge snapshot      |
-| `SIGN_OUT_START`      | `signOut()`          | → `signing-out`, clears user eagerly                       |
-| `SIGN_OUT_COMPLETE`   | `signOut()` finally  | → `ready`                                                  |
-| `SIGN_OUT_FAILED`     | `signOut()` catch    | → `ready`, rolls back `preferInitialAnonymousState`        |
-| `CLEAR_MERGE_SNAPSHOT`| `clearMergeSnapshot()` | Clears `mergeSnapshotGameState` (called by `useGameState` once Firestore confirms merged data) |
+| Action                 | Dispatched by          | Effect                                                                                         |
+| ---------------------- | ---------------------- | ---------------------------------------------------------------------------------------------- |
+| `AUTH_READY`           | `onAuthChange`         | Sets `user`, transitions to `ready`                                                            |
+| `AUTH_USER_CHANGED`    | `onAuthChange`         | Updates `user` only; status unchanged (op is in flight)                                        |
+| `SIGN_IN_START`        | `signIn()`             | → `signing-in`, clears merge snapshot                                                          |
+| `MERGE_START`          | `signIn()`             | → `merging`, stores anonymous gameState snapshot                                               |
+| `SIGN_IN_SUCCESS`      | `signIn()`             | → `ready`, sets Google user                                                                    |
+| `SIGN_IN_ABORTED`      | `signIn()` catch       | → `ready`, restores prior user, clears merge snapshot                                          |
+| `SIGN_OUT_START`       | `signOut()`            | → `signing-out`, clears user eagerly                                                           |
+| `SIGN_OUT_COMPLETE`    | `signOut()` finally    | → `ready`                                                                                      |
+| `SIGN_OUT_FAILED`      | `signOut()` catch      | → `ready`, rolls back `preferInitialAnonymousState`                                            |
+| `CLEAR_MERGE_SNAPSHOT` | `clearMergeSnapshot()` | Clears `mergeSnapshotGameState` (called by `useGameState` once Firestore confirms merged data) |
 
 ---
 

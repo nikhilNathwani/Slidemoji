@@ -35,14 +35,14 @@ import { ReactNode, useEffect, useReducer, useRef } from "react";
 import type { User } from "firebase/auth";
 import {
 	onAuthChange,
-	signInAnonymouslyIfNeeded,
+	signInAnonymously,
 	signInWithGoogle as firebaseSignIn,
 	signOut as firebaseSignOut,
-} from "../firebase/auth";
+} from "../services/auth";
 import {
 	getFirestoreUserData,
 	syncFirestoreUserData,
-} from "../firebase/firestore/user";
+} from "../services/firestore/user";
 import { mergeAnonymousDataToGoogle } from "../utils/accountMerge";
 import { AuthContext, type UserObject } from "./AuthContext";
 
@@ -180,7 +180,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 	const [state, dispatch] = useReducer(authReducer, initialState);
 	// Ref (not state) because it must be readable synchronously in onAuthChange
 	// without triggering re-renders or stale-closure issues.
-	const authOpInFlightRef = useRef(false);
+	const authInProgressRef = useRef(false);
 
 	useEffect(() => {
 		const unsubscribe = onAuthChange(async (firebaseUser: User | null) => {
@@ -189,7 +189,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 				// If an auth op is in flight, only update the user object.
 				// Status transitions are owned by signIn() / signOut().
 				dispatch(
-					authOpInFlightRef.current
+					authInProgressRef.current
 						? { type: "AUTH_USER_CHANGED", user }
 						: { type: "AUTH_READY", user },
 				);
@@ -198,13 +198,13 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 				// No user — auto sign in anonymously.
 				// onAuthChange will fire again with the new anonymous user.
 				try {
-					await signInAnonymouslyIfNeeded();
+					await signInAnonymously();
 				} catch (error) {
 					console.error(
 						"[Auth] Failed to sign in anonymously:",
 						error,
 					);
-					if (!authOpInFlightRef.current) {
+					if (!authInProgressRef.current) {
 						dispatch({ type: "AUTH_READY", user: null });
 					}
 				}
@@ -218,7 +218,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 		// Capture the current user before any state changes so we can restore on failure.
 		const priorUser = state.user;
 
-		authOpInFlightRef.current = true;
+		authInProgressRef.current = true;
 		dispatch({ type: "SIGN_IN_START" });
 
 		try {
@@ -283,23 +283,23 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 			// GoogleSignInButton's finally re-enable the button without an error message.
 			return null;
 		} finally {
-			authOpInFlightRef.current = false;
+			authInProgressRef.current = false;
 		}
 	};
 
 	const signOut = async (): Promise<void> => {
-		authOpInFlightRef.current = true;
+		authInProgressRef.current = true;
 		// Clear user eagerly so user-scoped listeners unsubscribe before auth tokens rotate.
 		dispatch({ type: "SIGN_OUT_START" });
 		try {
 			await firebaseSignOut();
-			// onAuthChange will fire with null → signInAnonymouslyIfNeeded() → new anon user
+			// onAuthChange will fire with null → signInAnonymously() → new anon user
 		} catch (error) {
 			console.error("[Auth] Sign out error:", error);
 			dispatch({ type: "SIGN_OUT_FAILED" });
 			throw error;
 		} finally {
-			authOpInFlightRef.current = false;
+			authInProgressRef.current = false;
 			dispatch({ type: "SIGN_OUT_COMPLETE" });
 		}
 	};

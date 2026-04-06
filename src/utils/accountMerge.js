@@ -1,5 +1,5 @@
 import { doc, runTransaction, serverTimestamp } from "firebase/firestore";
-import { db } from "../firebase/firebaseConfig";
+import { db } from "../services/firebaseConfig";
 import { chooseGridForMerge } from "./gridHelpers.js";
 
 // Extracts the initial (unsolved) grids from a Firestore puzzle document.

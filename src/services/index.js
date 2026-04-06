@@ -3,7 +3,7 @@ export { default as app, db, auth } from "./firebaseConfig";
 
 // Authentication functions
 export {
-	signInAnonymouslyIfNeeded,
+	signInAnonymously,
 	signInWithGoogle,
 	signOut,
 	onAuthChange,
