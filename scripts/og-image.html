@@ -15,6 +15,9 @@
 <html>
 	<head>
 		<meta charset="UTF-8" />
+		<!-- Without this, Chrome's device toolbar uses a ~980px default viewport
+		     and scales the 1200px body down, making it appear at ~2/3 the width. -->
+		<meta name="viewport" content="width=1200, initial-scale=1" />
 		<link
 			href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap"
 			rel="stylesheet"

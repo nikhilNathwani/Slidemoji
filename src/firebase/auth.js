@@ -27,6 +27,57 @@ import { auth } from "./firebaseConfig";
 const googleProvider = new GoogleAuthProvider();
 
 /**
+ * Wraps a Firebase popup call and rejects within ~200ms of the popup closing,
+ * rather than waiting for Firebase's internal polling timeout (~8–10s).
+ *
+ * Strategy:
+ *   1. Temporarily patch window.open to capture the popup window reference.
+ *   2. Race Firebase's promise against our own popup.closed polling loop.
+ *   3. A 500ms grace period after closure detection lets Firebase resolve first
+ *      if auth just completed (popup closes right after a successful sign-in).
+ */
+async function withPopupCloseDetection(firebasePopupFn) {
+	let capturedPopup = null;
+	let pollInterval = null;
+
+	const originalOpen = window.open.bind(window);
+	window.open = (...args) => {
+		window.open = originalOpen; // restore immediately after first call
+		capturedPopup = originalOpen(...args);
+		return capturedPopup;
+	};
+
+	const firebasePromise = firebasePopupFn();
+	// Suppress the background Firebase rejection if our close-detector wins the
+	// race, so it doesn't surface as an unhandled-rejection console error.
+	firebasePromise.catch(() => {});
+
+	const closedEarlyPromise = new Promise((_, reject) => {
+		pollInterval = setInterval(() => {
+			if (capturedPopup?.closed) {
+				clearInterval(pollInterval);
+				pollInterval = null;
+				// Grace period: if auth just completed, Firebase's promise will
+				// resolve within ~500ms of the popup closing. If it does, Promise.race
+				// resolves with Firebase's result and our rejection is ignored.
+				setTimeout(() => {
+					const err = new Error("Popup closed by user");
+					err.code = "auth/popup-closed-by-user";
+					reject(err);
+				}, 500);
+			}
+		}, 200);
+	});
+
+	try {
+		return await Promise.race([firebasePromise, closedEarlyPromise]);
+	} finally {
+		window.open = originalOpen;
+		if (pollInterval) clearInterval(pollInterval);
+	}
+}
+
+/**
  * Sign in anonymously (called automatically on app load)
  * Creates a temporary Firebase user ID so anonymous users can save to Firestore
  * @returns {Promise<User>} Anonymous Firebase user
@@ -63,7 +114,9 @@ export async function signInWithGoogle() {
 			return await linkAnonymousWithGoogle(currentUser);
 		}
 
-		const result = await signInWithPopup(auth, googleProvider);
+		const result = await withPopupCloseDetection(() =>
+			signInWithPopup(auth, googleProvider),
+		);
 		return result.user;
 	} catch (error) {
 		if (error.code === "auth/popup-blocked") {
@@ -84,7 +137,9 @@ export async function signInWithGoogle() {
  */
 async function linkAnonymousWithGoogle(anonymousUser) {
 	try {
-		const result = await linkWithPopup(anonymousUser, googleProvider);
+		const result = await withPopupCloseDetection(() =>
+			linkWithPopup(anonymousUser, googleProvider),
+		);
 		return result.user;
 	} catch (error) {
 		if (error.code === "auth/popup-blocked") {

@@ -37,8 +37,22 @@ export default async function handler(req, res) {
 
 	try {
 		const db = getAdminDb();
-		await db.collection("users").doc(uid).update({ isPremium: true });
-		return res.status(200).json({ success: true });
+		const docRef = db.collection("users").doc(uid);
+
+		// After sign-out a new anonymous user is created, but syncFirestoreUserData
+		// runs async and may not have written the doc yet. Retry a few times.
+		for (let attempt = 0; attempt < 5; attempt++) {
+			const snap = await docRef.get();
+			if (snap.exists) {
+				await docRef.update({ isPremium: true });
+				return res.status(200).json({ success: true });
+			}
+			await new Promise((r) => setTimeout(r, 400));
+		}
+
+		return res
+			.status(404)
+			.json({ error: "User doc not found — try again in a moment" });
 	} catch (error) {
 		console.error("[dev-grant-premium] Error:", error.message);
 		return res.status(500).json({ error: error.message });

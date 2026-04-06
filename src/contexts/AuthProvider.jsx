@@ -111,7 +111,11 @@ function authReducer(state, action) {
 
 		// Sign-out failed; roll back flag (onAuthChange will restore the correct user)
 		case "SIGN_OUT_FAILED":
-			return { ...state, status: "ready", preferInitialAnonymousState: false };
+			return {
+				...state,
+				status: "ready",
+				preferInitialAnonymousState: false,
+			};
 
 		// Called by useGameState once Firestore confirms the merged state
 		case "CLEAR_MERGE_SNAPSHOT":
@@ -214,7 +218,11 @@ export default function AuthProvider({ children }) {
 
 			// If the UID changed, linkWithCredential failed (account already existed).
 			// Merge the anonymous user's data into the Google account.
-			if (anonymousData && anonymousUid && firebaseUser.uid !== anonymousUid) {
+			if (
+				anonymousData &&
+				anonymousUid &&
+				firebaseUser.uid !== anonymousUid
+			) {
 				await mergeAnonymousDataToGoogle(
 					anonymousUid,
 					firebaseUser.uid,
@@ -222,7 +230,10 @@ export default function AuthProvider({ children }) {
 				);
 			}
 
-			dispatch({ type: "SIGN_IN_SUCCESS", user: toUserObject(firebaseUser) });
+			dispatch({
+				type: "SIGN_IN_SUCCESS",
+				user: toUserObject(firebaseUser),
+			});
 			return firebaseUser;
 		} catch (error) {
 			const isCancelled =
