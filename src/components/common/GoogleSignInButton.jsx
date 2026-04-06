@@ -17,7 +17,7 @@ import { useAuth } from "../../hooks/useAuth";
 import styles from "./GoogleSignInButton.module.css";
 
 function GoogleSignInButton({ isCondensed = false }) {
-	const { user, signIn, signOut, loading } = useAuth();
+	const { user, signIn, signOut, isLoading } = useAuth();
 	const [isProcessing, setIsProcessing] = useState(false);
 	const [errorMessage, setErrorMessage] = useState(null);
 
@@ -48,7 +48,7 @@ function GoogleSignInButton({ isCondensed = false }) {
 		? `${styles.googleSignInButton} ${styles.headerVariant}`
 		: styles.googleSignInButton;
 
-	const isDisabled = loading || isProcessing;
+	const isDisabled = isLoading || isProcessing;
 	const isSignedInWithGoogle = user?.isAnonymous === false;
 	const buttonText = isCondensed
 		? isSignedInWithGoogle

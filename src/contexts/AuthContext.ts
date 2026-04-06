@@ -15,7 +15,7 @@ export interface UserObject {
 /** Shape of the value provided by AuthProvider and consumed by useAuth(). */
 export interface AuthContextValue {
 	user: UserObject | null;
-	loading: boolean;
+	isLoading: boolean;
 	isMerging: boolean;
 	preferInitialAnonymousState: boolean;
 	mergeSnapshotGameState: Record<string, unknown> | null;

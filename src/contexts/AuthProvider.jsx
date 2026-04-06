@@ -27,12 +27,11 @@
  *                  aborted/failed ──▶ ready
  *
  * Derived values (computed, not stored):
- *   isLoading = status !== 'ready'
+ *   loading  = status !== 'ready'
  *   isMerging = status === 'merging'
  */
 
-import { ReactNode, useEffect, useReducer, useRef } from "react";
-import type { User } from "firebase/auth";
+import { useEffect, useReducer, useRef } from "react";
 import {
 	onAuthChange,
 	signInAnonymouslyIfNeeded,
@@ -44,49 +43,19 @@ import {
 	syncFirestoreUserData,
 } from "../firebase/firestore/user";
 import { mergeAnonymousDataToGoogle } from "../utils/accountMerge";
-import { AuthContext, type UserObject } from "./AuthContext";
-
-// ─── State ───────────────────────────────────────────────────────────────────
-
-type AuthStatus =
-	| "initializing"
-	| "ready"
-	| "signing-in"
-	| "merging"
-	| "signing-out";
-
-interface AuthState {
-	user: UserObject | null;
-	/** Drives the isLoading/isMerging derived values consumed by components. */
-	status: AuthStatus;
-	mergeSnapshotGameState: Record<string, unknown> | null;
-	preferInitialAnonymousState: boolean;
-}
-
-// ─── Actions ─────────────────────────────────────────────────────────────────
-
-type AuthAction =
-	| { type: "AUTH_READY"; user: UserObject | null }
-	| { type: "AUTH_USER_CHANGED"; user: UserObject }
-	| { type: "SIGN_IN_START" }
-	| { type: "MERGE_START"; gameState: Record<string, unknown> }
-	| { type: "SIGN_IN_SUCCESS"; user: UserObject }
-	| { type: "SIGN_IN_ABORTED"; priorUser: UserObject | null }
-	| { type: "SIGN_OUT_START" }
-	| { type: "SIGN_OUT_COMPLETE" }
-	| { type: "SIGN_OUT_FAILED" }
-	| { type: "CLEAR_MERGE_SNAPSHOT" };
+import { AuthContext } from "./AuthContext";
 
 // ─── Reducer ─────────────────────────────────────────────────────────────────
 
-const initialState: AuthState = {
+const initialState = {
 	user: null,
-	status: "initializing",
+	// Status drives the loading/isMerging derived values consumed by components.
+	status: "initializing", // 'initializing' | 'ready' | 'signing-in' | 'merging' | 'signing-out'
 	mergeSnapshotGameState: null,
 	preferInitialAnonymousState: false,
 };
 
-function authReducer(state: AuthState, action: AuthAction): AuthState {
+function authReducer(state, action) {
 	switch (action.type) {
 		// Firebase reported a user (idle — no auth op in progress)
 		case "AUTH_READY":
@@ -151,12 +120,16 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
 		// Called by useGameState once Firestore confirms the merged state
 		case "CLEAR_MERGE_SNAPSHOT":
 			return { ...state, mergeSnapshotGameState: null };
+
+		default:
+			return state;
 	}
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-function toUserObject(firebaseUser: User): UserObject {
+function toUserObject(firebaseUser) {
+	if (!firebaseUser) return null;
 	return {
 		uid: firebaseUser.uid,
 		email: firebaseUser.email,
@@ -166,7 +139,7 @@ function toUserObject(firebaseUser: User): UserObject {
 	};
 }
 
-async function syncUserDoc(firebaseUser: User): Promise<void> {
+async function syncUserDoc(firebaseUser) {
 	try {
 		await syncFirestoreUserData(firebaseUser);
 	} catch (error) {
@@ -176,14 +149,14 @@ async function syncUserDoc(firebaseUser: User): Promise<void> {
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-export default function AuthProvider({ children }: { children: ReactNode }) {
+export default function AuthProvider({ children }) {
 	const [state, dispatch] = useReducer(authReducer, initialState);
 	// Ref (not state) because it must be readable synchronously in onAuthChange
 	// without triggering re-renders or stale-closure issues.
 	const authOpInFlightRef = useRef(false);
 
 	useEffect(() => {
-		const unsubscribe = onAuthChange(async (firebaseUser: User | null) => {
+		const unsubscribe = onAuthChange(async (firebaseUser) => {
 			if (firebaseUser) {
 				const user = toUserObject(firebaseUser);
 				// If an auth op is in flight, only update the user object.
@@ -214,7 +187,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 		return () => unsubscribe();
 	}, []);
 
-	const signIn = async (): Promise<User | null> => {
+	const signIn = async () => {
 		// Capture the current user before any state changes so we can restore on failure.
 		const priorUser = state.user;
 
@@ -233,10 +206,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 				// Signal that a merge is about to happen so UI preserves the current board.
 				dispatch({
 					type: "MERGE_START",
-					gameState: anonymousData.gameState as Record<
-						string,
-						unknown
-					>,
+					gameState: anonymousData.gameState,
 				});
 			}
 
@@ -266,10 +236,9 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 			});
 			return firebaseUser;
 		} catch (error) {
-			const authError = error as { code?: string };
 			const isCancelled =
-				authError.code === "auth/popup-closed-by-user" ||
-				authError.code === "auth/cancelled-popup-request";
+				error.code === "auth/popup-closed-by-user" ||
+				error.code === "auth/cancelled-popup-request";
 
 			// Restore state cleanly. mergeSnapshotGameState is also cleared so the
 			// board doesn't flash with the pending merge state.
@@ -287,7 +256,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 		}
 	};
 
-	const signOut = async (): Promise<void> => {
+	const signOut = async () => {
 		authOpInFlightRef.current = true;
 		// Clear user eagerly so user-scoped listeners unsubscribe before auth tokens rotate.
 		dispatch({ type: "SIGN_OUT_START" });
@@ -315,6 +284,8 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 		clearMergeSnapshot,
 		signIn,
 		signOut,
+		isAuthenticated: state.user?.isAnonymous === false,
+		isAnonymous: state.user?.isAnonymous ?? true,
 	};
 
 	return (

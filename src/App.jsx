@@ -13,7 +13,7 @@ import { useGameState } from "./hooks/useGameState";
 import { useSolvedPuzzles } from "./hooks/useSolvedPuzzles";
 
 function App() {
-	const { loading: isAuthLoading, isMerging } = useAuth();
+	const { isLoading: isAuthLoading, isMerging } = useAuth();
 
 	// PUZZLE contains: id, emoji, emoji name, initialGrids (normal and hard)
 	const [puzzleId, setPuzzleId] = useState(() => getLatestPuzzleId());
@@ -145,7 +145,9 @@ function App() {
 					!!solvedPuzzles?.[puzzleId]?.[gameState.currentDifficulty]
 				}
 				onAlmostSolve={setAlmostSolved}
-				onTogglePremium={(grant) => setDevIsPremium(grant ? true : null)}
+				onTogglePremium={(grant) =>
+					setDevIsPremium(grant ? true : null)
+				}
 			/>
 
 			<ArchiveDialog
