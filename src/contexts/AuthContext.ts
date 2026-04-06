@@ -22,8 +22,6 @@ export interface AuthContextValue {
 	clearMergeSnapshot: () => void;
 	signIn: () => Promise<User | null>;
 	signOut: () => Promise<void>;
-	isAuthenticated: boolean;
-	isAnonymous: boolean;
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null);

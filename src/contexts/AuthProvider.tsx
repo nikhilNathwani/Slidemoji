@@ -315,8 +315,6 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 		clearMergeSnapshot,
 		signIn,
 		signOut,
-		isAuthenticated: state.user?.isAnonymous === false,
-		isAnonymous: state.user?.isAnonymous ?? true,
 	};
 
 	return (
