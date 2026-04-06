@@ -147,7 +147,9 @@ export default function AuthProvider({ children }) {
 		} finally {
 			authOpInFlightRef.current = false;
 			setIsMerging(false);
-			setMergeSnapshotGameState(null);
+			// mergeSnapshotGameState is intentionally NOT cleared here.
+			// useGameState clears it once Firestore has confirmed the merged data,
+			// preventing a flash of the pre-merge state during the settle period.
 			setLoading(false);
 		}
 	};
@@ -171,6 +173,8 @@ export default function AuthProvider({ children }) {
 		}
 	};
 
+	const clearMergeSnapshot = () => setMergeSnapshotGameState(null);
+
 	// Context value exposed to all children via useAuth() hook
 	const value = {
 		user, // Current user object (always exists - either anonymous or Google)
@@ -178,6 +182,7 @@ export default function AuthProvider({ children }) {
 		isMerging, // True while anonymous->Google merge is reconciling
 		preferInitialAnonymousState, // True after sign-out so anonymous view can render initial grid immediately
 		mergeSnapshotGameState, // Anonymous gameState snapshot while merge is in progress
+		clearMergeSnapshot, // Called by useGameState once Firestore confirms the merged data
 		signIn, // Function to sign in with Google (links anonymous account)
 		signOut, // Function to sign out (creates new anonymous user)
 		isAuthenticated: user?.isAnonymous === false, // True if signed in with Google

@@ -35,10 +35,10 @@ const PREFERENCE_DEFAULTS = {
 
 export function usePreference(key, defaultValue, options = {}) {
 	// Use the caller-supplied default, or fall back to the built-in default.
-	defaultValue = defaultValue ?? PREFERENCE_DEFAULTS[key];
+	const resolvedDefault = defaultValue ?? PREFERENCE_DEFAULTS[key];
 	const { contextKey = null } = options;
 	const { user } = useAuth();
-	const { userData, loading: userDocLoading } = useUserDoc();
+	const { userData } = useUserDoc();
 	const userId = user?.uid || null;
 
 	// If contextKey is provided, scope the storage key (e.g., showNumbers_123 for puzzle 123)
@@ -55,7 +55,7 @@ export function usePreference(key, defaultValue, options = {}) {
 						`pref_${key}`,
 						JSON.stringify(newValue),
 					);
-				} catch {}
+				} catch { /* localStorage may be unavailable; best-effort */ }
 			}
 
 			if (!userId) return;
@@ -84,9 +84,9 @@ export function usePreference(key, defaultValue, options = {}) {
 			try {
 				const stored = localStorage.getItem(`pref_${key}`);
 				if (stored !== null) return JSON.parse(stored);
-			} catch {}
+			} catch { /* localStorage may be unavailable; best-effort */ }
 		}
-		return defaultValue;
+		return resolvedDefault;
 	})();
 
 	return [preference, setPreference];

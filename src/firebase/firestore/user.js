@@ -56,6 +56,17 @@ export async function resetPremiumForDev(userId, isPremium) {
 	await updateDoc(userDocRef, { isPremium });
 }
 
+// Read a preference value saved by usePreference's setPreference so it can be
+// seeded into a new user doc, preserving settings across sign-out.
+function readLocalPref(key, fallback) {
+	try {
+		const v = localStorage.getItem(`pref_${key}`);
+		return v !== null ? JSON.parse(v) : fallback;
+	} catch {
+		return fallback;
+	}
+}
+
 export async function syncFirestoreUserData(firebaseUser) {
 	if (!firebaseUser?.uid) {
 		throw new Error("User ID is required");
@@ -78,8 +89,8 @@ export async function syncFirestoreUserData(firebaseUser) {
 					createdAt: serverTimestamp(),
 					updatedAt: serverTimestamp(),
 					preferences: {
-						darkMode: false,
-						soundEnabled: true,
+						darkMode: readLocalPref("darkMode", false),
+						soundEnabled: readLocalPref("soundEnabled", true),
 					},
 					gameState: null,
 					isPremium: false,

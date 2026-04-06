@@ -17,7 +17,7 @@
  * - Eliminates dual storage and if(user) branching
  */
 
-import { useMemo, useCallback } from "react";
+import { useMemo, useCallback, useEffect } from "react";
 import {
 	saveFirestoreGameState,
 	deleteAnonymousPastGameState,
@@ -26,7 +26,7 @@ import { DIFFICULTY, DEFAULT_DIFFICULTY } from "../constants";
 import { useAuth } from "./useAuth";
 import { useUserDoc } from "./useUserDoc";
 
-import { chooseGridForMerge } from "../utils/gridHelpers";
+import { chooseGridForMerge, checkWin } from "../utils/gridHelpers";
 
 function composeGameState(preferredState, alternateState, initialGrids) {
 	if (!initialGrids) {
@@ -60,6 +60,7 @@ export function useGameState({ puzzleMetadata }) {
 		user,
 		isMerging,
 		mergeSnapshotGameState,
+		clearMergeSnapshot,
 		preferInitialAnonymousState,
 	} = useAuth();
 	const { userData, loading: userDocLoading } = useUserDoc();
@@ -117,9 +118,9 @@ export function useGameState({ puzzleMetadata }) {
 	]);
 
 	const gameState = useMemo(() => {
-		const activeMergePuzzleState = isMerging
-			? mergeSnapshotGameState?.[puzzleId]
-			: null;
+		// Gate on mergeSnapshotGameState directly (not isMerging) so the composed
+		// result is held stable until Firestore confirms the merge — see useEffect below.
+		const activeMergePuzzleState = mergeSnapshotGameState?.[puzzleId] ?? null;
 
 		return activeMergePuzzleState
 			? composeGameState(
@@ -129,11 +130,40 @@ export function useGameState({ puzzleMetadata }) {
 				)
 			: persistedGameState;
 	}, [
-		isMerging,
 		mergeSnapshotGameState,
 		puzzleId,
 		persistedGameState,
 		puzzleMetadata,
+	]);
+
+	// Once the merge is done and Firestore data has settled, clear the merge snapshot
+	// so regular persistedGameState takes over. We wait until persistedGameState is
+	// at least as "good" as what the anonymous user had — specifically, if anonymous
+	// was solved we don't clear until persistedGameState is also solved. This prevents
+	// a flash of the pre-merge unsolved state during the Firestore write settle period.
+	useEffect(() => {
+		if (isMerging || !mergeSnapshotGameState || userData === null) return;
+
+		const mergeForPuzzle = mergeSnapshotGameState[puzzleId];
+		if (!mergeForPuzzle) {
+			clearMergeSnapshot();
+			return;
+		}
+
+		const diff = persistedGameState?.currentDifficulty || DEFAULT_DIFFICULTY;
+		const mergeWasSolved = checkWin(
+			mergeForPuzzle?.[diff] ?? mergeForPuzzle?.normal,
+		);
+		if (!mergeWasSolved || checkWin(persistedGameState?.[diff])) {
+			clearMergeSnapshot();
+		}
+	}, [
+		isMerging,
+		mergeSnapshotGameState,
+		userData,
+		persistedGameState,
+		puzzleId,
+		clearMergeSnapshot,
 	]);
 
 	// Setter that saves to Firestore via the shared firestore module
