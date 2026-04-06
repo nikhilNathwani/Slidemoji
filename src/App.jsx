@@ -12,6 +12,7 @@ import { usePuzzle } from "./hooks/usePuzzle";
 import { useGameState } from "./hooks/useGameState";
 import { useSolvedPuzzles } from "./hooks/useSolvedPuzzles";
 import { resetPremiumForDev } from "./firebase/firestore/user";
+import { auth } from "./firebase/firebaseConfig";
 
 function App() {
 	const { loading: isAuthLoading, isMerging, user } = useAuth();
@@ -144,14 +145,17 @@ function App() {
 				}
 				onAlmostSolve={setAlmostSolved}
 				onTogglePremium={(grant) => {
+					// user?.uid may be transiently null during sign-out; fall back to Firebase directly
+					const uid = user?.uid ?? auth.currentUser?.uid;
+					if (!uid) return;
 					if (grant) {
 						fetch("/api/dev-grant-premium", {
 							method: "POST",
 							headers: { "Content-Type": "application/json" },
-							body: JSON.stringify({ uid: user?.uid }),
+							body: JSON.stringify({ uid }),
 						});
 					} else {
-						resetPremiumForDev(user?.uid, false);
+						resetPremiumForDev(uid, false);
 					}
 				}}
 			/>

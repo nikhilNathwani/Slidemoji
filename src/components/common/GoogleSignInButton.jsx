@@ -35,10 +35,7 @@ function GoogleSignInButton({ isCondensed = false }) {
 				setErrorMessage(
 					"Popup blocked — please allow popups for this site and try again.",
 				);
-			} else if (
-				error.code !== "auth/popup-closed-by-user" &&
-				error.code !== "auth/cancelled-popup-request"
-			) {
+			} else {
 				setErrorMessage("Sign-in failed. Please try again.");
 				console.error("Authentication error:", error);
 			}

@@ -120,7 +120,8 @@ export function useGameState({ puzzleMetadata }) {
 	const gameState = useMemo(() => {
 		// Gate on mergeSnapshotGameState directly (not isMerging) so the composed
 		// result is held stable until Firestore confirms the merge — see useEffect below.
-		const activeMergePuzzleState = mergeSnapshotGameState?.[puzzleId] ?? null;
+		const activeMergePuzzleState =
+			mergeSnapshotGameState?.[puzzleId] ?? null;
 
 		return activeMergePuzzleState
 			? composeGameState(
@@ -129,12 +130,7 @@ export function useGameState({ puzzleMetadata }) {
 					puzzleMetadata?.initialGrids,
 				)
 			: persistedGameState;
-	}, [
-		mergeSnapshotGameState,
-		puzzleId,
-		persistedGameState,
-		puzzleMetadata,
-	]);
+	}, [mergeSnapshotGameState, puzzleId, persistedGameState, puzzleMetadata]);
 
 	// Once the merge is done and Firestore data has settled, clear the merge snapshot
 	// so regular persistedGameState takes over. We wait until persistedGameState is
@@ -150,7 +146,8 @@ export function useGameState({ puzzleMetadata }) {
 			return;
 		}
 
-		const diff = persistedGameState?.currentDifficulty || DEFAULT_DIFFICULTY;
+		const diff =
+			persistedGameState?.currentDifficulty || DEFAULT_DIFFICULTY;
 		const mergeWasSolved = checkWin(
 			mergeForPuzzle?.[diff] ?? mergeForPuzzle?.normal,
 		);

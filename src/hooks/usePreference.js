@@ -55,7 +55,9 @@ export function usePreference(key, defaultValue, options = {}) {
 						`pref_${key}`,
 						JSON.stringify(newValue),
 					);
-				} catch { /* localStorage may be unavailable; best-effort */ }
+				} catch {
+					/* localStorage may be unavailable; best-effort */
+				}
 			}
 
 			if (!userId) return;
@@ -84,7 +86,9 @@ export function usePreference(key, defaultValue, options = {}) {
 			try {
 				const stored = localStorage.getItem(`pref_${key}`);
 				if (stored !== null) return JSON.parse(stored);
-			} catch { /* localStorage may be unavailable; best-effort */ }
+			} catch {
+				/* localStorage may be unavailable; best-effort */
+			}
 		}
 		return resolvedDefault;
 	})();
