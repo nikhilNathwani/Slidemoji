@@ -13,7 +13,7 @@ export interface UserObject {
 }
 
 /** Shape of the value provided by AuthProvider and consumed by useAuth(). */
-export interface AuthContextValue {
+export interface UseAuthResult {
 	user: UserObject | null;
 	isLoading: boolean;
 	isMerging: boolean;
@@ -24,4 +24,4 @@ export interface AuthContextValue {
 	signOut: () => Promise<void>;
 }
 
-export const AuthContext = createContext<AuthContextValue | null>(null);
+export const AuthContext = createContext<UseAuthResult | null>(null);
