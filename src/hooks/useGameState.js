@@ -60,7 +60,7 @@ export function useGameState({ puzzleMetadata }) {
 		user,
 		isMerging,
 		mergeSnapshotGameState,
-		clearMergeSnapshot,
+		onMergeSettled,
 		preferInitialAnonymousState,
 	} = useAuth();
 	const { userData, loading: userDocLoading } = useUserDoc();
@@ -142,7 +142,7 @@ export function useGameState({ puzzleMetadata }) {
 
 		const mergeForPuzzle = mergeSnapshotGameState[puzzleId];
 		if (!mergeForPuzzle) {
-			clearMergeSnapshot();
+			onMergeSettled();
 			return;
 		}
 
@@ -152,7 +152,7 @@ export function useGameState({ puzzleMetadata }) {
 			mergeForPuzzle?.[diff] ?? mergeForPuzzle?.normal,
 		);
 		if (!mergeWasSolved || checkWin(persistedGameState?.[diff])) {
-			clearMergeSnapshot();
+			onMergeSettled();
 		}
 	}, [
 		isMerging,
@@ -160,7 +160,7 @@ export function useGameState({ puzzleMetadata }) {
 		userData,
 		persistedGameState,
 		puzzleId,
-		clearMergeSnapshot,
+		onMergeSettled,
 	]);
 
 	// Setter that saves to Firestore via the shared firestore module

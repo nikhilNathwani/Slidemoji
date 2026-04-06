@@ -304,7 +304,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 		}
 	};
 
-	const clearMergeSnapshot = () => dispatch({ type: "CLEAR_MERGE_SNAPSHOT" });
+	const onMergeSettled = () => dispatch({ type: "CLEAR_MERGE_SNAPSHOT" });
 
 	const value = {
 		user: state.user,
@@ -312,7 +312,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 		isMerging: state.status === "merging",
 		preferInitialAnonymousState: state.preferInitialAnonymousState,
 		mergeSnapshotGameState: state.mergeSnapshotGameState,
-		clearMergeSnapshot,
+		onMergeSettled,
 		signIn,
 		signOut,
 	};

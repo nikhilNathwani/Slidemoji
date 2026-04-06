@@ -1,12 +1,18 @@
-import { useEffect, useMemo, useState } from "react";
+import { ReactNode, useEffect, useMemo, useState } from "react";
 import { subscribeToFirestoreUserData } from "../firebase/firestore/user";
 import { useAuth } from "../hooks/useAuth";
-import { UserDocContext } from "./UserDocContext";
+import { UserDocContext, type UserData } from "./UserDocContext";
 
-export default function UserDocProvider({ children }) {
+interface UserDocState {
+	userId: string | null;
+	userData: UserData | null;
+	error: Error | null;
+}
+
+export default function UserDocProvider({ children }: { children: ReactNode }) {
 	const { user } = useAuth();
-	const userId = user?.uid || null;
-	const [state, setState] = useState({
+	const userId = user?.uid ?? null;
+	const [state, setState] = useState<UserDocState>({
 		userId: null,
 		userData: null,
 		error: null,
@@ -21,11 +27,11 @@ export default function UserDocProvider({ children }) {
 			onData: (userData) => {
 				setState({
 					userId,
-					userData,
+					userData: userData as UserData | null,
 					error: null,
 				});
 			},
-			onError: (error) => {
+			onError: (error: Error) => {
 				console.error(
 					"[UserDocProvider] Error subscribing to user data:",
 					error,

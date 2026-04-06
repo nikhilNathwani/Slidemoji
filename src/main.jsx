@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
 import "./App.css";
 import AuthProvider from "./contexts/AuthProvider";
-import UserDocProvider from "./contexts/UserDocProvider.jsx";
+import UserDocProvider from "./contexts/UserDocProvider";
 import "./utils/icons.js"; // Initialize FontAwesome icon library
 import { usePreference } from "./hooks/usePreference";
 
