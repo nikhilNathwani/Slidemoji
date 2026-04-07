@@ -252,11 +252,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 
 			// If the UID changed, linkWithCredential failed (account already existed).
 			// Merge the anonymous user's data into the Google account.
-			if (
-				anonymousData &&
-				anonymousUid &&
-				firebaseUser.uid !== anonymousUid
-			) {
+			if (anonymousUid && firebaseUser.uid !== anonymousUid) {
 				await mergeAnonymousDataToGoogle(
 					anonymousUid,
 					firebaseUser.uid,

@@ -24,7 +24,7 @@ export async function mergeAnonymousDataToGoogle(
 			const mergedGameState = { ...(googleData?.gameState || {}) };
 
 			for (const [puzzleId, anonymousPuzzleData] of Object.entries(
-				anonymousData.gameState || {},
+				anonymousData.gameState,
 			)) {
 				const anonymousPuzzle = anonymousPuzzleData || {};
 
@@ -33,14 +33,12 @@ export async function mergeAnonymousDataToGoogle(
 					continue;
 				}
 
-				const googlePuzzleData = mergedGameState[puzzleId] || {};
+				const googlePuzzleData = mergedGameState[puzzleId];
 
 				for (const difficulty of ["normal", "hard"]) {
-					const anonymousGrid = anonymousPuzzle[difficulty];
-					const googleGrid = googlePuzzleData[difficulty];
 					const mergedGrid = chooseGridForMerge(
-						anonymousGrid,
-						googleGrid,
+						anonymousPuzzle[difficulty],
+						googlePuzzleData[difficulty],
 					);
 
 					if (mergedGrid) {
