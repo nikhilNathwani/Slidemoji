@@ -248,8 +248,8 @@ export function getTileIndexFromDirection(gapIndex, direction, size) {
  * Choose which grid to keep when merging anonymous and Google accounts.
  *
  * Priority order (highest wins):
- * 1. Solved grid — a completed puzzle always beats an in-progress one
- * 2. Google grid — if both are in-progress, prefer the Google account's data
+ * 1. Solved anonymous grid — a completed anonymous puzzle beats any Google progress
+ * 2. Google grid (any state) — otherwise always prefer the Google account's data
  * 3. Anonymous grid — use if Google has nothing
  *
  * NOTE: We don't detect the edge case where a signed-in user made moves that
@@ -266,7 +266,6 @@ export function chooseGridForMerge(anonymousGrid, googleGrid) {
 	const hasGoogleGrid = Array.isArray(googleGrid);
 
 	if (hasAnonymousGrid && checkWin(anonymousGrid)) return anonymousGrid;
-	if (hasGoogleGrid && checkWin(googleGrid)) return googleGrid;
 	if (hasGoogleGrid) return googleGrid;
 	if (hasAnonymousGrid) return anonymousGrid;
 	return null;

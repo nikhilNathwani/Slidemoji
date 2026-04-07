@@ -46,5 +46,3 @@ export interface PuzzleData {
 		hard: number[];
 	};
 }
-
-

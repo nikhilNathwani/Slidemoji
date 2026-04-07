@@ -38,7 +38,10 @@ export async function mergeAnonymousDataToGoogle(
 				for (const difficulty of ["normal", "hard"]) {
 					const anonymousGrid = anonymousPuzzle[difficulty];
 					const googleGrid = googlePuzzleData[difficulty];
-					const mergedGrid = chooseGridForMerge(anonymousGrid, googleGrid);
+					const mergedGrid = chooseGridForMerge(
+						anonymousGrid,
+						googleGrid,
+					);
 
 					if (mergedGrid) {
 						googlePuzzleData[difficulty] = mergedGrid;
