@@ -6,15 +6,31 @@ import {
 	onSnapshot,
 	updateDoc,
 } from "firebase/firestore";
+import type { User } from "firebase/auth";
 import { auth, db, COLLECTIONS } from "../firebaseConfig";
 
-function isTransientAuthTransitionPermissionError(userId, error) {
-	return (
-		error?.code === "permission-denied" && auth.currentUser?.uid !== userId
-	);
+/** Firestore app-data document for a user. Auth identity fields live in UserObject via useAuth(). */
+export interface UserDoc {
+	isPremium: boolean;
+	gameState: Record<string, unknown> | null;
+	preferences: {
+		darkMode: boolean;
+		soundEnabled: boolean;
+	};
+	createdAt?: unknown; // Firestore server timestamp — written by app, never read
+	updatedAt?: unknown;
 }
 
-export function subscribeToFirestoreUserData(userId, { onData, onError }) {
+export function subscribeToFirestoreUserData(
+	userId: string,
+	{
+		onData,
+		onError,
+	}: {
+			onData: (data: UserDoc | null) => void;
+			onError?: (error: Error) => void;
+	},
+): () => void {
 	if (!userId) {
 		return () => {};
 	}
@@ -23,10 +39,10 @@ export function subscribeToFirestoreUserData(userId, { onData, onError }) {
 	return onSnapshot(
 		userDocRef,
 		(docSnap) => {
-			onData(docSnap.exists() ? docSnap.data() : null);
+			onData(docSnap.exists() ? (docSnap.data() as UserDoc) : null);
 		},
 		(error) => {
-			if (isTransientAuthTransitionPermissionError(userId, error)) {
+			if (error?.code === "permission-denied" && auth.currentUser?.uid !== userId) {
 				return;
 			}
 			onError?.(error);
@@ -34,7 +50,7 @@ export function subscribeToFirestoreUserData(userId, { onData, onError }) {
 	);
 }
 
-export async function getFirestoreUserData(userId) {
+export async function getFirestoreUserData(userId: string): Promise<UserDoc | null> {
 	if (!userId) {
 		throw new Error("User ID is required");
 	}
@@ -42,7 +58,7 @@ export async function getFirestoreUserData(userId) {
 	try {
 		const userDocRef = doc(db, COLLECTIONS.USERS, userId);
 		const userDoc = await getDoc(userDocRef);
-		return userDoc.exists() ? userDoc.data() : null;
+		return userDoc.exists() ? (userDoc.data() as UserDoc) : null;
 	} catch (error) {
 		console.error("[Firestore] Error getting user data:", error);
 		throw error;
@@ -50,7 +66,7 @@ export async function getFirestoreUserData(userId) {
 }
 
 // Dev-only: toggle isPremium on the current user doc for local testing
-export async function resetPremiumForDev(userId, isPremium) {
+export async function resetPremiumForDev(userId: string, isPremium: boolean): Promise<void> {
 	if (!userId) throw new Error("User ID is required");
 	const userDocRef = doc(db, COLLECTIONS.USERS, userId);
 	await updateDoc(userDocRef, { isPremium });
@@ -58,16 +74,16 @@ export async function resetPremiumForDev(userId, isPremium) {
 
 // Read a preference value saved by usePreference's setPreference so it can be
 // seeded into a new user doc, preserving settings across sign-out.
-function readLocalPref(key, fallback) {
+function readLocalPref<T>(key: string, fallback: T): T {
 	try {
 		const v = localStorage.getItem(`pref_${key}`);
-		return v !== null ? JSON.parse(v) : fallback;
+		return v !== null ? (JSON.parse(v) as T) : fallback;
 	} catch {
 		return fallback;
 	}
 }
 
-export async function syncFirestoreUserData(firebaseUser) {
+export async function syncFirestoreUserData(firebaseUser: User): Promise<void> {
 	if (!firebaseUser?.uid) {
 		throw new Error("User ID is required");
 	}

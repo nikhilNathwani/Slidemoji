@@ -28,10 +28,10 @@ export default function UserDocProvider({ children }: { children: ReactNode }) {
 		}
 
 		const unsubscribe = subscribeToFirestoreUserData(userId, {
-			onData: (userData: unknown) => {
+			onData: (userData) => {
 				setState({
 					userId,
-					userData: userData as UserDoc | null,
+					userData,
 					error: null,
 				});
 			},

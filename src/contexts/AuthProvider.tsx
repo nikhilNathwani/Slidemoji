@@ -237,10 +237,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 				// Signal that a merge is about to happen so UI preserves the current board.
 				dispatch({
 					type: "MERGE_START",
-					gameState: anonymousData.gameState as Record<
-						string,
-						unknown
-					>,
+					gameState: anonymousData.gameState,
 				});
 			}
 
