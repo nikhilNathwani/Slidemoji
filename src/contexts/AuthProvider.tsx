@@ -44,7 +44,6 @@ import {
 	syncFirestoreUserData,
 } from "../services/firestore/user";
 import { mergeAnonymousDataToGoogle } from "../services/firestore/accountMerge";
-import { getLatestPuzzleId } from "../utils/puzzleUtils";
 import {
 	AuthContext,
 	type UserObject,
@@ -254,12 +253,9 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 			// If the UID changed, linkWithCredential failed (account already existed).
 			// Merge the anonymous user's data into the Google account.
 			if (anonymousUid && firebaseUser.uid !== anonymousUid) {
-				const puzzleId = getLatestPuzzleId().toString();
-				const anonymousPuzzle = anonymousData?.gameState?.[puzzleId];
 				await mergeAnonymousDataToGoogle(
 					anonymousUid,
-					puzzleId,
-					anonymousPuzzle,
+					anonymousData?.gameState,
 					firebaseUser.uid,
 				);
 			}

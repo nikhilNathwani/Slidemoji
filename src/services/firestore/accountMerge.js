@@ -1,11 +1,11 @@
 import { doc, runTransaction, serverTimestamp } from "firebase/firestore";
 import { db, COLLECTIONS } from "../firebaseConfig";
 import { chooseGridForMerge } from "../../utils/gridHelpers.js";
+import { getLatestPuzzleId } from "../../utils/puzzleUtils";
 
 export async function mergeAnonymousDataToGoogle(
 	anonymousUserId,
-	puzzleId,
-	anonymousPuzzle,
+	anonymousGameState,
 	googleUserId,
 ) {
 	if (!anonymousUserId || !googleUserId) {
@@ -13,9 +13,12 @@ export async function mergeAnonymousDataToGoogle(
 	}
 
 	try {
-		if (!anonymousPuzzle) {
+		if (!anonymousGameState) {
 			return;
 		}
+
+		const puzzleId = getLatestPuzzleId().toString();
+		const anonymousProgress = anonymousGameState[puzzleId] || {};
 
 		const googleDocRef = doc(db, COLLECTIONS.USERS, googleUserId);
 
@@ -25,27 +28,27 @@ export async function mergeAnonymousDataToGoogle(
 			const mergedGameState = { ...(googleData?.gameState || {}) };
 
 			if (!mergedGameState[puzzleId]) {
-				mergedGameState[puzzleId] = { ...anonymousPuzzle };
+				mergedGameState[puzzleId] = { ...anonymousProgress };
 			} else {
-				const googlePuzzleData = mergedGameState[puzzleId];
+				const googleProgress = mergedGameState[puzzleId];
 
 				for (const difficulty of ["normal", "hard"]) {
 					const mergedGrid = chooseGridForMerge(
-						anonymousPuzzle[difficulty],
-						googlePuzzleData[difficulty],
+						anonymousProgress[difficulty],
+						googleProgress[difficulty],
 					);
 
 					if (mergedGrid) {
-						googlePuzzleData[difficulty] = mergedGrid;
+						googleProgress[difficulty] = mergedGrid;
 					}
 				}
 
-				if (anonymousPuzzle.currentDifficulty) {
-					googlePuzzleData.currentDifficulty =
-						anonymousPuzzle.currentDifficulty;
+				if (anonymousProgress.currentDifficulty) {
+					googleProgress.currentDifficulty =
+						anonymousProgress.currentDifficulty;
 				}
 
-				mergedGameState[puzzleId] = googlePuzzleData;
+				mergedGameState[puzzleId] = googleProgress;
 			}
 
 			transaction.set(
