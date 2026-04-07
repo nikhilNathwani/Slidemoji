@@ -42,7 +42,7 @@ import {
 import {
 	getFirestoreUserData,
 	syncFirestoreUserData,
-} from "../services/firestore/user";
+} from "../services/firestore/userDoc";
 import { mergeAnonymousDataToGoogle } from "../services/firestore/accountMerge";
 import {
 	AuthContext,

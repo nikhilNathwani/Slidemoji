@@ -12,11 +12,11 @@ export async function mergeAnonymousDataToGoogle(
 		throw new Error("Both user IDs are required for merge");
 	}
 
-	try {
-		if (!anonymousGameState) {
-			return;
-		}
+	if (!anonymousGameState) {
+		return;
+	}
 
+	try {
 		const puzzleId = getLatestPuzzleId().toString();
 		const anonymousProgress = anonymousGameState[puzzleId] || {};
 
@@ -25,12 +25,12 @@ export async function mergeAnonymousDataToGoogle(
 		await runTransaction(db, async (transaction) => {
 			const googleDoc = await transaction.get(googleDocRef);
 			const googleData = googleDoc.exists() ? googleDoc.data() : null;
-			const mergedGameState = { ...(googleData?.gameState || {}) };
+			const updatedGameState = { ...(googleData?.gameState || {}) };
 
-			if (!mergedGameState[puzzleId]) {
-				mergedGameState[puzzleId] = { ...anonymousProgress };
+			if (!updatedGameState[puzzleId]) {
+				updatedGameState[puzzleId] = { ...anonymousProgress };
 			} else {
-				const googleProgress = mergedGameState[puzzleId];
+				const googleProgress = updatedGameState[puzzleId];
 
 				for (const difficulty of ["normal", "hard"]) {
 					// We don't detect the edge case where googleProgress happens to equal
@@ -54,13 +54,13 @@ export async function mergeAnonymousDataToGoogle(
 						anonymousProgress.currentDifficulty;
 				}
 
-				mergedGameState[puzzleId] = googleProgress;
+				updatedGameState[puzzleId] = googleProgress;
 			}
 
 			transaction.set(
 				googleDocRef,
 				{
-					gameState: mergedGameState,
+					gameState: updatedGameState,
 					updatedAt: serverTimestamp(),
 				},
 				{ merge: true },

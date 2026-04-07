@@ -14,7 +14,7 @@ export {
 	getFirestoreUserData,
 	syncFirestoreUserData,
 	subscribeToFirestoreUserData,
-} from "./firestore/user";
+} from "./firestore/userDoc";
 
 export { updateFirestorePreferences } from "./firestore/preference";
 

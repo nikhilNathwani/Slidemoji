@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useMemo, useState } from "react";
-import { subscribeToFirestoreUserData } from "../services/firestore/user";
+import { subscribeToFirestoreUserData } from "../services/firestore/userDoc";
 import { useAuth } from "../hooks/useAuth";
 import {
 	UserDocContext,
