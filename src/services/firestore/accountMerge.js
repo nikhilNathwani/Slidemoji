@@ -23,18 +23,16 @@ export async function mergeAnonymousDataToGoogle(
 			const googleData = googleDoc.exists() ? googleDoc.data() : null;
 			const mergedGameState = { ...(googleData?.gameState || {}) };
 
-			// Anonymous users can only play today's puzzle, and trimGameHistory
-			// runs before merge, so this always iterates over a single entry.
-			for (const [puzzleId, anonymousPuzzleData] of Object.entries(
+			// trimGameHistory runs before merge, so anonymousData.gameState
+			// always contains exactly one entry (today's puzzle).
+			const [[puzzleId, anonymousPuzzleData]] = Object.entries(
 				anonymousData.gameState,
-			)) {
-				const anonymousPuzzle = anonymousPuzzleData || {};
+			);
+			const anonymousPuzzle = anonymousPuzzleData || {};
 
-				if (!mergedGameState[puzzleId]) {
-					mergedGameState[puzzleId] = { ...anonymousPuzzle };
-					continue;
-				}
-
+			if (!mergedGameState[puzzleId]) {
+				mergedGameState[puzzleId] = { ...anonymousPuzzle };
+			} else {
 				const googlePuzzleData = mergedGameState[puzzleId];
 
 				for (const difficulty of ["normal", "hard"]) {
