@@ -3,6 +3,7 @@ import Dialog from "./Dialog";
 import PuzzleListItem from "./PuzzleListItem";
 import PaywallView from "./PaywallView";
 import { useSubscription } from "../../hooks/useSubscription";
+import { useSolvedPuzzles } from "../../hooks/useSolvedPuzzles";
 import { getLatestPuzzleId } from "../../utils/puzzleUtils";
 import { FontAwesomeIcon } from "../../utils/icons";
 import styles from "./ArchiveDialog.module.css";
@@ -10,11 +11,11 @@ import styles from "./ArchiveDialog.module.css";
 function ArchiveDialog({
 	isOpen,
 	onClose,
-	solvedPuzzles,
 	onPuzzleSelect,
 	devIsPremium,
 }) {
 	const { isPremium: firestoreIsPremium } = useSubscription();
+	const { solvedPuzzles } = useSolvedPuzzles();
 	const isPremium = devIsPremium ?? firestoreIsPremium;
 	const [filter, setFilter] = useState("all");
 	const todayPuzzleId = getLatestPuzzleId();

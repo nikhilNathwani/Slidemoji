@@ -131,7 +131,6 @@ function App() {
 				isAppDialogOpen={
 					showSettingsDialog || showStatsDialog || showArchiveDialog
 				}
-				solvedPuzzles={solvedPuzzles}
 			/>
 
 			<SettingsDialog
@@ -153,7 +152,6 @@ function App() {
 			<ArchiveDialog
 				isOpen={showArchiveDialog}
 				onClose={() => setShowArchiveDialog(false)}
-				solvedPuzzles={solvedPuzzles}
 				onPuzzleSelect={setPuzzleId}
 				devIsPremium={devIsPremium}
 			/>
@@ -161,7 +159,6 @@ function App() {
 			<StatsDialog
 				isOpen={showStatsDialog}
 				onClose={() => setShowStatsDialog(false)}
-				solvedPuzzles={solvedPuzzles}
 				onUnlockArchiveClick={() => {
 					setShowStatsDialog(false);
 					setShowArchiveDialog(true);

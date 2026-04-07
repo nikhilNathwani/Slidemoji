@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Dialog from "./Dialog";
 import Trophy from "../common/Trophy";
 import StatsContent from "../stats/StatsContent";
@@ -12,8 +13,9 @@ function WinDialog({
 	emoji,
 	emojiName,
 	difficulty,
-	solvedPuzzles = {},
 }) {
+	const [copied, setCopied] = useState(false);
+
 	const handleShare = () => {
 		const shareText = `Slidemoji ${formatPuzzleId(puzzleId)} 
 
@@ -25,7 +27,8 @@ Play at slidemoji.vercel.app`;
 		navigator.clipboard
 			.writeText(shareText)
 			.then(() => {
-				alert("Results copied to clipboard!");
+				setCopied(true);
+				setTimeout(() => setCopied(false), 2000);
 			})
 			.catch((err) => {
 				console.error("Failed to copy:", err);
@@ -45,16 +48,14 @@ Play at slidemoji.vercel.app`;
 				<h3>You earned today's emoji!</h3>
 
 				<button className={styles.shareButton} onClick={handleShare}>
-					<FontAwesomeIcon icon="share-nodes" />
-					Share
+					<FontAwesomeIcon icon={copied ? "check" : "share-nodes"} />
+					{copied ? "Copied!" : "Share"}
 				</button>
 
 				<div className={styles.winDivider}></div>
 
 				<StatsContent
 					showTitle={true}
-					solvedPuzzles={solvedPuzzles}
-					currentPuzzleId={puzzleId}
 				/>
 			</div>
 		</Dialog>

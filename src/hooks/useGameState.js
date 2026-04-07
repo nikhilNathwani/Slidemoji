@@ -33,7 +33,10 @@ function composeGameState(preferredState, alternateState, initialGrids) {
 		return preferredState || alternateState || null;
 	}
 
-	const normal = chooseGridForMerge(alternateState?.normal, preferredState?.normal);
+	const normal = chooseGridForMerge(
+		alternateState?.normal,
+		preferredState?.normal,
+	);
 	const hard = chooseGridForMerge(alternateState?.hard, preferredState?.hard);
 
 	return {
@@ -106,8 +109,7 @@ export function useGameState({ puzzleMetadata }) {
 	const gameState = useMemo(() => {
 		// Gate on mergeGameState directly (not isMerging) so the composed
 		// result is held stable until Firestore confirms the merge — see useEffect below.
-		const activeMergePuzzleState =
-			mergeGameState?.[puzzleId] ?? null;
+		const activeMergePuzzleState = mergeGameState?.[puzzleId] ?? null;
 
 		return activeMergePuzzleState
 			? composeGameState(

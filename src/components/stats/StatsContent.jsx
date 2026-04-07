@@ -4,17 +4,18 @@ import SignInUpsell from "../common/SignInUpsell";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAuth } from "../../hooks/useAuth";
 import { useSubscription } from "../../hooks/useSubscription";
+import { useSolvedPuzzles } from "../../hooks/useSolvedPuzzles";
 import { getLatestPuzzleId } from "../../utils/puzzleUtils";
 import styles from "./StatsContent.module.css";
 
 function StatsContent({
 	showTitle = false,
-	solvedPuzzles,
 	onUnlockArchiveClick,
 	devIsPremium,
 }) {
 	const { user } = useAuth();
 	const { isPremium: firestoreIsPremium } = useSubscription();
+	const { solvedPuzzles } = useSolvedPuzzles();
 	const isPremium = devIsPremium ?? firestoreIsPremium;
 
 	const numTotalPuzzles = getLatestPuzzleId();
