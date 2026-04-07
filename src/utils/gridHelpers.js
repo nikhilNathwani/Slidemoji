@@ -249,43 +249,25 @@ export function getTileIndexFromDirection(gapIndex, direction, size) {
  *
  * Priority order (highest wins):
  * 1. Solved grid — a completed puzzle always beats an in-progress one
- * 2. In-progress grid — a grid with moves made beats an untouched initial grid
- * 3. Google grid — if both are equal, prefer the Google account's data
- * 4. Anonymous grid — use if Google has nothing
- * 5. Initial grid — last resort fallback
+ * 2. Google grid — if both are in-progress, prefer the Google account's data
+ * 3. Anonymous grid — use if Google has nothing
+ *
+ * NOTE: We don't detect the edge case where a signed-in user made moves that
+ * happened to return to the exact initial grid, then signed out and made
+ * anonymous progress. In that case we incorrectly prefer Google's "no-progress"
+ * grid. See commit 7d44169 for an implementation that handled this.
  *
  * @param {Array} anonymousGrid
  * @param {Array} googleGrid
- * @param {Array} initialGrid
  * @returns {Array} The grid to keep
  */
-export function chooseGridForMerge(anonymousGrid, googleGrid, initialGrid) {
+export function chooseGridForMerge(anonymousGrid, googleGrid) {
 	const hasAnonymousGrid = Array.isArray(anonymousGrid);
 	const hasGoogleGrid = Array.isArray(googleGrid);
-	const hasInitialGrid = Array.isArray(initialGrid);
 
-	const isAnonymousSolved = hasAnonymousGrid && checkWin(anonymousGrid);
-	const isGoogleSolved = hasGoogleGrid && checkWin(googleGrid);
-	const isAnonymousInitial =
-		hasAnonymousGrid &&
-		hasInitialGrid &&
-		anonymousGrid.length === initialGrid.length &&
-		JSON.stringify(anonymousGrid) === JSON.stringify(initialGrid);
-	const isGoogleInitial =
-		hasGoogleGrid &&
-		hasInitialGrid &&
-		googleGrid.length === initialGrid.length &&
-		JSON.stringify(googleGrid) === JSON.stringify(initialGrid);
-
-	if (isAnonymousSolved) return anonymousGrid;
-	if (isGoogleSolved) return googleGrid;
-	if (isGoogleInitial && hasAnonymousGrid && !isAnonymousInitial)
-		return anonymousGrid;
-	if (isAnonymousInitial && hasGoogleGrid && !isGoogleInitial)
-		return googleGrid;
-	if (isAnonymousInitial && hasGoogleGrid) return googleGrid;
-	if (isGoogleInitial && hasAnonymousGrid) return anonymousGrid;
+	if (hasAnonymousGrid && checkWin(anonymousGrid)) return anonymousGrid;
+	if (hasGoogleGrid && checkWin(googleGrid)) return googleGrid;
 	if (hasGoogleGrid) return googleGrid;
 	if (hasAnonymousGrid) return anonymousGrid;
-	return initialGrid;
+	return null;
 }
