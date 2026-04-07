@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import styles from "./Game.module.css";
 import Grid from "./Grid";
 import Trophy from "../common/Trophy";
@@ -31,13 +31,11 @@ function Game({
 	const [showWinDialog, setShowWinDialog] = useState(false);
 	const isDialogOpen = isAppDialogOpen || showRestartDialog || showWinDialog;
 
-	// True only when the user's own move triggered the win (not a data load/reload)
-	const [justSolvedByMove, setJustSolvedByMove] = useState(false);
-
-	// Reset justSolvedByMove when difficulty changes (so switching modes clears the flag)
-	useEffect(() => {
-		setJustSolvedByMove(false);
-	}, [currentDifficulty]);
+	// Set to the difficulty that was just solved by a player move (null otherwise).
+	// Derived: justSolvedByMove = (justSolvedDifficulty === currentDifficulty),
+	// so switching difficulty automatically reads as false — no effect needed.
+	const [justSolvedDifficulty, setJustSolvedDifficulty] = useState(null);
+	const justSolvedByMove = justSolvedDifficulty === currentDifficulty;
 
 	// Auto-save after each move
 	const handleMove = (newGrid) => {
@@ -46,7 +44,7 @@ function Game({
 
 	// Handle puzzle solve — delay dialog so the user can relish the solved state
 	const handleSolve = () => {
-		setJustSolvedByMove(true);
+		setJustSolvedDifficulty(currentDifficulty);
 		setTimeout(() => setShowWinDialog(true), WIN_DIALOG_DELAY_MS);
 	};
 
@@ -57,7 +55,7 @@ function Game({
 
 	const handleRestartConfirm = () => {
 		setShowRestartDialog(false);
-		setJustSolvedByMove(false);
+		setJustSolvedDifficulty(null);
 		setGameState({
 			[currentDifficulty]: initialGrid,
 		});

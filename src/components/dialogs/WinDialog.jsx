@@ -54,9 +54,7 @@ Play at slidemoji.vercel.app`;
 
 				<div className={styles.winDivider}></div>
 
-				<StatsContent
-					showTitle={true}
-				/>
+				<StatsContent showTitle={true} />
 			</div>
 		</Dialog>
 	);

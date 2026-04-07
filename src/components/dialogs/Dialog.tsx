@@ -20,6 +20,15 @@ function Dialog({ isOpen, onClose, title, children }: DialogProps) {
 		return () => document.removeEventListener("keydown", handleKeyDown);
 	}, [isOpen, onClose]);
 
+	// Prevent background scroll while dialog is open (FocusTrap doesn't handle scroll).
+	useEffect(() => {
+		if (!isOpen) return;
+		document.body.style.overflow = "hidden";
+		return () => {
+			document.body.style.overflow = "";
+		};
+	}, [isOpen]);
+
 	if (!isOpen) return null;
 
 	return (

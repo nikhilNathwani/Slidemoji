@@ -4,12 +4,7 @@ import TrophyCaseTitle from "../stats/TrophyCaseTitle";
 import { useSolvedPuzzles } from "../../hooks/useSolvedPuzzles";
 import { getLatestPuzzleId } from "../../utils/puzzleUtils";
 
-function StatsDialog({
-	isOpen,
-	onClose,
-	onUnlockArchiveClick,
-	devIsPremium,
-}) {
+function StatsDialog({ isOpen, onClose, onUnlockArchiveClick, devIsPremium }) {
 	const { solvedPuzzles } = useSolvedPuzzles();
 	const numEarnedTrophies = Object.keys(solvedPuzzles || {}).length;
 
