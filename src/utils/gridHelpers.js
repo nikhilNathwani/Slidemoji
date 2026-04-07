@@ -252,10 +252,13 @@ export function getTileIndexFromDirection(gapIndex, direction, size) {
  * 2. Google grid (any state) — otherwise always prefer the Google account's data
  * 3. Anonymous grid — use if Google has nothing
  *
- * NOTE: We don't detect the edge case where a signed-in user made moves that
- * happened to return to the exact initial grid, then signed out and made
- * anonymous progress. In that case we incorrectly prefer Google's "no-progress"
- * grid. See commit 7d44169 for an implementation that handled this.
+ * NOTE: We don't detect the edge case where googleProgress happens to equal
+ * the puzzle's initial grid (i.e. the user made moves that returned
+ * to the start), which would cause us to incorrectly prefer it over
+ * real anonymous progress. The complexity of fetching initial grids
+ * to detect this wasn't worth the value-add for such a rare scenario.
+ * See commit 7d44169 for an implementation that handled it.
+ *
  *
  * @param {Array} anonymousGrid
  * @param {Array} googleGrid

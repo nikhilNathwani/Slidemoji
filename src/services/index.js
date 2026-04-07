@@ -18,9 +18,6 @@ export {
 
 export { updateFirestorePreferences } from "./firestore/preference";
 
-export {
-	saveFirestoreGameState,
-	trimGameHistory,
-} from "./firestore/gameState";
+export { saveFirestoreGameState, trimGameHistory } from "./firestore/gameState";
 
 export { getFirestorePuzzleById } from "./firestore/puzzle";

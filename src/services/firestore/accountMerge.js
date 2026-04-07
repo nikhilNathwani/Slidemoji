@@ -12,26 +12,34 @@ export async function mergeAnonymousDataToGoogle(
 		throw new Error("Both user IDs are required for merge");
 	}
 
+	// If no anonymous gameState, then merge not necessary, so early-return
 	if (!anonymousGameState) {
 		return;
 	}
 
-	try {
-		const puzzleId = getLatestPuzzleId().toString();
-		const anonymousProgress = anonymousGameState[puzzleId] || {};
+	const puzzleId = getLatestPuzzleId().toString();
+	const anonymousProgress = anonymousGameState[puzzleId] || {};
 
+	try {
 		const googleDocRef = doc(db, COLLECTIONS.USERS, googleUserId);
 
 		await runTransaction(db, async (transaction) => {
 			const googleDoc = await transaction.get(googleDocRef);
-			const googleData = googleDoc.exists() ? googleDoc.data() : null;
-			const updatedGameState = { ...(googleData?.gameState || {}) };
+			const googleGameState = googleDoc.exists()
+				? (googleDoc.data()?.gameState ?? {})
+				: {};
+			const googleProgress = googleGameState[puzzleId];
 
-			if (!updatedGameState[puzzleId]) {
-				updatedGameState[puzzleId] = { ...anonymousProgress };
+			let mergedProgress;
+			if (!googleProgress) {
+				mergedProgress = { ...anonymousProgress };
 			} else {
-				const googleProgress = updatedGameState[puzzleId];
-
+				// Start from Google's progress, then apply anonymous overrides
+				mergedProgress = { ...googleProgress };
+				if (anonymousProgress.currentDifficulty) {
+					mergedProgress.currentDifficulty =
+						anonymousProgress.currentDifficulty;
+				}
 				for (const difficulty of ["normal", "hard"]) {
 					// We don't detect the edge case where googleProgress happens to equal
 					// the puzzle's initial grid (i.e. the user made moves that returned
@@ -39,28 +47,18 @@ export async function mergeAnonymousDataToGoogle(
 					// real anonymous progress. The complexity of fetching initial grids
 					// to detect this wasn't worth the value-add for such a rare scenario.
 					// See commit 7d44169 for an implementation that handled it.
-					const mergedGrid = chooseGridForMerge(
+					const grid = chooseGridForMerge(
 						anonymousProgress[difficulty],
 						googleProgress[difficulty],
 					);
-
-					if (mergedGrid) {
-						googleProgress[difficulty] = mergedGrid;
-					}
+					if (grid) mergedProgress[difficulty] = grid;
 				}
-
-				if (anonymousProgress.currentDifficulty) {
-					googleProgress.currentDifficulty =
-						anonymousProgress.currentDifficulty;
-				}
-
-				updatedGameState[puzzleId] = googleProgress;
 			}
 
 			transaction.set(
 				googleDocRef,
 				{
-					gameState: updatedGameState,
+					gameState: { ...googleGameState, [puzzleId]: mergedProgress },
 					updatedAt: serverTimestamp(),
 				},
 				{ merge: true },
