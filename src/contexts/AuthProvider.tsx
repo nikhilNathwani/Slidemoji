@@ -59,7 +59,7 @@ interface AuthState {
 	user: UserObject | null;
 	/** Drives the isLoading/isMerging derived values consumed by components. */
 	status: AuthStatus;
-	mergeSnapshotGameState: Record<string, unknown> | null;
+	mergeGameState: Record<string, unknown> | null;
 	preferInitialGrid: boolean;
 }
 
@@ -82,7 +82,7 @@ type AuthAction =
 const initialState: AuthState = {
 	user: null,
 	status: "initializing",
-	mergeSnapshotGameState: null,
+	mergeGameState: null,
 	preferInitialGrid: false,
 };
 
@@ -102,7 +102,7 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
 			return {
 				...state,
 				status: "signing-in",
-				mergeSnapshotGameState: null,
+				mergeGameState: null,
 				preferInitialGrid: false,
 			};
 
@@ -111,7 +111,7 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
 			return {
 				...state,
 				status: "merging",
-				mergeSnapshotGameState: action.gameState,
+				mergeGameState: action.gameState,
 			};
 
 		// Sign-in and optional merge completed successfully
@@ -123,7 +123,7 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
 			return {
 				...state,
 				status: "ready",
-				mergeSnapshotGameState: null,
+				mergeGameState: null,
 				user: action.priorUser,
 			};
 
@@ -150,7 +150,7 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
 
 		// Called by useGameState once Firestore confirms the merged state
 		case "CLEAR_MERGE_SNAPSHOT":
-			return { ...state, mergeSnapshotGameState: null };
+			return { ...state, mergeGameState: null };
 	}
 }
 
@@ -271,7 +271,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 				authError.code === "auth/popup-closed-by-user" ||
 				authError.code === "auth/cancelled-popup-request";
 
-			// Restore state cleanly. mergeSnapshotGameState is also cleared so the
+			// Restore state cleanly. mergeGameState is also cleared so the
 			// board doesn't flash with the pending merge state.
 			dispatch({ type: "SIGN_IN_ABORTED", priorUser });
 
@@ -311,7 +311,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 		isLoading: state.status !== "ready",
 		isMerging: state.status === "merging",
 		preferInitialGrid: state.preferInitialGrid,
-		mergeSnapshotGameState: state.mergeSnapshotGameState,
+		mergeGameState: state.mergeGameState,
 		onMergeSettled,
 		signIn,
 		signOut,

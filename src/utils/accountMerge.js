@@ -86,27 +86,3 @@ export async function mergeAnonymousDataToGoogle(
 	}
 }
 
-export function mergeUserStats(anonStats, googleStats) {
-	// Example: merge by taking max for each stat
-	const merged = { ...googleStats };
-	for (const key in anonStats) {
-		if (
-			typeof anonStats[key] === "number" &&
-			typeof googleStats[key] === "number"
-		) {
-			merged[key] = Math.max(anonStats[key], googleStats[key]);
-		} else if (
-			Array.isArray(anonStats[key]) &&
-			Array.isArray(googleStats[key])
-		) {
-			merged[key] = Array.from(
-				new Set([...anonStats[key], ...googleStats[key]]),
-			);
-		} else if (!(key in googleStats)) {
-			merged[key] = anonStats[key];
-		}
-	}
-	return merged;
-}
-
-// Add more merge/migration helpers as needed

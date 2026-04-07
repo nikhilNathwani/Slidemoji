@@ -18,7 +18,7 @@ export interface UseAuthResult {
 	isLoading: boolean;
 	isMerging: boolean;
 	preferInitialGrid: boolean;
-	mergeSnapshotGameState: Record<string, unknown> | null;
+	mergeGameState: Record<string, unknown> | null;
 	/** Called by useGameState when Firestore data has settled after a merge. */
 	onMergeSettled: () => void;
 	signIn: () => Promise<User | null>;

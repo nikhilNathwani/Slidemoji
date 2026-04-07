@@ -41,7 +41,11 @@ export async function saveFirestoreGameState(userId, puzzleId, gameData = {}) {
 
 // mergeAnonymousDataToGoogle has been moved to src/utils/accountMerge.js
 
-export async function deleteAnonymousPastGameState(userId, currentPuzzleId, gameState) {
+export async function trimGameHistory(
+	userId,
+	currentPuzzleId,
+	gameState,
+) {
 	if (!userId) {
 		throw new Error("User ID is required");
 	}

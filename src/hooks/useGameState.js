@@ -20,7 +20,7 @@
 import { useMemo, useCallback, useEffect } from "react";
 import {
 	saveFirestoreGameState,
-	deleteAnonymousPastGameState,
+	trimGameHistory,
 } from "../services/firestore/gameState";
 import { DIFFICULTY, DEFAULT_DIFFICULTY } from "../constants";
 import { useAuth } from "./useAuth";
@@ -59,7 +59,7 @@ export function useGameState({ puzzleMetadata }) {
 	const {
 		user,
 		isMerging,
-		mergeSnapshotGameState,
+		mergeGameState,
 		onMergeSettled,
 		preferInitialGrid,
 	} = useAuth();
@@ -112,10 +112,10 @@ export function useGameState({ puzzleMetadata }) {
 	}, [userId, puzzleMetadata, userDoc, puzzleId, preferInitialGrid]);
 
 	const gameState = useMemo(() => {
-		// Gate on mergeSnapshotGameState directly (not isMerging) so the composed
+		// Gate on mergeGameState directly (not isMerging) so the composed
 		// result is held stable until Firestore confirms the merge — see useEffect below.
 		const activeMergePuzzleState =
-			mergeSnapshotGameState?.[puzzleId] ?? null;
+			mergeGameState?.[puzzleId] ?? null;
 
 		return activeMergePuzzleState
 			? composeGameState(
@@ -124,7 +124,7 @@ export function useGameState({ puzzleMetadata }) {
 					puzzleMetadata?.initialGrids,
 				)
 			: persistedGameState;
-	}, [mergeSnapshotGameState, puzzleId, persistedGameState, puzzleMetadata]);
+	}, [mergeGameState, puzzleId, persistedGameState, puzzleMetadata]);
 
 	// Once the merge is done and Firestore data has settled, clear the merge snapshot
 	// so regular persistedGameState takes over. We wait until persistedGameState is
@@ -132,9 +132,9 @@ export function useGameState({ puzzleMetadata }) {
 	// was solved we don't clear until persistedGameState is also solved. This prevents
 	// a flash of the pre-merge unsolved state during the Firestore write settle period.
 	useEffect(() => {
-		if (isMerging || !mergeSnapshotGameState || userDoc === null) return;
+		if (isMerging || !mergeGameState || userDoc === null) return;
 
-		const mergeForPuzzle = mergeSnapshotGameState[puzzleId];
+		const mergeForPuzzle = mergeGameState[puzzleId];
 		if (!mergeForPuzzle) {
 			onMergeSettled();
 			return;
@@ -150,7 +150,7 @@ export function useGameState({ puzzleMetadata }) {
 		}
 	}, [
 		isMerging,
-		mergeSnapshotGameState,
+		mergeGameState,
 		userDoc,
 		persistedGameState,
 		puzzleId,
@@ -186,7 +186,11 @@ export function useGameState({ puzzleMetadata }) {
 
 					// Clean up old trophies for anonymous users (only keep today's puzzle)
 					if (isAnonymous) {
-						await deleteAnonymousPastGameState(userId, puzzleId, userDoc?.gameState ?? null);
+						await trimGameHistory(
+							userId,
+							puzzleId,
+							userDoc?.gameState ?? null,
+						);
 					}
 				}
 			} catch (error) {
