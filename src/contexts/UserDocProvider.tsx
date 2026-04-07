@@ -53,7 +53,7 @@ export default function UserDocProvider({ children }: { children: ReactNode }) {
 
 	const value: UseUserDocResult = useMemo(
 		() => ({
-			userData: state.userId === userId ? state.userData : null,
+			userDoc: state.userId === userId ? state.userData : null,
 			isLoading: !!userId && state.userId !== userId,
 			error: state.userId === userId ? state.error : null,
 		}),

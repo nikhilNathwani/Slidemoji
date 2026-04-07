@@ -4,12 +4,12 @@ import { DIFFICULTY } from "../constants";
 import { checkWin } from "../utils/gridHelpers";
 
 export function useSolvedPuzzles() {
-	const { userData, isLoading, error } = useUserDoc();
+	const { userDoc, isLoading, error } = useUserDoc();
 
 	const solvedPuzzles = useMemo(() => {
-		if (!userData?.gameState) return {};
+		if (!userDoc?.gameState) return {};
 
-		return Object.entries(userData.gameState).reduce(
+		return Object.entries(userDoc.gameState).reduce(
 			(acc, [puzzleId, puzzleData]) => {
 				const solved = {
 					[DIFFICULTY.NORMAL]: checkWin(
@@ -25,7 +25,7 @@ export function useSolvedPuzzles() {
 			},
 			{},
 		);
-	}, [userData]);
+	}, [userDoc]);
 
 	return { solvedPuzzles, isLoading, error };
 }

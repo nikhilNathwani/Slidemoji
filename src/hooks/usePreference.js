@@ -38,7 +38,7 @@ export function usePreference(key, defaultValue, options = {}) {
 	const resolvedDefault = defaultValue ?? PREFERENCE_DEFAULTS[key];
 	const { contextKey = null } = options;
 	const { user } = useAuth();
-	const { userData } = useUserDoc();
+	const { userDoc } = useUserDoc();
 	const userId = user?.uid || null;
 
 	// If contextKey is provided, scope the storage key (e.g., showNumbers_123 for puzzle 123)
@@ -77,7 +77,7 @@ export function usePreference(key, defaultValue, options = {}) {
 		[userId, storageKey, key, contextKey],
 	);
 
-	const preferenceValue = userData?.preferences?.[storageKey];
+	const preferenceValue = userDoc?.preferences?.[storageKey];
 
 	// Priority: Firestore (signed-in) → localStorage fallback → built-in default
 	const preference = (() => {

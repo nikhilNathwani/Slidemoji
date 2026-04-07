@@ -14,7 +14,7 @@ export interface UserDoc {
 
 /** Shape of the value provided by UserDocProvider and consumed by useUserDoc(). */
 export interface UseUserDocResult {
-	userData: UserDoc | null;
+	userDoc: UserDoc | null;
 	isLoading: boolean;
 	error: Error | null;
 }

@@ -63,7 +63,7 @@ export function useGameState({ puzzleMetadata }) {
 		onMergeSettled,
 		preferInitialGrid,
 	} = useAuth();
-	const { userData, isLoading: userDocLoading } = useUserDoc();
+	const { userDoc, isLoading: userDocLoading } = useUserDoc();
 	const userId = user?.uid || null;
 	const isAnonymous = user?.isAnonymous === true;
 
@@ -82,7 +82,7 @@ export function useGameState({ puzzleMetadata }) {
 				: null;
 		}
 
-		const savedGameState = userData?.gameState?.[puzzleId] || null;
+		const savedGameState = userDoc?.gameState?.[puzzleId] || null;
 		if (!savedGameState) {
 			return {
 				normal: puzzleMetadata.initialGrids.normal,
@@ -109,13 +109,7 @@ export function useGameState({ puzzleMetadata }) {
 				puzzleMetadata.initialGrids.hard,
 			currentDifficulty,
 		};
-	}, [
-		userId,
-		puzzleMetadata,
-		userData,
-		puzzleId,
-		preferInitialGrid,
-	]);
+	}, [userId, puzzleMetadata, userDoc, puzzleId, preferInitialGrid]);
 
 	const gameState = useMemo(() => {
 		// Gate on mergeSnapshotGameState directly (not isMerging) so the composed
@@ -138,7 +132,7 @@ export function useGameState({ puzzleMetadata }) {
 	// was solved we don't clear until persistedGameState is also solved. This prevents
 	// a flash of the pre-merge unsolved state during the Firestore write settle period.
 	useEffect(() => {
-		if (isMerging || !mergeSnapshotGameState || userData === null) return;
+		if (isMerging || !mergeSnapshotGameState || userDoc === null) return;
 
 		const mergeForPuzzle = mergeSnapshotGameState[puzzleId];
 		if (!mergeForPuzzle) {
@@ -157,7 +151,7 @@ export function useGameState({ puzzleMetadata }) {
 	}, [
 		isMerging,
 		mergeSnapshotGameState,
-		userData,
+		userDoc,
 		persistedGameState,
 		puzzleId,
 		onMergeSettled,
@@ -203,9 +197,7 @@ export function useGameState({ puzzleMetadata }) {
 		[userId, isAnonymous, gameState, puzzleMetadata, puzzleId],
 	);
 
-	const loading = preferInitialGrid
-		? false
-		: !userId || userDocLoading;
+	const loading = preferInitialGrid ? false : !userId || userDocLoading;
 
 	return [gameState, setGameState, loading];
 }

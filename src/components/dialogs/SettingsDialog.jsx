@@ -17,8 +17,8 @@ function SettingsDialog({
 	const [showNumbers, setShowNumbers] = usePreference("showNumbers");
 	const [soundEnabled, setSoundEnabled] = usePreference("soundEnabled");
 	const [darkMode, setDarkMode] = usePreference("darkMode");
-	const { userData } = useUserDoc();
-	const isDevMode = import.meta.env.DEV || userData?.isDevMode === true;
+	const { userDoc } = useUserDoc();
+	const isDevMode = import.meta.env.DEV || userDoc?.isDevMode === true;
 	return (
 		<Dialog isOpen={isOpen} onClose={onClose} title="Settings">
 			<div className={styles.settingsContent}>
