@@ -1,5 +1,5 @@
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
-import { db } from "../firebaseConfig";
+import { db, COLLECTIONS } from "../firebaseConfig";
 
 export async function updateFirestorePreferences(userId, preferences) {
 	if (!userId) {
@@ -7,7 +7,7 @@ export async function updateFirestorePreferences(userId, preferences) {
 	}
 
 	try {
-		const userDocRef = doc(db, "users", userId);
+		const userDocRef = doc(db, COLLECTIONS.USERS, userId);
 		const updates = {
 			updatedAt: serverTimestamp(),
 		};

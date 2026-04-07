@@ -4,7 +4,7 @@ import {
 	serverTimestamp,
 	deleteField,
 } from "firebase/firestore";
-import { db } from "../firebaseConfig";
+import { db, COLLECTIONS } from "../firebaseConfig";
 
 export async function saveFirestoreGameState(userId, puzzleId, gameData = {}) {
 	if (!userId) {
@@ -15,7 +15,7 @@ export async function saveFirestoreGameState(userId, puzzleId, gameData = {}) {
 	}
 
 	try {
-		const userDocRef = doc(db, "users", userId);
+		const userDocRef = doc(db, COLLECTIONS.USERS, userId);
 
 		const updateData = {
 			[`gameState.${puzzleId}.currentDifficulty`]:
@@ -64,7 +64,7 @@ export async function trimGameHistory(
 			return;
 		}
 
-		const userDocRef = doc(db, "users", userId);
+		const userDocRef = doc(db, COLLECTIONS.USERS, userId);
 		const updates = {
 			updatedAt: serverTimestamp(),
 		};

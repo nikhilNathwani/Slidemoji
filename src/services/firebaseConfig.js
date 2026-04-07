@@ -31,4 +31,10 @@ export const db = initializeFirestore(app, {
 });
 export const auth = getAuth(app);
 
+/** Firestore collection name constants — single source of truth. */
+export const COLLECTIONS = {
+	USERS: "users",
+	PUZZLES: "puzzles",
+};
+
 export default app;

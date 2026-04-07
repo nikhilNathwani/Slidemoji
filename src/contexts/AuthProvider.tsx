@@ -44,7 +44,11 @@ import {
 	syncFirestoreUserData,
 } from "../services/firestore/user";
 import { mergeAnonymousDataToGoogle } from "../services/firestore/accountMerge";
-import { AuthContext, type UserObject, type UseAuthResult } from "./AuthContext";
+import {
+	AuthContext,
+	type UserObject,
+	type UseAuthResult,
+} from "./AuthContext";
 
 // ─── State ───────────────────────────────────────────────────────────────────
 

@@ -6,7 +6,7 @@ import {
 	onSnapshot,
 	updateDoc,
 } from "firebase/firestore";
-import { auth, db } from "../firebaseConfig";
+import { auth, db, COLLECTIONS } from "../firebaseConfig";
 
 function isTransientAuthTransitionPermissionError(userId, error) {
 	return (
@@ -19,7 +19,7 @@ export function subscribeToFirestoreUserData(userId, { onData, onError }) {
 		return () => {};
 	}
 
-	const userDocRef = doc(db, "users", userId);
+	const userDocRef = doc(db, COLLECTIONS.USERS, userId);
 	return onSnapshot(
 		userDocRef,
 		(docSnap) => {
@@ -40,7 +40,7 @@ export async function getFirestoreUserData(userId) {
 	}
 
 	try {
-		const userDocRef = doc(db, "users", userId);
+		const userDocRef = doc(db, COLLECTIONS.USERS, userId);
 		const userDoc = await getDoc(userDocRef);
 		return userDoc.exists() ? userDoc.data() : null;
 	} catch (error) {
@@ -52,7 +52,7 @@ export async function getFirestoreUserData(userId) {
 // Dev-only: toggle isPremium on the current user doc for local testing
 export async function resetPremiumForDev(userId, isPremium) {
 	if (!userId) throw new Error("User ID is required");
-	const userDocRef = doc(db, "users", userId);
+	const userDocRef = doc(db, COLLECTIONS.USERS, userId);
 	await updateDoc(userDocRef, { isPremium });
 }
 
@@ -73,7 +73,7 @@ export async function syncFirestoreUserData(firebaseUser) {
 	}
 
 	try {
-		const userDocRef = doc(db, "users", firebaseUser.uid);
+		const userDocRef = doc(db, COLLECTIONS.USERS, firebaseUser.uid);
 
 		await runTransaction(db, async (transaction) => {
 			const userDoc = await transaction.get(userDocRef);

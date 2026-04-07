@@ -48,7 +48,10 @@ export interface PuzzleData {
 }
 
 /** Extracts the initial (unsolved) grids from a Firestore puzzle document. */
-export function getPuzzleInitialGrids(puzzleData: FirestorePuzzle | null): { normal: number[] | null; hard: number[] | null } {
+export function getPuzzleInitialGrids(puzzleData: FirestorePuzzle | null): {
+	normal: number[] | null;
+	hard: number[] | null;
+} {
 	return {
 		normal: puzzleData?.normal ?? null,
 		hard: puzzleData?.hard ?? null,

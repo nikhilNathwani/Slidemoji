@@ -1,5 +1,5 @@
 import { doc, runTransaction, serverTimestamp } from "firebase/firestore";
-import { db } from "../firebaseConfig";
+import { db, COLLECTIONS } from "../firebaseConfig";
 import { chooseGridForMerge } from "../../utils/gridHelpers.js";
 import { getPuzzleInitialGrids } from "../../utils/puzzleUtils";
 
@@ -17,7 +17,7 @@ export async function mergeAnonymousDataToGoogle(
 			return;
 		}
 
-		const googleDocRef = doc(db, "users", googleUserId);
+		const googleDocRef = doc(db, COLLECTIONS.USERS, googleUserId);
 
 		await runTransaction(db, async (transaction) => {
 			const googleDoc = await transaction.get(googleDocRef);
@@ -27,7 +27,7 @@ export async function mergeAnonymousDataToGoogle(
 			for (const [puzzleId, anonymousPuzzleData] of Object.entries(
 				anonymousData.gameState || {},
 			)) {
-				const puzzleDocRef = doc(db, "puzzles", puzzleId.toString());
+				const puzzleDocRef = doc(db, COLLECTIONS.PUZZLES, puzzleId.toString());
 				const puzzleDoc = await transaction.get(puzzleDocRef);
 				const initialGrids = getPuzzleInitialGrids(
 					puzzleDoc.exists() ? puzzleDoc.data() : null,

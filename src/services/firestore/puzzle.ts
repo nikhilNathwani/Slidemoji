@@ -1,12 +1,12 @@
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "../firebaseConfig";
+import { db, COLLECTIONS } from "../firebaseConfig";
 import { FirestorePuzzle } from "../../utils/puzzleUtils";
 
 export async function getFirestorePuzzleById(
 	puzzleId: number,
 ): Promise<FirestorePuzzle | null> {
 	try {
-		const puzzleRef = doc(db, "puzzles", puzzleId.toString());
+		const puzzleRef = doc(db, COLLECTIONS.PUZZLES, puzzleId.toString());
 		const puzzleSnap = await getDoc(puzzleRef);
 
 		if (puzzleSnap.exists()) {
