@@ -5,7 +5,6 @@ import {
 	deleteField,
 } from "firebase/firestore";
 import { db } from "../firebaseConfig";
-import { getFirestoreUserData } from "./user";
 
 export async function saveFirestoreGameState(userId, puzzleId, gameData = {}) {
 	if (!userId) {
@@ -42,18 +41,17 @@ export async function saveFirestoreGameState(userId, puzzleId, gameData = {}) {
 
 // mergeAnonymousDataToGoogle has been moved to src/utils/accountMerge.js
 
-export async function deleteAnonymousPastGameState(userId, currentPuzzleId) {
+export async function deleteAnonymousPastGameState(userId, currentPuzzleId, gameState) {
 	if (!userId) {
 		throw new Error("User ID is required");
 	}
 
 	try {
-		const userData = await getFirestoreUserData(userId);
-		if (!userData?.gameState || !userData.isAnonymous) {
+		if (!gameState) {
 			return;
 		}
 
-		const puzzleIds = Object.keys(userData.gameState);
+		const puzzleIds = Object.keys(gameState);
 		const oldPuzzleIds = puzzleIds.filter(
 			(id) => parseInt(id) !== currentPuzzleId,
 		);

@@ -186,7 +186,7 @@ export function useGameState({ puzzleMetadata }) {
 
 					// Clean up old trophies for anonymous users (only keep today's puzzle)
 					if (isAnonymous) {
-						await deleteAnonymousPastGameState(userId, puzzleId);
+						await deleteAnonymousPastGameState(userId, puzzleId, userDoc?.gameState ?? null);
 					}
 				}
 			} catch (error) {
@@ -194,7 +194,7 @@ export function useGameState({ puzzleMetadata }) {
 				throw error;
 			}
 		},
-		[userId, isAnonymous, gameState, puzzleMetadata, puzzleId],
+		[userId, isAnonymous, gameState, puzzleMetadata, puzzleId, userDoc],
 	);
 
 	const loading = preferInitialGrid ? false : !userId || userDocLoading;
