@@ -61,9 +61,9 @@ export function useGameState({ puzzleMetadata }) {
 		isMerging,
 		mergeSnapshotGameState,
 		onMergeSettled,
-		preferInitialAnonymousState,
+		preferInitialGrid,
 	} = useAuth();
-	const { userData, loading: userDocLoading } = useUserDoc();
+	const { userData, isLoading: userDocLoading } = useUserDoc();
 	const userId = user?.uid || null;
 	const isAnonymous = user?.isAnonymous === true;
 
@@ -73,7 +73,7 @@ export function useGameState({ puzzleMetadata }) {
 		}
 
 		if (!userId) {
-			return preferInitialAnonymousState
+			return preferInitialGrid
 				? {
 						normal: puzzleMetadata.initialGrids.normal,
 						hard: puzzleMetadata.initialGrids.hard,
@@ -114,7 +114,7 @@ export function useGameState({ puzzleMetadata }) {
 		puzzleMetadata,
 		userData,
 		puzzleId,
-		preferInitialAnonymousState,
+		preferInitialGrid,
 	]);
 
 	const gameState = useMemo(() => {
@@ -203,7 +203,7 @@ export function useGameState({ puzzleMetadata }) {
 		[userId, isAnonymous, gameState, puzzleMetadata, puzzleId],
 	);
 
-	const loading = preferInitialAnonymousState
+	const loading = preferInitialGrid
 		? false
 		: !userId || userDocLoading;
 

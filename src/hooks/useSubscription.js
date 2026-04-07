@@ -12,10 +12,10 @@
 import { useUserDoc } from "./useUserDoc";
 
 export function useSubscription() {
-	const { userData, loading } = useUserDoc();
+	const { userData, isLoading } = useUserDoc();
 
 	return {
 		isPremium: userData?.isPremium === true,
-		loading,
+		isLoading,
 	};
 }

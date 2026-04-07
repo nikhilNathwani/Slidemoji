@@ -44,7 +44,7 @@ import {
 	syncFirestoreUserData,
 } from "../services/firestore/user";
 import { mergeAnonymousDataToGoogle } from "../utils/accountMerge";
-import { AuthContext, type UserObject } from "./AuthContext";
+import { AuthContext, type UserObject, type UseAuthResult } from "./AuthContext";
 
 // ─── State ───────────────────────────────────────────────────────────────────
 
@@ -60,7 +60,7 @@ interface AuthState {
 	/** Drives the isLoading/isMerging derived values consumed by components. */
 	status: AuthStatus;
 	mergeSnapshotGameState: Record<string, unknown> | null;
-	preferInitialAnonymousState: boolean;
+	preferInitialGrid: boolean;
 }
 
 // ─── Actions ─────────────────────────────────────────────────────────────────
@@ -83,7 +83,7 @@ const initialState: AuthState = {
 	user: null,
 	status: "initializing",
 	mergeSnapshotGameState: null,
-	preferInitialAnonymousState: false,
+	preferInitialGrid: false,
 };
 
 function authReducer(state: AuthState, action: AuthAction): AuthState {
@@ -103,7 +103,7 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
 				...state,
 				status: "signing-in",
 				mergeSnapshotGameState: null,
-				preferInitialAnonymousState: false,
+				preferInitialGrid: false,
 			};
 
 		// Google sign-in succeeded and anonymous data exists — merge in progress
@@ -133,7 +133,7 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
 				...state,
 				status: "signing-out",
 				user: null,
-				preferInitialAnonymousState: true,
+				preferInitialGrid: true,
 			};
 
 		// Sign-out complete; new anonymous user will arrive via AUTH_USER_CHANGED / AUTH_READY
@@ -145,7 +145,7 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
 			return {
 				...state,
 				status: "ready",
-				preferInitialAnonymousState: false,
+				preferInitialGrid: false,
 			};
 
 		// Called by useGameState once Firestore confirms the merged state
@@ -306,11 +306,11 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 
 	const onMergeSettled = () => dispatch({ type: "CLEAR_MERGE_SNAPSHOT" });
 
-	const value = {
+	const value: UseAuthResult = {
 		user: state.user,
 		isLoading: state.status !== "ready",
 		isMerging: state.status === "merging",
-		preferInitialAnonymousState: state.preferInitialAnonymousState,
+		preferInitialGrid: state.preferInitialGrid,
 		mergeSnapshotGameState: state.mergeSnapshotGameState,
 		onMergeSettled,
 		signIn,

@@ -1,11 +1,15 @@
 import { ReactNode, useEffect, useMemo, useState } from "react";
 import { subscribeToFirestoreUserData } from "../services/firestore/user";
 import { useAuth } from "../hooks/useAuth";
-import { UserDocContext, type UserData } from "./UserDocContext";
+import {
+	UserDocContext,
+	type UserDoc,
+	type UseUserDocResult,
+} from "./UserDocContext";
 
 interface UserDocState {
 	userId: string | null;
-	userData: UserData | null;
+	userData: UserDoc | null;
 	error: Error | null;
 }
 
@@ -27,7 +31,7 @@ export default function UserDocProvider({ children }: { children: ReactNode }) {
 			onData: (userData: unknown) => {
 				setState({
 					userId,
-					userData: userData as UserData | null,
+					userData: userData as UserDoc | null,
 					error: null,
 				});
 			},
@@ -47,10 +51,10 @@ export default function UserDocProvider({ children }: { children: ReactNode }) {
 		return () => unsubscribe();
 	}, [userId]);
 
-	const value = useMemo(
+	const value: UseUserDocResult = useMemo(
 		() => ({
 			userData: state.userId === userId ? state.userData : null,
-			loading: !!userId && state.userId !== userId,
+			isLoading: !!userId && state.userId !== userId,
 			error: state.userId === userId ? state.error : null,
 		}),
 		[state, userId],

@@ -1,12 +1,7 @@
 import { createContext } from "react";
 
-/** Raw Firestore user document data. Typed loosely to accommodate evolving schema. */
-export interface UserData {
-	uid: string;
-	email: string | null;
-	displayName: string | null;
-	photoURL: string | null;
-	isAnonymous: boolean;
+/** Firestore app-data document for a user. Auth identity fields (uid, email, etc.) live in UserObject via useAuth(). */
+export interface UserDoc {
 	isPremium: boolean;
 	gameState: Record<string, unknown> | null;
 	preferences: {
@@ -19,8 +14,8 @@ export interface UserData {
 
 /** Shape of the value provided by UserDocProvider and consumed by useUserDoc(). */
 export interface UseUserDocResult {
-	userData: UserData | null;
-	loading: boolean;
+	userData: UserDoc | null;
+	isLoading: boolean;
 	error: Error | null;
 }
 

@@ -99,6 +99,6 @@
 	}
 
 	.dialogClose {
-		font-size: var(--text-xl);
+		font-size: var(--text-3xl);
 	}
 }

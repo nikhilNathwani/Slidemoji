@@ -4,7 +4,7 @@ import { DIFFICULTY } from "../constants";
 import { checkWin } from "../utils/gridHelpers";
 
 export function useSolvedPuzzles() {
-	const { userData, loading, error } = useUserDoc();
+	const { userData, isLoading, error } = useUserDoc();
 
 	const solvedPuzzles = useMemo(() => {
 		if (!userData?.gameState) return {};
@@ -27,5 +27,5 @@ export function useSolvedPuzzles() {
 		);
 	}, [userData]);
 
-	return { solvedPuzzles, loading, error };
+	return { solvedPuzzles, isLoading, error };
 }
