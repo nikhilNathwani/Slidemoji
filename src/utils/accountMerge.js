@@ -1,14 +1,7 @@
 import { doc, runTransaction, serverTimestamp } from "firebase/firestore";
 import { db } from "../services/firebaseConfig";
 import { chooseGridForMerge } from "./gridHelpers.js";
-
-// Extracts the initial (unsolved) grids from a Firestore puzzle document.
-function getPuzzleInitialGrids(puzzleData) {
-	return {
-		normal: puzzleData?.normal || null,
-		hard: puzzleData?.hard || null,
-	};
-}
+import { getPuzzleInitialGrids } from "./puzzleUtils";
 
 export async function mergeAnonymousDataToGoogle(
 	anonymousUserId,
@@ -85,4 +78,3 @@ export async function mergeAnonymousDataToGoogle(
 		throw error;
 	}
 }
-
