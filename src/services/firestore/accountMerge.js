@@ -4,7 +4,8 @@ import { chooseGridForMerge } from "../../utils/gridHelpers.js";
 
 export async function mergeAnonymousDataToGoogle(
 	anonymousUserId,
-	anonymousData,
+	puzzleId,
+	anonymousPuzzle,
 	googleUserId,
 ) {
 	if (!anonymousUserId || !googleUserId) {
@@ -12,7 +13,7 @@ export async function mergeAnonymousDataToGoogle(
 	}
 
 	try {
-		if (!anonymousData || !anonymousData.gameState) {
+		if (!anonymousPuzzle) {
 			return;
 		}
 
@@ -22,11 +23,6 @@ export async function mergeAnonymousDataToGoogle(
 			const googleDoc = await transaction.get(googleDocRef);
 			const googleData = googleDoc.exists() ? googleDoc.data() : null;
 			const mergedGameState = { ...(googleData?.gameState || {}) };
-
-			// trimGameHistory runs before merge, so anonymousData.gameState
-			// always contains exactly one entry (today's puzzle).
-			const puzzleId = Object.keys(anonymousData.gameState)[0];
-			const anonymousPuzzle = anonymousData.gameState[puzzleId] || {};
 
 			if (!mergedGameState[puzzleId]) {
 				mergedGameState[puzzleId] = { ...anonymousPuzzle };
