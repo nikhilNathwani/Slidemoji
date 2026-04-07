@@ -1,7 +1,7 @@
 import { doc, runTransaction, serverTimestamp } from "firebase/firestore";
-import { db } from "../services/firebaseConfig";
-import { chooseGridForMerge } from "./gridHelpers.js";
-import { getPuzzleInitialGrids } from "./puzzleUtils";
+import { db } from "../firebaseConfig";
+import { chooseGridForMerge } from "../../utils/gridHelpers.js";
+import { getPuzzleInitialGrids } from "../../utils/puzzleUtils";
 
 export async function mergeAnonymousDataToGoogle(
 	anonymousUserId,
