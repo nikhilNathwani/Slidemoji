@@ -9,10 +9,18 @@ import {
 import type { User } from "firebase/auth";
 import { auth, db, COLLECTIONS } from "../firebaseConfig";
 
+/** Per-puzzle game progress stored under UserDoc.gameState[puzzleId]. */
+export interface PuzzleProgress {
+	normal?: number[];
+	hard?: number[];
+	currentDifficulty?: string;
+}
+
 /** Firestore app-data document for a user. Auth identity fields live in UserObject via useAuth(). */
 export interface UserDoc {
 	isPremium: boolean;
-	gameState: Record<string, unknown> | null;
+	/** Keys are puzzle IDs as strings (Firestore always serializes map keys as strings). */
+	gameState: Record<string, PuzzleProgress> | null;
 	preferences: {
 		darkMode: boolean;
 		soundEnabled: boolean;
@@ -27,8 +35,8 @@ export function subscribeToFirestoreUserData(
 		onData,
 		onError,
 	}: {
-			onData: (data: UserDoc | null) => void;
-			onError?: (error: Error) => void;
+		onData: (data: UserDoc | null) => void;
+		onError?: (error: Error) => void;
 	},
 ): () => void {
 	if (!userId) {
@@ -42,7 +50,10 @@ export function subscribeToFirestoreUserData(
 			onData(docSnap.exists() ? (docSnap.data() as UserDoc) : null);
 		},
 		(error) => {
-			if (error?.code === "permission-denied" && auth.currentUser?.uid !== userId) {
+			if (
+				error?.code === "permission-denied" &&
+				auth.currentUser?.uid !== userId
+			) {
 				return;
 			}
 			onError?.(error);
@@ -50,7 +61,9 @@ export function subscribeToFirestoreUserData(
 	);
 }
 
-export async function getFirestoreUserData(userId: string): Promise<UserDoc | null> {
+export async function getFirestoreUserData(
+	userId: string,
+): Promise<UserDoc | null> {
 	if (!userId) {
 		throw new Error("User ID is required");
 	}
@@ -66,7 +79,10 @@ export async function getFirestoreUserData(userId: string): Promise<UserDoc | nu
 }
 
 // Dev-only: toggle isPremium on the current user doc for local testing
-export async function resetPremiumForDev(userId: string, isPremium: boolean): Promise<void> {
+export async function resetPremiumForDev(
+	userId: string,
+	isPremium: boolean,
+): Promise<void> {
 	if (!userId) throw new Error("User ID is required");
 	const userDocRef = doc(db, COLLECTIONS.USERS, userId);
 	await updateDoc(userDocRef, { isPremium });

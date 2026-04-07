@@ -1,6 +1,6 @@
 import { createContext } from "react";
-import type { UserDoc } from "../services/firestore/user";
-export type { UserDoc };
+import type { UserDoc, PuzzleProgress } from "../services/firestore/user";
+export type { UserDoc, PuzzleProgress };
 
 /** Shape of the value provided by UserDocProvider and consumed by useUserDoc(). */
 export interface UseUserDocResult {
