@@ -25,10 +25,8 @@ export async function mergeAnonymousDataToGoogle(
 
 			// trimGameHistory runs before merge, so anonymousData.gameState
 			// always contains exactly one entry (today's puzzle).
-			const [[puzzleId, anonymousPuzzleData]] = Object.entries(
-				anonymousData.gameState,
-			);
-			const anonymousPuzzle = anonymousPuzzleData || {};
+			const puzzleId = Object.keys(anonymousData.gameState)[0];
+			const anonymousPuzzle = anonymousData.gameState[puzzleId] || {};
 
 			if (!mergedGameState[puzzleId]) {
 				mergedGameState[puzzleId] = { ...anonymousPuzzle };
