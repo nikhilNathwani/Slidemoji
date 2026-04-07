@@ -33,16 +33,8 @@ function composeGameState(preferredState, alternateState, initialGrids) {
 		return preferredState || alternateState || null;
 	}
 
-	const normal = chooseGridForMerge(
-		alternateState?.normal,
-		preferredState?.normal,
-		initialGrids.normal,
-	);
-	const hard = chooseGridForMerge(
-		alternateState?.hard,
-		preferredState?.hard,
-		initialGrids.hard,
-	);
+	const normal = chooseGridForMerge(alternateState?.normal, preferredState?.normal);
+	const hard = chooseGridForMerge(alternateState?.hard, preferredState?.hard);
 
 	return {
 		normal: normal || initialGrids.normal,

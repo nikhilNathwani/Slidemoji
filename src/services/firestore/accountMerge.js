@@ -13,13 +13,11 @@ export async function mergeAnonymousProgressToGoogle(
 		throw new Error("Both user IDs are required for merge");
 	}
 
-	// If no anonymous gameState, then merge not necessary, so early-return
-	if (!anonymousGameState) {
-		return;
-	}
-
 	const puzzleId = getLatestPuzzleId().toString();
-	const anonymousProgress = anonymousGameState[puzzleId] || {};
+
+	// If no anonymous progress for today's puzzle, merge not necessary
+	const anonymousProgress = anonymousGameState?.[puzzleId];
+	if (!anonymousProgress) return;
 
 	try {
 		const googleDocRef = doc(db, COLLECTIONS.USERS, googleUserId);
