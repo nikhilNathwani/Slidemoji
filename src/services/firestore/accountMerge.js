@@ -4,8 +4,8 @@ import { chooseGridForMerge } from "../../utils/gridHelpers.js";
 
 export async function mergeAnonymousDataToGoogle(
 	anonymousUserId,
-	googleUserId,
 	anonymousData,
+	googleUserId,
 ) {
 	if (!anonymousUserId || !googleUserId) {
 		throw new Error("Both user IDs are required for merge");
@@ -23,6 +23,8 @@ export async function mergeAnonymousDataToGoogle(
 			const googleData = googleDoc.exists() ? googleDoc.data() : null;
 			const mergedGameState = { ...(googleData?.gameState || {}) };
 
+			// Anonymous users can only play today's puzzle, and trimGameHistory
+			// runs before merge, so this always iterates over a single entry.
 			for (const [puzzleId, anonymousPuzzleData] of Object.entries(
 				anonymousData.gameState,
 			)) {

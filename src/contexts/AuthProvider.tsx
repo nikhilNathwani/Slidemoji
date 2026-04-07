@@ -255,8 +255,8 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 			if (anonymousUid && firebaseUser.uid !== anonymousUid) {
 				await mergeAnonymousDataToGoogle(
 					anonymousUid,
-					firebaseUser.uid,
 					anonymousData,
+					firebaseUser.uid,
 				);
 			}
 
