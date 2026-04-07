@@ -3,7 +3,8 @@ import { db, COLLECTIONS } from "../firebaseConfig";
 import { chooseGridForMerge } from "../../utils/gridHelpers.js";
 import { getLatestPuzzleId } from "../../utils/puzzleUtils";
 
-export async function mergeAnonymousDataToGoogle(
+// Merge any anonymous progress on today's puzzle into the Google account
+export async function mergeAnonymousProgressToGoogle(
 	anonymousUserId,
 	anonymousGameState,
 	googleUserId,
@@ -24,12 +25,14 @@ export async function mergeAnonymousDataToGoogle(
 		const googleDocRef = doc(db, COLLECTIONS.USERS, googleUserId);
 
 		await runTransaction(db, async (transaction) => {
+			// Fetch Google game data
 			const googleDoc = await transaction.get(googleDocRef);
 			const googleGameState = googleDoc.exists()
 				? (googleDoc.data()?.gameState ?? {})
 				: {};
 			const googleProgress = googleGameState[puzzleId];
 
+			// Merge anonymous progress with Google progress (if there is any)
 			let mergedProgress;
 			if (!googleProgress) {
 				mergedProgress = { ...anonymousProgress };
@@ -41,12 +44,6 @@ export async function mergeAnonymousDataToGoogle(
 						anonymousProgress.currentDifficulty;
 				}
 				for (const difficulty of ["normal", "hard"]) {
-					// We don't detect the edge case where googleProgress happens to equal
-					// the puzzle's initial grid (i.e. the user made moves that returned
-					// to the start), which would cause us to incorrectly prefer it over
-					// real anonymous progress. The complexity of fetching initial grids
-					// to detect this wasn't worth the value-add for such a rare scenario.
-					// See commit 7d44169 for an implementation that handled it.
 					const grid = chooseGridForMerge(
 						anonymousProgress[difficulty],
 						googleProgress[difficulty],
@@ -58,7 +55,10 @@ export async function mergeAnonymousDataToGoogle(
 			transaction.set(
 				googleDocRef,
 				{
-					gameState: { ...googleGameState, [puzzleId]: mergedProgress },
+					gameState: {
+						...googleGameState, //retain history
+						[puzzleId]: mergedProgress, //update today's puzzle
+					},
 					updatedAt: serverTimestamp(),
 				},
 				{ merge: true },

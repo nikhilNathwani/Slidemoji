@@ -43,7 +43,7 @@ import {
 	getFirestoreUserData,
 	syncFirestoreUserData,
 } from "../services/firestore/userDoc";
-import { mergeAnonymousDataToGoogle } from "../services/firestore/accountMerge";
+import { mergeAnonymousProgressToGoogle } from "../services/firestore/accountMerge";
 import {
 	AuthContext,
 	type UserObject,
@@ -250,7 +250,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 			// If the UID changed, linkWithCredential failed (account already existed).
 			// Merge the anonymous user's data into the Google account.
 			if (anonymousUid && firebaseUser.uid !== anonymousUid) {
-				await mergeAnonymousDataToGoogle(
+				await mergeAnonymousProgressToGoogle(
 					anonymousUid,
 					anonymousData?.gameState,
 					firebaseUser.uid,
