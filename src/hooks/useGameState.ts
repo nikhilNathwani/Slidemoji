@@ -26,7 +26,7 @@ import { DIFFICULTY, DEFAULT_DIFFICULTY } from "../constants";
 import { useAuth } from "./useAuth";
 import { useUserDoc } from "./useUserDoc";
 import type { PuzzleData } from "../utils/puzzleUtils";
-import type { GameState, SavedGame } from "../services/firestore/userDoc";
+import type { GameState } from "../services/firestore/userDoc";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -38,11 +38,7 @@ export function useGameState({
 }: {
 	puzzleId: number | null | undefined;
 	initialGrids: PuzzleData["initialGrids"] | null | undefined;
-}): [
-	GameState | null,
-	(update: Partial<GameState>) => Promise<void>,
-	boolean,
-] {
+}): [GameState | null, (update: Partial<GameState>) => Promise<void>, boolean] {
 	const {
 		user,
 		isMerging,
@@ -70,7 +66,7 @@ export function useGameState({
 		}
 
 		const key = puzzleId != null ? String(puzzleId) : null;
-		const savedGameState: SavedGame | null = key
+		const savedGameState: Partial<GameState> | null = key
 			? (userDoc?.savedGames?.[key] ?? null)
 			: null;
 		if (!savedGameState) {
@@ -82,7 +78,7 @@ export function useGameState({
 		}
 
 		const getSavedGrid = (diff: string): number[] | null => {
-			const grid = savedGameState?.[diff as keyof SavedGame];
+			const grid = savedGameState?.[diff as keyof GameState];
 			if (!grid || !Array.isArray(grid)) return null;
 			return grid;
 		};
@@ -100,7 +96,7 @@ export function useGameState({
 	const gameState = useMemo((): GameState | null => {
 		const key = puzzleId != null ? String(puzzleId) : null;
 		const snapshot = key
-			? (anonymousSnapshot?.[key] as SavedGame | undefined)
+			? (anonymousSnapshot?.[key] as Partial<GameState> | undefined)
 			: undefined;
 		if (snapshot && initialGrids) {
 			return {

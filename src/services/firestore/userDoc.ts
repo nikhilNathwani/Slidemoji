@@ -16,14 +16,13 @@ export interface GameState {
 	currentDifficulty: string;
 }
 
-/** Firestore storage shape — all fields optional since a save can be partial (e.g. difficulty-only). */
-export type SavedGame = Partial<GameState>;
-
 /** Firestore app-data document for a user. Auth identity fields live in UserObject via useAuth(). */
 export interface UserDoc {
 	isPremium: boolean;
-	/** Keys are puzzle IDs as strings (Firestore always serializes map keys as strings). */
-	savedGames: Record<string, SavedGame> | null;
+	/** Keys are puzzle IDs as strings (Firestore always serializes map keys as strings).
+	 *  Values are Partial<GameState> because a save can be incomplete
+	 *  (e.g. only currentDifficulty written on a difficulty switch before any moves). */
+	savedGames: Record<string, Partial<GameState>> | null;
 	preferences: {
 		darkMode: boolean;
 		soundEnabled: boolean;
