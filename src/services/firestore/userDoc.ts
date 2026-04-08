@@ -9,12 +9,15 @@ import {
 import type { User } from "firebase/auth";
 import { auth, db, COLLECTIONS } from "../firebaseConfig";
 
-/** Per-puzzle save state stored under UserDoc.savedGames[puzzleId]. */
-export interface SavedGame {
-	normal?: number[];
-	hard?: number[];
-	currentDifficulty?: string;
+/** The normalised, in-memory state for a single puzzle (both grids guaranteed present). */
+export interface GameState {
+	normal: number[];
+	hard: number[];
+	currentDifficulty: string;
 }
+
+/** Firestore storage shape — all fields optional since a save can be partial (e.g. difficulty-only). */
+export type SavedGame = Partial<GameState>;
 
 /** Firestore app-data document for a user. Auth identity fields live in UserObject via useAuth(). */
 export interface UserDoc {

@@ -26,16 +26,11 @@ import { DIFFICULTY, DEFAULT_DIFFICULTY } from "../constants";
 import { useAuth } from "./useAuth";
 import { useUserDoc } from "./useUserDoc";
 import type { PuzzleData } from "../utils/puzzleUtils";
-import type { SavedGame } from "../services/firestore/userDoc";
+import type { GameState, SavedGame } from "../services/firestore/userDoc";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-/** The normalised, ready-to-render state for a single puzzle (both grids guaranteed present). */
-export interface GameState {
-	normal: number[];
-	hard: number[];
-	currentDifficulty: string;
-}
+export type { GameState };
 
 export function useGameState({
 	puzzleId,
