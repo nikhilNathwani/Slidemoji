@@ -3,7 +3,7 @@ import Dialog from "./Dialog";
 import Trophy from "../common/Trophy";
 import StatsContent from "../stats/StatsContent";
 import styles from "./WinDialog.module.css";
-import { FontAwesomeIcon } from "../../utils/icons";
+import { FontAwesomeIcon, faCheck, faShareNodes } from "../../utils/icons";
 import { formatPuzzleId } from "../../utils/puzzleUtils";
 
 function WinDialog({
@@ -48,7 +48,7 @@ Play at slidemoji.vercel.app`;
 				<h3>You earned today's emoji!</h3>
 
 				<button className={styles.shareButton} onClick={handleShare}>
-					<FontAwesomeIcon icon={copied ? "check" : "share-nodes"} />
+					<FontAwesomeIcon icon={copied ? faCheck : faShareNodes} />
 					{copied ? "Copied!" : "Share"}
 				</button>
 

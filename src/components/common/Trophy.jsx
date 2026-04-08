@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { FontAwesomeIcon } from "../../utils/icons";
+import { FontAwesomeIcon, faLock, faUnlock } from "../../utils/icons";
 import { DIFFICULTY } from "../../constants";
 import styles from "./Trophy.module.css";
 import { formatPuzzleId } from "../../utils/puzzleUtils";
@@ -79,7 +79,7 @@ function Trophy({
 			<div className={styles.number}>{formatPuzzleId(trophyNum)}</div>
 			{isLocked ? (
 				<div className={styles.lockIcon}>
-					<FontAwesomeIcon icon={isToday ? "unlock" : "lock"} />
+					<FontAwesomeIcon icon={isToday ? faUnlock : faLock} />
 				</div>
 			) : (
 				<div className={styles.emoji}>{emoji}</div>

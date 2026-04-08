@@ -1,5 +1,5 @@
 import PuzzleListItem from "./PuzzleListItem";
-import { FontAwesomeIcon } from "../../utils/icons";
+import { FontAwesomeIcon, faCheck, faShieldAlt } from "../../utils/icons";
 import { useCheckout } from "../../hooks/useCheckout";
 import styles from "./PaywallView.module.css";
 
@@ -33,7 +33,7 @@ function PaywallView({ puzzleList }) {
 			<ul className={styles.featureList}>
 				<li className={styles.featureItem}>
 					<FontAwesomeIcon
-						icon="check"
+						icon={faCheck}
 						className={styles.featureIcon}
 					/>
 					<div>
@@ -47,7 +47,7 @@ function PaywallView({ puzzleList }) {
 				</li>
 				<li className={styles.featureItem}>
 					<FontAwesomeIcon
-						icon="check"
+						icon={faCheck}
 						className={styles.featureIcon}
 					/>
 					<div>
@@ -76,7 +76,7 @@ function PaywallView({ puzzleList }) {
 			{error && <p className={styles.error}>{error}</p>}
 
 			<p className={styles.securityNote}>
-				<FontAwesomeIcon icon="shield-alt" />
+				<FontAwesomeIcon icon={faShieldAlt} />
 				Secure payment via Stripe
 			</p>
 		</div>

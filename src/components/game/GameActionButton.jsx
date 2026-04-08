@@ -1,5 +1,5 @@
 import SignInUpsell from "../common/SignInUpsell";
-import { FontAwesomeIcon } from "../../utils/icons";
+import { FontAwesomeIcon, faTrophy, faRedo } from "../../utils/icons";
 import styles from "./Game.module.css";
 
 /**
@@ -29,7 +29,7 @@ function GameActionButton({ isSolved, isSignedIn, onOpenStats, onRestart }) {
 				onClick={onOpenStats}
 				title="View your trophy collection"
 			>
-				<FontAwesomeIcon icon="trophy" />
+				<FontAwesomeIcon icon={faTrophy} />
 				View Trophies
 			</button>
 		);
@@ -42,7 +42,7 @@ function GameActionButton({ isSolved, isSignedIn, onOpenStats, onRestart }) {
 			onClick={onRestart}
 			title="Restart Puzzle"
 		>
-			<FontAwesomeIcon icon="redo" />
+			<FontAwesomeIcon icon={faRedo} />
 			Restart
 		</button>
 	);

@@ -5,7 +5,7 @@ import PaywallView from "./PaywallView";
 import { useSubscription } from "../../hooks/useSubscription";
 import { useSolvedPuzzles } from "../../hooks/useSolvedPuzzles";
 import { getLatestPuzzleId } from "../../utils/puzzleUtils";
-import { FontAwesomeIcon } from "../../utils/icons";
+import { FontAwesomeIcon, faClockRotateLeft } from "../../utils/icons";
 import styles from "./ArchiveDialog.module.css";
 
 function ArchiveDialog({ isOpen, onClose, onPuzzleSelect, devIsPremium }) {
@@ -49,7 +49,7 @@ function ArchiveDialog({ isOpen, onClose, onPuzzleSelect, devIsPremium }) {
 			title={
 				<>
 					<FontAwesomeIcon
-						icon="clock-rotate-left"
+						icon={faClockRotateLeft}
 						className={styles.archiveIcon}
 					/>{" "}
 					Puzzle Archive

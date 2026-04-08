@@ -1,6 +1,6 @@
 import Dialog from "./Dialog";
 import styles from "./SettingsDialog.module.css";
-import { FontAwesomeIcon } from "../../utils/icons";
+import { FontAwesomeIcon, faComment, faBug } from "../../utils/icons";
 import { DIFFICULTIES } from "../../constants";
 import { useUserDoc } from "../../hooks/useUserDoc";
 import { usePreference } from "../../hooks/usePreference";
@@ -131,7 +131,7 @@ function SettingsDialog({
 						href="mailto:support.slidemoji@gmail.com?subject=Slidemoji%20Feedback"
 						className={`${styles.actionButton} ${styles.feedback}`}
 					>
-						<FontAwesomeIcon icon="comment" />
+						<FontAwesomeIcon icon={faComment} />
 						Give Feedback
 					</a>
 					<a
@@ -145,7 +145,7 @@ function SettingsDialog({
 						)}`}
 						className={`${styles.actionButton} ${styles.report}`}
 					>
-						<FontAwesomeIcon icon="bug" />
+						<FontAwesomeIcon icon={faBug} />
 						Report an Issue
 					</a>
 				</div>

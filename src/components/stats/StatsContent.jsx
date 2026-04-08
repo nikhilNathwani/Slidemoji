@@ -1,7 +1,7 @@
 import TrophyCase from "../stats/TrophyCase";
 import TrophyCaseTitle from "../stats/TrophyCaseTitle";
 import SignInUpsell from "../common/SignInUpsell";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FontAwesomeIcon, faClockRotateLeft } from "../../utils/icons";
 import { useAuth } from "../../hooks/useAuth";
 import { useSubscription } from "../../hooks/useSubscription";
 import { useSolvedPuzzles } from "../../hooks/useSolvedPuzzles";
@@ -53,7 +53,7 @@ function StatsContent({
 								Archive unlocked! Use the{" "}
 								<strong>
 									Puzzle Archive{" "}
-									<FontAwesomeIcon icon="clock-rotate-left" />
+									<FontAwesomeIcon icon={faClockRotateLeft} />
 								</strong>{" "}
 								button in the header to play past puzzles and
 								complete your trophy collection.

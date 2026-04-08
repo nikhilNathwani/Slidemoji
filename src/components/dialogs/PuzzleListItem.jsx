@@ -1,6 +1,6 @@
 import { usePuzzle } from "../../hooks/usePuzzle";
 import { formatPuzzleId } from "../../utils/puzzleUtils";
-import { FontAwesomeIcon } from "../../utils/icons";
+import { FontAwesomeIcon, faLock, faPlayCircle } from "../../utils/icons";
 import styles from "./PuzzleListItem.module.css";
 
 function PuzzleListItem({ puzzleNum, isSolved, onClick, isLocked = false }) {
@@ -29,7 +29,7 @@ function PuzzleListItem({ puzzleNum, isSolved, onClick, isLocked = false }) {
 				)}
 			</div>
 			<FontAwesomeIcon
-				icon={isLocked ? "lock" : "play-circle"}
+				icon={isLocked ? faLock : faPlayCircle}
 				className={styles.playIcon}
 			/>
 		</button>

@@ -1,4 +1,4 @@
-import { FontAwesomeIcon } from "../../utils/icons";
+import { FontAwesomeIcon, faTrophy, faChevronLeft, faChevronRight } from "../../utils/icons";
 import Trophy from "../common/Trophy";
 import { DIFFICULTY } from "../../constants";
 import { getLatestPuzzleId } from "../../utils/puzzleUtils";
@@ -78,7 +78,7 @@ function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true }) {
 		<div className={styles.trophyCase}>
 			{showTitle && (
 				<h3>
-					<FontAwesomeIcon icon="trophy" /> Trophy Case
+					<FontAwesomeIcon icon={faTrophy} /> Trophy Case
 					<span className={styles.trophyCount}>
 						{numEarnedTrophies}/{totalPuzzles}
 					</span>
@@ -121,7 +121,7 @@ function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true }) {
 						disabled={currentPage === 1}
 						aria-label="Previous page"
 					>
-						<FontAwesomeIcon icon="chevron-left" />
+						<FontAwesomeIcon icon={faChevronLeft} />
 					</button>
 					<span className={styles.pageInfo}>
 						Page {currentPage} of {totalPages}
@@ -132,7 +132,7 @@ function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true }) {
 						disabled={currentPage === totalPages}
 						aria-label="Next page"
 					>
-						<FontAwesomeIcon icon="chevron-right" />
+						<FontAwesomeIcon icon={faChevronRight} />
 					</button>
 				</div>
 			)}

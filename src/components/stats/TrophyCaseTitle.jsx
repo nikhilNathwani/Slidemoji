@@ -1,5 +1,5 @@
 import styles from "./TrophyCaseTitle.module.css";
-import { FontAwesomeIcon } from "../../utils/icons";
+import { FontAwesomeIcon, faTrophy } from "../../utils/icons";
 
 function TrophyCaseTitle({
 	numEarnedTrophies,
@@ -9,7 +9,7 @@ function TrophyCaseTitle({
 	const Wrapper = isDialogHeader ? "span" : "h2";
 	return (
 		<Wrapper className={styles.trophyCaseTitle}>
-			<FontAwesomeIcon icon="trophy" className={styles.titleIcon} />
+			<FontAwesomeIcon icon={faTrophy} className={styles.titleIcon} />
 			Trophy Case{" "}
 			<span className={styles.trophyCountPill}>
 				{numEarnedTrophies}
