@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { FontAwesomeIcon, faLock, faUnlock } from "../../utils/icons";
 import { DIFFICULTY } from "../../constants";
 import styles from "./Trophy.module.css";
@@ -30,36 +30,35 @@ function Trophy({
 	const name = trophyName || puzzleData?.emojiName;
 
 	const [isCelebrating, setIsCelebrating] = useState(false);
-	// showTrophyStyle delays the visual trophy switch until the animation peak
-	const [showTrophyStyle, setShowTrophyStyle] = useState(isSolved);
+	// celebrationPeaked: true once the 550ms timer fires (animation scale peak).
+	// Used to derive showTrophyStyle without a separate state variable.
+	const [celebrationPeaked, setCelebrationPeaked] = useState(false);
 
-	// Celebration trigger: only fires when an actual move solved the puzzle.
-	// Using justSolvedByMove (false → true) avoids false replays on sign-in
-	// data reloads where isSolved can blip false → true without a real solve.
-	const prevJustSolvedByMoveRef = useRef(false);
+	// showTrophyStyle is derived: show trophy style when solved, but during the
+	// early phase of celebration (before the animation peak) keep it grey so the
+	// reveal lands at the visual peak rather than immediately.
+	const showTrophyStyle = isMini
+		? isSolved
+		: isSolved && (!isCelebrating || celebrationPeaked);
+
+	// Detect false → true transition in justSolvedByMove to start celebration.
+	// Using "storing previous render" (setState during render) avoids a cascading effect.
+	const [prevJustSolvedByMove, setPrevJustSolvedByMove] =
+		useState(justSolvedByMove);
+	if (prevJustSolvedByMove !== justSolvedByMove) {
+		setPrevJustSolvedByMove(justSolvedByMove);
+		if (!prevJustSolvedByMove && justSolvedByMove && !isMini) {
+			setIsCelebrating(true);
+		}
+	}
+
+	// At the animation scale peak (550ms), mark the celebration as peaked.
+	// setState is only called asynchronously (inside setTimeout), not synchronously.
 	useEffect(() => {
-		const isNewSolve =
-			!prevJustSolvedByMoveRef.current && justSolvedByMove;
-		prevJustSolvedByMoveRef.current = justSolvedByMove;
-
-		if (isMini || !isNewSolve) return;
-		setIsCelebrating(true);
-		// Switch to trophy style at the scale-1.12 peak (350ms start + 40% of 500ms = 550ms)
-		const timer = setTimeout(() => setShowTrophyStyle(true), 550);
+		if (!isCelebrating) return;
+		const timer = setTimeout(() => setCelebrationPeaked(true), 550);
 		return () => clearTimeout(timer);
-	}, [justSolvedByMove, isMini]);
-
-	// Trophy style: update on isSolved changes when not mid-celebration.
-	// Skips updates while justSolvedByMove is true to prevent auth-reload flickers.
-	useEffect(() => {
-		if (isMini) {
-			setShowTrophyStyle(isSolved);
-			return;
-		}
-		if (!justSolvedByMove) {
-			setShowTrophyStyle(isSolved);
-		}
-	}, [isSolved, justSolvedByMove, isMini]);
+	}, [isCelebrating]);
 
 	// Determine variant-specific class based on difficulty
 	// Normal, hard, or neutral (locked/unsolved)
@@ -74,7 +73,10 @@ function Trophy({
 	return (
 		<div
 			className={`${styles.trophy} ${variantClass} ${isMini ? styles.trophyMini : ""} ${isCelebrating ? styles.celebrating : ""}`.trim()}
-			onAnimationEnd={() => setIsCelebrating(false)}
+			onAnimationEnd={() => {
+				setIsCelebrating(false);
+				setCelebrationPeaked(false);
+			}}
 		>
 			<div className={styles.number}>{formatPuzzleId(trophyNum)}</div>
 			{isLocked ? (

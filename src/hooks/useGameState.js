@@ -26,35 +26,12 @@ import { DIFFICULTY, DEFAULT_DIFFICULTY } from "../constants";
 import { useAuth } from "./useAuth";
 import { useUserDoc } from "./useUserDoc";
 
-import { chooseGridForMerge, checkWin } from "../utils/gridHelpers";
-
-function composeGameState(preferredState, alternateState, initialGrids) {
-	if (!initialGrids) {
-		return preferredState || alternateState || null;
-	}
-
-	const normal = chooseGridForMerge(
-		alternateState?.normal,
-		preferredState?.normal,
-	);
-	const hard = chooseGridForMerge(alternateState?.hard, preferredState?.hard);
-
-	return {
-		normal: normal || initialGrids.normal,
-		hard: hard || initialGrids.hard,
-		currentDifficulty:
-			preferredState?.currentDifficulty ||
-			alternateState?.currentDifficulty ||
-			DEFAULT_DIFFICULTY,
-	};
-}
-
 export function useGameState({ puzzleMetadata }) {
 	const puzzleId = puzzleMetadata?.id;
 	const {
 		user,
 		isMerging,
-		mergeGameState,
+		anonymousSnapshot,
 		onMergeSettled,
 		preferInitialGrid,
 	} = useAuth();
@@ -62,7 +39,7 @@ export function useGameState({ puzzleMetadata }) {
 	const userId = user?.uid || null;
 	const isAnonymous = user?.isAnonymous === true;
 
-	const persistedGameState = useMemo(() => {
+	const firestoreGameState = useMemo(() => {
 		if (!puzzleMetadata?.initialGrids) {
 			return null;
 		}
@@ -106,50 +83,21 @@ export function useGameState({ puzzleMetadata }) {
 		};
 	}, [userId, puzzleMetadata, userDoc, puzzleId, preferInitialGrid]);
 
-	const gameState = useMemo(() => {
-		// Gate on mergeGameState directly (not isMerging) so the composed
-		// result is held stable until Firestore confirms the merge — see useEffect below.
-		const activeMergePuzzleState = mergeGameState?.[puzzleId] ?? null;
+	const gameState = useMemo(
+		() => anonymousSnapshot?.[puzzleId] ?? firestoreGameState,
+		[anonymousSnapshot, puzzleId, firestoreGameState],
+	);
 
-		return activeMergePuzzleState
-			? composeGameState(
-					persistedGameState,
-					activeMergePuzzleState,
-					puzzleMetadata?.initialGrids,
-				)
-			: persistedGameState;
-	}, [mergeGameState, puzzleId, persistedGameState, puzzleMetadata]);
-
-	// Once the merge is done and Firestore data has settled, clear the merge snapshot
-	// so regular persistedGameState takes over. We wait until persistedGameState is
-	// at least as "good" as what the anonymous user had — specifically, if anonymous
-	// was solved we don't clear until persistedGameState is also solved. This prevents
-	// a flash of the pre-merge unsolved state during the Firestore write settle period.
+	// Once isMerging is done and anonymousSnapshot is still set, wait for
+	// Firestore to deliver today's puzzle data then clear the snapshot.
+	// The merge write commits before SIGN_IN_SUCCESS (isMerging→false), so
+	// the first onSnapshot for the Google doc always includes the merged data.
 	useEffect(() => {
-		if (isMerging || !mergeGameState || userDoc === null) return;
-
-		const mergeForPuzzle = mergeGameState[puzzleId];
-		if (!mergeForPuzzle) {
-			onMergeSettled();
-			return;
-		}
-
-		const diff =
-			persistedGameState?.currentDifficulty || DEFAULT_DIFFICULTY;
-		const mergeWasSolved = checkWin(
-			mergeForPuzzle?.[diff] ?? mergeForPuzzle?.normal,
-		);
-		if (!mergeWasSolved || checkWin(persistedGameState?.[diff])) {
+		if (isMerging || !anonymousSnapshot) return;
+		if (userDoc?.gameState?.[puzzleId]) {
 			onMergeSettled();
 		}
-	}, [
-		isMerging,
-		mergeGameState,
-		userDoc,
-		persistedGameState,
-		puzzleId,
-		onMergeSettled,
-	]);
+	}, [isMerging, anonymousSnapshot, userDoc, puzzleId, onMergeSettled]);
 
 	// Setter that saves to Firestore via the shared firestore module
 	const setGameState = useCallback(

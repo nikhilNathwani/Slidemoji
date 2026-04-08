@@ -63,7 +63,7 @@ interface AuthState {
 	user: UserObject | null;
 	/** Drives the isLoading/isMerging derived values consumed by components. */
 	status: AuthStatus;
-	mergeGameState: Record<string, unknown> | null;
+	anonymousSnapshot: Record<string, unknown> | null;
 	preferInitialGrid: boolean;
 }
 
@@ -86,7 +86,7 @@ type AuthAction =
 const initialState: AuthState = {
 	user: null,
 	status: "initializing",
-	mergeGameState: null,
+	anonymousSnapshot: null,
 	preferInitialGrid: false,
 };
 
@@ -106,7 +106,7 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
 			return {
 				...state,
 				status: "signing-in",
-				mergeGameState: null,
+				anonymousSnapshot: null,
 				preferInitialGrid: false,
 			};
 
@@ -115,7 +115,7 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
 			return {
 				...state,
 				status: "merging",
-				mergeGameState: action.gameState,
+				anonymousSnapshot: action.gameState,
 			};
 
 		// Sign-in and optional merge completed successfully
@@ -127,7 +127,7 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
 			return {
 				...state,
 				status: "ready",
-				mergeGameState: null,
+				anonymousSnapshot: null,
 				user: action.priorUser,
 			};
 
@@ -154,7 +154,7 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
 
 		// Called by useGameState once Firestore confirms the merged state
 		case "CLEAR_MERGE_SNAPSHOT":
-			return { ...state, mergeGameState: null };
+			return { ...state, anonymousSnapshot: null };
 	}
 }
 
@@ -268,7 +268,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 				authError.code === "auth/popup-closed-by-user" ||
 				authError.code === "auth/cancelled-popup-request";
 
-			// Restore state cleanly. mergeGameState is also cleared so the
+		// Restore state cleanly. anonymousSnapshot is also cleared so the
 			// board doesn't flash with the pending merge state.
 			dispatch({ type: "SIGN_IN_ABORTED", priorUser });
 
@@ -308,7 +308,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 		isLoading: state.status !== "ready",
 		isMerging: state.status === "merging",
 		preferInitialGrid: state.preferInitialGrid,
-		mergeGameState: state.mergeGameState,
+		anonymousSnapshot: state.anonymousSnapshot,
 		onMergeSettled,
 		signIn,
 		signOut,

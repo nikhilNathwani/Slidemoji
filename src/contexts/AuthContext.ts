@@ -18,11 +18,11 @@ export interface UseAuthResult {
 	isLoading: boolean;
 	isMerging: boolean;
 	preferInitialGrid: boolean;
-	mergeGameState: Record<string, unknown> | null;
 	/** Called by useGameState when Firestore data has settled after a merge. */
 	onMergeSettled: () => void;
 	signIn: () => Promise<User | null>;
 	signOut: () => Promise<void>;
+	anonymousSnapshot: Record<string, unknown> | null;
 }
 
 export const AuthContext = createContext<UseAuthResult | null>(null);
