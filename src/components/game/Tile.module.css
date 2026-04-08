@@ -61,8 +61,24 @@
 	}
 }
 
+@keyframes numberFade {
+	0%,
+	40% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+	}
+}
+
 .celebrating {
 	animation: tilePop 500ms ease both;
+}
+
+/* Number fades out in sync with the tile bounce — starts at the scale peak (40%) */
+.celebrating .tileNumber {
+	animation: numberFade 500ms ease both;
+	animation-delay: var(--celebration-delay, 0ms);
 }
 
 /* Mobile Responsive */

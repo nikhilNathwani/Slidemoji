@@ -61,11 +61,16 @@ function Tile({
 			{...(isClickable && { onPointerDown })}
 			style={{
 				...getTileStyle(tileNumber, gridSize, emojiSvgUrl),
-				...(celebrating && { animationDelay: `${celebrationDelay}ms` }),
+				...(celebrating && {
+					animationDelay: `${celebrationDelay}ms`,
+					"--celebration-delay": `${celebrationDelay}ms`,
+				}),
 			}}
 			data-tile-number={tileNumber}
 		>
-			{hasNumbersShown && tileNumber ? tileNumber : ""}
+			{(hasNumbersShown || celebrating) && tileNumber ? (
+				<span className={styles.tileNumber}>{tileNumber}</span>
+			) : null}
 		</motion.div>
 	);
 }
