@@ -4,7 +4,7 @@
  * Uses shared user-doc context for real-time updates.
  * Everyone uses Firestore (anonymous or Google via Firebase Anonymous Auth).
  *
- * const [gameState, setGameState] = useGameState({ puzzleMetadata })
+ * const [gameState, setGameState] = useGameState({ puzzleId, initialGrids })
  *
  * Returns:
  * - gameState: { normal: grid, hard: grid, currentDifficulty }
@@ -26,8 +26,7 @@ import { DIFFICULTY, DEFAULT_DIFFICULTY } from "../constants";
 import { useAuth } from "./useAuth";
 import { useUserDoc } from "./useUserDoc";
 
-export function useGameState({ puzzleMetadata }) {
-	const puzzleId = puzzleMetadata?.id;
+export function useGameState({ puzzleId, initialGrids }) {
 	const {
 		user,
 		isMerging,
@@ -40,15 +39,15 @@ export function useGameState({ puzzleMetadata }) {
 	const isAnonymous = user?.isAnonymous === true;
 
 	const firestoreGameState = useMemo(() => {
-		if (!puzzleMetadata?.initialGrids) {
+		if (!initialGrids) {
 			return null;
 		}
 
 		if (!userId) {
 			return preferInitialGrid
 				? {
-						normal: puzzleMetadata.initialGrids.normal,
-						hard: puzzleMetadata.initialGrids.hard,
+						normal: initialGrids.normal,
+						hard: initialGrids.hard,
 						currentDifficulty: DEFAULT_DIFFICULTY,
 					}
 				: null;
@@ -57,8 +56,8 @@ export function useGameState({ puzzleMetadata }) {
 		const savedGameState = userDoc?.gameState?.[puzzleId] || null;
 		if (!savedGameState) {
 			return {
-				normal: puzzleMetadata.initialGrids.normal,
-				hard: puzzleMetadata.initialGrids.hard,
+				normal: initialGrids.normal,
+				hard: initialGrids.hard,
 				currentDifficulty: DEFAULT_DIFFICULTY,
 			};
 		}
@@ -75,13 +74,13 @@ export function useGameState({ puzzleMetadata }) {
 		return {
 			normal:
 				getSavedGrid(DIFFICULTY.NORMAL) ||
-				puzzleMetadata.initialGrids.normal,
+				initialGrids.normal,
 			hard:
 				getSavedGrid(DIFFICULTY.HARD) ||
-				puzzleMetadata.initialGrids.hard,
+				initialGrids.hard,
 			currentDifficulty,
 		};
-	}, [userId, puzzleMetadata, userDoc, puzzleId, preferInitialGrid]);
+	}, [userId, initialGrids, userDoc, puzzleId, preferInitialGrid]);
 
 	const gameState = useMemo(
 		() => anonymousSnapshot?.[puzzleId] ?? firestoreGameState,
@@ -102,7 +101,7 @@ export function useGameState({ puzzleMetadata }) {
 	// Setter that saves to Firestore via the shared firestore module
 	const setGameState = useCallback(
 		async ({ currentDifficulty, normal, hard }) => {
-			if (!userId || !puzzleMetadata?.initialGrids || !gameState) return;
+			if (!userId || !initialGrids || !gameState) return;
 
 			try {
 				const hasNormalUpdate = Array.isArray(normal);
@@ -140,7 +139,7 @@ export function useGameState({ puzzleMetadata }) {
 				throw error;
 			}
 		},
-		[userId, isAnonymous, gameState, puzzleMetadata, puzzleId, userDoc],
+		[userId, isAnonymous, gameState, initialGrids, puzzleId, userDoc],
 	);
 
 	const loading = preferInitialGrid ? false : !userId || userDocLoading;

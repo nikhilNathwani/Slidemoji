@@ -7,10 +7,10 @@ import SettingsDialog from "./components/dialogs/SettingsDialog";
 import StatsDialog from "./components/dialogs/StatsDialog";
 import ArchiveDialog from "./components/dialogs/ArchiveDialog";
 import { getLatestPuzzleId } from "./utils/puzzleUtils";
+import { checkWin } from "./utils/gridHelpers";
 import { useAuth } from "./hooks/useAuth";
 import { usePuzzle } from "./hooks/usePuzzle";
 import { useGameState } from "./hooks/useGameState";
-import { useSolvedPuzzles } from "./hooks/useSolvedPuzzles";
 
 function App() {
 	const { isLoading: isAuthLoading, isMerging } = useAuth();
@@ -22,11 +22,11 @@ function App() {
 
 	// GAME STATE is {currentDifficulty: normal|hard, normal:[normal_grid], hard:[hard_grid]}
 	const [gameState, setGameState, isLoadingGameState] = useGameState({
-		puzzleMetadata,
+		puzzleId,
+		initialGrids: puzzleMetadata?.initialGrids,
 	});
 
-	// SOLVED PUZZLES is a list of puzzles with a normal- and/or hard-solve
-	const { solvedPuzzles } = useSolvedPuzzles();
+	// SOLVED PUZZLES is used by StatsDialog and ArchiveDialog via their own hooks
 
 	// Dev-only: in-memory premium override (avoids Firestore write / race conditions)
 	const [devIsPremium, setDevIsPremium] = useState(null); // null = no override
@@ -140,9 +140,7 @@ function App() {
 				onDifficultyChange={(diff) =>
 					setGameState({ currentDifficulty: diff })
 				}
-				isPuzzleSolved={
-					!!solvedPuzzles?.[puzzleId]?.[gameState.currentDifficulty]
-				}
+				isPuzzleSolved={checkWin(gameState?.[gameState?.currentDifficulty])}
 				onAlmostSolve={setAlmostSolved}
 				onTogglePremium={(grant) =>
 					setDevIsPremium(grant ? true : null)
