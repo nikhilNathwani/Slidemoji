@@ -102,8 +102,6 @@ function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true }) {
 								trophyNum={slot.puzzleNum}
 								trophyEmoji={slot.emoji}
 								trophyName={slot.name}
-								isLocked={!slot.isEarned}
-
 								isSolved={!!slot.solvedDifficulty}
 								difficulty={
 									slot.solvedDifficulty || DIFFICULTY.NORMAL

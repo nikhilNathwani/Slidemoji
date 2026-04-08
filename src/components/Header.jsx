@@ -2,7 +2,14 @@ import { useState, useRef, useEffect } from "react";
 import styles from "./Header.module.css";
 import GoogleSignInButton from "./common/GoogleSignInButton";
 import { useAuth } from "../hooks/useAuth";
-import { FontAwesomeIcon, faClockRotateLeft, faTrophy, faCog, faUserCircle, faSignOutAlt } from "../utils/icons";
+import {
+	FontAwesomeIcon,
+	faClockRotateLeft,
+	faTrophy,
+	faCog,
+	faUserCircle,
+	faSignOutAlt,
+} from "../utils/icons";
 
 function Header({ onSettingsClick, onStatsClick, onArchiveClick }) {
 	const { user, signOut } = useAuth();

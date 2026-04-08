@@ -30,9 +30,14 @@ export function usePuzzle(puzzleId: number | null): {
 	// Lazy initializer: if this puzzleId is already cached, initialize with the
 	// cached data so the very first render has the correct state (no flash).
 	const [state, setState] = useState<PuzzleState>(() => {
-		if (puzzleId === null) return { puzzleId: null, data: null, error: null };
+		if (puzzleId === null)
+			return { puzzleId: null, data: null, error: null };
 		const cached = puzzleCache.get(puzzleId) ?? null;
-		return { puzzleId: cached ? puzzleId : null, data: cached, error: null };
+		return {
+			puzzleId: cached ? puzzleId : null,
+			data: cached,
+			error: null,
+		};
 	});
 
 	useEffect(() => {

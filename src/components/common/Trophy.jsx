@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { FontAwesomeIcon, faLock, faUnlock } from "../../utils/icons";
 import { DIFFICULTY } from "../../constants";
 import styles from "./Trophy.module.css";
@@ -10,11 +10,12 @@ function Trophy({
 	trophyEmoji,
 	trophyName,
 	isMini = false,
-	isLocked = false,
 	isSolved = false, // Whether the current difficulty is solved
 	difficulty = DIFFICULTY.NORMAL, // Current difficulty being played/viewed
 	celebrationKey = 0, // Incremented by Game each time a player move solves the puzzle
 }) {
+	// Locked: mini trophies that haven't been solved yet (trophy case unsolved slots).
+	const isLocked = isMini && !isSolved;
 	// Show unlock icon for today's unsolved (locked) puzzle, lock icon for all others.
 	const isToday = isLocked && trophyNum === getLatestPuzzleId();
 
@@ -32,38 +33,21 @@ function Trophy({
 	const name = trophyName || puzzleData?.emojiName;
 
 	const [isCelebrating, setIsCelebrating] = useState(false);
-	// celebrationPeaked: true once the 550ms timer fires (animation scale peak).
-	// Used to derive showTrophyStyle without a separate state variable.
-	const [celebrationPeaked, setCelebrationPeaked] = useState(false);
-
-	// showTrophyStyle is derived: show trophy style when solved, but during the
-	// early phase of celebration (before the animation peak) keep it grey so the
-	// reveal lands at the visual peak rather than immediately.
-	const showTrophyStyle = isMini
-		? isSolved
-		: isSolved && (!isCelebrating || celebrationPeaked);
 
 	// Detect any increment of celebrationKey as a new solve event.
 	// Using "storing previous render" (setState during render) avoids a cascading effect.
-	const [prevCelebrationKey, setPrevCelebrationKey] = useState(celebrationKey);
+	const [prevCelebrationKey, setPrevCelebrationKey] =
+		useState(celebrationKey);
 	if (!isMini && celebrationKey !== prevCelebrationKey) {
 		setPrevCelebrationKey(celebrationKey);
 		setIsCelebrating(true);
 	}
 
-	// At the animation scale peak (550ms), mark the celebration as peaked.
-	// setState is only called asynchronously (inside setTimeout), not synchronously.
-	useEffect(() => {
-		if (!isCelebrating) return;
-		const timer = setTimeout(() => setCelebrationPeaked(true), 550);
-		return () => clearTimeout(timer);
-	}, [isCelebrating]);
-
 	// Determine variant-specific class based on difficulty
 	// Normal, hard, or neutral (locked/unsolved)
 	const variantClass = isLocked
 		? styles.locked
-		: !showTrophyStyle
+		: !isSolved
 			? styles.puzzleInfo // Grey for unsolved
 			: difficulty === DIFFICULTY.HARD
 				? styles.hard
@@ -74,7 +58,6 @@ function Trophy({
 			className={`${styles.trophy} ${variantClass} ${isMini ? styles.trophyMini : ""} ${isCelebrating ? styles.celebrating : ""}`.trim()}
 			onAnimationEnd={() => {
 				setIsCelebrating(false);
-				setCelebrationPeaked(false);
 			}}
 		>
 			<div className={styles.number}>{formatPuzzleId(trophyNum)}</div>

@@ -25,10 +25,10 @@ export async function mergeAnonymousProgressToGoogle(
 		await runTransaction(db, async (transaction) => {
 			// Fetch Google game data
 			const googleDoc = await transaction.get(googleDocRef);
-			const googleGameState = googleDoc.exists()
-				? (googleDoc.data()?.gameState ?? {})
+			const googleSavedGames = googleDoc.exists()
+				? (googleDoc.data()?.savedGames ?? {})
 				: {};
-			const googleProgress = googleGameState[puzzleId];
+			const googleProgress = googleSavedGames[puzzleId];
 
 			// Merge anonymous progress with Google progress (if there is any)
 			let mergedProgress;
@@ -53,8 +53,8 @@ export async function mergeAnonymousProgressToGoogle(
 			transaction.set(
 				googleDocRef,
 				{
-					gameState: {
-						...googleGameState, //retain history
+					savedGames: {
+						...googleSavedGames, //retain history
 						[puzzleId]: mergedProgress, //update today's puzzle
 					},
 					updatedAt: serverTimestamp(),

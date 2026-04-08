@@ -18,7 +18,7 @@ export async function saveFirestoreGameState(userId, puzzleId, gameData = {}) {
 		const userDocRef = doc(db, COLLECTIONS.USERS, userId);
 
 		const updateData = {
-			[`gameState.${puzzleId}.currentDifficulty`]:
+			[`savedGames.${puzzleId}.currentDifficulty`]:
 				gameData.currentDifficulty,
 			updatedAt: serverTimestamp(),
 		};
@@ -29,7 +29,7 @@ export async function saveFirestoreGameState(userId, puzzleId, gameData = {}) {
 				continue;
 			}
 
-			updateData[`gameState.${puzzleId}.${difficulty}`] = grid;
+			updateData[`savedGames.${puzzleId}.${difficulty}`] = grid;
 		}
 
 		await updateDoc(userDocRef, updateData);
@@ -39,17 +39,17 @@ export async function saveFirestoreGameState(userId, puzzleId, gameData = {}) {
 	}
 }
 
-export async function trimGameHistory(userId, currentPuzzleId, gameState) {
+export async function trimGameHistory(userId, currentPuzzleId, savedGames) {
 	if (!userId) {
 		throw new Error("User ID is required");
 	}
 
 	try {
-		if (!gameState) {
+		if (!savedGames) {
 			return;
 		}
 
-		const puzzleIds = Object.keys(gameState);
+		const puzzleIds = Object.keys(savedGames);
 		const oldPuzzleIds = puzzleIds.filter(
 			(id) => parseInt(id) !== currentPuzzleId,
 		);
@@ -64,7 +64,7 @@ export async function trimGameHistory(userId, currentPuzzleId, gameState) {
 		};
 
 		for (const puzzleId of oldPuzzleIds) {
-			updates[`gameState.${puzzleId}`] = deleteField();
+			updates[`savedGames.${puzzleId}`] = deleteField();
 		}
 
 		await updateDoc(userDocRef, updates);

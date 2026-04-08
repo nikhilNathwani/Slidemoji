@@ -140,7 +140,9 @@ function App() {
 				onDifficultyChange={(diff) =>
 					setGameState({ currentDifficulty: diff })
 				}
-				isPuzzleSolved={checkWin(gameState?.[gameState?.currentDifficulty])}
+				isPuzzleSolved={checkWin(
+					gameState?.[gameState?.currentDifficulty],
+				)}
 				onAlmostSolve={setAlmostSolved}
 				onTogglePremium={(grant) =>
 					setDevIsPremium(grant ? true : null)

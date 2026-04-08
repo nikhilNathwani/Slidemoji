@@ -3,4 +3,5 @@
 export const WIN_TILE_ANIM_START_DELAY_MS = 350; // Wait for Framer Motion spring to settle
 export const WIN_TILE_ANIM_STAGGER_MS = 60; // Delay between each tile's pop animation
 export const WIN_TILE_ANIM_DURATION_MS = 500; // Duration of a single tile's pop
+export const WIN_TROPHY_ANIMATION_PEAK_MS = 550; // When trophy turns gold: START_DELAY (350) + DURATION*40% (200) = 550
 export const WIN_DIALOG_DELAY_MS = 2400; // Total delay before WinDialog appears

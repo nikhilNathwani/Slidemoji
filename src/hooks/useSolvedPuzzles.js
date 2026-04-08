@@ -7,9 +7,9 @@ export function useSolvedPuzzles() {
 	const { userDoc, isLoading, error } = useUserDoc();
 
 	const solvedPuzzles = useMemo(() => {
-		if (!userDoc?.gameState) return {};
+		if (!userDoc?.savedGames) return {};
 
-		return Object.entries(userDoc.gameState).reduce(
+		return Object.entries(userDoc.savedGames).reduce(
 			(acc, [puzzleId, puzzleData]) => {
 				const solved = {
 					[DIFFICULTY.NORMAL]: checkWin(

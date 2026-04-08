@@ -252,6 +252,10 @@
 	animation: trophyPop 500ms ease both;
 	/* Delay matches WIN_TILE_ANIM_START_DELAY_MS in constants.js */
 	animation-delay: 350ms;
+	/* Delay colour/border/shadow transitions to the animation peak (350ms delay + 500ms * 40% peak = 550ms).
+	   Order must match the transition shorthand: transform, opacity, background, border, box-shadow.
+	   Matches WIN_TROPHY_ANIMATION_PEAK_MS in constants.js */
+	transition-delay: 0s, 0s, 550ms, 550ms, 550ms;
 }
 
 /* Mobile Responsive */

@@ -9,8 +9,8 @@ import {
 import type { User } from "firebase/auth";
 import { auth, db, COLLECTIONS } from "../firebaseConfig";
 
-/** Per-puzzle game progress stored under UserDoc.gameState[puzzleId]. */
-export interface PuzzleProgress {
+/** Per-puzzle save state stored under UserDoc.savedGames[puzzleId]. */
+export interface SavedGame {
 	normal?: number[];
 	hard?: number[];
 	currentDifficulty?: string;
@@ -20,7 +20,7 @@ export interface PuzzleProgress {
 export interface UserDoc {
 	isPremium: boolean;
 	/** Keys are puzzle IDs as strings (Firestore always serializes map keys as strings). */
-	gameState: Record<string, PuzzleProgress> | null;
+	savedGames: Record<string, SavedGame> | null;
 	preferences: {
 		darkMode: boolean;
 		soundEnabled: boolean;
@@ -124,7 +124,7 @@ export async function syncFirestoreUserData(firebaseUser: User): Promise<void> {
 						darkMode: readLocalPref("darkMode", false),
 						soundEnabled: readLocalPref("soundEnabled", true),
 					},
-					gameState: null,
+					savedGames: null,
 					isPremium: false,
 				});
 				return;

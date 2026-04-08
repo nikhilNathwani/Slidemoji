@@ -25,8 +25,29 @@ import {
 import { DIFFICULTY, DEFAULT_DIFFICULTY } from "../constants";
 import { useAuth } from "./useAuth";
 import { useUserDoc } from "./useUserDoc";
+import type { PuzzleData } from "../utils/puzzleUtils";
+import type { SavedGame } from "../services/firestore/userDoc";
 
-export function useGameState({ puzzleId, initialGrids }) {
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+/** The normalised, ready-to-render state for a single puzzle (both grids guaranteed present). */
+export interface GameState {
+	normal: number[];
+	hard: number[];
+	currentDifficulty: string;
+}
+
+export function useGameState({
+	puzzleId,
+	initialGrids,
+}: {
+	puzzleId: number | null | undefined;
+	initialGrids: PuzzleData["initialGrids"] | null | undefined;
+}): [
+	GameState | null,
+	(update: Partial<GameState>) => Promise<void>,
+	boolean,
+] {
 	const {
 		user,
 		isMerging,
@@ -38,7 +59,7 @@ export function useGameState({ puzzleId, initialGrids }) {
 	const userId = user?.uid || null;
 	const isAnonymous = user?.isAnonymous === true;
 
-	const firestoreGameState = useMemo(() => {
+	const firestoreGameState = useMemo((): GameState | null => {
 		if (!initialGrids) {
 			return null;
 		}
@@ -53,7 +74,10 @@ export function useGameState({ puzzleId, initialGrids }) {
 				: null;
 		}
 
-		const savedGameState = userDoc?.gameState?.[puzzleId] || null;
+		const key = puzzleId != null ? String(puzzleId) : null;
+		const savedGameState: SavedGame | null = key
+			? (userDoc?.savedGames?.[key] ?? null)
+			: null;
 		if (!savedGameState) {
 			return {
 				normal: initialGrids.normal,
@@ -62,8 +86,8 @@ export function useGameState({ puzzleId, initialGrids }) {
 			};
 		}
 
-		const getSavedGrid = (diff) => {
-			const grid = savedGameState?.[diff];
+		const getSavedGrid = (diff: string): number[] | null => {
+			const grid = savedGameState?.[diff as keyof SavedGame];
 			if (!grid || !Array.isArray(grid)) return null;
 			return grid;
 		};
@@ -72,20 +96,31 @@ export function useGameState({ puzzleId, initialGrids }) {
 			savedGameState?.currentDifficulty || DEFAULT_DIFFICULTY;
 
 		return {
-			normal:
-				getSavedGrid(DIFFICULTY.NORMAL) ||
-				initialGrids.normal,
-			hard:
-				getSavedGrid(DIFFICULTY.HARD) ||
-				initialGrids.hard,
+			normal: getSavedGrid(DIFFICULTY.NORMAL) || initialGrids.normal,
+			hard: getSavedGrid(DIFFICULTY.HARD) || initialGrids.hard,
 			currentDifficulty,
 		};
 	}, [userId, initialGrids, userDoc, puzzleId, preferInitialGrid]);
 
-	const gameState = useMemo(
-		() => anonymousSnapshot?.[puzzleId] ?? firestoreGameState,
-		[anonymousSnapshot, puzzleId, firestoreGameState],
-	);
+	const gameState = useMemo((): GameState | null => {
+		const key = puzzleId != null ? String(puzzleId) : null;
+		const snapshot = key
+			? (anonymousSnapshot?.[key] as SavedGame | undefined)
+			: undefined;
+		if (snapshot && initialGrids) {
+			return {
+				normal: Array.isArray(snapshot.normal)
+					? snapshot.normal
+					: initialGrids.normal,
+				hard: Array.isArray(snapshot.hard)
+					? snapshot.hard
+					: initialGrids.hard,
+				currentDifficulty:
+					snapshot.currentDifficulty ?? DEFAULT_DIFFICULTY,
+			};
+		}
+		return firestoreGameState;
+	}, [anonymousSnapshot, puzzleId, firestoreGameState, initialGrids]);
 
 	// Once isMerging is done and anonymousSnapshot is still set, wait for
 	// Firestore to deliver today's puzzle data then clear the snapshot.
@@ -93,14 +128,19 @@ export function useGameState({ puzzleId, initialGrids }) {
 	// the first onSnapshot for the Google doc always includes the merged data.
 	useEffect(() => {
 		if (isMerging || !anonymousSnapshot) return;
-		if (userDoc?.gameState?.[puzzleId]) {
+		const key = puzzleId != null ? String(puzzleId) : null;
+		if (key && userDoc?.savedGames?.[key]) {
 			onMergeSettled();
 		}
 	}, [isMerging, anonymousSnapshot, userDoc, puzzleId, onMergeSettled]);
 
 	// Setter that saves to Firestore via the shared firestore module
 	const setGameState = useCallback(
-		async ({ currentDifficulty, normal, hard }) => {
+		async ({
+			currentDifficulty,
+			normal,
+			hard,
+		}: Partial<GameState>): Promise<void> => {
 			if (!userId || !initialGrids || !gameState) return;
 
 			try {
@@ -118,7 +158,7 @@ export function useGameState({ puzzleId, initialGrids }) {
 				if (hasNormalUpdate || hasHardUpdate) {
 					// Grid update (move made or restart)
 					const nextDifficulty =
-						currentDifficulty || gameState.currentDifficulty;
+						currentDifficulty ?? gameState.currentDifficulty;
 					await saveFirestoreGameState(userId, puzzleId, {
 						currentDifficulty: nextDifficulty,
 						normal,
@@ -130,7 +170,7 @@ export function useGameState({ puzzleId, initialGrids }) {
 						await trimGameHistory(
 							userId,
 							puzzleId,
-							userDoc?.gameState ?? null,
+							userDoc?.savedGames ?? null,
 						);
 					}
 				}

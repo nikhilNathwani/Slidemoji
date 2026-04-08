@@ -73,7 +73,7 @@ type AuthAction =
 	| { type: "AUTH_READY"; user: UserObject | null }
 	| { type: "AUTH_USER_CHANGED"; user: UserObject }
 	| { type: "SIGN_IN_START" }
-	| { type: "MERGE_START"; gameState: Record<string, unknown> }
+	| { type: "MERGE_START"; savedGames: Record<string, unknown> }
 	| { type: "SIGN_IN_SUCCESS"; user: UserObject }
 	| { type: "SIGN_IN_ABORTED"; priorUser: UserObject | null }
 	| { type: "SIGN_OUT_START" }
@@ -115,7 +115,7 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
 			return {
 				...state,
 				status: "merging",
-				anonymousSnapshot: action.gameState,
+				anonymousSnapshot: action.savedGames,
 			};
 
 		// Sign-in and optional merge completed successfully
@@ -233,11 +233,11 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 				? await getFirestoreUserData(anonymousUid)
 				: null;
 
-			if (anonymousData?.gameState) {
+			if (anonymousData?.savedGames) {
 				// Signal that a merge is about to happen so UI preserves the current board.
 				dispatch({
 					type: "MERGE_START",
-					gameState: anonymousData.gameState,
+					savedGames: anonymousData.savedGames,
 				});
 			}
 
@@ -252,7 +252,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 			if (anonymousUid && firebaseUser.uid !== anonymousUid) {
 				await mergeAnonymousProgressToGoogle(
 					anonymousUid,
-					anonymousData?.gameState,
+					anonymousData?.savedGames,
 					firebaseUser.uid,
 				);
 			}
@@ -268,7 +268,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 				authError.code === "auth/popup-closed-by-user" ||
 				authError.code === "auth/cancelled-popup-request";
 
-		// Restore state cleanly. anonymousSnapshot is also cleared so the
+			// Restore state cleanly. anonymousSnapshot is also cleared so the
 			// board doesn't flash with the pending merge state.
 			dispatch({ type: "SIGN_IN_ABORTED", priorUser });
 
