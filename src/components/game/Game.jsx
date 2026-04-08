@@ -31,11 +31,10 @@ function Game({
 	const [showWinDialog, setShowWinDialog] = useState(false);
 	const isDialogOpen = isAppDialogOpen || showRestartDialog || showWinDialog;
 
-	// Set to the difficulty that was just solved by a player move (null otherwise).
-	// Derived: justSolvedByMove = (justSolvedDifficulty === currentDifficulty),
-	// so switching difficulty automatically reads as false — no effect needed.
-	const [justSolvedDifficulty, setJustSolvedDifficulty] = useState(null);
-	const justSolvedByMove = justSolvedDifficulty === currentDifficulty;
+	// Incremented each time the player makes a move that solves the puzzle.
+	// Trophy detects any change as a new celebration event — no directional
+	// check needed, and no reset required on difficulty switch or restart.
+	const [celebrationKey, setCelebrationKey] = useState(0);
 
 	// Auto-save after each move
 	const handleMove = (newGrid) => {
@@ -44,7 +43,7 @@ function Game({
 
 	// Handle puzzle solve — delay dialog so the user can relish the solved state
 	const handleSolve = () => {
-		setJustSolvedDifficulty(currentDifficulty);
+		setCelebrationKey((k) => k + 1);
 		setTimeout(() => setShowWinDialog(true), WIN_DIALOG_DELAY_MS);
 	};
 
@@ -55,7 +54,6 @@ function Game({
 
 	const handleRestartConfirm = () => {
 		setShowRestartDialog(false);
-		setJustSolvedDifficulty(null);
 		setGameState({
 			[currentDifficulty]: initialGrid,
 		});
@@ -71,7 +69,7 @@ function Game({
 						trophyName={emojiName}
 						isSolved={isSolved}
 						difficulty={currentDifficulty}
-						justSolvedByMove={justSolvedByMove}
+						celebrationKey={celebrationKey}
 					/>
 				</div>
 				<Grid

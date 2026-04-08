@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { FontAwesomeIcon, faLock, faUnlock } from "../../utils/icons";
 import { DIFFICULTY } from "../../constants";
 import styles from "./Trophy.module.css";
-import { formatPuzzleId } from "../../utils/puzzleUtils";
+import { formatPuzzleId, getLatestPuzzleId } from "../../utils/puzzleUtils";
 import { usePuzzle } from "../../hooks/usePuzzle";
 
 function Trophy({
@@ -11,11 +11,13 @@ function Trophy({
 	trophyName,
 	isMini = false,
 	isLocked = false,
-	isToday = false, // Today's puzzle (not yet solved)
 	isSolved = false, // Whether the current difficulty is solved
 	difficulty = DIFFICULTY.NORMAL, // Current difficulty being played/viewed
-	justSolvedByMove = false, // True only when the user's own move just solved the puzzle
+	celebrationKey = 0, // Incremented by Game each time a player move solves the puzzle
 }) {
+	// Show unlock icon for today's unsolved (locked) puzzle, lock icon for all others.
+	const isToday = isLocked && trophyNum === getLatestPuzzleId();
+
 	// Self-fetch emoji/name when not provided (trophy case displays).
 	// usePuzzle returns null when puzzleId is null, so no fetch for locked slots.
 	const puzzleId =
@@ -41,15 +43,12 @@ function Trophy({
 		? isSolved
 		: isSolved && (!isCelebrating || celebrationPeaked);
 
-	// Detect false → true transition in justSolvedByMove to start celebration.
+	// Detect any increment of celebrationKey as a new solve event.
 	// Using "storing previous render" (setState during render) avoids a cascading effect.
-	const [prevJustSolvedByMove, setPrevJustSolvedByMove] =
-		useState(justSolvedByMove);
-	if (prevJustSolvedByMove !== justSolvedByMove) {
-		setPrevJustSolvedByMove(justSolvedByMove);
-		if (!prevJustSolvedByMove && justSolvedByMove && !isMini) {
-			setIsCelebrating(true);
-		}
+	const [prevCelebrationKey, setPrevCelebrationKey] = useState(celebrationKey);
+	if (!isMini && celebrationKey !== prevCelebrationKey) {
+		setPrevCelebrationKey(celebrationKey);
+		setIsCelebrating(true);
 	}
 
 	// At the animation scale peak (550ms), mark the celebration as peaked.
