@@ -17,6 +17,11 @@
 	background-repeat: no-repeat;
 	background-origin: border-box;
 	background-clip: border-box;
+	/* Keep tile permanently on a compositing layer so it is never de-promoted
+	   between Framer Motion's spring end and the celebration CSS animation start.
+	   Without this, the layer promotion gap causes a 0.5–1px sub-pixel snap
+	   of the composite emoji image on solve. */
+	backface-visibility: hidden;
 }
 
 /* Theme-specific text shadows */
