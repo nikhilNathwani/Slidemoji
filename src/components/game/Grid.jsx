@@ -118,7 +118,14 @@ function Grid({
 
 	return (
 		<div
-			className={`${styles.grid}${isSolved ? " " + styles.won : ""}`}
+			className={[
+				styles.grid,
+				isSolved &&
+					(gridSize === 3 ? styles.wonNormal : styles.wonHard),
+				isJustSolved && styles.celebrating,
+			]
+				.filter(Boolean)
+				.join(" ")}
 			style={{
 				width: `${gridSizePx}px`,
 				height: `${gridSizePx}px`,

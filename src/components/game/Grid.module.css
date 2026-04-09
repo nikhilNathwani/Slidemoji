@@ -9,4 +9,23 @@
 	/* CSS Grid layout - Framer Motion animates grid changes */
 	display: grid;
 	gap: 0;
+	transition:
+		border-color 0.6s ease,
+		box-shadow 0.6s ease;
+}
+
+/* Applied on the winning move to delay the border glow until tiles settle */
+.celebrating {
+	transition-delay: 350ms;
+}
+
+/* Won state: border + glow in the matching trophy color */
+.wonNormal {
+	border-color: var(--trophy-normal-base);
+	box-shadow: 0 0 28px var(--trophy-normal-shadow);
+}
+
+.wonHard {
+	border-color: var(--trophy-hard-base);
+	box-shadow: 0 0 28px var(--trophy-hard-shadow);
 }
