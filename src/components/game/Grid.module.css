@@ -19,13 +19,16 @@
 	transition-delay: 350ms;
 }
 
-/* Won state: border + glow in the matching trophy color */
+/* Won state: border + glow in the matching trophy color.
+   Override border-style to solid so ridge doesn't darken one face of the color. */
 .wonNormal {
-	border-color: var(--trophy-normal-base);
+	border-style: solid;
+	border-color: var(--trophy-normal-highlight);
 	box-shadow: 0 0 28px var(--trophy-normal-shadow);
 }
 
 .wonHard {
-	border-color: var(--trophy-hard-base);
+	border-style: solid;
+	border-color: var(--trophy-hard-highlight);
 	box-shadow: 0 0 28px var(--trophy-hard-shadow);
 }
