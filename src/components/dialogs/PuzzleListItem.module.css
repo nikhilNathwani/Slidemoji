@@ -57,6 +57,40 @@
 	opacity: 0.6;
 }
 
+/* Solved puzzle — hard difficulty (uses hard trophy color) */
+.puzzleItem.solvedHard {
+	background: linear-gradient(
+		135deg,
+		var(--trophy-hard-base) 0%,
+		var(--trophy-hard-highlight) 50%,
+		var(--trophy-hard-base) 100%
+	);
+	border-color: var(--trophy-hard-base);
+	box-shadow:
+		0 2px 6px var(--trophy-hard-shadow),
+		inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.puzzleItem.solvedHard .puzzleNumber {
+	color: var(--trophy-hard-number);
+	font-weight: 700;
+}
+
+.puzzleItem.solvedHard .puzzleName {
+	color: var(--trophy-hard-number);
+	font-weight: 600;
+}
+
+.puzzleItem.solvedHard:hover:not(:disabled) {
+	box-shadow:
+		0 4px 12px var(--trophy-hard-shadow),
+		inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.puzzleItem.solvedHard .playIcon {
+	color: var(--trophy-hard-number);
+}
+
 /* Solved puzzle (gold gradient) */
 .puzzleItem.solved {
 	background: linear-gradient(

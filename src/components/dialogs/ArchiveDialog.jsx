@@ -19,9 +19,11 @@ function ArchiveDialog({ isOpen, onClose, onPuzzleSelect, devIsPremium }) {
 	// Generate list of all puzzles (1 to current puzzle number)
 	const puzzleList = Array.from({ length: totalPuzzles }, (_, i) => {
 		const puzzleNum = i + 1;
+		const solved = solvedPuzzles?.[puzzleNum];
 		return {
 			puzzleNum,
-			isSolved: !!solvedPuzzles?.[puzzleNum],
+			isSolved: !!solved,
+			isSolvedHard: !!solved?.["hard"],
 			isToday: puzzleNum === todayPuzzleId,
 		};
 	}).reverse(); // Most recent first
@@ -98,6 +100,7 @@ function ArchiveDialog({ isOpen, onClose, onPuzzleSelect, devIsPremium }) {
 								key={puzzle.puzzleNum}
 								puzzleNum={puzzle.puzzleNum}
 								isSolved={puzzle.isSolved}
+								isSolvedHard={puzzle.isSolvedHard}
 								onClick={handlePuzzleClick}
 							/>
 						))}
