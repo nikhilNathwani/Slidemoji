@@ -14,11 +14,11 @@
 	--trophy-normal-number: #78350f;
 	--trophy-normal-shadow: rgba(251, 191, 36, 0.4);
 
-	/* Hard Trophy (4x4) — electric green */
-	--trophy-hard-base: hsl(120, 100%, 35%);
-	--trophy-hard-highlight: hsl(108, 100%, 55%);
-	--trophy-hard-number: #052e16;
-	--trophy-hard-shadow: rgba(34, 197, 94, 0.5);
+	/* Hard Trophy (4x4) — emerald gem */
+	--trophy-hard-base: hsl(152, 65%, 52%);
+	--trophy-hard-highlight: hsl(152, 70%, 74%);
+	--trophy-hard-number: #064e3b;
+	--trophy-hard-shadow: rgba(52, 211, 153, 0.4);
 }
 
 /* Base Trophy Styles */
