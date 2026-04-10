@@ -27,7 +27,6 @@ figcaption {
 	--text-primary: #ffffff;
 	--text-secondary: rgba(255, 255, 255, 0.7);
 	--text-tertiary: rgba(255, 255, 255, 0.5);
-	--surface-primary: rgba(255, 255, 255, 0.15);
 	--surface-primary: rgb(59 59 59);
 	--surface-secondary: rgba(255, 255, 255, 0.05);
 	--border-primary: rgba(255, 255, 255, 0.2);
@@ -38,8 +37,7 @@ figcaption {
 	--dialog-bg: #1e1e1e;
 	--header-bg: #1a1a1a;
 	--header-border: rgba(255, 255, 255, 0.1);
-	--color-cta: #3b82f6;
-	--color-cta-hover: #2563eb;
+	--ui-muted: rgba(255, 255, 255, 0.45);
 }
 
 .light-theme {
@@ -48,7 +46,6 @@ figcaption {
 	--text-primary: #1a1a1a;
 	--text-secondary: #6b7280;
 	--text-tertiary: #9ca3af;
-	/* --surface-primary: rgba(0, 0, 0, 0.08); */
 	--surface-primary: rgb(231 231 231);
 	--surface-secondary: rgba(0, 0, 0, 0.02);
 	--border-primary: rgba(0, 0, 0, 0.15);
@@ -58,9 +55,8 @@ figcaption {
 	--dialog-overlay: rgba(0, 0, 0, 0.5);
 	--dialog-bg: #ffffff;
 	--header-bg: #ffffff;
-	--header-border: #e5e7eb;
-	--color-cta: #2563eb;
-	--color-cta-hover: #1d4ed8;
+	--header-border: #aaa;
+	--ui-muted: #777;
 }
 
 :root {

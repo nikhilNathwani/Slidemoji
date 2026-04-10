@@ -38,7 +38,7 @@ function GameActionButton({ isSolved, isSignedIn, onOpenStats, onRestart }) {
 	// Not won yet - show Restart
 	return (
 		<button
-			className={`${styles.restartButton} ${styles.visible}`}
+			className={styles.restartButton}
 			onClick={onRestart}
 			title="Restart Puzzle"
 		>

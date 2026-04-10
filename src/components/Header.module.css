@@ -12,26 +12,6 @@
 	backdrop-filter: blur(10px);
 }
 
-.archiveButtonWrapper {
-	position: relative;
-	display: inline-flex;
-}
-
-.newBadge {
-	position: absolute;
-	top: -4px;
-	right: -4px;
-	background-color: var(--color-cta);
-	color: #fff;
-	font-size: 9px;
-	font-weight: 700;
-	letter-spacing: 0.3px;
-	padding: 2px 5px;
-	border-radius: 6px;
-	pointer-events: none;
-	text-transform: uppercase;
-}
-
 .appTitle {
 	font-size: var(--text-2xl);
 	font-weight: 600;
@@ -43,35 +23,30 @@
 
 .headerActions {
 	display: flex;
-	gap: 10px;
+	gap: 20px;
 	align-items: center;
 }
 
 .iconButton {
-	width: 48px;
-	height: 48px;
-	border-radius: 50%;
-	background-color: var(--surface-primary);
-	border: 1px solid var(--border-secondary);
+	margin-block: -15px;
+	padding-block: 15px;
+	padding-inline: 8px;
+	width: auto;
+	border-radius: 8px;
+	background-color: transparent;
+	border: none;
 	color: var(--text-primary);
-	font-size: var(--text-xl);
+	font-size: var(--text-2xl);
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	cursor: pointer;
-	transition:
-		background-color 0.2s ease,
-		border-color 0.2s ease,
-		opacity 0.2s ease;
-}
-
-.iconButton i {
-	font-size: var(--text-xl);
+	transition: background-color 0.2s ease;
+	-webkit-tap-highlight-color: transparent;
 }
 
 .iconButton:hover {
-	background-color: var(--surface-secondary);
-	border-color: var(--border-primary);
+	background-color: var(--border-secondary);
 }
 
 .iconButton:active {
@@ -201,12 +176,9 @@
 	}
 
 	.iconButton {
-		width: 42px;
-		height: 42px;
-	}
-
-	.iconButton i {
-		font-size: var(--text-base);
+		margin-block: -12px;
+		padding-block: 12px;
+		padding-inline: 6px;
 	}
 
 	.avatarButton {

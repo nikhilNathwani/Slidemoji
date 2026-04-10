@@ -6,28 +6,12 @@
 	padding-block: 6px;
 }
 
-.winDialogContent .emoji {
-	font-size: 4rem;
-	margin: 20px 0;
-}
-
 /* Target only direct h3 children to avoid affecting nested components */
 .winDialogContent > h3 {
 	font-size: var(--text-3xl);
 	color: var(--text-primary);
 	margin-top: 36px;
 	margin-bottom: 8px;
-}
-
-/* Target only direct p children to avoid affecting nested components */
-.winDialogContent > p {
-	color: var(--text-secondary);
-	font-size: 1.1rem;
-}
-
-.earnedEmojiLarge {
-	font-size: 6rem;
-	line-height: 1;
 }
 
 .shareButton {
@@ -58,15 +42,6 @@
 	opacity: 0.7;
 }
 
-.shareButton i {
-	font-size: var(--text-base);
-}
-
-.winTrophyDisplay {
-	margin: 20px auto 15px auto;
-	display: inline-block;
-}
-
 .winDivider {
 	width: 100%;
 	height: 1px;
@@ -74,25 +49,4 @@
 	margin: 36px 0 32px 0;
 }
 
-.winSigninPrompt {
-	width: 100%;
-	text-align: center;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 16px;
-}
 
-.signinTitle {
-	font-size: 1.3rem;
-	color: var(--text-primary);
-	margin: 0;
-}
-
-.signinMessage {
-	color: var(--text-secondary);
-	font-size: 0.95rem;
-	margin: 0;
-	line-height: 1.5;
-	max-width: 380px;
-}

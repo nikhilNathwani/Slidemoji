@@ -40,9 +40,4 @@
 	text-align: left;
 }
 
-.privacyNote i {
-	color: rgba(96, 165, 250, 0.6);
-	flex-shrink: 0;
-	position: relative;
-	top: 0.3em;
-}
+

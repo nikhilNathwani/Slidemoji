@@ -4,74 +4,10 @@
 	gap: 30px;
 }
 
-.trophyCaseTitle {
-	font-size: var(--text-xl);
-	color: var(--text-primary);
-	margin: 0;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 10px;
-}
-
-.trophyCaseTitle i {
-	color: var(--text-secondary);
-}
-
 .statsDivider {
 	height: 1px;
 	background: var(--border-secondary);
 	margin: 0;
-}
-
-.streaksSection {
-	display: flex;
-	flex-direction: column;
-	gap: 12px;
-}
-
-.statRow {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding: 8px 0;
-}
-
-.statLabel {
-	color: var(--text-secondary);
-	font-size: var(--text-base);
-	display: flex;
-	align-items: center;
-	gap: 8px;
-}
-
-.statLabel i {
-	width: 20px;
-	text-align: center;
-}
-
-.statValue {
-	color: var(--text-primary);
-	font-size: var(--text-lg);
-	font-weight: 600;
-}
-
-.statsEmpty {
-	text-align: center;
-	max-width: 400px;
-	margin: 0 auto;
-}
-
-.statsIcon {
-	font-size: var(--text-5xl);
-	color: var(--text-tertiary);
-	margin-bottom: 20px;
-}
-
-.statsEmpty h3 {
-	font-size: var(--text-2xl);
-	color: var(--text-primary);
-	margin-bottom: 10px;
 }
 
 /* Archive Section */
@@ -123,36 +59,3 @@
 	transform: scale(0.97);
 }
 
-.unlockArchiveButton {
-	margin-top: 8px;
-	padding: 14px 32px;
-	background-color: #1a1a1a;
-	color: #ffffff;
-	border: 2px solid rgba(255, 255, 255, 0.2);
-	border-radius: 10px;
-	font-size: var(--text-base);
-	font-weight: 600;
-	cursor: pointer;
-	transition:
-		box-shadow 0.2s ease,
-		border-color 0.2s ease;
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.unlockArchiveButton:hover {
-	box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-	border-color: rgba(255, 255, 255, 0.4);
-	transform: translateY(-2px);
-}
-
-.unlockArchiveButton:active {
-	transform: translateY(0);
-	opacity: 0.8;
-}
-
-.unlockArchiveButton i {
-	font-size: var(--text-base);
-}
