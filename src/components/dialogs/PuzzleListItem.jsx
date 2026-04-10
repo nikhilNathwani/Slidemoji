@@ -8,11 +8,9 @@ function PuzzleListItem({ puzzleNum, isSolved, isSolvedHard = false, onClick, is
 
 	const variantClass = isLocked
 		? styles.locked
-		: isSolvedHard
-			? styles.solvedHard
-			: isSolved
-				? styles.solved
-				: styles.unsolved;
+		: isSolved || isSolvedHard
+			? styles.solved
+			: styles.unsolved;
 
 	return (
 		<button
@@ -30,6 +28,12 @@ function PuzzleListItem({ puzzleNum, isSolved, isSolvedHard = false, onClick, is
 					puzzleMetadata?.emojiName || "Unknown Puzzle"
 				)}
 			</div>
+			{!isLocked && (isSolved || isSolvedHard) && (
+				<div className={styles.solveIndicators}>
+					{isSolved && <span className={`${styles.pip} ${styles.normalPip}`} aria-label="Solved" />}
+					{isSolvedHard && <span className={`${styles.pip} ${styles.hardPip}`} aria-label="Solved Hard" />}
+				</div>
+			)}
 			<FontAwesomeIcon
 				icon={isLocked ? faLock : faPlayCircle}
 				className={styles.playIcon}

@@ -57,62 +57,38 @@
 	opacity: 0.6;
 }
 
-/* Solved puzzle — hard difficulty (uses hard trophy color) */
-.puzzleItem.solvedHard {
-	background: linear-gradient(
-		135deg,
-		var(--trophy-hard-base) 0%,
-		var(--trophy-hard-highlight) 50%,
-		var(--trophy-hard-base) 100%
-	);
-	border-color: var(--trophy-hard-base);
-}
-
-.puzzleItem.solvedHard .puzzleNumber {
-	color: var(--trophy-hard-number);
-	font-weight: 700;
-}
-
-.puzzleItem.solvedHard .puzzleName {
-	color: var(--trophy-hard-number);
-	font-weight: 600;
-}
-
-.puzzleItem.solvedHard:hover:not(:disabled) {
-	background-color: var(--trophy-hard-highlight);
-}
-
-.puzzleItem.solvedHard .playIcon {
-	color: var(--trophy-hard-number);
-}
-
-/* Solved puzzle (gold gradient) */
+/* Solved puzzle — any difficulty (neutral background, indicators show which) */
 .puzzleItem.solved {
-	background: linear-gradient(
-		135deg,
-		var(--trophy-normal-base) 0%,
-		var(--trophy-normal-highlight) 50%,
-		var(--trophy-normal-base) 100%
-	);
-	border-color: var(--trophy-normal-base);
+	background-color: var(--surface-secondary);
+	border-color: var(--border-secondary);
 }
 
-.puzzleItem.solved .puzzleNumber {
-	color: var(--trophy-normal-number);
-	font-weight: 700;
+/* Solve Indicator Pips */
+.solveIndicators {
+	display: flex;
+	gap: 4px;
+	align-items: center;
+	flex-shrink: 0;
 }
 
-.puzzleItem.solved .puzzleName {
-	color: var(--trophy-normal-number);
-	font-weight: 600;
+.pip {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	flex-shrink: 0;
 }
 
-.puzzleItem.solved:hover:not(:disabled) {
-	background-color: var(--trophy-normal-highlight);
+.normalPip {
+	background-color: var(--trophy-normal-base);
+	box-shadow: 0 0 0 1.5px var(--trophy-normal-number);
+}
+
+.hardPip {
+	background-color: var(--trophy-hard-base);
+	box-shadow: 0 0 0 1.5px var(--trophy-hard-number);
 }
 
 /* Puzzle Number */
-.puzzleNumber {
 	font-size: var(--text-base);
 	font-weight: 700;
 	min-width: 50px;
@@ -147,10 +123,6 @@
 
 .puzzleItem:hover .playIcon {
 	opacity: 1;
-}
-
-.puzzleItem.solved .playIcon {
-	color: var(--trophy-normal-number);
 }
 
 /* Mobile Adjustments */
