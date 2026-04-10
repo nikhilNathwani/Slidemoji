@@ -15,8 +15,8 @@
 	--trophy-normal-shadow: rgba(251, 191, 36, 0.4);
 
 	/* Hard Trophy (4x4) — pink/magenta gem (rhodolite) */
-	--trophy-hard-base: hsl(322, 85%, 52%);
-	--trophy-hard-highlight: hsl(322, 90%, 74%);
+	--trophy-hard-base: hsl(322, 78%, 59%);
+	--trophy-hard-highlight: hsl(322, 82%, 79%);
 	--trophy-hard-number: #5b0020;
 	--trophy-hard-shadow: rgba(221, 62, 133, 0.4);
 	/* Emerald gem (previous):
