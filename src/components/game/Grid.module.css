@@ -16,28 +16,3 @@
 	   causing the emoji image to appear to shift on solve. */
 	transform: translateZ(0);
 }
-
-/* Won state: one-shot glow animation that returns to default border.
-   fill-mode 'both' holds the 0% frame (normal border) during the delay
-   and the 100% frame (normal border) after the animation completes. */
-@keyframes wonNormalBorderPulse {
-	0%   { border-color: var(--border-primary); box-shadow: none; }
-	12%  { border-color: var(--trophy-normal-highlight); box-shadow: 0 0 28px var(--trophy-normal-shadow); }
-	70%  { border-color: var(--trophy-normal-highlight); box-shadow: 0 0 28px var(--trophy-normal-shadow); }
-	100% { border-color: var(--border-primary); box-shadow: none; }
-}
-
-@keyframes wonHardBorderPulse {
-	0%   { border-color: var(--border-primary); box-shadow: none; }
-	12%  { border-color: var(--trophy-hard-highlight); box-shadow: 0 0 28px var(--trophy-hard-shadow); }
-	70%  { border-color: var(--trophy-hard-highlight); box-shadow: 0 0 28px var(--trophy-hard-shadow); }
-	100% { border-color: var(--border-primary); box-shadow: none; }
-}
-
-.wonNormal {
-	animation: wonNormalBorderPulse 2.5s ease 0.35s both;
-}
-
-.wonHard {
-	animation: wonHardBorderPulse 2.5s ease 0.35s both;
-}

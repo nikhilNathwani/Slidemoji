@@ -134,14 +134,7 @@ function Grid({
 
 	return (
 		<div
-			className={[
-				styles.grid,
-				// Only apply animation when isJustSolved — prevents re-playing on page refresh
-				isJustSolved &&
-					(gridSize === 3 ? styles.wonNormal : styles.wonHard),
-			]
-				.filter(Boolean)
-				.join(" ")}
+			className={styles.grid}
 			style={{
 				width: `${gridSizePx}px`,
 				height: `${gridSizePx}px`,
