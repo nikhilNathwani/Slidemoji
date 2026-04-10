@@ -8,11 +8,7 @@
 	padding-block: 90px 40px;
 	padding-inline: 20px;
 	position: relative;
-	background: linear-gradient(
-		135deg,
-		var(--bg-gradient-start) 0%,
-		var(--bg-gradient-end) 100%
-	);
+	background-color: var(--bg-gradient-start);
 	color: var(--text-primary);
 }
 
@@ -29,7 +25,7 @@
 /* Title */
 .landingTitle {
 	font-family: "Fredoka", sans-serif;
-	font-size: var(--text-7xl);
+	font-size: var(--text-6xl);
 	font-weight: 700;
 	color: var(--text-primary);
 	margin: 0;
@@ -118,7 +114,7 @@
 /* Mobile Responsive */
 @media (max-width: 600px) {
 	.landingTitle {
-		font-size: var(--text-6xl);
+		font-size: var(--text-5xl);
 	}
 
 	.landingSubtitle {

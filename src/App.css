@@ -45,13 +45,13 @@ figcaption {
 	--bg-gradient-end: #f8f9fa;
 	--text-primary: #1a1a1a;
 	--text-secondary: #777;
-	--text-tertiary: #9ca3af;
+	--text-tertiary: #999;
 	--surface-primary: rgb(231 231 231);
 	--surface-secondary: rgba(0, 0, 0, 0.02);
 	--border-primary: rgba(0, 0, 0, 0.15);
 	--border-secondary: rgba(0, 0, 0, 0.08);
 	--tile-bg: #ffffff;
-	--tile-border: #d1d5db;
+	--tile-border: #d0d0d0;
 	--dialog-overlay: rgba(0, 0, 0, 0.5);
 	--dialog-bg: #ffffff;
 	--header-bg: #ffffff;
@@ -68,11 +68,9 @@ figcaption {
 	--text-xl: 1.25rem; /* 20px */
 	--text-2xl: 1.5rem; /* 24px */
 	--text-3xl: 1.875rem; /* 30px */
-	--text-4xl: 2.25rem; /* 36px */
-	--text-5xl: 3rem; /* 48px */
-	--text-6xl: 3.75rem; /* 60px */
-	--text-7xl: 4.5rem; /* 72px */
-	--text-8xl: 6rem; /* 96px */
+	--text-4xl: 3rem; /* 48px */
+	--text-5xl: 3.75rem; /* 60px */
+	--text-6xl: 4.5rem; /* 72px */
 }
 
 body,
