@@ -13,6 +13,7 @@ import { playTileMoveSound } from "../../utils/sound";
 import {
 	WIN_TILE_ANIM_START_DELAY_MS,
 	WIN_TILE_ANIM_STAGGER_MS,
+	WIN_TILE_ANIM_DURATION_MS,
 } from "../../utils/constants";
 import styles from "./Grid.module.css";
 
@@ -39,6 +40,21 @@ function Grid({
 	useEffect(() => {
 		if (!isSolved) setIsJustSolved(false);
 	}, [isSolved]);
+
+	// Reset celebrating after all tile pop animations complete.
+	// This removes the CSS animation from tiles, releasing their compositing layers
+	// so they render at maximum sharpness in the solved state.
+	useEffect(() => {
+		if (!isJustSolved) return;
+		// Last real tile is at grid index (gridSize²-2) since gap occupies the last index.
+		const totalMs =
+			WIN_TILE_ANIM_START_DELAY_MS +
+			(gridSize * gridSize - 2) * WIN_TILE_ANIM_STAGGER_MS +
+			WIN_TILE_ANIM_DURATION_MS +
+			150; // buffer
+		const id = setTimeout(() => setIsJustSolved(false), totalMs);
+		return () => clearTimeout(id);
+	}, [isJustSolved, gridSize]);
 
 	const emojiSvgUrl = useMemo(
 		() => (emoji ? createEmojiSvgUrl(emoji) : null),
@@ -122,7 +138,6 @@ function Grid({
 				styles.grid,
 				isSolved &&
 					(gridSize === 3 ? styles.wonNormal : styles.wonHard),
-				isJustSolved && styles.celebrating,
 			]
 				.filter(Boolean)
 				.join(" ")}

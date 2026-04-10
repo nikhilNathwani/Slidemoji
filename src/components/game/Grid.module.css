@@ -9,27 +9,35 @@
 	/* CSS Grid layout - Framer Motion animates grid changes */
 	display: grid;
 	gap: 0;
-	/* Pre-promote to compositing layer so adding box-shadow on win doesn't
-	   cause a mid-animation layer change (which shifts child pixel-snapping) */
-	will-change: border-color, box-shadow;
-	transition:
-		border-color 0.6s ease,
-		box-shadow 0.6s ease;
+	/* Anchor the grid to a pixel-aligned compositing layer.
+	   Child tiles promote to compositing layers on CSS animation;
+	   if the grid itself had a fractional offset, those child layers
+	   would snap to different sub-pixel positions on each promotion,
+	   causing the emoji image to appear to shift on solve. */
+	transform: translateZ(0);
 }
 
-/* Applied on the winning move to delay the border glow until tiles settle */
-.celebrating {
-	transition-delay: 350ms;
+/* Won state: one-shot glow animation that returns to default border.
+   fill-mode 'both' holds the 0% frame (normal border) during the delay
+   and the 100% frame (normal border) after the animation completes. */
+@keyframes wonNormalBorderPulse {
+	0%   { border-color: var(--border-primary); box-shadow: none; }
+	12%  { border-color: var(--trophy-normal-highlight); box-shadow: 0 0 28px var(--trophy-normal-shadow); }
+	70%  { border-color: var(--trophy-normal-highlight); box-shadow: 0 0 28px var(--trophy-normal-shadow); }
+	100% { border-color: var(--border-primary); box-shadow: none; }
 }
 
-/* Won state: border + glow in the matching trophy color.
-   Both use the highlight (lighter) variant so vibrancy is matched. */
+@keyframes wonHardBorderPulse {
+	0%   { border-color: var(--border-primary); box-shadow: none; }
+	12%  { border-color: var(--trophy-hard-highlight); box-shadow: 0 0 28px var(--trophy-hard-shadow); }
+	70%  { border-color: var(--trophy-hard-highlight); box-shadow: 0 0 28px var(--trophy-hard-shadow); }
+	100% { border-color: var(--border-primary); box-shadow: none; }
+}
+
 .wonNormal {
-	border-color: var(--trophy-normal-highlight);
-	box-shadow: 0 0 28px var(--trophy-normal-shadow);
+	animation: wonNormalBorderPulse 2.5s ease 0.35s both;
 }
 
 .wonHard {
-	border-color: var(--trophy-hard-highlight);
-	box-shadow: 0 0 28px var(--trophy-hard-shadow);
+	animation: wonHardBorderPulse 2.5s ease 0.35s both;
 }
