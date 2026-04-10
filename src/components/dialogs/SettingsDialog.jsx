@@ -20,7 +20,18 @@ function SettingsDialog({
 	const { userDoc } = useUserDoc();
 	const isDevMode = import.meta.env.DEV || userDoc?.isDevMode === true;
 	return (
-		<Dialog isOpen={isOpen} onClose={onClose} title={<><FontAwesomeIcon icon={faCog} className={styles.settingsIcon} /> Settings</>}>
+		<Dialog
+			isOpen={isOpen}
+			onClose={onClose}
+			title={
+				<>
+					<FontAwesomeIcon
+						icon={faCog}
+						className={styles.settingsIcon}
+					/>Settings
+				</>
+			}
+		>
 			<div className={styles.settingsContent}>
 				<div className={styles.settingsItem}>
 					<label className={styles.settingsLabel}>Difficulty</label>

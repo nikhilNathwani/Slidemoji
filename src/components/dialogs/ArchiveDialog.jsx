@@ -53,8 +53,7 @@ function ArchiveDialog({ isOpen, onClose, onPuzzleSelect, devIsPremium }) {
 					<FontAwesomeIcon
 						icon={faClockRotateLeft}
 						className={styles.archiveIcon}
-					/>{" "}
-					Puzzle Archive
+					/>Puzzle Archive
 				</>
 			}
 		>

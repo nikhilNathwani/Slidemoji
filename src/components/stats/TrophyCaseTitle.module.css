@@ -1,13 +1,13 @@
 .trophyCaseTitle {
 	display: flex;
-	align-items: center; /* vertically align elements */
-	justify-content: center; /* centers text for section title*/
-	white-space: nowrap; /* prevents "Trophy Case" from wrapping onto 2nd line */
+	align-items: center;
+	justify-content: center;
+	white-space: nowrap;
 }
 
 .titleIcon {
 	height: 0.875em;
-	margin-right: 0.175em;
+	margin-right: 0.35em;
 	position: relative;
 	top: 0.025em;
 }

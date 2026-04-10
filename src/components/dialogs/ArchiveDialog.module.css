@@ -20,12 +20,12 @@
 
 .filterButton {
 	flex: 1;
-	padding: 8px 12px;
-	border: 2px solid var(--border-primary);
-	border-radius: 6px;
+	padding: 10px 16px;
+	border: 2px solid var(--tile-border);
+	border-radius: 8px;
 	background-color: var(--surface-secondary);
 	color: var(--text-primary);
-	font-size: var(--text-sm);
+	font-size: var(--text-base);
 	font-weight: 600;
 	cursor: pointer;
 	transition:
@@ -35,13 +35,12 @@
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	gap: 2px;
+	gap: 4px;
 	min-height: 60px;
 }
 
 .filterButton:hover {
 	background-color: var(--surface-primary);
-	border-color: var(--border-primary);
 }
 
 .filterButton.active {
@@ -50,12 +49,11 @@
 }
 
 .filterCount {
-	font-size: var(--text-xs);
-	opacity: 0.9;
+	font-size: var(--text-sm);
+	opacity: 0.8;
 }
 
 .archiveIcon {
-	margin-right: 0.175em;
 }
 
 /* Puzzle List */
@@ -101,7 +99,7 @@
 /* Mobile Adjustments */
 @media (max-width: 480px) {
 	.filterButton {
-		font-size: var(--text-xs);
-		padding: 6px 8px;
+		font-size: var(--text-sm);
+		padding: 8px 10px;
 	}
 }

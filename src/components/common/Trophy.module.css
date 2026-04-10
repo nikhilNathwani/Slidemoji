@@ -16,7 +16,7 @@
 	--trophy-hard-base: oklch(86% 0.09 215);
 	--trophy-hard-highlight: oklch(93% 0.06 215);
 	--trophy-hard-number: #1e3a5f;
-	--trophy-hard-shadow: oklch(72% 0.10 215 / 0.4);
+	--trophy-hard-shadow: oklch(72% 0.1 215 / 0.4);
 }
 
 /* Base Trophy Styles */
