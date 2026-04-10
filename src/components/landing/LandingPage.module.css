@@ -8,7 +8,7 @@
 	padding-block: 90px 40px;
 	padding-inline: 20px;
 	position: relative;
-	background-color: var(--bg-gradient-start);
+	background-color: var(--bg);
 	color: var(--text-primary);
 }
 

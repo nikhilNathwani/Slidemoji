@@ -1,6 +1,6 @@
 import Dialog from "./Dialog";
 import styles from "./SettingsDialog.module.css";
-import { FontAwesomeIcon, faComment, faBug } from "../../utils/icons";
+import { FontAwesomeIcon, faComment, faBug, faCog } from "../../utils/icons";
 import { DIFFICULTIES } from "../../constants";
 import { useUserDoc } from "../../hooks/useUserDoc";
 import { usePreference } from "../../hooks/usePreference";
@@ -20,7 +20,7 @@ function SettingsDialog({
 	const { userDoc } = useUserDoc();
 	const isDevMode = import.meta.env.DEV || userDoc?.isDevMode === true;
 	return (
-		<Dialog isOpen={isOpen} onClose={onClose} title="Settings">
+		<Dialog isOpen={isOpen} onClose={onClose} title={<><FontAwesomeIcon icon={faCog} className={styles.settingsIcon} /> Settings</>}>
 			<div className={styles.settingsContent}>
 				<div className={styles.settingsItem}>
 					<label className={styles.settingsLabel}>Difficulty</label>

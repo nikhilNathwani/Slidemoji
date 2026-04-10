@@ -33,7 +33,7 @@
 	padding: 12px 20px;
 	border-radius: 12px;
 	background-color: transparent;
-	color: var(--ui-muted);
+	color: var(--text-secondary);
 	border: 1px solid;
 	box-shadow: 0 2px 0 currentColor;
 	font-size: var(--text-base);

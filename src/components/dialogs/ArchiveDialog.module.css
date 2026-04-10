@@ -30,8 +30,7 @@
 	cursor: pointer;
 	transition:
 		background-color 0.2s ease,
-		border-color 0.2s ease,
-		border-width 0.2s ease;
+		border-color 0.2s ease;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -46,7 +45,6 @@
 }
 
 .filterButton.active {
-	border-width: 3px;
 	border-color: var(--text-primary);
 	background-color: var(--surface-primary);
 }

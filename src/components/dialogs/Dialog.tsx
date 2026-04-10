@@ -5,7 +5,7 @@ import styles from "./Dialog.module.css";
 interface DialogProps {
 	isOpen: boolean;
 	onClose: () => void;
-	title: string;
+	title: React.ReactNode;
 	children: React.ReactNode;
 }
 
@@ -43,7 +43,7 @@ function Dialog({ isOpen, onClose, title, children }: DialogProps) {
 				<div
 					role="dialog"
 					aria-modal="true"
-					aria-label={title}
+					aria-label={typeof title === "string" ? title : undefined}
 					className={styles.dialogContent}
 					onClick={(e) => e.stopPropagation()}
 				>

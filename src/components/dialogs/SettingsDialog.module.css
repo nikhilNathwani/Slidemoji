@@ -28,6 +28,10 @@
 	font-style: italic;
 }
 
+.settingsIcon {
+	margin-right: 0.175em;
+}
+
 .settingsItem.disabled {
 	opacity: 0.5;
 }
@@ -61,7 +65,7 @@
 
 .difficultyBtn.active {
 	background-color: var(--surface-primary);
-	border-color: #fbbf24;
+	border-color: var(--text-primary);
 	border-width: 2px;
 	color: var(--text-primary);
 	opacity: 1;
@@ -98,15 +102,12 @@
 	padding: 14px 20px;
 	border-radius: 12px;
 	background-color: transparent;
-	color: var(--ui-muted);
+	color: var(--text-secondary);
 	border: 1px solid;
-	box-shadow: 0 2px 0 currentColor;
 	font-size: var(--text-base);
 	font-weight: 600;
 	cursor: pointer;
-	transition:
-		transform 0.1s ease,
-		box-shadow 0.1s ease;
+	transition: background-color 0.2s ease;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -115,13 +116,7 @@
 }
 
 .actionButton:hover {
-	transform: translateY(-1px);
-	box-shadow: 0 3px 0 currentColor;
-}
-
-.actionButton:active {
-	transform: translateY(1px);
-	box-shadow: none;
+	background-color: var(--surface-secondary);
 }
 
 .devButton {
@@ -166,8 +161,7 @@
 }
 
 .toggle.on {
-	background-color: #fbbf24;
-	/* background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); */
+	background-color: var(--text-primary);
 }
 
 .slider {
@@ -184,6 +178,7 @@
 
 .toggle.on .slider {
 	transform: translateX(30px);
+	background-color: var(--bg);
 }
 
 .label {
@@ -198,7 +193,7 @@
 
 .toggle.on .label {
 	left: 8px;
-	color: #1a1a1a;
+	color: var(--bg);
 }
 
 .toggle.off .label {

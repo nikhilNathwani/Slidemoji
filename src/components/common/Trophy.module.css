@@ -12,11 +12,11 @@
 	--trophy-normal-number: #78350f;
 	--trophy-normal-shadow: oklch(77% 0.168 70 / 0.4);
 
-	/* Hard Trophy (4x4) — pink/magenta (matched L to gold) */
-	--trophy-hard-base: oklch(86% 0.2 270);
-	--trophy-hard-highlight: oklch(92% 0.14 270);
-	--trophy-hard-number: #5b0020;
-	--trophy-hard-shadow: oklch(77% 0.2 0 / 0.4);
+	/* Hard Trophy (4x4) — light blue / diamond (matched L to gold) */
+	--trophy-hard-base: oklch(86% 0.09 215);
+	--trophy-hard-highlight: oklch(93% 0.06 215);
+	--trophy-hard-number: #1e3a5f;
+	--trophy-hard-shadow: oklch(72% 0.10 215 / 0.4);
 }
 
 /* Base Trophy Styles */
