@@ -6,24 +6,17 @@
 	--trophy-mini-width-mobile: 60px;
 	--trophy-mini-height-mobile: 75px;
 
-	/* Normal Trophy (3x3) */
-	/* --trophy-normal-base: hsl(43, 96%, 56%); */
-	--trophy-normal-base: hsl(43, 96%, 58%);
-	/* --trophy-normal-highlight: #fcd34d; */
-	--trophy-normal-highlight: hsl(46, 97%, 79%);
+	/* Normal Trophy (3x3) — gold */
+	--trophy-normal-base: oklch(77% 0.168 70);
+	--trophy-normal-highlight: oklch(88% 0.130 82);
 	--trophy-normal-number: #78350f;
-	--trophy-normal-shadow: rgba(251, 191, 36, 0.4);
+	--trophy-normal-shadow: oklch(77% 0.168 70 / 0.4);
 
-	/* Hard Trophy (4x4) — pink/magenta gem (rhodolite) */
-	--trophy-hard-base: hsl(322, 78%, 59%);
-	--trophy-hard-highlight: hsl(322, 82%, 79%);
+	/* Hard Trophy (4x4) — pink/magenta (matched L to gold) */
+	--trophy-hard-base: oklch(77% 0.200 0);
+	--trophy-hard-highlight: oklch(88% 0.140 0);
 	--trophy-hard-number: #5b0020;
-	--trophy-hard-shadow: rgba(221, 62, 133, 0.4);
-	/* Emerald gem (previous):
-	--trophy-hard-base: hsl(152, 65%, 52%);
-	--trophy-hard-highlight: hsl(152, 70%, 74%);
-	--trophy-hard-number: #064e3b;
-	--trophy-hard-shadow: rgba(52, 211, 153, 0.4); */
+	--trophy-hard-shadow: oklch(77% 0.200 0 / 0.4);
 }
 
 /* Base Trophy Styles */

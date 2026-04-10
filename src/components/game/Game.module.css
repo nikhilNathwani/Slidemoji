@@ -35,13 +35,13 @@
 	background-color: transparent;
 	color: var(--ui-muted);
 	border: 1px solid;
-	border-bottom: 3px solid;
+	box-shadow: 0 2px 0 currentColor;
 	font-size: 0.95rem;
 	font-weight: bold;
 	cursor: pointer;
 	transition:
 		transform 0.1s ease,
-		border-bottom-width 0.1s ease;
+		box-shadow 0.1s ease;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -51,12 +51,12 @@
 
 .restartButton:hover {
 	transform: translateY(-1px);
-	border-bottom-width: 4px;
+	box-shadow: 0 3px 0 currentColor;
 }
 
 .restartButton:active {
 	transform: translateY(1px);
-	border-bottom-width: 1px;
+	box-shadow: none;
 }
 
 @media (max-width: 600px) {

@@ -61,10 +61,12 @@
 	background-color: transparent;
 	color: var(--text-primary);
 	border: 2px solid;
-	border-bottom: 4px solid;
+	box-shadow: 0 2px 0 currentColor;
 	border-radius: 12px;
 	cursor: pointer;
-	transition: transform 0.1s ease, border-bottom-width 0.1s ease;
+	transition:
+		transform 0.1s ease,
+		box-shadow 0.1s ease;
 	display: flex;
 	align-items: center;
 	gap: 12px;
@@ -73,12 +75,12 @@
 
 .playButton:hover {
 	transform: translateY(-1px);
-	border-bottom-width: 5px;
+	box-shadow: 0 3px 0 currentColor;
 }
 
 .playButton:active {
 	transform: translateY(2px);
-	border-bottom-width: 2px;
+	box-shadow: none;
 }
 
 /* Footer */
