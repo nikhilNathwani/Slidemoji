@@ -15,7 +15,9 @@
 	transition: border-color 0.3s ease;
 	/* Static background styles for emoji tiles */
 	background-repeat: no-repeat;
-	background-origin: border-box;
+	/* padding-box (default) positions the image relative to the content area,
+	   not the border edge — ensures crisp consistent rendering at all times */
+	background-origin: padding-box;
 	background-clip: border-box;
 	/* Keep tile permanently on a compositing layer so it is never de-promoted
 	   between Framer Motion's spring end and the celebration CSS animation start.

@@ -68,7 +68,7 @@ function Tile({
 			}}
 			data-tile-number={tileNumber}
 		>
-			{(hasNumbersShown || celebrating) && tileNumber ? (
+			{hasNumbersShown && tileNumber ? (
 				<span className={styles.tileNumber}>{tileNumber}</span>
 			) : null}
 		</motion.div>
