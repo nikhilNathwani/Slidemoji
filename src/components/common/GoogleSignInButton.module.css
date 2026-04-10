@@ -5,7 +5,7 @@
 	border: 2px solid rgba(0, 0, 0, 0.12); /* Thicker, more visible border on white background */
 	background-color: #ffffff; /* White background */
 	color: #333333;
-	font-size: 0.9rem;
+	font-size: var(--text-sm);
 	font-weight: 600;
 	cursor: pointer;
 	transition:
@@ -44,7 +44,7 @@
 
 .errorMessage {
 	margin: 8px 0 0;
-	font-size: 0.8rem;
+	font-size: var(--text-xs);
 	color: #ef4444;
 	text-align: center;
 }

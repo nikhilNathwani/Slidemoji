@@ -17,7 +17,7 @@
 }
 
 .trophyCount {
-	font-size: 1rem;
+	font-size: var(--text-base);
 	color: var(--text-secondary);
 	background-color: var(--surface-primary);
 	padding: 4px 12px;
@@ -63,7 +63,7 @@
 	background-color: var(--surface-primary);
 	border: 1px solid var(--border-secondary);
 	color: var(--text-primary);
-	font-size: 0.9rem;
+	font-size: var(--text-sm);
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -89,7 +89,7 @@
 }
 
 .pageInfo {
-	font-size: 0.9rem;
+	font-size: var(--text-sm);
 	color: var(--text-secondary);
 	font-weight: 500;
 	min-width: 100px;

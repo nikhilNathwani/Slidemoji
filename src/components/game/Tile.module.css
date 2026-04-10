@@ -6,7 +6,7 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	font-size: 2rem;
+	font-size: 2rem; /* 32px — between --text-3xl and --text-4xl; sized for emoji tile display */
 	font-weight: bold;
 	user-select: none;
 	box-sizing: border-box;

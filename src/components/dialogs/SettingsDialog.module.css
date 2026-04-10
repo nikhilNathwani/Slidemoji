@@ -190,7 +190,7 @@
 	position: absolute;
 	top: 50%;
 	transform: translateY(-50%);
-	font-size: 0.7rem;
+	font-size: 0.7rem; /* tighter than --text-xs (0.75rem) to fit inside 30px toggle pill */
 	font-weight: 600;
 	color: var(--text-primary);
 	pointer-events: none;

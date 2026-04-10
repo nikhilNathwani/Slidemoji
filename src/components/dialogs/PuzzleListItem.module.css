@@ -123,7 +123,7 @@
 
 /* Puzzle Number */
 .puzzleNumber {
-	font-size: 15px;
+	font-size: var(--text-base);
 	font-weight: 700;
 	min-width: 50px;
 	flex-shrink: 0;
@@ -133,7 +133,7 @@
 /* Puzzle Name */
 .puzzleName {
 	flex: 1;
-	font-size: 15px;
+	font-size: var(--text-base);
 	font-weight: 500;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -148,7 +148,7 @@
 
 /* Play Icon */
 .playIcon {
-	font-size: 18px;
+	font-size: var(--text-lg);
 	color: var(--text-secondary);
 	opacity: 0.5;
 	flex-shrink: 0;
@@ -166,12 +166,12 @@
 /* Mobile Adjustments */
 @media (max-width: 480px) {
 	.puzzleNumber {
-		font-size: 14px;
+		font-size: var(--text-sm);
 		min-width: 45px;
 	}
 
 	.puzzleName {
-		font-size: 14px;
+		font-size: var(--text-sm);
 	}
 
 	.puzzleItem {
