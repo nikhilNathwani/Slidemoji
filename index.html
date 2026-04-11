@@ -42,6 +42,16 @@
 					document.documentElement.classList.add(
 						prefersDark ? "dark-theme" : "light-theme",
 					);
+					// Sync browser chrome color to initial theme
+					var metaTheme = document.querySelector(
+						'meta[name="theme-color"]',
+					);
+					if (metaTheme) {
+						metaTheme.setAttribute(
+							"content",
+							prefersDark ? "#121212" : "#f2f2f2",
+						);
+					}
 				} catch (e) {}
 			})();
 		</script>

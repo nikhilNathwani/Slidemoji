@@ -20,7 +20,7 @@
 }
 
 .googleSignInButton:hover {
-	background-color: #f8f9fa;
+	background-color: rgba(0, 0, 0, 0.03);
 	border-color: var(--border-primary);
 	transform: scale(1.05);
 }
@@ -45,6 +45,6 @@
 .errorMessage {
 	margin: 8px 0 0;
 	font-size: var(--text-xs);
-	color: #ef4444;
+	color: var(--color-error);
 	text-align: center;
 }

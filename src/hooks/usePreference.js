@@ -55,6 +55,12 @@ export function usePreference(key, defaultValue, options = {}) {
 						`pref_${key}`,
 						JSON.stringify(newValue),
 					);
+					// Notify same-window listeners immediately (e.g. theme toggle bypasses Firestore round-trip)
+					window.dispatchEvent(
+						new CustomEvent("preference-updated", {
+							detail: { key, value: newValue },
+						}),
+					);
 				} catch {
 					/* localStorage may be unavailable; best-effort */
 				}

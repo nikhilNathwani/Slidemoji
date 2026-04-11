@@ -22,13 +22,30 @@ window.addEventListener(
 	{ passive: false },
 );
 
+function applyTheme(isDark) {
+	const root = document.documentElement;
+	root.classList.toggle("dark-theme", isDark);
+	root.classList.toggle("light-theme", !isDark);
+	const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+	if (metaThemeColor) {
+		metaThemeColor.setAttribute("content", isDark ? "#121212" : "#f2f2f2");
+	}
+}
+
 export function Root() {
 	const [darkMode] = usePreference("darkMode");
+	// Sync from Firestore-driven React state
 	useEffect(() => {
-		const root = document.documentElement;
-		root.classList.toggle("dark-theme", darkMode);
-		root.classList.toggle("light-theme", !darkMode);
+		applyTheme(darkMode);
 	}, [darkMode]);
+	// Also respond immediately to same-window preference writes (bypasses Firestore round-trip)
+	useEffect(() => {
+		const handler = (e) => {
+			if (e.detail?.key === "darkMode") applyTheme(e.detail.value);
+		};
+		window.addEventListener("preference-updated", handler);
+		return () => window.removeEventListener("preference-updated", handler);
+	}, []);
 	return <App />;
 }
 

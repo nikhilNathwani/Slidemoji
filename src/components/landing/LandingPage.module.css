@@ -19,7 +19,7 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 24px;
+	gap: 16px;
 }
 
 /* Title */
@@ -63,6 +63,7 @@
 	display: flex;
 	align-items: center;
 	gap: 12px;
+	margin-top: 12px;
 }
 
 .playButton:hover {
@@ -108,11 +109,11 @@
 /* Mobile Responsive */
 @media (max-width: 600px) {
 	.landingTitle {
-		font-size: var(--text-5xl);
+		font-size: var(--text-4xl);
 	}
 
 	.landingSubtitle {
-		font-size: var(--text-2xl);
+		font-size: var(--text-xl);
 	}
 
 	.playButton {

@@ -121,9 +121,9 @@
 .devButton {
 	padding: 10px 16px;
 	border-radius: 8px;
-	border: 2px solid #ef4444;
+	border: 2px solid var(--color-error);
 	background-color: var(--surface-secondary);
-	color: #ef4444;
+	color: var(--color-error);
 	font-size: var(--text-sm);
 	font-weight: 600;
 	cursor: pointer;
@@ -134,7 +134,7 @@
 }
 
 .devButton:hover {
-	background-color: #ef4444;
+	background-color: var(--color-error);
 	color: white;
 }
 

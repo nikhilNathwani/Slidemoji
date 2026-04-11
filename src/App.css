@@ -67,6 +67,8 @@ figcaption {
 	--text-4xl: 3rem; /* 48px */
 	--text-5xl: 3.75rem; /* 60px */
 	--text-6xl: 4.5rem; /* 72px */
+	/* State Colors */
+	--color-error: #ef4444;
 }
 
 body,
