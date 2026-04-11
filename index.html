@@ -37,7 +37,8 @@
 					var prefersDark =
 						stored !== null
 							? JSON.parse(stored)
-							: window.matchMedia("(prefers-color-scheme: dark)").matches;
+							: window.matchMedia("(prefers-color-scheme: dark)")
+									.matches;
 					document.documentElement.classList.add(
 						prefersDark ? "dark-theme" : "light-theme",
 					);
