@@ -89,6 +89,7 @@
 }
 
 /* Puzzle Number */
+.puzzleNumber {
 	font-size: var(--text-base);
 	font-weight: 700;
 	min-width: 50px;
