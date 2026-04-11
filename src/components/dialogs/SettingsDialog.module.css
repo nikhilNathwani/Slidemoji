@@ -46,7 +46,7 @@
 	border: 2px solid var(--tile-border);
 	background-color: var(--surface-secondary);
 	color: var(--text-primary);
-	border-radius: 12px;
+	border-radius: 8px;
 	cursor: pointer;
 	transition:
 		background-color 0.2s ease,
@@ -99,7 +99,7 @@
 
 .actionButton {
 	padding: 14px 20px;
-	border-radius: 12px;
+	border-radius: 8px;
 	background-color: transparent;
 	color: var(--text-secondary);
 	border: 1px solid;

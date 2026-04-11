@@ -31,7 +31,7 @@
 /* Restart Button — flat, background tied to grid border color */
 .restartButton {
 	padding: 12px 20px;
-	border-radius: 12px;
+	border-radius: 8px;
 	background-color: var(--border-primary);
 	color: var(--text-primary);
 	border: none;

@@ -57,7 +57,7 @@
 	background-color: var(--text-primary);
 	color: var(--bg);
 	border: none;
-	border-radius: 12px;
+	border-radius: 8px;
 	cursor: pointer;
 	transition: opacity 0.15s ease;
 	display: flex;
