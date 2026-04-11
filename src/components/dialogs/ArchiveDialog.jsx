@@ -24,7 +24,8 @@ function ArchiveDialog({ isOpen, onClose, onPuzzleSelect, devIsPremium }) {
 		return {
 			puzzleNum,
 			isSolved: !!solved,
-			isSolvedHard: !!solved?.["hard"],
+			isSolvedNormal: !!solved?.[DIFFICULTY.NORMAL],
+			isSolvedHard: !!solved?.[DIFFICULTY.HARD],
 			isToday: puzzleNum === todayPuzzleId,
 		};
 	}).reverse(); // Most recent first
@@ -32,8 +33,10 @@ function ArchiveDialog({ isOpen, onClose, onPuzzleSelect, devIsPremium }) {
 	// Filter puzzles based on selected filter
 	const filteredPuzzles = puzzleList.filter((puzzle) => {
 		if (filter === "all") return true;
-		if (filter === "unsolved") return !puzzle.isSolvedNormal && !puzzle.isSolvedHard;
-		if (filter === "solved") return puzzle.isSolvedNormal || puzzle.isSolvedHard;
+		if (filter === "unsolved")
+			return !puzzle.isSolvedNormal && !puzzle.isSolvedHard;
+		if (filter === "solved")
+			return puzzle.isSolvedNormal || puzzle.isSolvedHard;
 		return true;
 	});
 
@@ -42,7 +45,9 @@ function ArchiveDialog({ isOpen, onClose, onPuzzleSelect, devIsPremium }) {
 		onClose();
 	};
 
-	const numSolved = puzzleList.filter((p) => p.isSolvedNormal || p.isSolvedHard).length;
+	const numSolved = puzzleList.filter(
+		(p) => p.isSolvedNormal || p.isSolvedHard,
+	).length;
 	const numUnsolved = totalPuzzles - numSolved;
 
 	return (

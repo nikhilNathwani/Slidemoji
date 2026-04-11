@@ -1,5 +1,5 @@
 .grid {
-	background-color: var(--surface-primary);
+	background-color: var(--bg);
 	padding: 0;
 	margin: 0 auto;
 	touch-action: none;
