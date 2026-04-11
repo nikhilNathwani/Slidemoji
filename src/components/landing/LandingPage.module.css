@@ -51,13 +51,13 @@
 
 /* Play Button */
 .playButton {
-	padding: 12px 36px;
+	padding: 14px 40px;
 	font-size: var(--text-xl);
 	font-weight: bold;
 	background-color: transparent;
 	color: var(--text-primary);
 	border: 2px solid;
-	box-shadow: 0 2px 0 currentColor;
+	box-shadow: 0 4px 0 currentColor;
 	border-radius: 12px;
 	cursor: pointer;
 	transition:
@@ -71,11 +71,11 @@
 
 .playButton:hover {
 	transform: translateY(-1px);
-	box-shadow: 0 3px 0 currentColor;
+	box-shadow: 0 5px 0 currentColor;
 }
 
 .playButton:active {
-	transform: translateY(2px);
+	transform: translateY(3px);
 	box-shadow: none;
 }
 
