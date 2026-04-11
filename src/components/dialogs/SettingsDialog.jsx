@@ -18,7 +18,7 @@ function SettingsDialog({
 	const [soundEnabled, setSoundEnabled] = usePreference("soundEnabled");
 	const [darkMode, setDarkMode] = usePreference("darkMode");
 	const { userDoc } = useUserDoc();
-	const isDevMode = import.meta.env.DEV || userDoc?.isDevMode === true;
+	const isDevMode = userDoc?.isDevMode === true;
 	return (
 		<Dialog
 			isOpen={isOpen}

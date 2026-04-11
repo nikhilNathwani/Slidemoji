@@ -40,14 +40,16 @@ function Header({ onSettingsClick, onStatsClick, onArchiveClick }) {
 		<header className={styles.appHeader}>
 			<h1 className={styles.appTitle}>Slidemoji</h1>
 			<div className={styles.headerActions}>
-				<button
-					className={styles.iconButton}
-					onClick={onArchiveClick}
-					aria-label="Puzzle Archive"
-					title="Puzzle Archive"
-				>
-					<FontAwesomeIcon icon={faClockRotateLeft} />
-				</button>
+				{user && !user.isAnonymous && (
+					<button
+						className={styles.iconButton}
+						onClick={onArchiveClick}
+						aria-label="Puzzle Archive"
+						title="Puzzle Archive"
+					>
+						<FontAwesomeIcon icon={faClockRotateLeft} />
+					</button>
+				)}
 				<button
 					className={styles.iconButton}
 					onClick={onStatsClick}

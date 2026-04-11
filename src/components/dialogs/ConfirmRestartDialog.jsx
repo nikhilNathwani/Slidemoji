@@ -9,7 +9,10 @@ function ConfirmRestartDialog({ isOpen, onClose, onConfirm }) {
 			onClose={onClose}
 			title={
 				<>
-					<FontAwesomeIcon icon={faRedo} style={{ marginRight: "0.35em" }} />
+					<FontAwesomeIcon
+						icon={faRedo}
+						style={{ marginRight: "0.35em" }}
+					/>
 					Restart Puzzle?
 				</>
 			}

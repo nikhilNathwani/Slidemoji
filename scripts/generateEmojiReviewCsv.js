@@ -38,6 +38,15 @@ const groupOrder = [
 	"Flags",
 ];
 
+// Build canonical index map from unicode-emoji-json's insertion order (matches Unicode spec)
+const emojiDataKeys = Object.keys(emojiData);
+const canonicalIndex = (emoji) => {
+	const i = emojiDataKeys.indexOf(emoji);
+	const j = emojiDataKeys.indexOf(normalizeEmoji(emoji));
+	const idx = i !== -1 ? i : j;
+	return idx === -1 ? 99999 : idx;
+};
+
 const rows = [];
 let notFound = 0;
 
@@ -50,13 +59,25 @@ for (const entry of calendar) {
 	if (!info) notFound++;
 }
 
+// Add all flag emojis from unicode-emoji-json not already in the calendar
+const calendarEmojiSet = new Set(
+	rows.flatMap((r) => [r.emoji, normalizeEmoji(r.emoji)]),
+);
+for (const [emoji, info] of Object.entries(emojiData)) {
+	if (info.group !== "Flags") continue;
+	if (calendarEmojiSet.has(emoji) || calendarEmojiSet.has(normalizeEmoji(emoji)))
+		continue;
+	rows.push({ emoji, name: info.name, group: "Flags" });
+}
+
 rows.sort((a, b) => {
 	const ai = groupOrder.indexOf(a.group);
 	const bi = groupOrder.indexOf(b.group);
 	const ao = ai === -1 ? 99 : ai;
 	const bo = bi === -1 ? 99 : bi;
 	if (ao !== bo) return ao - bo;
-	return a.name.localeCompare(b.name);
+	// Within group, use canonical Unicode order from unicode-emoji-json
+	return canonicalIndex(a.emoji) - canonicalIndex(b.emoji);
 });
 
 const lines = ["emoji,name,group,exclude"];
