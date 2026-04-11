@@ -63,32 +63,50 @@
 	border-color: var(--border-secondary);
 }
 
-/* Solve Indicator Pips */
-.solveIndicators {
-	display: flex;
-	gap: 4px;
-	align-items: center;
+/* Icon Slot — stacks play and check icons in the same cell */
+.iconSlot {
+	display: grid;
+	place-items: center;
 	flex-shrink: 0;
+	width: var(--text-lg);
 }
 
-.pip {
-	width: 8px;
-	height: 8px;
-	border-radius: 50%;
-	flex-shrink: 0;
+.iconSlot > * {
+	grid-area: 1 / 1; /* both icons occupy the same grid cell */
+	transition: opacity 0.15s ease;
 }
 
-.normalPip {
-	background-color: var(--trophy-normal-base);
-	box-shadow: 0 0 0 1.5px var(--trophy-normal-number);
+/* Play Icon */
+.playIcon {
+	font-size: var(--text-lg);
+	color: var(--text-secondary);
+	opacity: 0.5;
 }
 
-.hardPip {
-	background-color: var(--trophy-hard-base);
-	box-shadow: 0 0 0 1.5px var(--trophy-hard-number);
+/* When solved, hide play icon at rest */
+.playIconSolved {
+	opacity: 0;
 }
 
-/* Puzzle Number */
+/* Check Icon */
+.checkIcon {
+	font-size: var(--text-lg);
+	color: var(--text-primary);
+	opacity: 1;
+}
+
+/* Hover: for unsolved → brighten play; for solved → swap check out, play in */
+.puzzleItem:hover .playIcon {
+	opacity: 1;
+}
+
+.puzzleItem.solved:hover .checkIcon {
+	opacity: 0;
+}
+
+.puzzleItem.solved:hover .playIconSolved {
+	opacity: 1;
+}
 .puzzleNumber {
 	font-size: var(--text-base);
 	font-weight: 700;

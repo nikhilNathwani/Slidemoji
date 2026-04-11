@@ -1,6 +1,6 @@
 import { usePuzzle } from "../../hooks/usePuzzle";
 import { formatPuzzleId } from "../../utils/puzzleUtils";
-import { FontAwesomeIcon, faLock, faPlayCircle } from "../../utils/icons";
+import { FontAwesomeIcon, faLock, faPlayCircle, faCircleCheck } from "../../utils/icons";
 import styles from "./PuzzleListItem.module.css";
 
 function PuzzleListItem({
@@ -35,16 +35,18 @@ function PuzzleListItem({
 					puzzleMetadata?.emojiName || "Unknown Puzzle"
 				)}
 			</div>
-			{!isLocked && isSolved && (
-				<div className={styles.solveIndicators}>
-					{isSolvedNormal && <span className={`${styles.pip} ${styles.normalPip}`} aria-label="Solved normal" />}
-					{isSolvedHard && <span className={`${styles.pip} ${styles.hardPip}`} aria-label="Solved hard" />}
-				</div>
-			)}
-			<FontAwesomeIcon
-				icon={isLocked ? faLock : faPlayCircle}
-				className={styles.playIcon}
-			/>
+			<div className={styles.iconSlot}>
+				<FontAwesomeIcon
+					icon={isLocked ? faLock : faPlayCircle}
+					className={`${styles.playIcon} ${isSolved ? styles.playIconSolved : ""}`}
+				/>
+				{isSolved && (
+					<FontAwesomeIcon
+						icon={faCircleCheck}
+						className={styles.checkIcon}
+					/>
+				)}
+			</div>
 		</button>
 	);
 }
