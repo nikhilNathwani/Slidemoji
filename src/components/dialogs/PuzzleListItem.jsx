@@ -3,7 +3,13 @@ import { formatPuzzleId } from "../../utils/puzzleUtils";
 import { FontAwesomeIcon, faLock, faPlayCircle } from "../../utils/icons";
 import styles from "./PuzzleListItem.module.css";
 
-function PuzzleListItem({ puzzleNum, isSolved, isSolvedHard = false, onClick, isLocked = false }) {
+function PuzzleListItem({
+	puzzleNum,
+	isSolved,
+	isSolvedHard = false,
+	onClick,
+	isLocked = false,
+}) {
 	const { data: puzzleMetadata, isLoading } = usePuzzle(puzzleNum);
 
 	const variantClass = isLocked
