@@ -31,20 +31,10 @@
 	cursor: not-allowed;
 }
 
-/* Unsolved puzzle (grey) */
+/* Unsolved puzzle — full legibility, same base appearance */
 .puzzleItem.unsolved {
 	background-color: var(--surface-secondary);
 	border-color: var(--border-secondary);
-	opacity: 0.7;
-}
-
-.puzzleItem.unsolved .puzzleNumber {
-	color: var(--text-secondary);
-	font-weight: 600;
-}
-
-.puzzleItem.unsolved .puzzleName {
-	color: var(--text-secondary);
 }
 
 /* Locked puzzle (paywall preview) */
@@ -57,58 +47,10 @@
 	opacity: 0.6;
 }
 
-/* Solved puzzle — hard difficulty (uses hard trophy color) */
-.puzzleItem.solvedHard {
-	background: linear-gradient(
-		135deg,
-		var(--trophy-hard-base) 0%,
-		var(--trophy-hard-highlight) 50%,
-		var(--trophy-hard-base) 100%
-	);
-	border-color: var(--trophy-hard-base);
-}
-
-.puzzleItem.solvedHard .puzzleNumber {
-	color: var(--trophy-hard-number);
-	font-weight: 700;
-}
-
-.puzzleItem.solvedHard .puzzleName {
-	color: var(--trophy-hard-number);
-	font-weight: 600;
-}
-
-.puzzleItem.solvedHard:hover:not(:disabled) {
-	background-color: var(--trophy-hard-highlight);
-}
-
-.puzzleItem.solvedHard .playIcon {
-	color: var(--trophy-hard-number);
-}
-
-/* Solved puzzle (gold gradient) */
+/* Solved puzzle — neutral background; checkmark is the sole solved indicator */
 .puzzleItem.solved {
-	background: linear-gradient(
-		135deg,
-		var(--trophy-normal-base) 0%,
-		var(--trophy-normal-highlight) 50%,
-		var(--trophy-normal-base) 100%
-	);
-	border-color: var(--trophy-normal-base);
-}
-
-.puzzleItem.solved .puzzleNumber {
-	color: var(--trophy-normal-number);
-	font-weight: 700;
-}
-
-.puzzleItem.solved .puzzleName {
-	color: var(--trophy-normal-number);
-	font-weight: 600;
-}
-
-.puzzleItem.solved:hover:not(:disabled) {
-	background-color: var(--trophy-normal-highlight);
+	background-color: var(--surface-secondary);
+	border-color: var(--border-secondary);
 }
 
 /* Puzzle Number */
@@ -136,21 +78,49 @@
 	font-style: italic;
 }
 
-/* Play Icon */
+/* Icon Slot — stacks play and check icons in the same grid cell */
+.iconSlot {
+	display: grid;
+	place-items: center;
+	flex-shrink: 0;
+	width: var(--text-lg);
+}
+
+.iconSlot > * {
+	grid-area: 1 / 1;
+	transition: opacity 0.15s ease;
+}
+
+/* Play icon — dim at rest, full on hover */
 .playIcon {
 	font-size: var(--text-lg);
 	color: var(--text-secondary);
 	opacity: 0.5;
-	flex-shrink: 0;
-	transition: opacity 0.2s ease;
 }
 
+/* When solved, hide play icon at rest */
+.playIconSolved {
+	opacity: 0;
+}
+
+/* Check icon — visible at rest when solved */
+.checkIcon {
+	font-size: var(--text-lg);
+	color: var(--text-primary);
+	opacity: 1;
+}
+
+/* Hover interactions */
 .puzzleItem:hover .playIcon {
 	opacity: 1;
 }
 
-.puzzleItem.solved .playIcon {
-	color: var(--trophy-normal-number);
+.puzzleItem.solved:hover .checkIcon {
+	opacity: 0;
+}
+
+.puzzleItem.solved:hover .playIconSolved {
+	opacity: 1;
 }
 
 /* Mobile Adjustments */

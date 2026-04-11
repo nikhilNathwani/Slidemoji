@@ -5,6 +5,7 @@ import PaywallView from "./PaywallView";
 import { useSubscription } from "../../hooks/useSubscription";
 import { useSolvedPuzzles } from "../../hooks/useSolvedPuzzles";
 import { getLatestPuzzleId } from "../../utils/puzzleUtils";
+import { DIFFICULTY } from "../../constants";
 import { FontAwesomeIcon, faClockRotateLeft } from "../../utils/icons";
 import styles from "./ArchiveDialog.module.css";
 
@@ -23,7 +24,8 @@ function ArchiveDialog({ isOpen, onClose, onPuzzleSelect, devIsPremium }) {
 		return {
 			puzzleNum,
 			isSolved: !!solved,
-			isSolvedHard: !!solved?.["hard"],
+			isSolvedNormal: !!solved?.[DIFFICULTY.NORMAL],
+			isSolvedHard: !!solved?.[DIFFICULTY.HARD],
 			isToday: puzzleNum === todayPuzzleId,
 		};
 	}).reverse(); // Most recent first
@@ -99,7 +101,7 @@ function ArchiveDialog({ isOpen, onClose, onPuzzleSelect, devIsPremium }) {
 							<PuzzleListItem
 								key={puzzle.puzzleNum}
 								puzzleNum={puzzle.puzzleNum}
-								isSolved={puzzle.isSolved}
+							isSolvedNormal={puzzle.isSolvedNormal}
 								isSolvedHard={puzzle.isSolvedHard}
 								onClick={handlePuzzleClick}
 							/>

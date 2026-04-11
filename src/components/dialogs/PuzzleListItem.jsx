@@ -1,24 +1,23 @@
 import { usePuzzle } from "../../hooks/usePuzzle";
 import { formatPuzzleId } from "../../utils/puzzleUtils";
-import { FontAwesomeIcon, faLock, faPlayCircle } from "../../utils/icons";
+import { FontAwesomeIcon, faLock, faPlayCircle, faCircleCheck } from "../../utils/icons";
 import styles from "./PuzzleListItem.module.css";
 
 function PuzzleListItem({
 	puzzleNum,
-	isSolved,
+	isSolvedNormal = false,
 	isSolvedHard = false,
 	onClick,
 	isLocked = false,
 }) {
 	const { data: puzzleMetadata, isLoading } = usePuzzle(puzzleNum);
 
+	const isSolved = isSolvedNormal || isSolvedHard;
 	const variantClass = isLocked
 		? styles.locked
-		: isSolvedHard
-			? styles.solvedHard
-			: isSolved
-				? styles.solved
-				: styles.unsolved;
+		: isSolved
+			? styles.solved
+			: styles.unsolved;
 
 	return (
 		<button
@@ -36,10 +35,18 @@ function PuzzleListItem({
 					puzzleMetadata?.emojiName || "Unknown Puzzle"
 				)}
 			</div>
-			<FontAwesomeIcon
-				icon={isLocked ? faLock : faPlayCircle}
-				className={styles.playIcon}
-			/>
+			<div className={styles.iconSlot}>
+				<FontAwesomeIcon
+					icon={isLocked ? faLock : faPlayCircle}
+					className={`${styles.playIcon} ${isSolved ? styles.playIconSolved : ""}`}
+				/>
+				{isSolved && (
+					<FontAwesomeIcon
+						icon={faCircleCheck}
+						className={styles.checkIcon}
+					/>
+				)}
+			</div>
 		</button>
 	);
 }
