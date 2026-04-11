@@ -26,7 +26,9 @@
 			content="sliding puzzle, emoji puzzle, daily puzzle, brain game, puzzle game, emoji game, tile puzzle, 15 puzzle, slide puzzle"
 		/>
 		<meta name="author" content="Nikhil Nathwani" />
-		<meta name="theme-color" content="#ffffff" />
+		<!-- theme-color is set to the correct value by the inline script below.
+		     Starts as #f2f2f2 (light default); script updates it before first paint. -->
+		<meta name="theme-color" content="#f2f2f2" />
 
 		<!-- Apply theme class synchronously before React hydrates to prevent flash of unstyled background -->
 		<script>
@@ -42,7 +44,8 @@
 					document.documentElement.classList.add(
 						prefersDark ? "dark-theme" : "light-theme",
 					);
-					// Sync browser chrome color to initial theme
+					// Set browser chrome color before first paint.
+					// applyTheme() in main.jsx keeps this in sync on theme toggle.
 					var metaTheme = document.querySelector(
 						'meta[name="theme-color"]',
 					);

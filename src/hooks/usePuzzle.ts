@@ -10,6 +10,7 @@
 import { useState, useEffect } from "react";
 import type { FirestorePuzzle, PuzzleData } from "../utils/puzzleUtils";
 import { getFirestorePuzzleById } from "../services/firestore/puzzle";
+import { useAuth } from "./useAuth";
 
 interface PuzzleState {
 	puzzleId: number | null;
@@ -27,6 +28,7 @@ export function usePuzzle(puzzleId: number | null): {
 	isLoading: boolean;
 	error: Error | null;
 } {
+	const { isLoading: isAuthLoading } = useAuth();
 	// Lazy initializer: if this puzzleId is already cached, initialize with the
 	// cached data so the very first render has the correct state (no flash).
 	const [state, setState] = useState<PuzzleState>(() => {
@@ -41,6 +43,11 @@ export function usePuzzle(puzzleId: number | null): {
 	});
 
 	useEffect(() => {
+		// Firestore puzzle reads require an authenticated user.
+		// Wait for Firebase Auth to settle before making any request.
+		// Without this, first-time visitors get a permission-denied error
+		// (anonymous sign-in hasn't completed yet), leaving the app stuck on "Loading...".
+		if (isAuthLoading) return;
 		if (!puzzleId) return;
 
 		// Cache hit: update state if needed (e.g. puzzleId changed on same component
@@ -77,7 +84,7 @@ export function usePuzzle(puzzleId: number | null): {
 				console.error("[usePuzzle] Error loading puzzle:", err);
 				setState({ puzzleId, data: null, error: err as Error });
 			});
-	}, [puzzleId]);
+	}, [puzzleId, isAuthLoading]);
 
 	if (!puzzleId) return { data: null, isLoading: false, error: null };
 	if (state.puzzleId !== puzzleId)

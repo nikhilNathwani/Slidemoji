@@ -21,7 +21,9 @@ function Trophy({
 	// Premium users can access all past puzzles → show unlock for any released-but-unsolved slot.
 	// Non-premium: only today's puzzle shows unlock (the rest are paywalled).
 	const isPastOrToday = trophyNum <= getLatestPuzzleId();
-	const showUnlock = isLocked && (isPremium ? isPastOrToday : trophyNum === getLatestPuzzleId());
+	const showUnlock =
+		isLocked &&
+		(isPremium ? isPastOrToday : trophyNum === getLatestPuzzleId());
 
 	// Self-fetch emoji/name when not provided (trophy case displays).
 	// usePuzzle returns null when puzzleId is null, so no fetch for locked slots.

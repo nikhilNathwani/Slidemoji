@@ -30,6 +30,7 @@ service cloud.firestore {
 							 'updatedAt',
 							 'preferences',
 						 'gameState',
+						 'savedGames',
 						 'isPremium'
 						 ]) &&
 						 request.resource.data.keys().hasAll([
@@ -48,7 +49,7 @@ service cloud.firestore {
 						 (!('displayName' in request.resource.data) || request.resource.data.displayName == null || request.resource.data.displayName is string) &&
 						 (!('photoURL' in request.resource.data) || request.resource.data.photoURL == null || request.resource.data.photoURL is string) &&
 						 isValidPreferences(request.resource.data.preferences) &&
-						 (!('gameState' in request.resource.data) || request.resource.data.gameState == null || request.resource.data.gameState is map) &&
+						 (!('savedGames' in request.resource.data) || request.resource.data.savedGames == null || request.resource.data.savedGames is map) &&
 					 // isPremium is optional (may not exist on old docs), must be bool if present
 					 (!('isPremium' in request.resource.data) || request.resource.data.isPremium is bool);
 		}
