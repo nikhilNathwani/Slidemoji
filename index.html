@@ -26,10 +26,20 @@
 			content="sliding puzzle, emoji puzzle, daily puzzle, brain game, puzzle game, emoji game, tile puzzle, 15 puzzle, slide puzzle"
 		/>
 		<meta name="author" content="Nikhil Nathwani" />
+		<!-- Declare light+dark support so Safari uses prefers-color-scheme for chrome color -->
+		<meta name="color-scheme" content="light dark" />
 		<!-- Two theme-color entries with media queries handle system-preference at parse time.
 		     The inline script below overrides them with the user's saved preference. -->
-		<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f2f2f2" />
-		<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#121212" />
+		<meta
+			name="theme-color"
+			media="(prefers-color-scheme: light)"
+			content="#f2f2f2"
+		/>
+		<meta
+			name="theme-color"
+			media="(prefers-color-scheme: dark)"
+			content="#121212"
+		/>
 
 		<!-- Apply theme class synchronously before React hydrates to prevent flash of unstyled background -->
 		<script>
@@ -40,28 +50,28 @@
 					// If no saved pref, system media queries on the meta tags above are already correct —
 					// no JS override needed. Only override when there's a saved preference.
 					var prefersDark =
-						stored !== null
-							? JSON.parse(stored)
-							: null;
+						stored !== null ? JSON.parse(stored) : null;
 					var systemDark = window.matchMedia(
 						"(prefers-color-scheme: dark)",
 					).matches;
-					var isDark = prefersDark !== null ? prefersDark : systemDark;
+					var isDark =
+						prefersDark !== null ? prefersDark : systemDark;
+					var bg = isDark ? "#121212" : "#f2f2f2";
 					document.documentElement.classList.add(
 						isDark ? "dark-theme" : "light-theme",
 					);
+					// Set html/body background immediately so Safari reads the correct
+					// color for the browser chrome before React mounts.
+					document.documentElement.style.background = bg;
 					// When saved pref differs from system pref, override the media-query meta tags
 					// so the browser chrome reflects the user's choice, not the system default.
 					if (prefersDark !== null && prefersDark !== systemDark) {
-						document.querySelectorAll(
-							'meta[name="theme-color"]',
-						).forEach(function (m) {
-							m.removeAttribute("media");
-							m.setAttribute(
-								"content",
-								isDark ? "#121212" : "#f2f2f2",
-							);
-						});
+						document
+							.querySelectorAll('meta[name="theme-color"]')
+							.forEach(function (m) {
+								m.removeAttribute("media");
+								m.setAttribute("content", bg);
+							});
 					}
 				} catch (e) {}
 			})();

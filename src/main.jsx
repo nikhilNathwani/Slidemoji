@@ -24,12 +24,15 @@ window.addEventListener(
 
 function applyTheme(isDark) {
 	const root = document.documentElement;
+	const bg = isDark ? "#121212" : "#f2f2f2";
 	root.classList.toggle("dark-theme", isDark);
 	root.classList.toggle("light-theme", !isDark);
+	// Keep html background in sync — Safari reads this for browser chrome color
+	root.style.background = bg;
 	// Update all theme-color meta tags (may be one or two depending on inline-script state)
 	document.querySelectorAll('meta[name="theme-color"]').forEach((m) => {
 		m.removeAttribute("media");
-		m.setAttribute("content", isDark ? "#121212" : "#f2f2f2");
+		m.setAttribute("content", bg);
 	});
 }
 
