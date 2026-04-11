@@ -65,7 +65,10 @@ const calendarEmojiSet = new Set(
 );
 for (const [emoji, info] of Object.entries(emojiData)) {
 	if (info.group !== "Flags") continue;
-	if (calendarEmojiSet.has(emoji) || calendarEmojiSet.has(normalizeEmoji(emoji)))
+	if (
+		calendarEmojiSet.has(emoji) ||
+		calendarEmojiSet.has(normalizeEmoji(emoji))
+	)
 		continue;
 	rows.push({ emoji, name: info.name, group: "Flags" });
 }

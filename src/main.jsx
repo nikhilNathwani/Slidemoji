@@ -33,11 +33,14 @@ function applyTheme(isDark) {
 	// the browser chrome signal.
 	root.style.background = bg;
 	document.body.style.background = bg;
-	// Update all theme-color meta tags (may be one or two depending on inline-script state)
-	document.querySelectorAll('meta[name="theme-color"]').forEach((m) => {
-		m.removeAttribute("media");
-		m.setAttribute("content", bg);
-	});
+	// Remove existing theme-color metas and create a fresh one.
+	// Safari iOS only reliably re-reads theme-color on a genuine DOM change in <head>,
+	// not when an existing element's attribute is mutated in-place.
+	document.querySelectorAll('meta[name="theme-color"]').forEach((m) => m.remove());
+	const themeMeta = document.createElement("meta");
+	themeMeta.name = "theme-color";
+	themeMeta.content = bg;
+	document.head.appendChild(themeMeta);
 }
 
 export function Root() {
