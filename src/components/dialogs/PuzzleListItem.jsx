@@ -4,7 +4,7 @@ import {
 	FontAwesomeIcon,
 	faLock,
 	faPlayCircle,
-	faCircleCheck,
+	faCheck,
 } from "../../utils/icons";
 import styles from "./PuzzleListItem.module.css";
 
@@ -45,7 +45,7 @@ function PuzzleListItem({
 				/>
 				{isSolved && (
 					<FontAwesomeIcon
-						icon={faCircleCheck}
+						icon={faCheck}
 						className={styles.checkIcon}
 					/>
 				)}
