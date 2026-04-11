@@ -5,16 +5,17 @@ import styles from "./PuzzleListItem.module.css";
 
 function PuzzleListItem({
 	puzzleNum,
-	isSolved,
+	isSolvedNormal = false,
 	isSolvedHard = false,
 	onClick,
 	isLocked = false,
 }) {
 	const { data: puzzleMetadata, isLoading } = usePuzzle(puzzleNum);
 
+	const isSolved = isSolvedNormal || isSolvedHard;
 	const variantClass = isLocked
 		? styles.locked
-		: isSolved || isSolvedHard
+		: isSolved
 			? styles.solved
 			: styles.unsolved;
 
@@ -34,10 +35,10 @@ function PuzzleListItem({
 					puzzleMetadata?.emojiName || "Unknown Puzzle"
 				)}
 			</div>
-			{!isLocked && (isSolved || isSolvedHard) && (
+			{!isLocked && isSolved && (
 				<div className={styles.solveIndicators}>
-					{isSolved && <span className={`${styles.pip} ${styles.normalPip}`} aria-label="Solved" />}
-					{isSolvedHard && <span className={`${styles.pip} ${styles.hardPip}`} aria-label="Solved Hard" />}
+					{isSolvedNormal && <span className={`${styles.pip} ${styles.normalPip}`} aria-label="Solved normal" />}
+					{isSolvedHard && <span className={`${styles.pip} ${styles.hardPip}`} aria-label="Solved hard" />}
 				</div>
 			)}
 			<FontAwesomeIcon

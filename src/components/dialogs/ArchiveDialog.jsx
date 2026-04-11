@@ -5,6 +5,7 @@ import PaywallView from "./PaywallView";
 import { useSubscription } from "../../hooks/useSubscription";
 import { useSolvedPuzzles } from "../../hooks/useSolvedPuzzles";
 import { getLatestPuzzleId } from "../../utils/puzzleUtils";
+import { DIFFICULTY } from "../../constants";
 import { FontAwesomeIcon, faClockRotateLeft } from "../../utils/icons";
 import styles from "./ArchiveDialog.module.css";
 
@@ -31,8 +32,8 @@ function ArchiveDialog({ isOpen, onClose, onPuzzleSelect, devIsPremium }) {
 	// Filter puzzles based on selected filter
 	const filteredPuzzles = puzzleList.filter((puzzle) => {
 		if (filter === "all") return true;
-		if (filter === "unsolved") return !puzzle.isSolved;
-		if (filter === "solved") return puzzle.isSolved;
+		if (filter === "unsolved") return !puzzle.isSolvedNormal && !puzzle.isSolvedHard;
+		if (filter === "solved") return puzzle.isSolvedNormal || puzzle.isSolvedHard;
 		return true;
 	});
 
@@ -41,7 +42,7 @@ function ArchiveDialog({ isOpen, onClose, onPuzzleSelect, devIsPremium }) {
 		onClose();
 	};
 
-	const numSolved = puzzleList.filter((p) => p.isSolved).length;
+	const numSolved = puzzleList.filter((p) => p.isSolvedNormal || p.isSolvedHard).length;
 	const numUnsolved = totalPuzzles - numSolved;
 
 	return (
@@ -53,7 +54,8 @@ function ArchiveDialog({ isOpen, onClose, onPuzzleSelect, devIsPremium }) {
 					<FontAwesomeIcon
 						icon={faClockRotateLeft}
 						className={styles.archiveIcon}
-					/>{" "}Puzzle Archive
+					/>{" "}
+					Puzzle Archive
 				</>
 			}
 		>
@@ -98,7 +100,7 @@ function ArchiveDialog({ isOpen, onClose, onPuzzleSelect, devIsPremium }) {
 							<PuzzleListItem
 								key={puzzle.puzzleNum}
 								puzzleNum={puzzle.puzzleNum}
-								isSolved={puzzle.isSolved}
+								isSolvedNormal={puzzle.isSolvedNormal}
 								isSolvedHard={puzzle.isSolvedHard}
 								onClick={handlePuzzleClick}
 							/>
