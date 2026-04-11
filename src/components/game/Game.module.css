@@ -28,20 +28,17 @@
 	justify-content: center;
 }
 
-/* Restart Button */
+/* Restart Button — flat, background tied to grid border color */
 .restartButton {
 	padding: 12px 20px;
 	border-radius: 12px;
-	background-color: transparent;
+	background-color: var(--border-primary);
 	color: var(--text-secondary);
-	border: 1px solid;
-	box-shadow: 0 2px 0 currentColor;
+	border: none;
 	font-size: var(--text-base);
 	font-weight: bold;
 	cursor: pointer;
-	transition:
-		transform 0.1s ease,
-		box-shadow 0.1s ease;
+	transition: background-color 0.15s ease;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -50,13 +47,11 @@
 }
 
 .restartButton:hover {
-	transform: translateY(-1px);
-	box-shadow: 0 3px 0 currentColor;
+	background-color: var(--surface-primary);
 }
 
 .restartButton:active {
-	transform: translateY(1px);
-	box-shadow: none;
+	opacity: 0.75;
 }
 
 @media (max-width: 600px) {

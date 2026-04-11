@@ -1,18 +1,21 @@
 import { usePuzzle } from "../../hooks/usePuzzle";
 import { formatPuzzleId } from "../../utils/puzzleUtils";
-import { FontAwesomeIcon, faLock, faPlayCircle, faCircleCheck } from "../../utils/icons";
+import {
+	FontAwesomeIcon,
+	faLock,
+	faPlayCircle,
+	faCircleCheck,
+} from "../../utils/icons";
 import styles from "./PuzzleListItem.module.css";
 
 function PuzzleListItem({
 	puzzleNum,
-	isSolvedNormal = false,
-	isSolvedHard = false,
+	isSolved = false,
 	onClick,
 	isLocked = false,
 }) {
 	const { data: puzzleMetadata, isLoading } = usePuzzle(puzzleNum);
 
-	const isSolved = isSolvedNormal || isSolvedHard;
 	const variantClass = isLocked
 		? styles.locked
 		: isSolved

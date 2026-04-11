@@ -57,25 +57,20 @@
 	background-color: transparent;
 	color: var(--text-primary);
 	border: 2px solid;
-	box-shadow: 0 4px 0 currentColor;
 	border-radius: 12px;
 	cursor: pointer;
-	transition:
-		transform 0.1s ease,
-		box-shadow 0.1s ease;
+	transition: background-color 0.15s ease;
 	display: flex;
 	align-items: center;
 	gap: 12px;
 }
 
 .playButton:hover {
-	transform: translateY(-1px);
-	box-shadow: 0 5px 0 currentColor;
+	background-color: var(--surface-primary);
 }
 
 .playButton:active {
-	transform: translateY(3px);
-	box-shadow: none;
+	opacity: 0.75;
 }
 
 /* Footer */

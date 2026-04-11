@@ -101,8 +101,7 @@ function ArchiveDialog({ isOpen, onClose, onPuzzleSelect, devIsPremium }) {
 							<PuzzleListItem
 								key={puzzle.puzzleNum}
 								puzzleNum={puzzle.puzzleNum}
-							isSolvedNormal={puzzle.isSolvedNormal}
-								isSolvedHard={puzzle.isSolvedHard}
+							isSolved={puzzle.isSolved}
 								onClick={handlePuzzleClick}
 							/>
 						))}

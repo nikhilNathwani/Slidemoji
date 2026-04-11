@@ -1,0 +1,7 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- White rounded square background -->
+  <rect width="512" height="512" rx="115" ry="115" fill="#ffffff"/>
+  
+  <!-- Slide emoji -->
+  <text x="256" y="380" font-size="340" text-anchor="middle" font-family="Arial, sans-serif">🛝</text>
+</svg>
