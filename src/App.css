@@ -39,7 +39,7 @@ figcaption {
 }
 
 .light-theme {
-	--bg: #ffffff;
+	--bg: #f2f2f2;
 	--text-primary: #1a1a1a;
 	--text-secondary: #777;
 	--text-tertiary: #999;
@@ -51,7 +51,7 @@ figcaption {
 	--tile-border: #d0d0d0;
 	--dialog-overlay: rgba(0, 0, 0, 0.5);
 	--dialog-bg: #ffffff;
-	--header-bg: #ffffff;
+	--header-bg: #f2f2f2;
 	--header-border: #aaa;
 }
 
