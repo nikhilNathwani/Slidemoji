@@ -51,7 +51,7 @@
 
 /* Play Button */
 .playButton {
-	padding: 14px 40px;
+	padding: 18px 56px;
 	font-size: var(--text-xl);
 	font-weight: bold;
 	background-color: var(--text-primary);
@@ -60,9 +60,6 @@
 	border-radius: 12px;
 	cursor: pointer;
 	transition: opacity 0.15s ease;
-	display: flex;
-	align-items: center;
-	gap: 12px;
 	margin-top: 12px;
 }
 
@@ -117,7 +114,7 @@
 	}
 
 	.playButton {
-		padding: 10px 28px;
+		padding: 16px 48px;
 		font-size: var(--text-xl);
 		margin-top: 2.25rem;
 	}

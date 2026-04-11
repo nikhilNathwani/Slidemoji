@@ -26,10 +26,11 @@ function applyTheme(isDark) {
 	const root = document.documentElement;
 	root.classList.toggle("dark-theme", isDark);
 	root.classList.toggle("light-theme", !isDark);
-	const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-	if (metaThemeColor) {
-		metaThemeColor.setAttribute("content", isDark ? "#121212" : "#f2f2f2");
-	}
+	// Update all theme-color meta tags (may be one or two depending on inline-script state)
+	document.querySelectorAll('meta[name="theme-color"]').forEach((m) => {
+		m.removeAttribute("media");
+		m.setAttribute("content", isDark ? "#121212" : "#f2f2f2");
+	});
 }
 
 export function Root() {

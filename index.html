@@ -26,9 +26,10 @@
 			content="sliding puzzle, emoji puzzle, daily puzzle, brain game, puzzle game, emoji game, tile puzzle, 15 puzzle, slide puzzle"
 		/>
 		<meta name="author" content="Nikhil Nathwani" />
-		<!-- theme-color is set to the correct value by the inline script below.
-		     Starts as #f2f2f2 (light default); script updates it before first paint. -->
-		<meta name="theme-color" content="#f2f2f2" />
+		<!-- Two theme-color entries with media queries handle system-preference at parse time.
+		     The inline script below overrides them with the user's saved preference. -->
+		<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f2f2f2" />
+		<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#121212" />
 
 		<!-- Apply theme class synchronously before React hydrates to prevent flash of unstyled background -->
 		<script>
@@ -36,24 +37,31 @@
 				try {
 					// Prefer the user's saved setting (mirrored to localStorage by usePreference)
 					var stored = localStorage.getItem("pref_darkMode");
+					// If no saved pref, system media queries on the meta tags above are already correct —
+					// no JS override needed. Only override when there's a saved preference.
 					var prefersDark =
 						stored !== null
 							? JSON.parse(stored)
-							: window.matchMedia("(prefers-color-scheme: dark)")
-									.matches;
+							: null;
+					var systemDark = window.matchMedia(
+						"(prefers-color-scheme: dark)",
+					).matches;
+					var isDark = prefersDark !== null ? prefersDark : systemDark;
 					document.documentElement.classList.add(
-						prefersDark ? "dark-theme" : "light-theme",
+						isDark ? "dark-theme" : "light-theme",
 					);
-					// Set browser chrome color before first paint.
-					// applyTheme() in main.jsx keeps this in sync on theme toggle.
-					var metaTheme = document.querySelector(
-						'meta[name="theme-color"]',
-					);
-					if (metaTheme) {
-						metaTheme.setAttribute(
-							"content",
-							prefersDark ? "#121212" : "#f2f2f2",
-						);
+					// When saved pref differs from system pref, override the media-query meta tags
+					// so the browser chrome reflects the user's choice, not the system default.
+					if (prefersDark !== null && prefersDark !== systemDark) {
+						document.querySelectorAll(
+							'meta[name="theme-color"]',
+						).forEach(function (m) {
+							m.removeAttribute("media");
+							m.setAttribute(
+								"content",
+								isDark ? "#121212" : "#f2f2f2",
+							);
+						});
 					}
 				} catch (e) {}
 			})();
