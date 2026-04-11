@@ -23,28 +23,24 @@
 	border: none;
 	border-radius: 8px;
 	cursor: pointer;
-	transition:
-		background-color 0.2s ease,
-		opacity 0.2s ease;
+	transition: background-color 0.15s ease;
 	min-width: 100px;
 }
 
 .confirmBtn.cancel {
-	background-color: var(--tile-border);
-	color: var(--text-primary);
+	background-color: var(--surface-primary);
+	color: var(--text-secondary);
 }
 
 .confirmBtn.cancel:hover {
-	background-color: var(--surface-primary);
+	background-color: var(--border-primary);
 }
 
 .confirmBtn.confirm {
-	background-color: var(--surface-primary);
+	background-color: var(--border-primary);
 	color: var(--text-primary);
-	border: 2px solid var(--border-primary);
 }
 
 .confirmBtn.confirm:hover {
-	background-color: var(--surface-secondary);
-	border-color: var(--text-primary);
+	background-color: var(--surface-primary);
 }

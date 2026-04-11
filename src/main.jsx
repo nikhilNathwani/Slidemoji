@@ -27,8 +27,12 @@ function applyTheme(isDark) {
 	const bg = isDark ? "#121212" : "#f2f2f2";
 	root.classList.toggle("dark-theme", isDark);
 	root.classList.toggle("light-theme", !isDark);
-	// Keep html background in sync — Safari reads this for browser chrome color
+	// Set both html and body backgrounds synchronously so Safari can read the
+	// correct color for the browser toolbar on initial load *and* after a toggle.
+	// The .app div handles the visual background via CSS vars; this is only for
+	// the browser chrome signal.
 	root.style.background = bg;
+	document.body.style.background = bg;
 	// Update all theme-color meta tags (may be one or two depending on inline-script state)
 	document.querySelectorAll('meta[name="theme-color"]').forEach((m) => {
 		m.removeAttribute("media");

@@ -63,6 +63,7 @@
 					// Set html/body background immediately so Safari reads the correct
 					// color for the browser chrome before React mounts.
 					document.documentElement.style.background = bg;
+					document.body.style.background = bg;
 					// When saved pref differs from system pref, override the media-query meta tags
 					// so the browser chrome reflects the user's choice, not the system default.
 					if (prefersDark !== null && prefersDark !== systemDark) {

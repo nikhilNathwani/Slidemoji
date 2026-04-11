@@ -69,7 +69,9 @@ const outPath = join(__dirname, "../data/emoji_review.csv");
 writeFileSync(outPath, lines.join("\n") + "\n");
 console.log(`Written ${rows.length} rows to ${outPath}`);
 if (notFound > 0) {
-	console.warn(`${notFound} emojis not found in unicode-emoji-json (marked Unknown)`);
+	console.warn(
+		`${notFound} emojis not found in unicode-emoji-json (marked Unknown)`,
+	);
 }
 
 // Print group breakdown
