@@ -42,14 +42,14 @@ li {
 	--text-tertiary: #999999;
 	--surface-primary: #e7e7e7;
 	--surface-secondary: #f7f7f7;
-	--border-primary: #d9d9d9;
+	--border-primary: #c4c4c4;
 	--border-secondary: #ebebeb;
 	--tile-bg: #ffffff;
-	--tile-border: #d9d9d9;
+	--tile-border: #c4c4c4;
 	--dialog-overlay: #00000080;
 	--dialog-bg: #ffffff;
 	--header-bg: #f2f2f2;
-	--header-border: #aaaaaa;
+	--header-border: #c4c4c4;
 }
 
 :root {

@@ -28,13 +28,13 @@
 	justify-content: center;
 }
 
-/* Restart Button — flat, background tied to grid border color */
+/* Restart Button — tile-like: white bg with border, matching grid vocabulary */
 .restartButton {
 	padding: 12px 20px;
 	border-radius: 8px;
-	background-color: var(--border-primary);
+	background-color: var(--tile-bg);
 	color: var(--text-primary);
-	border: none;
+	border: 1.5px solid var(--header-border);
 	font-size: var(--text-sm);
 	font-weight: bold;
 	cursor: pointer;

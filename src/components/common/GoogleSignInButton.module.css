@@ -1,27 +1,27 @@
 .googleSignInButton {
 	padding: 12px 20px; /* Match icon button visual weight */
 	height: 48px; /* Match icon button height */
-	border-radius: 24px; /* Fully rounded to match icon buttons */
-	border: 1.5px solid var(--header-border);
-	background-color: var(--tile-bg);
-	color: var(--text-primary);
+	border-radius: 8px; /* Match other buttons throughout the app */
+	/* Always white — Google brand standard, acts as its own CTA element */
+	background-color: #ffffff;
+	color: #1a1a1a;
+	border: 1.5px solid #c4c4c4;
 	font-size: var(--text-sm);
 	font-weight: 600;
 	cursor: pointer;
 	transition:
 		background-color 0.2s ease,
 		border-color 0.2s ease,
-		box-shadow 0.2s ease,
 		transform 0.2s ease;
 	display: inline-flex;
 	align-items: center;
 	gap: 8px;
-	box-sizing: border-box; /* Ensure height includes padding and border */
+	box-sizing: border-box;
 }
 
 .googleSignInButton:hover {
-	background-color: var(--surface-primary);
-	border-color: var(--header-border);
+	background-color: #f5f5f5;
+	border-color: #aaaaaa;
 	transform: scale(1.05);
 }
 
