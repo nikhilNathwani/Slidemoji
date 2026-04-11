@@ -46,7 +46,7 @@
 	border: 2px solid var(--tile-border);
 	background-color: var(--surface-secondary);
 	color: var(--text-primary);
-	border-radius: 8px;
+	border-radius: 12px;
 	cursor: pointer;
 	transition:
 		background-color 0.2s ease,

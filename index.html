@@ -28,6 +28,19 @@
 		<meta name="author" content="Nikhil Nathwani" />
 		<meta name="theme-color" content="#ffffff" />
 
+		<!-- Apply theme class synchronously before React hydrates to prevent flash of unstyled background -->
+		<script>
+			(function () {
+				try {
+					var prefs = null;
+					// Firestore stores prefs under the user's UID — we don't know it here,
+					// so fall back to system preference for the initial paint.
+					var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+					document.documentElement.classList.add(prefersDark ? "dark-theme" : "light-theme");
+				} catch (e) {}
+			})();
+		</script>
+
 		<!-- Open Graph / Facebook -->
 		<meta property="og:type" content="website" />
 		<meta property="og:url" content="https://slidemoji.vercel.app/" />
