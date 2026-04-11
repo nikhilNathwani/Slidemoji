@@ -33,10 +33,8 @@ function ArchiveDialog({ isOpen, onClose, onPuzzleSelect, devIsPremium }) {
 	// Filter puzzles based on selected filter
 	const filteredPuzzles = puzzleList.filter((puzzle) => {
 		if (filter === "all") return true;
-		if (filter === "unsolved")
-			return !puzzle.isSolvedNormal && !puzzle.isSolvedHard;
-		if (filter === "solved")
-			return puzzle.isSolvedNormal || puzzle.isSolvedHard;
+		if (filter === "unsolved") return !puzzle.isSolved;
+		if (filter === "solved") return puzzle.isSolved;
 		return true;
 	});
 
@@ -45,9 +43,7 @@ function ArchiveDialog({ isOpen, onClose, onPuzzleSelect, devIsPremium }) {
 		onClose();
 	};
 
-	const numSolved = puzzleList.filter(
-		(p) => p.isSolvedNormal || p.isSolvedHard,
-	).length;
+	const numSolved = puzzleList.filter((p) => p.isSolved).length;
 	const numUnsolved = totalPuzzles - numSolved;
 
 	return (
@@ -105,7 +101,7 @@ function ArchiveDialog({ isOpen, onClose, onPuzzleSelect, devIsPremium }) {
 							<PuzzleListItem
 								key={puzzle.puzzleNum}
 								puzzleNum={puzzle.puzzleNum}
-								isSolvedNormal={puzzle.isSolvedNormal}
+							isSolvedNormal={puzzle.isSolvedNormal}
 								isSolvedHard={puzzle.isSolvedHard}
 								onClick={handlePuzzleClick}
 							/>

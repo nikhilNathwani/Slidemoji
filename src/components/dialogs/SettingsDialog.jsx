@@ -28,7 +28,8 @@ function SettingsDialog({
 					<FontAwesomeIcon
 						icon={faCog}
 						className={styles.settingsIcon}
-					/>{" "}Settings
+					/>{" "}
+					Settings
 				</>
 			}
 		>
