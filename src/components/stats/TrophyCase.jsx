@@ -9,7 +9,12 @@ import { DIFFICULTY } from "../../constants";
 import styles from "./TrophyCase.module.css";
 import { useState } from "react";
 
-function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true, isPremium }) {
+function TrophyCase({
+	totalPuzzles = 12,
+	solvedPuzzles,
+	showTitle = true,
+	isPremium,
+}) {
 	const TROPHIES_PER_PAGE = 12;
 	const totalPages = Math.ceil(totalPuzzles / TROPHIES_PER_PAGE);
 	const numEarnedTrophies = Object.keys(solvedPuzzles || {}).length;

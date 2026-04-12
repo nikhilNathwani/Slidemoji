@@ -37,6 +37,12 @@
 	touch-action: manipulation;
 	text-decoration: none; /* for <a> elements styled as buttons */
 	transition: opacity 0.15s ease;
+	/* Center content — works for text-only and icon+text alike.
+	   gap: 8px is a no-op when there's a single child. */
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
 }
 
 .btn:active {
@@ -84,12 +90,9 @@
 	color: #1a1a1a;
 	border: 1.5px solid #c4c4c4;
 	font-size: var(--text-sm);
-	/* Layout: icon + text row */
+	/* Layout: taller than secondary buttons to align with header icon buttons */
 	padding: 12px 20px;
-	height: 48px; /* Aligns with icon button height in header */
-	display: inline-flex;
-	align-items: center;
-	gap: 8px;
+	height: 48px;
 	box-sizing: border-box;
 }
 

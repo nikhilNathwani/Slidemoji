@@ -1,7 +1,11 @@
 import TrophyCase from "../stats/TrophyCase";
 import TrophyCaseTitle from "../stats/TrophyCaseTitle";
 import SignInUpsell from "../common/SignInUpsell";
-import { FontAwesomeIcon, faClockRotateLeft, faUnlock } from "../../utils/icons";
+import {
+	FontAwesomeIcon,
+	faClockRotateLeft,
+	faUnlock,
+} from "../../utils/icons";
 import { useAuth } from "../../hooks/useAuth";
 import { useSubscription } from "../../hooks/useSubscription";
 import { useSolvedPuzzles } from "../../hooks/useSolvedPuzzles";

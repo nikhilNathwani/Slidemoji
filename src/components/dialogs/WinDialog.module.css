@@ -17,10 +17,6 @@
 .shareButton {
 	margin: 16px auto 8px auto;
 	padding: 12px 24px;
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	justify-content: center;
 }
 
 .winDivider {
