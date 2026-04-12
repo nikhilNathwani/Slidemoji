@@ -1,7 +1,7 @@
 .googleSignInButton {
 	padding: 12px 20px; /* Match icon button visual weight */
 	height: 48px; /* Match icon button height */
-	border-radius: 8px; /* Match other buttons throughout the app */
+	border-radius: 999px;
 	/* Always white — Google brand standard, acts as its own CTA element */
 	background-color: #ffffff;
 	color: #1a1a1a;

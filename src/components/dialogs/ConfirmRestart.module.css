@@ -17,11 +17,11 @@
 }
 
 .confirmBtn {
-	padding: 10px 24px;
+	padding: 10px 28px;
 	font-size: var(--text-base);
 	font-weight: 600;
 	border: none;
-	border-radius: 8px;
+	border-radius: 999px;
 	cursor: pointer;
 	transition: background-color 0.15s ease;
 	min-width: 100px;

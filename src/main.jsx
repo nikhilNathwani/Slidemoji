@@ -36,7 +36,9 @@ function applyTheme(isDark) {
 	// Remove existing theme-color metas and create a fresh one.
 	// Safari iOS only reliably re-reads theme-color on a genuine DOM change in <head>,
 	// not when an existing element's attribute is mutated in-place.
-	document.querySelectorAll('meta[name="theme-color"]').forEach((m) => m.remove());
+	document
+		.querySelectorAll('meta[name="theme-color"]')
+		.forEach((m) => m.remove());
 	const themeMeta = document.createElement("meta");
 	themeMeta.name = "theme-color";
 	themeMeta.content = bg;

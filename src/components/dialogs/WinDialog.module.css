@@ -20,7 +20,7 @@
 	background-color: var(--surface-secondary);
 	color: var(--text-primary);
 	border: 2px solid var(--border-secondary);
-	border-radius: 12px;
+	border-radius: 999px;
 	font-size: var(--text-base);
 	font-weight: 600;
 	cursor: pointer;

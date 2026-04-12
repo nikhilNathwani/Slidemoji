@@ -30,8 +30,8 @@
 
 /* Restart Button — tile-like: white bg with border, matching grid vocabulary */
 .restartButton {
-	padding: 12px 20px;
-	border-radius: 8px;
+	padding: 12px 24px;
+	border-radius: 999px;
 	background-color: var(--tile-bg);
 	color: var(--text-primary);
 	border: 1.5px solid var(--header-border);
