@@ -28,6 +28,10 @@ function applyTheme(isDark) {
 	const bg = isDark ? "#121212" : "#f2f2f2";
 	root.classList.toggle("dark-theme", isDark);
 	root.classList.toggle("light-theme", !isDark);
+	// color-scheme is the most reliable browser signal for native UI color
+	// (scrollbars, form controls, and browser chrome on iOS/macOS Safari).
+	// Must mirror the class change; browser re-reads this property dynamically.
+	root.style.colorScheme = isDark ? "dark" : "light";
 	// Set both html and body backgrounds synchronously so Safari can read the
 	// correct color for the browser toolbar on initial load *and* after a toggle.
 	// The .app div handles the visual background via CSS vars; this is only for

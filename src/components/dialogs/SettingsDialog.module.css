@@ -42,7 +42,7 @@
 }
 
 .difficultyBtn {
-	padding: 10px 16px;
+	padding: 12px 16px;
 	border: 2px solid var(--tile-border);
 	background-color: var(--surface-secondary);
 	color: var(--text-primary);
@@ -94,11 +94,11 @@
 .settingsActions {
 	display: flex;
 	flex-direction: column;
-	gap: 10px;
+	gap: 8px;
 }
 
 .devButton {
-	padding: 10px 16px;
+	padding: 12px 16px;
 	border-radius: 8px;
 	border: 2px solid var(--color-error);
 	background-color: var(--surface-secondary);

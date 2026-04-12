@@ -20,7 +20,7 @@
 
 .filterButton {
 	flex: 1;
-	padding: 10px 16px;
+	padding: 12px 16px;
 	border: 2px solid var(--tile-border);
 	border-radius: 8px;
 	background-color: var(--surface-secondary);
@@ -101,6 +101,6 @@
 @media (max-width: 480px) {
 	.filterButton {
 		font-size: var(--text-sm);
-		padding: 8px 10px;
+		padding: 8px 12px;
 	}
 }

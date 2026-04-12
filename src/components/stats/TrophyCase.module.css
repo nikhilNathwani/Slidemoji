@@ -43,8 +43,8 @@
 @media (max-width: 480px) {
 	.emojiGrid {
 		grid-template-columns: repeat(4, var(--trophy-mini-width-mobile));
-		gap: 10px; /* 8px vertical, 6px horizontal */
-		padding: 10px 2px; /* Reduced inline padding to free space for horizontal gaps */
+		gap: 8px; /* Tighter than desktop 12px — fits 4 columns on small screens */
+		padding: 8px 2px; /* Reduced inline padding to free space for horizontal gaps */
 	}
 }
 

@@ -7,7 +7,7 @@
 	flex: 1;
 	justify-content: center;
 	width: 100%;
-	padding: 20px 15px; /* Reduced from 25px for better fit */
+	padding: 20px 16px; /* Reduced from 25px for better fit */
 }
 
 /* Trophy container - matches restart button height for vertical centering */
