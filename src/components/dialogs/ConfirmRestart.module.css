@@ -17,6 +17,5 @@
 }
 
 .confirmBtn {
-	padding: 10px 28px;
-	min-width: 100px;
+	min-width: 100px; /* Equalizes Cancel/Confirm widths side-by-side */
 }

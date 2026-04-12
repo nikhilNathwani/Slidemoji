@@ -1,27 +1,11 @@
 .googleSignInButton {
-	padding: 12px 20px; /* Match icon button visual weight */
-	height: 48px; /* Match icon button height */
-	border-radius: 999px;
-	/* Always white — Google brand standard, acts as its own CTA element */
-	background-color: #ffffff;
-	color: #1a1a1a;
-	border: 1.5px solid #c4c4c4;
-	font-size: var(--text-sm);
-	font-weight: 600;
-	cursor: pointer;
-	transition: opacity 0.15s ease;
+	/* Layout — paint properties live in .btn-google in buttons.css */
+	padding: 12px 20px;
+	height: 48px; /* Match icon button visual height */
 	display: inline-flex;
 	align-items: center;
 	gap: 8px;
 	box-sizing: border-box;
-}
-
-.googleSignInButton:hover {
-	opacity: 0.85;
-}
-
-.googleSignInButton:active {
-	opacity: 0.7;
 }
 
 .googleIcon {

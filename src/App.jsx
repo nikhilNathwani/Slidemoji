@@ -144,9 +144,7 @@ function App() {
 					gameState?.[gameState?.currentDifficulty],
 				)}
 				onAlmostSolve={setAlmostSolved}
-				onTogglePremium={(grant) =>
-					setDevIsPremium(grant ? true : null)
-				}
+				onTogglePremium={(grant) => setDevIsPremium(grant)}
 			/>
 
 			<ArchiveDialog

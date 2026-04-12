@@ -45,8 +45,8 @@ function GoogleSignInButton({ isCondensed = false }) {
 	};
 
 	const className = isCondensed
-		? `${styles.googleSignInButton} ${styles.headerVariant}`
-		: styles.googleSignInButton;
+		? `btn btn-google ${styles.googleSignInButton} ${styles.headerVariant}`
+		: `btn btn-google ${styles.googleSignInButton}`;
 
 	const isDisabled = isLoading || isProcessing;
 	const isSignedInWithGoogle = user?.isAnonymous === false;

@@ -68,6 +68,12 @@ li {
 	--color-error: #ef4444;
 }
 
+button {
+	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
+	touch-action: manipulation;
+}
+
 body,
 html {
 	overflow: hidden;

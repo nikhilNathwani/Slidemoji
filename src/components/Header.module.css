@@ -40,9 +40,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	cursor: pointer;
 	transition: background-color 0.15s ease;
-	-webkit-tap-highlight-color: transparent;
 }
 
 .iconButton:hover {
@@ -64,7 +62,6 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	cursor: pointer;
 	transition: opacity 0.2s ease;
 	flex-shrink: 0;
 	overflow: hidden; /* Ensure image stays within border */
@@ -149,7 +146,6 @@
 	color: var(--text-primary);
 	font-size: var(--text-sm);
 	text-align: left;
-	cursor: pointer;
 	display: flex;
 	align-items: center;
 	gap: 10px;

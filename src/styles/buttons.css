@@ -1,24 +1,32 @@
 /**
  * Button System
  *
- * Three categories of interactive buttons in this app:
+ * Base class:
+ *  .btn           — Shared shape, weight, and interaction properties.
+ *                   Apply alongside a variant class on every button/anchor.
  *
- *  .btn-primary   — Inverted fill. Used for the most important CTA on a screen.
+ * Variants:
+ *  .btn-primary   — Inverted fill. Main CTA on a screen.
  *                   bg: --text-primary, text: --bg, no border.
- *                   Hover: opacity 0.85. Active: opacity 0.7.
+ *                   Hover: opacity 0.85.
  *
- *  .btn-secondary — Outlined. Used for standard actions (restart, confirm, feedback).
+ *  .btn-secondary — Outlined. Standard actions (restart, confirm, feedback).
  *                   bg: --tile-bg, text: --text-primary, border: 1.5px --header-border.
- *                   Hover: --surface-primary bg. Active: opacity 0.75.
- *                   Modifier .btn-cancel: mutes text to --text-secondary (de-emphasizes
- *                   the destructive / back-out companion alongside a Confirm button).
+ *                   Default padding: 10px 28px. Hover: --surface-primary bg.
+ *                   Modifier .btn-cancel: mutes text to --text-secondary.
  *
- *  Google Sign In — Always-white, self-contained in GoogleSignInButton.module.css.
+ *  .btn-google    — Always-white. Google sign-in CTA.
+ *                   bg: #ffffff, text: #1a1a1a, border: 1.5px #c4c4c4.
+ *                   Hover: opacity 0.85.
  *
- *  Icon buttons   — Ghost hover only, handled per-component (shapes vary too much).
+ *  Icon buttons   — Ghost hover only, handled per-component (shape varies).
  *
- * Component-specific CSS modules handle: padding, width, display, gap, margin,
- * font-size overrides, and any element-specific layout concerns.
+ * Active state (opacity 0.7) lives on .btn and applies to all variants.
+ * Transition base (opacity 0.15s) lives on .btn; secondary extends it
+ * to also cover background-color.
+ *
+ * Component-specific CSS modules handle: padding overrides, width, display,
+ * gap, margin, font-size overrides, and internal element layout.
  */
 
 .btn {
@@ -26,6 +34,13 @@
 	font-weight: 600;
 	cursor: pointer;
 	-webkit-tap-highlight-color: transparent;
+	touch-action: manipulation;
+	text-decoration: none; /* for <a> elements styled as buttons */
+	transition: opacity 0.15s ease;
+}
+
+.btn:active {
+	opacity: 0.7;
 }
 
 .btn-primary {
@@ -33,15 +48,10 @@
 	background-color: var(--text-primary);
 	color: var(--bg);
 	font-size: var(--text-base);
-	transition: opacity 0.15s ease;
 }
 
 .btn-primary:hover {
 	opacity: 0.85;
-}
-
-.btn-primary:active {
-	opacity: 0.7;
 }
 
 .btn-primary:disabled {
@@ -54,17 +64,28 @@
 	background-color: var(--tile-bg);
 	color: var(--text-primary);
 	font-size: var(--text-sm);
-	transition: background-color 0.15s ease;
+	padding: 10px 28px;
+	transition:
+		background-color 0.15s ease,
+		opacity 0.15s ease;
 }
 
 .btn-secondary:hover {
 	background-color: var(--surface-primary);
 }
 
-.btn-secondary:active {
-	opacity: 0.7;
-}
-
 .btn-secondary.btn-cancel {
 	color: var(--text-secondary);
+}
+
+.btn-google {
+	/* Always white — Google brand standard, not theme-aware */
+	background-color: #ffffff;
+	color: #1a1a1a;
+	border: 1.5px solid #c4c4c4;
+	font-size: var(--text-sm);
+}
+
+.btn-google:hover {
+	opacity: 0.85;
 }
