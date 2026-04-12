@@ -48,7 +48,7 @@ Play at slidemoji.vercel.app`;
 				<h3>You earned today's emoji!</h3>
 
 				<button
-					className={`btn btn-primary ${styles.shareButton}`}
+					className="btn btn-primary"
 					onClick={handleShare}
 				>
 					<FontAwesomeIcon icon={copied ? faCheck : faShareNodes} />

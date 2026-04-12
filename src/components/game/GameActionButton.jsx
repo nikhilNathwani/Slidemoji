@@ -25,7 +25,7 @@ function GameActionButton({ isSolved, isSignedIn, onOpenStats, onRestart }) {
 	if (isSolved) {
 		return (
 			<button
-				className={`btn btn-secondary ${styles.restartButton} ${styles.visible}`}
+				className={`btn btn-secondary ${styles.visible}`}
 				onClick={onOpenStats}
 				title="View your trophy collection"
 			>
@@ -38,7 +38,7 @@ function GameActionButton({ isSolved, isSignedIn, onOpenStats, onRestart }) {
 	// Not won yet - show Restart
 	return (
 		<button
-			className={`btn btn-secondary ${styles.restartButton}`}
+			className="btn btn-secondary"
 			onClick={onRestart}
 			title="Restart Puzzle"
 		>

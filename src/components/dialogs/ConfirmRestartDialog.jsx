@@ -24,13 +24,13 @@ function ConfirmRestartDialog({ isOpen, onClose, onConfirm }) {
 				</p>
 				<div className={styles.confirmButtons}>
 					<button
-						className={`btn btn-secondary btn-cancel ${styles.confirmBtn}`}
+						className={`btn btn-secondary btn-cancel ${styles.confirmButton}`}
 						onClick={onClose}
 					>
 						Cancel
 					</button>
 					<button
-						className={`btn btn-secondary ${styles.confirmBtn}`}
+						className={`btn btn-secondary ${styles.confirmButton}`}
 						onClick={onConfirm}
 					>
 						Confirm
