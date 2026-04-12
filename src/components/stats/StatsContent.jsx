@@ -69,7 +69,7 @@ function StatsContent({
 								complete your collection.
 							</p>
 							<button
-								className={styles.unlockButton}
+								className={`btn-primary ${styles.unlockButton}`}
 								onClick={onUnlockArchiveClick}
 							>
 								Unlock Archive

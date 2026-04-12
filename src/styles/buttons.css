@@ -1,0 +1,71 @@
+/**
+ * Button System
+ *
+ * Three categories of interactive buttons in this app:
+ *
+ *  .btn-primary   — Inverted fill. Used for the most important CTA on a screen.
+ *                   bg: --text-primary, text: --bg, no border.
+ *                   Hover: opacity 0.85. Active: opacity 0.7.
+ *
+ *  .btn-secondary — Outlined. Used for standard actions (restart, confirm, feedback).
+ *                   bg: --tile-bg, text: --text-primary, border: 1.5px --header-border.
+ *                   Hover: --surface-primary bg. Active: opacity 0.75.
+ *                   Modifier .btn-cancel: mutes text to --text-secondary (de-emphasizes
+ *                   the destructive / back-out companion alongside a Confirm button).
+ *
+ *  Google Sign In — Always-white, self-contained in GoogleSignInButton.module.css.
+ *
+ *  Icon buttons   — Ghost hover only, handled per-component (shapes vary too much).
+ *
+ * Component-specific CSS modules handle: padding, width, display, gap, margin,
+ * font-size overrides, and any element-specific layout concerns.
+ */
+
+.btn-primary {
+	border: none;
+	border-radius: 999px;
+	background-color: var(--text-primary);
+	color: var(--bg);
+	font-size: var(--text-base);
+	font-weight: 600;
+	cursor: pointer;
+	transition: opacity 0.15s ease;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.btn-primary:hover {
+	opacity: 0.85;
+}
+
+.btn-primary:active {
+	opacity: 0.7;
+}
+
+.btn-primary:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+.btn-secondary {
+	border: 1.5px solid var(--header-border);
+	border-radius: 999px;
+	background-color: var(--tile-bg);
+	color: var(--text-primary);
+	font-size: var(--text-sm);
+	font-weight: 600;
+	cursor: pointer;
+	transition: background-color 0.15s ease;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.btn-secondary:hover {
+	background-color: var(--surface-primary);
+}
+
+.btn-secondary:active {
+	opacity: 0.75;
+}
+
+.btn-secondary.btn-cancel {
+	color: var(--text-secondary);
+}

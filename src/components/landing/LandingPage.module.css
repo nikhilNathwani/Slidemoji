@@ -53,22 +53,7 @@
 .playButton {
 	padding: 18px 56px;
 	font-size: var(--text-xl);
-	font-weight: bold;
-	background-color: var(--btn-primary-bg);
-	color: var(--btn-primary-text);
-	border: none;
-	border-radius: 999px;
-	cursor: pointer;
-	transition: opacity 0.15s ease;
 	margin-top: 12px;
-}
-
-.playButton:hover {
-	opacity: 0.85;
-}
-
-.playButton:active {
-	opacity: 0.7;
 }
 
 /* Footer */

@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
 import "./App.css";
+import "./styles/buttons.css";
 import AuthProvider from "./contexts/AuthProvider";
 import UserDocProvider from "./contexts/UserDocProvider";
 import "./utils/icons.js"; // Initialize FontAwesome icon library

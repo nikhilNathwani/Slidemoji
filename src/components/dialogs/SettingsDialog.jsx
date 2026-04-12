@@ -141,7 +141,7 @@ function SettingsDialog({
 				<div className={styles.settingsActions}>
 					<a
 						href="mailto:support.slidemoji@gmail.com?subject=Slidemoji%20Feedback"
-						className={`${styles.actionButton} ${styles.feedback}`}
+						className={`btn-secondary ${styles.actionButton}`}
 					>
 						<FontAwesomeIcon icon={faComment} />
 						Give Feedback
@@ -155,7 +155,7 @@ function SettingsDialog({
 								`Show Numbers: ${showNumbers}\n` +
 								`Timestamp: ${new Date().toISOString()}`,
 						)}`}
-						className={`${styles.actionButton} ${styles.report}`}
+						className={`btn-secondary ${styles.actionButton}`}
 					>
 						<FontAwesomeIcon icon={faBug} />
 						Report an Issue

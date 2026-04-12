@@ -116,7 +116,7 @@ function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true }) {
 			{totalPages > 1 && (
 				<div className={styles.pagination}>
 					<button
-						className={styles.paginationButton}
+						className={`btn-secondary ${styles.paginationButton}`}
 						onClick={handlePrevPage}
 						disabled={currentPage === 1}
 						aria-label="Previous page"
@@ -127,7 +127,7 @@ function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true }) {
 						Page {currentPage} of {totalPages}
 					</span>
 					<button
-						className={styles.paginationButton}
+						className={`btn-secondary ${styles.paginationButton}`}
 						onClick={handleNextPage}
 						disabled={currentPage === totalPages}
 						aria-label="Next page"

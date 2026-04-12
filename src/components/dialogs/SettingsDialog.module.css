@@ -98,25 +98,12 @@
 }
 
 .actionButton {
-	padding: 12px 24px;
-	border-radius: 999px;
-	background-color: var(--btn-secondary-bg);
-	color: var(--btn-secondary-text);
-	border: 1.5px solid var(--btn-secondary-border);
-	font-size: var(--text-sm);
-	font-weight: 600;
-	cursor: pointer;
-	transition: background-color 0.15s ease;
-	align-self: center;
+	padding: 10px 28px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	gap: 10px;
 	text-decoration: none;
-}
-
-.actionButton:hover {
-	background-color: var(--btn-secondary-hover-bg);
 }
 
 .devButton {

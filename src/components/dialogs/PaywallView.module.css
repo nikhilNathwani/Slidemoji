@@ -92,29 +92,13 @@
 	margin-top: 3px;
 }
 
-/* Unlock CTA button */
+/* Unlock CTA button — font-size promoted: this is the only revenue action */
 .unlockButton {
 	width: fit-content;
 	align-self: center;
 	margin-top: 42px;
 	padding: 12px 32px;
-	border-radius: 999px;
-	border: none;
-	background-color: var(--btn-primary-bg);
-	color: var(--btn-primary-text);
-	font-size: var(--text-base);
-	font-weight: 600;
-	cursor: pointer;
-	transition: opacity 0.15s ease;
-}
-
-.unlockButton:hover:not(:disabled) {
-	opacity: 0.85;
-}
-
-.unlockButton:disabled {
-	opacity: 0.6;
-	cursor: not-allowed;
+	font-size: var(--text-lg);
 }
 
 .securityNote {

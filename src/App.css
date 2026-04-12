@@ -67,20 +67,6 @@ li {
 	/* State Colors */
 	--color-error: #ef4444;
 
-	/* ─── Button System ───────────────────────────────────────────────────
-	   Primary:   filled/inverted — Play, Share, Unlock Archive
-	   Secondary: outlined        — Restart, Confirm, Feedback, Pagination
-	   Google:    always-white    — hardcoded, not theme-aware
-	   Icon:      ghost hover     — header icons, close button
-	-------------------------------------------------------------------- */
-	--btn-primary-bg: var(--text-primary);
-	--btn-primary-text: var(--bg);
-	--btn-secondary-bg: var(--tile-bg);
-	--btn-secondary-text: var(--text-primary);
-	--btn-secondary-border: var(--header-border);
-	--btn-secondary-hover-bg: var(--surface-primary);
-	--btn-cancel-text: var(--text-secondary);
-	--btn-icon-hover-bg: var(--border-secondary);
 }
 
 body,

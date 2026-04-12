@@ -17,26 +17,10 @@
 .shareButton {
 	margin: 16px auto 8px auto;
 	padding: 12px 24px;
-	background-color: var(--btn-primary-bg);
-	color: var(--btn-primary-text);
-	border: none;
-	border-radius: 999px;
-	font-size: var(--text-base);
-	font-weight: 600;
-	cursor: pointer;
-	transition: opacity 0.15s ease;
 	display: flex;
 	align-items: center;
 	gap: 8px;
 	justify-content: center;
-}
-
-.shareButton:hover {
-	opacity: 0.85;
-}
-
-.shareButton:active {
-	opacity: 0.7;
 }
 
 .winDivider {
