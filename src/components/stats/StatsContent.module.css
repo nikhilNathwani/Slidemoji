@@ -35,5 +35,5 @@
 }
 
 .unlockButton {
-	padding: 10px 28px;
+	/* padding from .btn default (12px 24px) */
 }

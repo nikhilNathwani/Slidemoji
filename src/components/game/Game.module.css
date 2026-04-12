@@ -29,7 +29,7 @@
 }
 
 .restartButton {
-	padding: 12px 20px;
+	padding-inline: 20px; /* Narrower than default 24px — icon takes horizontal space */
 }
 
 @media (max-width: 600px) {

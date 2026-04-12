@@ -97,10 +97,6 @@
 	gap: 10px;
 }
 
-.actionButton {
-	/* padding from .btn-secondary default; text-decoration from .btn */
-}
-
 .devButton {
 	padding: 10px 16px;
 	border-radius: 8px;
