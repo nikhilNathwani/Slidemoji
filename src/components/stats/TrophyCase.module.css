@@ -59,10 +59,12 @@
 .paginationButton {
 	width: 36px;
 	height: 36px;
-	border-radius: 50%; /* Circle shape is the earned difference from pill action buttons */
-	display: flex;
-	align-items: center;
-	justify-content: center;
+	/* display, align-items, justify-content come from .btn */
+}
+
+/* Two-class specificity (0,0,2,0) beats .btn's border-radius: 999px (0,0,1,0) */
+.pagination .paginationButton {
+	border-radius: 50%; /* Circle — earned difference from pill action buttons */
 }
 
 .paginationButton:disabled {

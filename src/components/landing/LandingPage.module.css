@@ -65,7 +65,7 @@
 
 	display: flex;
 	flex-flow: column nowrap;
-	gap: 0.375rem;
+	gap: 8px;
 	text-align: center;
 }
 
@@ -96,7 +96,9 @@
 	}
 
 	.landingSubtitle {
-		font-size: var(--text-2xl); /* bump from text-xl — subtitle was reading small on mobile */
+		font-size: var(
+			--text-2xl
+		); /* bump from text-xl — subtitle was reading small on mobile */
 	}
 
 	.landingPage .playButton {

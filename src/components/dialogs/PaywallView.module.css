@@ -64,7 +64,7 @@
 	flex-direction: column;
 	gap: 24px;
 	width: 100%;
-	margin-top: 42px;
+	margin-top: 40px;
 }
 
 .featureItem {
@@ -76,7 +76,7 @@
 .featureIcon {
 	color: var(--text-secondary);
 	font-size: var(--text-sm);
-	margin-top: 3px;
+	margin-top: 4px;
 	flex-shrink: 0;
 }
 
@@ -89,16 +89,16 @@
 .featureDetail {
 	font-size: var(--text-sm);
 	color: var(--text-secondary);
-	margin-top: 3px;
+	margin-top: 4px;
 }
 
-/* Unlock CTA button — font-size promoted: this is the only revenue action */
-.unlockButton {
+/* Two-class specificity (0,0,2,0) beats .btn { padding } and .btn-primary { font-size } */
+.paywallContent .unlockButton {
 	width: fit-content;
 	align-self: center;
-	margin-top: 42px;
+	margin-top: 40px;
 	padding-inline: 32px; /* Wider than default 24px — revenue CTA deserves more presence */
-	font-size: var(--text-lg);
+	font-size: var(--text-lg); /* Promoted: only revenue action */
 }
 
 .securityNote {
@@ -108,7 +108,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	gap: 5px;
+	gap: 4px;
 	text-align: center;
 }
 
