@@ -99,18 +99,17 @@
 	margin-top: 42px;
 	padding: 12px 32px;
 	border-radius: 999px;
-	border: 1px solid var(--border-secondary);
-	background-color: var(--surface-primary);
-	color: var(--text-primary);
+	border: none;
+	background-color: var(--text-primary);
+	color: var(--bg);
 	font-size: var(--text-lg);
 	font-weight: 700;
 	cursor: pointer;
-	transition: background-color 0.15s ease;
+	transition: opacity 0.15s ease;
 }
 
 .unlockButton:hover:not(:disabled) {
-	background-color: var(--surface-secondary);
-	border-color: var(--border-primary);
+	opacity: 0.85;
 }
 
 .unlockButton:disabled {

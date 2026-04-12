@@ -16,17 +16,15 @@
 
 .shareButton {
 	margin: 16px auto 8px auto;
-	padding: 12px 21px;
-	background-color: var(--surface-secondary);
-	color: var(--text-primary);
-	border: 2px solid var(--border-secondary);
+	padding: 12px 24px;
+	background-color: var(--text-primary);
+	color: var(--bg);
+	border: none;
 	border-radius: 999px;
 	font-size: var(--text-base);
 	font-weight: 600;
 	cursor: pointer;
-	transition:
-		background-color 0.2s ease,
-		border-color 0.2s ease;
+	transition: opacity 0.15s ease;
 	display: flex;
 	align-items: center;
 	gap: 8px;
@@ -34,8 +32,7 @@
 }
 
 .shareButton:hover {
-	background-color: var(--surface-primary);
-	border-color: var(--border-primary);
+	opacity: 0.85;
 }
 
 .shareButton:active {

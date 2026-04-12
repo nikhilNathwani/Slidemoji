@@ -100,9 +100,9 @@
 .actionButton {
 	padding: 14px 20px;
 	border-radius: 999px;
-	background-color: transparent;
+	background-color: var(--tile-bg);
 	color: var(--text-secondary);
-	border: 1px solid;
+	border: 1.5px solid var(--header-border);
 	font-size: var(--text-base);
 	font-weight: 600;
 	cursor: pointer;
@@ -115,7 +115,7 @@
 }
 
 .actionButton:hover {
-	background-color: var(--surface-secondary);
+	background-color: var(--surface-primary);
 }
 
 .devButton {

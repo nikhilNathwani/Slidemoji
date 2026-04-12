@@ -20,24 +20,23 @@
 	padding: 10px 28px;
 	font-size: var(--text-base);
 	font-weight: 600;
-	border: none;
+	border: 1.5px solid var(--header-border);
 	border-radius: 999px;
+	background-color: var(--tile-bg);
 	cursor: pointer;
 	transition: background-color 0.15s ease;
 	min-width: 100px;
 }
 
 .confirmBtn.cancel {
-	background-color: var(--surface-primary);
 	color: var(--text-secondary);
 }
 
 .confirmBtn.cancel:hover {
-	background-color: var(--border-primary);
+	background-color: var(--surface-primary);
 }
 
 .confirmBtn.confirm {
-	background-color: var(--border-primary);
 	color: var(--text-primary);
 }
 
