@@ -49,8 +49,9 @@
 	line-height: 1.5;
 }
 
-/* Play Button */
-.playButton {
+/* Play Button — two-class specificity (.landingPage .playButton = 0,0,2,0)
+   beats global .btn / .btn-primary (0,0,1,0) regardless of CSS bundle order */
+.landingPage .playButton {
 	padding: 18px 56px;
 	font-size: var(--text-xl);
 	margin-top: 12px;
@@ -95,10 +96,10 @@
 	}
 
 	.landingSubtitle {
-		font-size: var(--text-xl);
+		font-size: var(--text-2xl); /* bump from text-xl — subtitle was reading small on mobile */
 	}
 
-	.playButton {
+	.landingPage .playButton {
 		padding: 16px 48px;
 		font-size: var(--text-xl);
 		margin-top: 2.25rem;

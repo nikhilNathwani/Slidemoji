@@ -38,8 +38,7 @@
 	text-decoration: none; /* for <a> elements styled as buttons */
 	transition: opacity 0.15s ease;
 	/* Default padding — overridden per-button where context demands it.
-	   Play: 18px 56px (hero). PaywallView Unlock: inline 32px (revenue CTA).
-	   Google / Restart: inline 20px (compact). */
+	   Play: 18px 56px (hero). PaywallView Unlock: inline 32px (revenue CTA). */
 	padding: 12px 24px;
 	/* Center content — works for text-only and icon+text alike.
 	   gap: 8px is a no-op when there's a single child. */

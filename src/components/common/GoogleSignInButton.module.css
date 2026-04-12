@@ -6,10 +6,12 @@
 	flex-shrink: 0;
 }
 
-/* Hide header variant on mobile */
+/* Hide header variant on mobile.
+   !important needed: .btn { display: inline-flex } has equal specificity and
+   can win if the global bundle loads after this module CSS. */
 @media (max-width: 600px) {
 	.headerVariant {
-		display: none;
+		display: none !important;
 	}
 }
 

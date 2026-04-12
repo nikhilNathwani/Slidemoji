@@ -16,6 +16,6 @@
 	justify-content: center;
 }
 
-.confirmButton {
+.dialogButton {
 	min-width: 100px; /* Equalizes Cancel/Confirm widths side-by-side */
 }

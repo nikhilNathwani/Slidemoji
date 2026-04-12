@@ -74,7 +74,7 @@ function StatsContent({
 								complete your collection.
 							</p>
 							<button
-									className="btn btn-primary"
+								className="btn btn-primary"
 								onClick={onUnlockArchiveClick}
 							>
 								<FontAwesomeIcon icon={faUnlock} />
