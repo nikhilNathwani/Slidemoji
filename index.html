@@ -62,8 +62,9 @@
 					);
 					// color-scheme signals browser-native UI (scrollbars, form controls,
 					// browser chrome on iOS/macOS). Set here to match initial theme class.
-					document.documentElement.style.colorScheme =
-						isDark ? "dark" : "light";
+					document.documentElement.style.colorScheme = isDark
+						? "dark"
+						: "light";
 					// Set html/body background immediately so Safari reads the correct
 					// color for the browser chrome before React mounts.
 					document.documentElement.style.background = bg;
