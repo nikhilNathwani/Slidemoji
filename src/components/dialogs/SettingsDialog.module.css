@@ -101,7 +101,7 @@
 	padding: 14px 20px;
 	border-radius: 999px;
 	background-color: var(--tile-bg);
-	color: var(--text-secondary);
+	color: var(--text-primary);
 	border: 1.5px solid var(--header-border);
 	font-size: var(--text-base);
 	font-weight: 600;

@@ -60,8 +60,8 @@
 	width: 36px;
 	height: 36px;
 	border-radius: 50%;
-	background-color: var(--surface-primary);
-	border: 1px solid var(--border-secondary);
+	background-color: var(--tile-bg);
+	border: 1.5px solid var(--header-border);
 	color: var(--text-primary);
 	font-size: var(--text-sm);
 	display: flex;
@@ -75,8 +75,7 @@
 }
 
 .paginationButton:hover:not(:disabled) {
-	background-color: var(--surface-secondary);
-	border-color: var(--border-primary);
+	background-color: var(--surface-primary);
 }
 
 .paginationButton:active:not(:disabled) {
