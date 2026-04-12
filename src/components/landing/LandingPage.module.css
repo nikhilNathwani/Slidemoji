@@ -54,8 +54,8 @@
 	padding: 18px 56px;
 	font-size: var(--text-xl);
 	font-weight: bold;
-	background-color: var(--text-primary);
-	color: var(--bg);
+	background-color: var(--btn-primary-bg);
+	color: var(--btn-primary-text);
 	border: none;
 	border-radius: 999px;
 	cursor: pointer;

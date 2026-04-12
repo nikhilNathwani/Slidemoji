@@ -18,28 +18,28 @@
 
 .confirmBtn {
 	padding: 10px 28px;
-	font-size: var(--text-base);
+	font-size: var(--text-sm);
 	font-weight: 600;
-	border: 1.5px solid var(--header-border);
+	border: 1.5px solid var(--btn-secondary-border);
 	border-radius: 999px;
-	background-color: var(--tile-bg);
+	background-color: var(--btn-secondary-bg);
 	cursor: pointer;
 	transition: background-color 0.15s ease;
 	min-width: 100px;
 }
 
 .confirmBtn.cancel {
-	color: var(--text-secondary);
+	color: var(--btn-cancel-text);
 }
 
 .confirmBtn.cancel:hover {
-	background-color: var(--surface-primary);
+	background-color: var(--btn-secondary-hover-bg);
 }
 
 .confirmBtn.confirm {
-	color: var(--text-primary);
+	color: var(--btn-secondary-text);
 }
 
 .confirmBtn.confirm:hover {
-	background-color: var(--surface-primary);
+	background-color: var(--btn-secondary-hover-bg);
 }

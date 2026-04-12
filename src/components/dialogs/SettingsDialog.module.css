@@ -98,15 +98,16 @@
 }
 
 .actionButton {
-	padding: 14px 20px;
+	padding: 12px 24px;
 	border-radius: 999px;
-	background-color: var(--tile-bg);
-	color: var(--text-primary);
-	border: 1.5px solid var(--header-border);
-	font-size: var(--text-base);
+	background-color: var(--btn-secondary-bg);
+	color: var(--btn-secondary-text);
+	border: 1.5px solid var(--btn-secondary-border);
+	font-size: var(--text-sm);
 	font-weight: 600;
 	cursor: pointer;
-	transition: background-color 0.2s ease;
+	transition: background-color 0.15s ease;
+	align-self: center;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -115,7 +116,7 @@
 }
 
 .actionButton:hover {
-	background-color: var(--surface-primary);
+	background-color: var(--btn-secondary-hover-bg);
 }
 
 .devButton {

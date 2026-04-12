@@ -60,22 +60,21 @@
 	width: 36px;
 	height: 36px;
 	border-radius: 50%;
-	background-color: var(--tile-bg);
-	border: 1.5px solid var(--header-border);
-	color: var(--text-primary);
+	background-color: var(--btn-secondary-bg);
+	border: 1.5px solid var(--btn-secondary-border);
+	color: var(--btn-secondary-text);
 	font-size: var(--text-sm);
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	cursor: pointer;
 	transition:
-		background-color 0.2s ease,
-		border-color 0.2s ease,
-		opacity 0.2s ease;
+		background-color 0.15s ease,
+		opacity 0.15s ease;
 }
 
 .paginationButton:hover:not(:disabled) {
-	background-color: var(--surface-primary);
+	background-color: var(--btn-secondary-hover-bg);
 }
 
 .paginationButton:active:not(:disabled) {

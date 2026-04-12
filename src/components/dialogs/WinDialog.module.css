@@ -17,8 +17,8 @@
 .shareButton {
 	margin: 16px auto 8px auto;
 	padding: 12px 24px;
-	background-color: var(--text-primary);
-	color: var(--bg);
+	background-color: var(--btn-primary-bg);
+	color: var(--btn-primary-text);
 	border: none;
 	border-radius: 999px;
 	font-size: var(--text-base);

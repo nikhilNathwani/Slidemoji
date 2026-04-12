@@ -46,7 +46,7 @@
 }
 
 .iconButton:hover {
-	background-color: var(--border-secondary);
+	background-color: var(--btn-icon-hover-bg);
 }
 
 .iconButton:active {

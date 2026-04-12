@@ -100,10 +100,10 @@
 	padding: 12px 32px;
 	border-radius: 999px;
 	border: none;
-	background-color: var(--text-primary);
-	color: var(--bg);
-	font-size: var(--text-lg);
-	font-weight: 700;
+	background-color: var(--btn-primary-bg);
+	color: var(--btn-primary-text);
+	font-size: var(--text-base);
+	font-weight: 600;
 	cursor: pointer;
 	transition: opacity 0.15s ease;
 }
