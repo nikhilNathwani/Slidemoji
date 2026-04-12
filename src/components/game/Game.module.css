@@ -29,15 +29,11 @@
 }
 
 .restartButton {
-	padding: 10px 28px;
+	padding: 12px 20px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	gap: 8px;
-}
-
-.restartButton:active {
-	opacity: 0.75;
 }
 
 @media (max-width: 600px) {

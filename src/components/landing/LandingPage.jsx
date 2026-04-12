@@ -14,7 +14,10 @@ function LandingPage({ onPlay }) {
 					Slide the tiles to unscramble the daily emoji
 				</p>
 
-				<button className={`btn-primary ${styles.playButton}`} onClick={onPlay}>
+				<button
+					className={`btn btn-primary ${styles.playButton}`}
+					onClick={onPlay}
+				>
 					Play
 				</button>
 			</div>

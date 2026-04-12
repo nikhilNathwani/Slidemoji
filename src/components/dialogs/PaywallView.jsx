@@ -62,7 +62,7 @@ function PaywallView({ puzzleList }) {
 			</ul>
 
 			<button
-				className={`btn-primary ${styles.unlockButton}`}
+				className={`btn btn-primary ${styles.unlockButton}`}
 				onClick={startCheckout}
 				disabled={isRedirecting}
 			>

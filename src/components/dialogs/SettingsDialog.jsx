@@ -18,7 +18,7 @@ function SettingsDialog({
 	const [soundEnabled, setSoundEnabled] = usePreference("soundEnabled");
 	const [darkMode, setDarkMode] = usePreference("darkMode");
 	const { userDoc } = useUserDoc();
-	const isDevMode = userDoc?.isDevMode === true;
+	const isDevMode = import.meta.env.DEV || userDoc?.isDevMode === true;
 	return (
 		<Dialog
 			isOpen={isOpen}
@@ -141,7 +141,7 @@ function SettingsDialog({
 				<div className={styles.settingsActions}>
 					<a
 						href="mailto:support.slidemoji@gmail.com?subject=Slidemoji%20Feedback"
-						className={`btn-secondary ${styles.actionButton}`}
+						className={`btn btn-secondary ${styles.actionButton}`}
 					>
 						<FontAwesomeIcon icon={faComment} />
 						Give Feedback
@@ -155,7 +155,7 @@ function SettingsDialog({
 								`Show Numbers: ${showNumbers}\n` +
 								`Timestamp: ${new Date().toISOString()}`,
 						)}`}
-						className={`btn-secondary ${styles.actionButton}`}
+						className={`btn btn-secondary ${styles.actionButton}`}
 					>
 						<FontAwesomeIcon icon={faBug} />
 						Report an Issue
