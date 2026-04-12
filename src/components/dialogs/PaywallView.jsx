@@ -29,6 +29,9 @@ function PaywallView({ puzzleList }) {
 				<p className={styles.paywallCtaHeadline}>
 					Access all past puzzles
 				</p>
+				<p className={styles.paywallCtaNote}>
+					One-time purchase · No subscription
+				</p>
 			</div>
 			<ul className={styles.featureList}>
 				<li className={styles.featureItem}>
@@ -68,10 +71,6 @@ function PaywallView({ puzzleList }) {
 			>
 				{isRedirecting ? "Redirecting…" : "Unlock for $3"}
 			</button>
-
-			<p className={styles.paywallCtaNote}>
-				One-time purchase · No subscription
-			</p>
 
 			{error && <p className={styles.error}>{error}</p>}
 

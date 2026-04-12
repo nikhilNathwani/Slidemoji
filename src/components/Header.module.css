@@ -28,8 +28,8 @@
 }
 
 .iconButton {
-	margin-block: -15px;
-	padding-block: 15px;
+	margin-block: -16px;
+	padding-block: 16px;
 	padding-inline: 8px;
 	width: auto;
 	border-radius: 8px;
@@ -148,7 +148,7 @@
 	text-align: left;
 	display: flex;
 	align-items: center;
-	gap: 10px;
+	gap: 8px;
 	transition: background-color 0.15s ease;
 }
 
@@ -168,13 +168,13 @@
 	}
 
 	.appHeader {
-		padding: 16px 15px;
+		padding: 16px;
 	}
 
 	.iconButton {
-		margin-block: -12px;
-		padding-block: 12px;
-		padding-inline: 6px;
+		margin-block: -16px;
+		padding-block: 16px;
+		padding-inline: 8px;
 	}
 
 	.avatarButton {
