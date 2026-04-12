@@ -2,7 +2,7 @@
 	width: 100%;
 	background-color: var(--header-bg);
 	border-bottom: 1px solid var(--header-border);
-	padding: 15px 20px;
+	padding: 16px 20px;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;

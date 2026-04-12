@@ -49,9 +49,8 @@
 	line-height: 1.5;
 }
 
-/* Play Button — two-class specificity (.landingPage .playButton = 0,0,2,0)
-   beats global .btn / .btn-primary (0,0,1,0) regardless of CSS bundle order */
-.landingPage .playButton {
+/* :global(.btn).playButton = (0,0,2,0) — beats .btn / .btn-primary (0,0,1,0) regardless of bundle order */
+:global(.btn).playButton {
 	padding: 18px 56px;
 	font-size: var(--text-xl);
 	margin-top: 12px;
@@ -101,7 +100,7 @@
 		); /* bump from text-xl — subtitle was reading small on mobile */
 	}
 
-	.landingPage .playButton {
+	:global(.btn).playButton {
 		padding: 16px 48px;
 		font-size: var(--text-xl);
 		margin-top: 2.25rem;

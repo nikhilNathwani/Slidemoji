@@ -92,10 +92,9 @@
 	margin-top: 4px;
 }
 
-/* Two-class specificity (0,0,2,0) beats .btn { padding } and .btn-primary { font-size } */
-.paywallContent .unlockButton {
-	width: fit-content;
-	align-self: center;
+/* :global(.btn).unlockButton = (0,0,2,0) — beats .btn { padding } and .btn-primary { font-size } */
+:global(.btn).unlockButton {
+	align-self: center; /* width: fit-content is redundant — inline-flex + align-self: center suffices */
 	margin-top: 40px;
 	padding-inline: 32px; /* Wider than default 24px — revenue CTA deserves more presence */
 	font-size: var(--text-lg); /* Promoted: only revenue action */

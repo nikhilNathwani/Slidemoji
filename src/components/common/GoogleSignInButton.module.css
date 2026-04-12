@@ -7,11 +7,10 @@
 }
 
 /* Hide header variant on mobile.
-   !important needed: .btn { display: inline-flex } has equal specificity and
-   can win if the global bundle loads after this module CSS. */
+   :global(.btn).headerVariant = (0,0,2,0) — beats .btn { display: inline-flex } (0,0,1,0) */
 @media (max-width: 600px) {
-	.headerVariant {
-		display: none !important;
+	:global(.btn).headerVariant {
+		display: none;
 	}
 }
 

@@ -62,8 +62,8 @@
 	/* display, align-items, justify-content come from .btn */
 }
 
-/* Two-class specificity (0,0,2,0) beats .btn's border-radius: 999px (0,0,1,0) */
-.pagination .paginationButton {
+/* :global(.btn).paginationButton = (0,0,2,0) — beats .btn { border-radius: 999px } */
+:global(.btn).paginationButton {
 	border-radius: 50%; /* Circle — earned difference from pill action buttons */
 }
 
