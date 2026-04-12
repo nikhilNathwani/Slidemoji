@@ -1,12 +1,4 @@
-.googleSignInButton {
-	/* Layout — paint properties live in .btn-google in buttons.css */
-	padding: 12px 20px;
-	height: 48px; /* Match icon button visual height */
-	display: inline-flex;
-	align-items: center;
-	gap: 8px;
-	box-sizing: border-box;
-}
+/* Layout is in .btn-google (src/styles/buttons.css) */
 
 .googleIcon {
 	width: 18px;

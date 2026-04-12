@@ -1,7 +1,7 @@
 import TrophyCase from "../stats/TrophyCase";
 import TrophyCaseTitle from "../stats/TrophyCaseTitle";
 import SignInUpsell from "../common/SignInUpsell";
-import { FontAwesomeIcon, faClockRotateLeft } from "../../utils/icons";
+import { FontAwesomeIcon, faClockRotateLeft, faUnlock } from "../../utils/icons";
 import { useAuth } from "../../hooks/useAuth";
 import { useSubscription } from "../../hooks/useSubscription";
 import { useSolvedPuzzles } from "../../hooks/useSolvedPuzzles";
@@ -43,6 +43,7 @@ function StatsContent({
 						totalPuzzles={numTotalPuzzles}
 						solvedPuzzles={solvedPuzzles}
 						showTitle={false}
+						isPremium={isPremium}
 					/>
 
 					{/* Archive section */}
@@ -72,6 +73,7 @@ function StatsContent({
 								className={`btn btn-primary ${styles.unlockButton}`}
 								onClick={onUnlockArchiveClick}
 							>
+								<FontAwesomeIcon icon={faUnlock} />
 								Unlock Archive
 							</button>
 						</div>
