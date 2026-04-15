@@ -109,8 +109,8 @@ function SettingsDialog({
 								style={{
 									display: "flex",
 									gap: "8px",
-									flexWrap: "wrap",
-									justifyContent: "flex-end",
+									flexDirection: "column",
+									alignItems: "flex-end",
 								}}
 							>
 								<button

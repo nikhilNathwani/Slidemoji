@@ -1,6 +1,6 @@
 .appHeader {
 	width: 100%;
-	background-color: var(--header-bg);
+	background-color: var(--bg);
 	border-bottom: 1px solid var(--header-border);
 	padding: 16px 20px;
 	display: flex;
@@ -44,7 +44,7 @@
 }
 
 .iconButton:hover {
-	background-color: var(--btn-icon-hover-bg);
+	background-color: var(--surface-primary);
 }
 
 .iconButton:active {

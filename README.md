@@ -61,6 +61,7 @@ npm run build     # Production build to dist/
 ```
 
 Firebase emulators (optional):
+
 ```bash
 firebase emulators:start
 ```
