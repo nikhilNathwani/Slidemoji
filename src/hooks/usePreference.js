@@ -20,7 +20,7 @@
 
 import { useCallback } from "react";
 import { updateFirestorePreferences } from "../services/firestore/preference";
-import { useAuth } from "./useAuth";
+import { useAuth } from "../auth/useAuth";
 import { useUserDoc } from "./useUserDoc";
 import { DEFAULT_DIFFICULTY } from "../constants";
 

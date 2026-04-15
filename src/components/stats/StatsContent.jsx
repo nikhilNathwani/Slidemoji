@@ -1,13 +1,13 @@
 import TrophyCase from "../stats/TrophyCase";
 import TrophyCaseTitle from "../stats/TrophyCaseTitle";
-import SignInUpsell from "../common/SignInUpsell";
+import SignInUpsell from "../../auth/SignInUpsell";
 import {
 	FontAwesomeIcon,
 	faClockRotateLeft,
 	faUnlock,
 } from "../../utils/icons";
-import { useAuth } from "../../hooks/useAuth";
-import { useSubscription } from "../../hooks/useSubscription";
+import { useAuth } from "../../auth/useAuth";
+import { useSubscription } from "../../payment/useSubscription";
 import { useSolvedPuzzles } from "../../hooks/useSolvedPuzzles";
 import { getLatestPuzzleId } from "../../utils/puzzleUtils";
 import styles from "./StatsContent.module.css";

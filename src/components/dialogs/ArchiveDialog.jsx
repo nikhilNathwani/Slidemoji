@@ -1,8 +1,8 @@
 import { useState } from "react";
 import Dialog from "./Dialog";
 import PuzzleListItem from "./PuzzleListItem";
-import PaywallView from "./PaywallView";
-import { useSubscription } from "../../hooks/useSubscription";
+import PaywallView from "../../payment/PaywallView";
+import { useSubscription } from "../../payment/useSubscription";
 import { useSolvedPuzzles } from "../../hooks/useSolvedPuzzles";
 import { getLatestPuzzleId } from "../../utils/puzzleUtils";
 import { DIFFICULTY } from "../../constants";

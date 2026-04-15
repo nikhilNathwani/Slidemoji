@@ -38,12 +38,12 @@ import {
 	signInAnonymously,
 	signInWithGoogle as firebaseSignIn,
 	signOut as firebaseSignOut,
-} from "../services/auth";
+} from "./auth";
 import {
 	getFirestoreUserData,
 	syncFirestoreUserData,
 } from "../services/firestore/userDoc";
-import { mergeAnonymousProgressToGoogle } from "../services/firestore/accountMerge";
+import { mergeAnonymousProgressToGoogle } from "./accountMerge";
 import {
 	AuthContext,
 	type UserObject,

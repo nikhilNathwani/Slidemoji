@@ -29,10 +29,7 @@ function ConfirmRestartDialog({ isOpen, onClose, onConfirm }) {
 					>
 						Cancel
 					</button>
-					<button
-						className="btn btn-secondary"
-						onClick={onConfirm}
-					>
+					<button className="btn btn-secondary" onClick={onConfirm}>
 						Confirm
 					</button>
 				</div>

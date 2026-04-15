@@ -4,7 +4,7 @@ import { DIFFICULTY } from "../../constants";
 import styles from "./Trophy.module.css";
 import { formatPuzzleId, getLatestPuzzleId } from "../../utils/puzzleUtils";
 import { usePuzzle } from "../../hooks/usePuzzle";
-import { useSubscription } from "../../hooks/useSubscription";
+import { useSubscription } from "../../payment/useSubscription";
 
 function Trophy({
 	trophyNum,

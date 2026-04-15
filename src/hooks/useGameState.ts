@@ -23,7 +23,7 @@ import {
 	trimGameHistory,
 } from "../services/firestore/gameState";
 import { DIFFICULTY, DEFAULT_DIFFICULTY } from "../constants";
-import { useAuth } from "./useAuth";
+import { useAuth } from "../auth/useAuth";
 import { useUserDoc } from "./useUserDoc";
 import type { PuzzleData } from "../utils/puzzleUtils";
 import type { GameState } from "../services/firestore/userDoc";

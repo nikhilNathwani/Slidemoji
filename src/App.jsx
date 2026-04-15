@@ -8,7 +8,7 @@ import StatsDialog from "./components/dialogs/StatsDialog";
 import ArchiveDialog from "./components/dialogs/ArchiveDialog";
 import { getLatestPuzzleId } from "./utils/puzzleUtils";
 import { checkWin } from "./utils/gridHelpers";
-import { useAuth } from "./hooks/useAuth";
+import { useAuth } from "./auth/useAuth";
 import { usePuzzle } from "./hooks/usePuzzle";
 import { useGameState } from "./hooks/useGameState";
 

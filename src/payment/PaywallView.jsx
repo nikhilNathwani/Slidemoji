@@ -1,6 +1,6 @@
-import PuzzleListItem from "./PuzzleListItem";
-import { FontAwesomeIcon, faCheck, faShieldAlt } from "../../utils/icons";
-import { useCheckout } from "../../hooks/useCheckout";
+import PuzzleListItem from "../components/dialogs/PuzzleListItem";
+import { FontAwesomeIcon, faCheck, faShieldAlt } from "../utils/icons";
+import { useCheckout } from "./useCheckout";
 import styles from "./PaywallView.module.css";
 
 function PaywallView({ puzzleList }) {

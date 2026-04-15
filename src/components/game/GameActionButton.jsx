@@ -1,4 +1,4 @@
-import SignInUpsell from "../common/SignInUpsell";
+import SignInUpsell from "../../auth/SignInUpsell";
 import { FontAwesomeIcon, faTrophy, faRedo } from "../../utils/icons";
 import styles from "./Game.module.css";
 

@@ -1,7 +1,7 @@
 import { doc, runTransaction, serverTimestamp } from "firebase/firestore";
-import { db, COLLECTIONS } from "../firebaseConfig";
-import { chooseGridForMerge } from "../../utils/gridHelpers.js";
-import { getLatestPuzzleId } from "../../utils/puzzleUtils";
+import { db, COLLECTIONS } from "../services/firebaseConfig";
+import { chooseGridForMerge } from "../utils/gridHelpers.js";
+import { getLatestPuzzleId } from "../utils/puzzleUtils";
 
 // Merge any anonymous progress on today's puzzle into the Google account
 export async function mergeAnonymousProgressToGoogle(

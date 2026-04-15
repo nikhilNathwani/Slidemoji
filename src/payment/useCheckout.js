@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAuth } from "./useAuth";
+import { useAuth } from "../auth/useAuth";
 
 /**
  * useCheckout - initiates a Stripe Checkout session for the premium upgrade.

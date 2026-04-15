@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import styles from "./Header.module.css";
-import GoogleSignInButton from "./common/GoogleSignInButton";
-import { useAuth } from "../hooks/useAuth";
+import GoogleSignInButton from "../auth/GoogleSignInButton";
+import { useAuth } from "../auth/useAuth";
 import {
 	FontAwesomeIcon,
 	faClockRotateLeft,

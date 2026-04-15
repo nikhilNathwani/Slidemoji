@@ -5,7 +5,7 @@ import Trophy from "../common/Trophy";
 import ConfirmRestartDialog from "../dialogs/ConfirmRestartDialog";
 import WinDialog from "../dialogs/WinDialog";
 import GameActionButton from "./GameActionButton";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "../../auth/useAuth";
 import { usePreference } from "../../hooks/usePreference";
 import { checkWin } from "../../utils/gridHelpers";
 import { WIN_DIALOG_DELAY_MS } from "../../utils/constants";

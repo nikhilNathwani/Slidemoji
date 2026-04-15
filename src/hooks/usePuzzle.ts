@@ -10,7 +10,7 @@
 import { useState, useEffect } from "react";
 import type { FirestorePuzzle, PuzzleData } from "../utils/puzzleUtils";
 import { getFirestorePuzzleById } from "../services/firestore/puzzle";
-import { useAuth } from "./useAuth";
+import { useAuth } from "../auth/useAuth";
 
 interface PuzzleState {
 	puzzleId: number | null;

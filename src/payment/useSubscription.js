@@ -9,7 +9,7 @@
  *   if (isPremium) { ... }
  */
 
-import { useUserDoc } from "./useUserDoc";
+import { useUserDoc } from "../hooks/useUserDoc";
 
 export function useSubscription() {
 	const { userDoc, isLoading } = useUserDoc();

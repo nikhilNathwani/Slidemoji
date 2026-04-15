@@ -1,16 +1,66 @@
-# React + Vite
+# Slidemoji
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A daily emoji puzzle game. Swap emoji tiles on a grid to match a hidden target arrangement.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **React + Vite** — component framework and dev server
+- **Firebase** — Auth (Anonymous + Google), Firestore (user data, puzzles), Hosting
+- **Stripe** — premium subscription via Checkout Sessions (Vercel serverless functions in `api/`)
+- **CSS Modules** + a shared `src/styles/buttons.css` design system
 
-## React Compiler
+## Project Structure
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```
+src/
+  auth/           # Vertical slice — all authentication concerns
+  │   AuthContext.ts        — React context type + createContext
+  │   AuthProvider.tsx      — state machine, Google sign-in, anonymous upgrade
+  │   useAuth.ts            — hook to consume AuthContext
+  │   auth.js               — Firebase Auth service (signIn, signOut, onAuthChange)
+  │   accountMerge.js       — Firestore transaction merging anonymous → Google progress
+  │   GoogleSignInButton.jsx — sign-in / sign-out button component
+  │   SignInUpsell.jsx       — "sign in to save trophies" prompt
+  │
+  payment/        # Vertical slice — all subscription / paywall concerns
+  │   useCheckout.js        — initiates Stripe Checkout session
+  │   useSubscription.js    — reads isPremium from Firestore userDoc
+  │   PaywallView.jsx        — paywall UI with feature list and unlock button
+  │
+  components/     # Horizontal — UI components grouped by type
+  │   Header.jsx / Header.module.css
+  │   common/     Trophy, (auth UI lives in src/auth/)
+  │   dialogs/    SettingsDialog, StatsDialog, ArchiveDialog, ConfirmRestartDialog, ...
+  │   game/       Game, Grid, Tile, GameActionButton
+  │   landing/    LandingPage, AnimatedTileGrid
+  │   stats/      StatsContent, TrophyCase, ...
+  │
+  contexts/       # UserDocContext + UserDocProvider (shared, not auth-specific)
+  hooks/          # useGameState, usePuzzle, usePreference, useTheme, useUserDoc, ...
+  services/       # firebaseConfig.js + firestore/ sub-services
+  utils/          # pure helpers: emoji, grid, puzzle, icons, sound
+  styles/         # buttons.css global design tokens
 
-## Expanding the ESLint configuration
+api/              # Vercel serverless functions (Stripe webhook, checkout session)
+data/             # emoji_calendar.json, exclusion lists
+scripts/          # one-off data migration / upload scripts
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Codebase conventions
+
+- **Vertical slices** for domains with multiple layers and clear boundaries (`src/auth/`, `src/payment/`). Everything a feature needs — service, state, context, hooks, UI — lives together.
+- **Horizontal grouping** for shared infrastructure (`hooks/`, `components/`, `utils/`) that has no single owner.
+- **Global button classes** (`.btn`, `.btn-primary`, `.btn-secondary`, `.btn-cancel`, `.btn-google`) in `src/styles/buttons.css`. Module CSS overrides use `:global(.btn).moduleClass` to stay one specificity level above the base.
+
+## Development
+
+```bash
+npm install
+npm run dev       # Vite dev server at http://localhost:5173
+npm run build     # Production build to dist/
+```
+
+Firebase emulators (optional):
+```bash
+firebase emulators:start
+```
