@@ -4,6 +4,7 @@ import { FontAwesomeIcon, faComment, faBug, faCog } from "../../utils/icons";
 import { DIFFICULTIES } from "../../constants";
 import { useUserDoc } from "../../hooks/useUserDoc";
 import { usePreference } from "../../hooks/usePreference";
+import { useTheme } from "../../hooks/useTheme";
 
 function SettingsDialog({
 	isOpen,
@@ -16,7 +17,7 @@ function SettingsDialog({
 }) {
 	const [showNumbers, setShowNumbers] = usePreference("showNumbers");
 	const [soundEnabled, setSoundEnabled] = usePreference("soundEnabled");
-	const [darkMode, setDarkMode] = usePreference("darkMode");
+	const [darkMode, setDarkMode] = useTheme();
 	const { userDoc } = useUserDoc();
 	const isDevMode = import.meta.env.DEV || userDoc?.isDevMode === true;
 	return (
