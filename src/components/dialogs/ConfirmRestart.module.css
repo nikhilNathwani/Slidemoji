@@ -14,4 +14,6 @@
 	display: grid;
 	grid-template-columns: repeat(2, 1fr);
 	gap: 12px;
+	max-width: 280px;
+	margin: 0 auto;
 }
