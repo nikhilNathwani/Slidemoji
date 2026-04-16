@@ -20,7 +20,7 @@ import { useAuth } from "../auth/useAuth";
  */
 export function useCheckout() {
 	const { user } = useAuth();
-	const [isLoading, setIsLoading] = useState(false);
+	const [isRedirecting, setIsRedirecting] = useState(false);
 	const [error, setError] = useState(null);
 
 	async function startCheckout() {
@@ -29,7 +29,7 @@ export function useCheckout() {
 			return;
 		}
 
-		setIsLoading(true);
+		setIsRedirecting(true);
 		setError(null);
 
 		try {
@@ -42,7 +42,17 @@ export function useCheckout() {
 				}),
 			});
 
-			const data = await res.json();
+			// Parse JSON safely — a non-JSON response (e.g. 404 from Vite dev server
+			// when API routes aren't served) would otherwise throw an opaque error.
+			let data;
+			try {
+				data = await res.json();
+			} catch {
+				throw new Error(
+					`Server returned an unexpected response (${res.status}). ` +
+						"API routes require \'vercel dev\' locally.",
+				);
+			}
 
 			if (!res.ok) {
 				throw new Error(data.error ?? "Checkout failed");
@@ -52,9 +62,9 @@ export function useCheckout() {
 			window.location.href = data.url;
 		} catch (err) {
 			setError(err.message);
-			setIsLoading(false);
+			setIsRedirecting(false);
 		}
 	}
 
-	return { startCheckout, isLoading, error };
+	return { startCheckout, isRedirecting, error };
 }

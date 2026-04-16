@@ -59,6 +59,7 @@
 .paginationButton {
 	width: 36px;
 	height: 36px;
+	padding: 0; /* Override .btn's 12px 24px — horizontal padding alone would exceed 36px width */
 	/* display, align-items, justify-content come from .btn */
 }
 
