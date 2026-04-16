@@ -56,15 +56,11 @@
 	margin-top: 16px;
 }
 
-.paginationButton {
-	width: 36px;
-	height: 36px;
-	/* display, align-items, justify-content come from .btn */
-}
-
 /* :global(.btn).paginationButton = (0,0,2,0) — beats .btn { border-radius: 999px; padding: 12px 24px } */
 :global(.btn).paginationButton {
-	padding: 0; /* Override .btn's 12px 24px — horizontal padding alone would exceed 36px width */
+	width: 36px;
+	height: 36px;
+	padding: 0;
 	border-radius: 50%; /* Circle — earned difference from pill action buttons */
 }
 
