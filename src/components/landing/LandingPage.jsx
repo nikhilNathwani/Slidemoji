@@ -11,7 +11,7 @@ function LandingPage({ onPlay }) {
 					Slidem<span className={styles.titleEmoji}>😊</span>ji
 				</h1>
 				<p className={styles.landingSubtitle}>
-					Slide the tiles to unscramble the daily emoji
+					Unscramble the daily emoji
 				</p>
 
 				<button
