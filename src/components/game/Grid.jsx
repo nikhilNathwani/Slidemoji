@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useCallback, useRef } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import Tile from "./Tile";
 import {
 	isAdjacent,
@@ -37,18 +37,17 @@ function Grid({
 	const [isJustSolved, setIsJustSolved] = useState(false);
 	// Captures whether numbers were visible at the moment of the win, so spans
 	// stay mounted during the numberFade animation instead of disappearing instantly.
-	const hadNumbersOnSolve = useRef(false);
+	const [hadNumbersOnSolve, setHadNumbersOnSolve] = useState(false);
 
-	// Reset celebration when the puzzle goes back to unsolved (sign-out, restart, difficulty change)
-	useEffect(() => {
-		if (!isSolved) setIsJustSolved(false);
-	}, [isSolved]);
+	// Derive celebrating: if the puzzle was reset (sign-out, restart, difficulty change),
+	// isSolved becomes false and this automatically turns off without a setState-in-effect.
+	const celebrating = isJustSolved && isSolved;
 
 	// Reset celebrating after all tile pop animations complete.
 	// This removes the CSS animation from tiles, releasing their compositing layers
 	// so they render at maximum sharpness in the solved state.
 	useEffect(() => {
-		if (!isJustSolved) return;
+		if (!celebrating) return;
 		// Last real tile is at grid index (gridSize²-2) since gap occupies the last index.
 		const totalMs =
 			WIN_TILE_ANIM_START_DELAY_MS +
@@ -57,7 +56,7 @@ function Grid({
 			150; // buffer
 		const id = setTimeout(() => setIsJustSolved(false), totalMs);
 		return () => clearTimeout(id);
-	}, [isJustSolved, gridSize]);
+	}, [celebrating, gridSize]);
 
 	const emojiSvgUrl = useMemo(
 		() => (emoji ? createEmojiSvgUrl(emoji) : null),
@@ -78,7 +77,7 @@ function Grid({
 			}
 
 			if (checkWin(newGrid)) {
-				hadNumbersOnSolve.current = hasNumbersShown;
+				setHadNumbersOnSolve(hasNumbersShown);
 				setIsJustSolved(true);
 				onWin();
 			}
@@ -133,9 +132,9 @@ function Grid({
 	}, [grid, gridSize, handleTileSelect]);
 
 	// Keep number spans mounted during the win celebration so numberFade can play.
-	// Once isJustSolved resets, spans unmount cleanly.
+	// Once celebrating ends, spans unmount cleanly.
 	const numbersVisible =
-		hasNumbersShown || (isJustSolved && hadNumbersOnSolve.current);
+		hasNumbersShown || (celebrating && hadNumbersOnSolve);
 
 	if (!grid || !Array.isArray(grid)) {
 		return <div>Loading grid...</div>;
@@ -169,7 +168,7 @@ function Grid({
 						emojiSvgUrl={emojiSvgUrl}
 						isClickable={isClickable}
 						hasNumbersShown={numbersVisible}
-						celebrating={isJustSolved}
+						celebrating={celebrating}
 						celebrationDelay={
 							WIN_TILE_ANIM_START_DELAY_MS +
 							index * WIN_TILE_ANIM_STAGGER_MS

@@ -67,6 +67,15 @@
 	color: var(--text-primary);
 }
 
+.dialogClose:focus {
+	outline: none;
+}
+
+.dialogClose:focus-visible {
+	outline: 2px solid var(--text-secondary);
+	outline-offset: 2px;
+}
+
 .dialogBody {
 	padding: 36px 24px;
 }
