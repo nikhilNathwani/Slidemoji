@@ -53,7 +53,7 @@
 :global(.btn).playButton {
 	padding: 18px 56px;
 	font-size: var(--text-xl);
-	margin-top: 12px;
+	margin-top: 32px;
 }
 
 /* Footer */
