@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import Tile from "./Tile";
 import {
 	isAdjacent,
@@ -35,6 +35,9 @@ function Grid({
 
 	// Tracks whether the win happened interactively this session (not on page load)
 	const [isJustSolved, setIsJustSolved] = useState(false);
+	// Captures whether numbers were visible at the moment of the win, so spans
+	// stay mounted during the numberFade animation instead of disappearing instantly.
+	const hadNumbersOnSolve = useRef(false);
 
 	// Reset celebration when the puzzle goes back to unsolved (sign-out, restart, difficulty change)
 	useEffect(() => {
@@ -75,11 +78,12 @@ function Grid({
 			}
 
 			if (checkWin(newGrid)) {
+				hadNumbersOnSolve.current = hasNumbersShown;
 				setIsJustSolved(true);
 				onWin();
 			}
 		},
-		[grid, onMove, hasSoundEnabled, onWin],
+		[grid, onMove, hasSoundEnabled, onWin, hasNumbersShown],
 	);
 
 	const handleTileSelect = useCallback(
@@ -128,6 +132,11 @@ function Grid({
 		return () => window.removeEventListener("keydown", handleKeyDown);
 	}, [grid, gridSize, handleTileSelect]);
 
+	// Keep number spans mounted during the win celebration so numberFade can play.
+	// Once isJustSolved resets, spans unmount cleanly.
+	const numbersVisible =
+		hasNumbersShown || (isJustSolved && hadNumbersOnSolve.current);
+
 	if (!grid || !Array.isArray(grid)) {
 		return <div>Loading grid...</div>;
 	}
@@ -159,7 +168,7 @@ function Grid({
 						gridSize={gridSize}
 						emojiSvgUrl={emojiSvgUrl}
 						isClickable={isClickable}
-						hasNumbersShown={hasNumbersShown}
+						hasNumbersShown={numbersVisible}
 						celebrating={isJustSolved}
 						celebrationDelay={
 							WIN_TILE_ANIM_START_DELAY_MS +
