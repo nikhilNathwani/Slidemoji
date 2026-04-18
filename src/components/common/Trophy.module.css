@@ -157,7 +157,7 @@
 }
 
 .trophy.locked .number {
-	color: var(--border-primary);
+	color: var(--text-secondary);
 }
 
 /* Emoji Display */
@@ -181,7 +181,7 @@
 .lockIcon {
 	font-size: 2rem; /* 32px — mirrors .trophyMini .emoji; sized for mini trophy container */
 	line-height: 1;
-	color: var(--border-primary);
+	color: var(--text-secondary);
 	display: flex;
 	align-items: center;
 	justify-content: center;
