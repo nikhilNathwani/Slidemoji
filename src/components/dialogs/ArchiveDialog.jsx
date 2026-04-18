@@ -71,7 +71,7 @@ function ArchiveDialog({ isOpen, onClose, onPuzzleSelect, devIsPremium }) {
 							onClick={() => setFilter("all")}
 						>
 							<span>All</span>
-							<span className="selectorBtnSub">
+							<span className="selectorBtnSubtitle">
 								({totalPuzzles})
 							</span>
 						</button>
@@ -80,7 +80,7 @@ function ArchiveDialog({ isOpen, onClose, onPuzzleSelect, devIsPremium }) {
 							onClick={() => setFilter("unsolved")}
 						>
 							<span>Unsolved</span>
-							<span className="selectorBtnSub">
+							<span className="selectorBtnSubtitle">
 								({numUnsolved})
 							</span>
 						</button>
@@ -89,7 +89,7 @@ function ArchiveDialog({ isOpen, onClose, onPuzzleSelect, devIsPremium }) {
 							onClick={() => setFilter("solved")}
 						>
 							<span>Solved</span>
-							<span className="selectorBtnSub">
+							<span className="selectorBtnSubtitle">
 								({numSolved})
 							</span>
 						</button>

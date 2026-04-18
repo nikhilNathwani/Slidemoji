@@ -45,7 +45,7 @@ function SettingsDialog({
 								onClick={() => onDifficultyChange(diff.value)}
 							>
 								<span>{diff.label}</span>
-								<span className="selectorBtnSub">
+							<span className="selectorBtnSubtitle">
 									{diff.display}
 								</span>
 							</button>

@@ -104,11 +104,11 @@
 }
 
 /*
- * .selectorBtn    — Tile-shaped choice button (filter bar, difficulty selector).
- *                   Two-line layout: primary label + smaller sub-label.
- *                   Apply alongside a component-specific class for size overrides.
+ * .selectorBtn         — Tile-shaped choice button (filter bar, difficulty selector).
+ *                        Two-line layout: primary label + smaller sub-label.
+ *                        Apply alongside a component-specific class for size overrides.
  *
- * .selectorBtnSub — Secondary sub-label inside a .selectorBtn.
+ * .selectorBtnSubtitle  — Secondary sub-label inside a .selectorBtn.
  */
 
 .selectorBtn {
@@ -138,7 +138,7 @@
 	background-color: var(--surface-primary);
 }
 
-.selectorBtnSub {
+.selectorBtnSubtitle {
 	font-size: var(--text-sm);
-	opacity: 0.8;
+	color: var(--text-secondary);
 }

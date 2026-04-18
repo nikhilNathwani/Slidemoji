@@ -44,7 +44,7 @@
 }
 
 .puzzleItem.locked .playIcon {
-	opacity: 0.6;
+	/* opacity already dimmed by parent .locked { opacity: 0.5 } */
 }
 
 /* Solved puzzle — neutral background; checkmark is the sole solved indicator */
@@ -122,7 +122,6 @@
 .checkIcon {
 	font-size: var(--text-lg);
 	color: var(--text-secondary);
-	opacity: 0.6;
 }
 
 /* Hover: solved item brightens fully as a replay CTA */
