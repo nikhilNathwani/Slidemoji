@@ -59,7 +59,7 @@
 /* Footer */
 .landingFooter {
 	margin-top: 64px;
-	color: var(--text-secondary);
+	color: var(--text-primary);
 	font-size: var(--text-lg);
 
 	display: flex;
@@ -69,23 +69,17 @@
 }
 
 .footerDate {
-	color: var(--text-secondary);
 	font-weight: 600;
 }
 
-.footerPuzzleNumber {
-	color: var(--text-secondary);
-}
-
 .landingFooter a {
-	color: var(--text-secondary);
-	/* text-decoration: none; */
-	transition: color 0.2s ease;
+	color: var(--text-primary);
+	text-decoration: none;
+	transition: opacity 0.2s ease;
 }
 
 .landingFooter a:hover {
-	color: var(--text-primary);
-	/* text-decoration: underline; */
+	text-decoration: underline;
 }
 
 /* Mobile Responsive */

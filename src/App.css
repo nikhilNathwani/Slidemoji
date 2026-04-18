@@ -35,19 +35,19 @@ li {
 }
 
 .light-theme {
-	--bg: #f1eeea;
+	--bg: #f2f2f2;
 	--text-primary: #1a1a1a;
-	--text-secondary: #76736f;
-	--text-tertiary: #989490;
-	--surface-primary: #e6e2de;
-	--surface-secondary: #f6f4f0;
-	--border-primary: #c2beb8;
-	--border-secondary: #eae7e2;
+	--text-secondary: #777777;
+	--text-tertiary: #999999;
+	--surface-primary: #e7e7e7;
+	--surface-secondary: #f7f7f7;
+	--border-primary: #c4c4c4;
+	--border-secondary: #ebebeb;
 	--tile-bg: #ffffff;
-	--tile-border: #c2beb8;
+	--tile-border: #c4c4c4;
 	--dialog-overlay: #00000080;
 	--dialog-bg: #ffffff;
-	--header-border: #c2beb8;
+	--header-border: #c4c4c4;
 }
 
 :root {
