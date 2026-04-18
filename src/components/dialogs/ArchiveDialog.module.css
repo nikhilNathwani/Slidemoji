@@ -26,7 +26,7 @@
 	background-color: var(--surface-secondary);
 	color: var(--text-primary);
 	font-size: var(--text-base);
-	font-weight: 400;
+	font-weight: 600;
 	cursor: pointer;
 	transition:
 		background-color 0.2s ease,
@@ -46,7 +46,6 @@
 .filterButton.active {
 	border-color: var(--text-primary);
 	background-color: var(--surface-primary);
-	font-weight: 600;
 }
 
 .filterCount {
