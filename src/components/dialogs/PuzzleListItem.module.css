@@ -91,7 +91,7 @@
 }
 
 .loading {
-	color: var(--text-tertiary);
+	color: var(--text-secondary);
 	font-style: italic;
 }
 

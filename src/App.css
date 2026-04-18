@@ -21,8 +21,7 @@ li {
 .dark-theme {
 	--bg: #121212;
 	--text-primary: #ffffff;
-	--text-secondary: #b3b3b3;
-	--text-tertiary: #808080;
+	--text-secondary: #999999;
 	--surface-primary: #3b3b3b;
 	--surface-secondary: #1e1e1e;
 	--border-primary: #333333;
@@ -37,8 +36,7 @@ li {
 .light-theme {
 	--bg: #f2f2f2;
 	--text-primary: #1a1a1a;
-	--text-secondary: #777777;
-	--text-tertiary: #999999;
+	--text-secondary: #666666;
 	--surface-primary: #e7e7e7;
 	--surface-secondary: #f7f7f7;
 	--border-primary: #c4c4c4;
