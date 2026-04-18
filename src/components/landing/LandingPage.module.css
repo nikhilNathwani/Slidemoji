@@ -60,7 +60,7 @@
 .landingFooter {
 	margin-top: 64px;
 	color: var(--text-secondary);
-	font-size: var(--text-base);
+	font-size: var(--text-lg);
 
 	display: flex;
 	flex-flow: column nowrap;
