@@ -69,7 +69,7 @@
 
 /* Variant: Locked Trophy */
 .trophy.locked {
-	border: 2px dashed var(--text-secondary);
+	border: 2px dashed var(--border-primary);
 	background-color: var(--surface-secondary);
 	box-shadow: none;
 }
@@ -157,7 +157,7 @@
 }
 
 .trophy.locked .number {
-	color: var(--text-secondary);
+	color: var(--border-primary);
 }
 
 /* Emoji Display */
@@ -181,7 +181,7 @@
 .lockIcon {
 	font-size: 2rem; /* 32px — mirrors .trophyMini .emoji; sized for mini trophy container */
 	line-height: 1;
-	color: var(--text-secondary);
+	color: var(--border-primary);
 	display: flex;
 	align-items: center;
 	justify-content: center;
