@@ -67,29 +67,29 @@ function ArchiveDialog({ isOpen, onClose, onPuzzleSelect, devIsPremium }) {
 					{/* Filter buttons */}
 					<div className={styles.filterBar}>
 						<button
-							className={`${styles.filterButton} ${filter === "all" ? styles.active : ""}`}
+							className={`selectorBtn ${styles.filterButton} ${filter === "all" ? "active" : ""}`}
 							onClick={() => setFilter("all")}
 						>
 							<span>All</span>
-							<span className={styles.filterCount}>
+							<span className="selectorBtnSub">
 								({totalPuzzles})
 							</span>
 						</button>
 						<button
-							className={`${styles.filterButton} ${filter === "unsolved" ? styles.active : ""}`}
+							className={`selectorBtn ${styles.filterButton} ${filter === "unsolved" ? "active" : ""}`}
 							onClick={() => setFilter("unsolved")}
 						>
 							<span>Unsolved</span>
-							<span className={styles.filterCount}>
+							<span className="selectorBtnSub">
 								({numUnsolved})
 							</span>
 						</button>
 						<button
-							className={`${styles.filterButton} ${filter === "solved" ? styles.active : ""}`}
+							className={`selectorBtn ${styles.filterButton} ${filter === "solved" ? "active" : ""}`}
 							onClick={() => setFilter("solved")}
 						>
 							<span>Solved</span>
-							<span className={styles.filterCount}>
+							<span className="selectorBtnSub">
 								({numSolved})
 							</span>
 						</button>

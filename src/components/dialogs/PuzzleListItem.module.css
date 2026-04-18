@@ -56,21 +56,19 @@
 /* Puzzle Number */
 .puzzleNumber {
 	font-size: var(--text-base);
-	font-weight: 700;
+	font-weight: 600;
 	min-width: 50px;
 	flex-shrink: 0;
 	color: var(--text-primary);
 }
 
-/* Solved items: dim text and reduce weight so unsolved items stand out */
+/* Solved items: dim text so unsolved items stand out */
 .puzzleItem.solved .puzzleNumber {
 	color: var(--text-secondary);
-	font-weight: 400;
 }
 
 .puzzleItem.solved .puzzleName {
 	color: var(--text-secondary);
-	font-weight: 400;
 }
 
 /* On hover, restore full prominence as a replay CTA */
@@ -83,7 +81,7 @@
 .puzzleName {
 	flex: 1;
 	font-size: var(--text-base);
-	font-weight: 700;
+	font-weight: 600;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;

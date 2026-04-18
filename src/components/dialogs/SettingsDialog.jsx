@@ -41,17 +41,11 @@ function SettingsDialog({
 						{DIFFICULTIES.map((diff) => (
 							<button
 								key={diff.value}
-								className={`${styles.difficultyBtn} ${
-									difficulty === diff.value
-										? styles.active
-										: ""
-								}`}
+								className={`selectorBtn ${styles.difficultyBtn} ${difficulty === diff.value ? "active" : ""}`}
 								onClick={() => onDifficultyChange(diff.value)}
 							>
-								<span className={styles.difficultyLabel}>
-									{diff.label}
-								</span>
-								<span className={styles.difficultySize}>
+								<span>{diff.label}</span>
+								<span className="selectorBtnSub">
 									{diff.display}
 								</span>
 							</button>
@@ -60,15 +54,15 @@ function SettingsDialog({
 				</div>
 				<div className={styles.settingsDivider}></div>
 				{!isPuzzleSolved && (
-				<div className={styles.settingsItem}>
-					<label className={styles.settingsLabel}>
-						Show Numbers
-					</label>
-					<Toggle
-						isOn={showNumbers}
-						onToggle={() => setShowNumbers(!showNumbers)}
-					/>
-				</div>
+					<div className={styles.settingsItem}>
+						<label className={styles.settingsLabel}>
+							Show Numbers
+						</label>
+						<Toggle
+							isOn={showNumbers}
+							onToggle={() => setShowNumbers(!showNumbers)}
+						/>
+					</div>
 				)}
 				<div className={styles.settingsItem}>
 					<label className={styles.settingsLabel}>

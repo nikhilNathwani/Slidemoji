@@ -18,39 +18,11 @@
 	flex-wrap: nowrap;
 }
 
+/* filter-specific overrides on top of .selectorBtn base */
 .filterButton {
 	flex: 1;
-	padding: 12px 16px;
-	border: 2px solid var(--tile-border);
-	border-radius: 8px;
-	background-color: var(--surface-secondary);
-	color: var(--text-primary);
-	font-size: var(--text-base);
-	font-weight: 600;
-	cursor: pointer;
-	transition:
-		background-color 0.2s ease,
-		border-color 0.2s ease;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
 	justify-content: center;
-	gap: 4px;
 	min-height: 60px;
-}
-
-.filterButton:hover {
-	background-color: var(--surface-primary);
-}
-
-.filterButton.active {
-	border-color: var(--text-primary);
-	background-color: var(--surface-primary);
-}
-
-.filterCount {
-	font-size: var(--text-sm);
-	opacity: 0.8;
 }
 
 .archiveIcon {
