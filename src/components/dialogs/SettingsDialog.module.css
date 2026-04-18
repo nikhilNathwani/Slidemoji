@@ -21,19 +21,8 @@
 	gap: 4px;
 }
 
-.disabledHint {
-	font-size: var(--text-xs);
-	font-weight: 400;
-	color: var(--text-tertiary);
-	font-style: italic;
-}
-
 .settingsIcon {
 	margin-right: 0.35em;
-}
-
-.settingsItem.disabled {
-	opacity: 0.5;
 }
 
 .difficultySelector {
@@ -176,5 +165,5 @@
 
 .toggle.off .label {
 	right: 6px;
-	color: var(--text-secondary);
+	color: var(--text-primary);
 }

@@ -4,7 +4,7 @@
 	grid-template-rows: repeat(3, 22px);
 	gap: 3px;
 	padding: 6px;
-	background-color: #d0d0d0;
+	background-color: var(--border-primary);
 	border-radius: 8px;
 	border: 1.5px solid rgba(0, 0, 0, 0.12);
 	box-shadow:

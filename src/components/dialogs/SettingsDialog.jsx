@@ -59,29 +59,17 @@ function SettingsDialog({
 					</div>
 				</div>
 				<div className={styles.settingsDivider}></div>
-				<div
-					className={`${styles.settingsItem} ${
-						isPuzzleSolved ? styles.disabled : ""
-					}`}
-				>
+				{!isPuzzleSolved && (
+				<div className={styles.settingsItem}>
 					<label className={styles.settingsLabel}>
 						Show Numbers
-						{isPuzzleSolved && (
-							<span className={styles.disabledHint}>
-								(hidden when solved)
-							</span>
-						)}
 					</label>
 					<Toggle
 						isOn={showNumbers}
-						onToggle={
-							isPuzzleSolved
-								? undefined
-								: () => setShowNumbers(!showNumbers)
-						}
-						disabled={isPuzzleSolved}
+						onToggle={() => setShowNumbers(!showNumbers)}
 					/>
 				</div>
+				)}
 				<div className={styles.settingsItem}>
 					<label className={styles.settingsLabel}>
 						Sound Effects
