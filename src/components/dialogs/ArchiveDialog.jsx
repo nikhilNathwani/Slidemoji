@@ -67,7 +67,7 @@ function ArchiveDialog({ isOpen, onClose, onPuzzleSelect, devIsPremium }) {
 					{/* Filter buttons */}
 					<div className={styles.filterBar}>
 						<button
-							className={`selectorBtn ${styles.filterButton} ${filter === "all" ? "active" : ""}`}
+							className={`selectorBtn ${filter === "all" ? "active" : ""}`}
 							onClick={() => setFilter("all")}
 						>
 							<span>All</span>
@@ -76,7 +76,7 @@ function ArchiveDialog({ isOpen, onClose, onPuzzleSelect, devIsPremium }) {
 							</span>
 						</button>
 						<button
-							className={`selectorBtn ${styles.filterButton} ${filter === "unsolved" ? "active" : ""}`}
+							className={`selectorBtn ${filter === "unsolved" ? "active" : ""}`}
 							onClick={() => setFilter("unsolved")}
 						>
 							<span>Unsolved</span>
@@ -85,7 +85,7 @@ function ArchiveDialog({ isOpen, onClose, onPuzzleSelect, devIsPremium }) {
 							</span>
 						</button>
 						<button
-							className={`selectorBtn ${styles.filterButton} ${filter === "solved" ? "active" : ""}`}
+							className={`selectorBtn ${filter === "solved" ? "active" : ""}`}
 							onClick={() => setFilter("solved")}
 						>
 							<span>Solved</span>

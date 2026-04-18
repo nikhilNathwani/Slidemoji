@@ -28,11 +28,7 @@
 .difficultySelector {
 	display: flex;
 	gap: 12px;
-}
-
-/* difficulty-specific overrides on top of .selectorBtn base */
-.difficultyBtn {
-	min-width: 80px;
+	width: 180px;
 }
 
 .settingsDivider {

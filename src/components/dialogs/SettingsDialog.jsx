@@ -41,11 +41,11 @@ function SettingsDialog({
 						{DIFFICULTIES.map((diff) => (
 							<button
 								key={diff.value}
-								className={`selectorBtn ${styles.difficultyBtn} ${difficulty === diff.value ? "active" : ""}`}
+								className={`selectorBtn ${difficulty === diff.value ? "active" : ""}`}
 								onClick={() => onDifficultyChange(diff.value)}
 							>
 								<span>{diff.label}</span>
-							<span className="selectorBtnSubtitle">
+								<span className="selectorBtnSubtitle">
 									{diff.display}
 								</span>
 							</button>

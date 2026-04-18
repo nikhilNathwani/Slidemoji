@@ -18,13 +18,6 @@
 	flex-wrap: nowrap;
 }
 
-/* filter-specific overrides on top of .selectorBtn base */
-.filterButton {
-	flex: 1;
-	justify-content: center;
-	min-height: 60px;
-}
-
 .archiveIcon {
 	margin-right: 0.35em;
 }
