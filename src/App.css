@@ -34,6 +34,7 @@ li {
 }
 
 .light-theme {
+<<<<<<< HEAD
 	--bg: #f2f2f2;
 	--text-primary: #1a1a1a;
 	--text-secondary: #666666;
@@ -46,6 +47,22 @@ li {
 	--dialog-overlay: #00000080;
 	--dialog-bg: #ffffff;
 	--header-border: #c4c4c4;
+=======
+	/* Half-greige: midpoint between pure greyscale and full greige */
+	--bg: #f1eeea;             /* greyscale: #f2f2f2 | full greige: #f0ebe2 */
+	--text-primary: #1a1a1a;
+	--text-secondary: #76736f; /* greyscale: #777777 | full greige: #756f68 */
+	--text-tertiary: #989490;  /* greyscale: #999999 | full greige: #978f88 */
+	--surface-primary: #e6e2de;  /* greyscale: #e7e7e7 | full greige: #e4ddd4 */
+	--surface-secondary: #f6f4f0; /* greyscale: #f7f7f7 | full greige: #f5f0e8 */
+	--border-primary: #c2beb8;   /* greyscale: #c4c4c4 | full greige: #c0b8ac */
+	--border-secondary: #eae7e2; /* greyscale: #ebebeb | full greige: #e8e2d8 */
+	--tile-bg: #ffffff;
+	--tile-border: #c2beb8;      /* greyscale: #c4c4c4 | full greige: #c0b8ac */
+	--dialog-overlay: #00000080;
+	--dialog-bg: #ffffff;
+	--header-border: #c2beb8;    /* greyscale: #c4c4c4 | full greige: #c0b8ac */
+>>>>>>> d4e41e9 (Replace full greige with half-greige; annotate greyscale and full-greige reference values)
 }
 
 :root {

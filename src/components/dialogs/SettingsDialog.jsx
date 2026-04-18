@@ -60,15 +60,15 @@ function SettingsDialog({
 				</div>
 				<div className={styles.settingsDivider}></div>
 				{!isPuzzleSolved && (
-				<div className={styles.settingsItem}>
-					<label className={styles.settingsLabel}>
-						Show Numbers
-					</label>
-					<Toggle
-						isOn={showNumbers}
-						onToggle={() => setShowNumbers(!showNumbers)}
-					/>
-				</div>
+					<div className={styles.settingsItem}>
+						<label className={styles.settingsLabel}>
+							Show Numbers
+						</label>
+						<Toggle
+							isOn={showNumbers}
+							onToggle={() => setShowNumbers(!showNumbers)}
+						/>
+					</div>
 				)}
 				<div className={styles.settingsItem}>
 					<label className={styles.settingsLabel}>
