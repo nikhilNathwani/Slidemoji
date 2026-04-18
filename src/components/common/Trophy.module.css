@@ -69,9 +69,8 @@
 
 /* Variant: Locked Trophy */
 .trophy.locked {
-	border: 2px dashed var(--border-secondary);
+	border: 2px dashed var(--text-secondary);
 	background-color: var(--surface-secondary);
-	opacity: 0.5;
 	box-shadow: none;
 }
 
