@@ -22,7 +22,7 @@ li {
 	--bg: #121212;
 	--text-primary: #ffffff;
 	--text-secondary: #999999;
-	--surface-primary: #3b3b3b;
+	--surface: #3b3b3b;
 	--border-primary: #333333;
 	--border-secondary: #2a2a2a;
 	--tile-bg: #242424;
@@ -36,7 +36,7 @@ li {
 	--bg: #f2f2f2;
 	--text-primary: #1a1a1a;
 	--text-secondary: #666666;
-	--surface-primary: #e7e7e7;
+	--surface: #e7e7e7;
 	--border-primary: #c4c4c4;
 	--border-secondary: #ebebeb;
 	--tile-bg: #ffffff;

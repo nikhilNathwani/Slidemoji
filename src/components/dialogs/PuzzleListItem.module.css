@@ -24,7 +24,7 @@
 }
 
 .puzzleItem:hover:not(:disabled) {
-	background-color: var(--surface-primary);
+	background-color: var(--surface);
 }
 
 .puzzleItem:disabled {

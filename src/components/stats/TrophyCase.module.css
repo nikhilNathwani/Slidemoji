@@ -19,7 +19,7 @@
 .trophyCount {
 	font-size: var(--text-base);
 	color: var(--text-secondary);
-	background-color: var(--surface-primary);
+	background-color: var(--surface);
 	padding: 4px 12px;
 	border-radius: 12px;
 	font-weight: 600;
@@ -33,7 +33,7 @@
 	gap: 12px;
 	height: fit-content;
 	padding: 12px;
-	background-color: var(--surface-primary);
+	background-color: var(--surface);
 	border-radius: 12px;
 	border: 1px solid var(--border-secondary);
 	position: relative;

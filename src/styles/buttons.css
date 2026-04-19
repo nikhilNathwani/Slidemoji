@@ -12,7 +12,7 @@
  *
  *  .btn-secondary — Outlined. Standard actions (restart, confirm, feedback).
  *                   bg: --tile-bg, text: --text-primary, border: 1.5px --header-border.
- *                   Hover: --surface-primary bg.
+ *                   Hover: --surface bg.
  *                   Modifier .btn-cancel: mutes text to --text-secondary.
  *
  *  .btn-google    — Always-white. Google sign-in CTA.
@@ -79,7 +79,7 @@
 }
 
 .btn-secondary:hover {
-	background-color: var(--surface-primary);
+	background-color: var(--surface);
 }
 
 .btn-secondary.btn-cancel {
@@ -130,12 +130,12 @@
 }
 
 .selectorBtn:hover {
-	background-color: var(--surface-primary);
+	background-color: var(--surface);
 }
 
 .selectorBtn.active {
 	border-color: var(--text-primary);
-	background-color: var(--surface-primary);
+	background-color: var(--surface);
 }
 
 .selectorBtnSubtitle {

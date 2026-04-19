@@ -18,7 +18,7 @@
 	/* Pill background */
 	padding: 0.2875rem 0.5rem;
 	border-radius: 999px;
-	background-color: var(--surface-primary);
+	background-color: var(--surface);
 
 	font-size: 0.625em;
 	font-variant-numeric: tabular-nums;
