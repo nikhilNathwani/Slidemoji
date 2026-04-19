@@ -33,13 +33,7 @@
 
 .settingsDivider {
 	height: 1px;
-	background: linear-gradient(
-		to right,
-		transparent,
-		var(--border-primary),
-		transparent
-	);
-	/* margin: 0px 0; */
+	background: var(--border-primary);
 }
 
 .settingsActions {
