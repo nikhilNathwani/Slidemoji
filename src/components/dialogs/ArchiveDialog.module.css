@@ -26,29 +26,10 @@
 .puzzleList {
 	display: flex;
 	flex-direction: column;
-	gap: 8px;
 	overflow-y: auto;
-	padding-right: 4px;
 	flex: 1;
-}
-
-/* Custom scrollbar */
-.puzzleList::-webkit-scrollbar {
-	width: 8px;
-}
-
-.puzzleList::-webkit-scrollbar-track {
-	background: transparent;
-	border-radius: 4px;
-}
-
-.puzzleList::-webkit-scrollbar-thumb {
-	background: var(--border-primary);
-	border-radius: 4px;
-}
-
-.puzzleList::-webkit-scrollbar-thumb:hover {
-	background: var(--border-secondary);
+	border: 1px solid var(--border-primary);
+	border-radius: 8px;
 }
 
 /* ── Empty state ──────────────────────────────────────────────────────────── */
@@ -62,10 +43,4 @@
 	font-style: italic;
 }
 
-/* Mobile Adjustments */
-@media (max-width: 480px) {
-	.filterButton {
-		font-size: var(--text-sm);
-		padding: 8px 12px;
-	}
-}
+

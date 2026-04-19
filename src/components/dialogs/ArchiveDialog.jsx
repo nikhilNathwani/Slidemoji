@@ -97,21 +97,21 @@ function ArchiveDialog({ isOpen, onClose, onPuzzleSelect, devIsPremium }) {
 
 					{/* Puzzle list */}
 					<div className={styles.puzzleList}>
-						{filteredPuzzles.map((puzzle) => (
-							<PuzzleListItem
-								key={puzzle.puzzleNum}
-								puzzleNum={puzzle.puzzleNum}
-								isSolved={puzzle.isSolved}
-								onClick={handlePuzzleClick}
-							/>
-						))}
+						{filteredPuzzles.length === 0 ? (
+							<div className={styles.emptyState}>
+								<p>No puzzles found</p>
+							</div>
+						) : (
+							filteredPuzzles.map((puzzle) => (
+								<PuzzleListItem
+									key={puzzle.puzzleNum}
+									puzzleNum={puzzle.puzzleNum}
+									isSolved={puzzle.isSolved}
+									onClick={handlePuzzleClick}
+								/>
+							))
+						)}
 					</div>
-
-					{filteredPuzzles.length === 0 && (
-						<div className={styles.emptyState}>
-							<p>No puzzles found</p>
-						</div>
-					)}
 				</div>
 			)}
 		</Dialog>
