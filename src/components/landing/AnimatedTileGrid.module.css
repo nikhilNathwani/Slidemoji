@@ -14,7 +14,7 @@
 
 .animatedTile {
 	background-color: var(--tile-bg);
-	border: 1.5px solid var(--tile-border);
+	border: 1.5px solid var(--border-primary);
 	border-radius: 4px;
 	display: flex;
 	align-items: center;

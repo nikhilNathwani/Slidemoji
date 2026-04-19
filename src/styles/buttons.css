@@ -112,7 +112,7 @@
  */
 
 .selectorBtn {
-	border: 2px solid var(--tile-border);
+	border: 2px solid var(--border-primary);
 	border-radius: 8px;
 	background-color: transparent;
 	color: var(--text-primary);

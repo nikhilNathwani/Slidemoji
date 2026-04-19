@@ -23,10 +23,9 @@ li {
 	--text-primary: #ffffff;
 	--text-secondary: #999999;
 	--surface: #3b3b3b;
-	--border-primary: #333333;
+	--border-primary: #404040;
 	--border-secondary: #2a2a2a;
 	--tile-bg: #242424;
-	--tile-border: #404040;
 	--dialog-overlay: #000000bf;
 }
 
@@ -38,7 +37,6 @@ li {
 	--border-primary: #c4c4c4;
 	--border-secondary: #ebebeb;
 	--tile-bg: #ffffff;
-	--tile-border: #c4c4c4;
 	--dialog-overlay: #00000080;
 }
 

@@ -23,10 +23,10 @@
 	overflow: auto;
 	overscroll-behavior: contain;
 	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-	border: 1px solid var(--tile-border);
+	border: 1px solid var(--border-primary);
 	animation: dialogSlideUp 0.3s ease;
 	scrollbar-width: thin;
-	scrollbar-color: var(--tile-border) transparent;
+	scrollbar-color: var(--border-primary) transparent;
 }
 
 .dialogHeader {
@@ -34,7 +34,7 @@
 	justify-content: space-between;
 	align-items: center;
 	padding: 20px 24px;
-	border-bottom: 1px solid var(--tile-border);
+	border-bottom: 1px solid var(--border-primary);
 }
 
 .dialogHeader h2 {

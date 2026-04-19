@@ -104,6 +104,12 @@
 		inset 0 -1px 0 rgba(0, 0, 0, 0.15);
 }
 
+/* Mini earned trophies: flat (no 3D shadow/glow) — color alone signals earned vs locked */
+.trophy.trophyMini.normal,
+.trophy.trophyMini.hard {
+	box-shadow: none;
+}
+
 /* Shimmer overlay for earned trophies */
 .trophy.normal::before,
 .trophy.hard::before {
