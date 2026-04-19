@@ -28,7 +28,7 @@
 	left: 0;
 	right: 0;
 	height: 50px;
-	background: linear-gradient(to bottom, transparent, var(--dialog-bg) 60%);
+	background: linear-gradient(to bottom, transparent, var(--bg) 60%);
 	pointer-events: none;
 }
 

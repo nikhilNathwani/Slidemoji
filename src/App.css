@@ -28,7 +28,6 @@ li {
 	--tile-bg: #242424;
 	--tile-border: #404040;
 	--dialog-overlay: #000000bf;
-	--dialog-bg: #121212;
 	--header-border: #333333;
 }
 
@@ -42,7 +41,6 @@ li {
 	--tile-bg: #ffffff;
 	--tile-border: #c4c4c4;
 	--dialog-overlay: #00000080;
-	--dialog-bg: #ffffff;
 	--header-border: #c4c4c4;
 }
 
