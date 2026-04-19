@@ -70,7 +70,7 @@
 /* Variant: Locked Trophy */
 .trophy.locked {
 	border: 2px dashed var(--border-primary);
-	background-color: var(--surface-primary);
+	background-color: transparent;
 	box-shadow: none;
 }
 

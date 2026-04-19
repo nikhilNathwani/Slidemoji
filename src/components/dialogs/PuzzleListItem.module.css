@@ -33,7 +33,6 @@
 
 /* Unsolved puzzle — full legibility, same base appearance */
 .puzzleItem.unsolved {
-	background-color: var(--surface-secondary);
 	border-color: var(--border-secondary);
 }
 
@@ -49,7 +48,6 @@
 
 /* Solved puzzle — neutral background; checkmark is the sole solved indicator */
 .puzzleItem.solved {
-	background-color: var(--surface-secondary);
 	border-color: var(--border-secondary);
 }
 
