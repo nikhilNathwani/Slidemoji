@@ -3,10 +3,9 @@
 	flex-direction: column;
 	gap: 16px;
 	min-height: 50vh;
-	max-height: 60vh;
-	overflow: hidden;
 	width: 352px;
 	max-width: calc(100vw - 88px);
+	margin-bottom: -36px; /* bleed through dialogBody's bottom padding */
 }
 
 /* Filter Bar */
@@ -28,8 +27,11 @@
 	flex-direction: column;
 	overflow-y: auto;
 	flex: 1;
-	border: 1px solid var(--border-primary);
-	border-radius: 8px;
+	scrollbar-width: none; /* Firefox */
+}
+
+.puzzleList::-webkit-scrollbar {
+	display: none; /* Chrome/Safari */
 }
 
 /* ── Empty state ──────────────────────────────────────────────────────────── */
@@ -42,5 +44,3 @@
 	color: var(--text-secondary);
 	font-style: italic;
 }
-
-
