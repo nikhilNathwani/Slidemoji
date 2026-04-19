@@ -38,7 +38,7 @@
 }
 
 .puzzleList::-webkit-scrollbar-track {
-	background: var(--surface-secondary);
+	background: transparent;
 	border-radius: 4px;
 }
 
