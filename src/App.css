@@ -17,39 +17,40 @@ li {
 	text-wrap: pretty;
 }
 
-/* ── Color Ramp ───────────────────────────────────────────────────────────── */
-/* Greyscale primitives. Referenced by semantic aliases below.                */
-:root {
-	--grey-50:  #121212;
-	--grey-100: #1a1a1a;
-	--grey-200: #242424;
-	--grey-300: #3d3d3d;
-	--grey-500: #666666;
-	--grey-600: #999999;
-	--grey-800: #cccccc;
-	--grey-900: #f2f2f2;
-	--grey-950: #ffffff;
-}
-
-/* ── Semantic Aliases ─────────────────────────────────────────────────────── */
+/* ── Grey Ramp ────────────────────────────────────────────────────────────── */
+/* Each theme defines --shade-1 (most background) → --shade-5 (most foreground). */
+/* Same step number = same position in visual hierarchy across themes.          */
 .dark-theme {
-	--bg:             var(--grey-50);
-	--tile-bg:        var(--grey-200);
-	--surface:        var(--grey-300);
-	--border:         var(--grey-300);
-	--text-secondary: var(--grey-600);
-	--text-primary:   var(--grey-950);
-	--dialog-overlay: #000000bf;
+	--shade-1: #121212; /* bg */
+	--shade-2: #242424; /* tile-bg */
+	--shade-3: #3d3d3d; /* surface / border */
+	--shade-4: #999999; /* secondary text */
+	--shade-5: #ffffff; /* primary text */
 }
 
 .light-theme {
-	--bg:             var(--grey-900);
-	--tile-bg:        var(--grey-950);
-	--surface:        var(--grey-800);
-	--border:         var(--grey-800);
-	--text-secondary: var(--grey-500);
-	--text-primary:   var(--grey-100);
+	--shade-1: #f2f2f2; /* bg */
+	--shade-2: #ffffff; /* tile-bg */
+	--shade-3: #cccccc; /* surface / border */
+	--shade-4: #666666; /* secondary text */
+	--shade-5: #1a1a1a; /* primary text */
+}
+
+/* ── Semantic Aliases ─────────────────────────────────────────────────────── */
+/* Identical in both themes — any component using these works across themes.   */
+.dark-theme,
+.light-theme {
+	--bg:             var(--shade-1);
+	--tile-bg:        var(--shade-2);
+	--surface:        var(--shade-3);
+	--border:         var(--shade-3);
+	--text-secondary: var(--shade-4);
+	--text-primary:   var(--shade-5);
 	--dialog-overlay: #00000080;
+}
+
+.dark-theme {
+	--dialog-overlay: #000000bf;
 }
 
 :root {
