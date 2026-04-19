@@ -52,7 +52,6 @@ function SettingsDialog({
 						))}
 					</div>
 				</div>
-				<div className={styles.settingsDivider}></div>
 				{!isPuzzleSolved && (
 					<div className={styles.settingsItem}>
 						<label className={styles.settingsLabel}>
