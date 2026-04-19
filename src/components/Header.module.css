@@ -56,7 +56,7 @@
 	height: 48px;
 	border-radius: 50%;
 	background-color: var(--surface);
-	border: 1px solid var(--border-primary);
+	border: 1px solid var(--text-secondary);
 	color: var(--text-primary);
 	font-size: var(--text-2xl);
 	display: flex;
@@ -91,7 +91,7 @@
 	top: calc(100% + 8px);
 	right: 0;
 	background: var(--bg);
-	border: 1px solid var(--border-secondary);
+	border: 1px solid var(--border-primary);
 	border-radius: 12px;
 	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 	min-width: 220px;
@@ -134,7 +134,7 @@
 
 .accountMenuDivider {
 	height: 1px;
-	background: var(--border-secondary);
+	background: var(--border-primary);
 	margin: 0;
 }
 

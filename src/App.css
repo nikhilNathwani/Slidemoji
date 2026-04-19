@@ -22,9 +22,8 @@ li {
 	--bg: #121212;
 	--text-primary: #ffffff;
 	--text-secondary: #999999;
-	--surface: #3b3b3b;
-	--border-primary: #404040;
-	--border-secondary: #2a2a2a;
+	--surface: #3d3d3d;
+	--border-primary: #3d3d3d;
 	--tile-bg: #242424;
 	--dialog-overlay: #000000bf;
 }
@@ -33,9 +32,8 @@ li {
 	--bg: #f2f2f2;
 	--text-primary: #1a1a1a;
 	--text-secondary: #666666;
-	--surface: #d8d8d8;
-	--border-primary: #c4c4c4;
-	--border-secondary: #ebebeb;
+	--surface: #cccccc;
+	--border-primary: #cccccc;
 	--tile-bg: #ffffff;
 	--dialog-overlay: #00000080;
 }
