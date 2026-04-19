@@ -18,22 +18,22 @@ li {
 }
 
 /* ── Color Ramp ──────────────────────────────────────────────────────────── */
-/* Each theme defines --layer-1 (base) → --layer-5 (foreground).             */
-/* Same number = same position in visual hierarchy regardless of theme.       */
+/* Each theme defines --layer-1 (base) → --layer-4 (foreground).             */
+/* layer-1 serves as both app bg and tile surface (same unified color).       */
+/* layer-2 doubles as grid/gap background, providing tile delineation.        */
+/* Same number = same position in visual hierarchy regardless of theme.        */
 .dark-theme {
-	--layer-1: #121212; /* app background */
-	--layer-2: #242424; /* tile / card surface */
-	--layer-3: #3d3d3d; /* raised surface, border */
-	--layer-4: #999999; /* secondary text */
-	--layer-5: #ffffff; /* primary text */
+	--layer-1: #181818; /* app / tile surface */
+	--layer-2: #3d3d3d; /* raised surface, border, grid bg */
+	--layer-3: #999999; /* secondary text */
+	--layer-4: #ffffff; /* primary text */
 }
 
 .light-theme {
-	--layer-1: #f2f2f2; /* app background */
-	--layer-2: #ffffff; /* tile / card surface */
-	--layer-3: #cccccc; /* raised surface, border */
-	--layer-4: #666666; /* secondary text */
-	--layer-5: #1a1a1a; /* primary text */
+	--layer-1: #ffffff; /* app / tile surface */
+	--layer-2: #cccccc; /* raised surface, border, grid bg */
+	--layer-3: #666666; /* secondary text */
+	--layer-4: #1a1a1a; /* primary text */
 }
 
 /* ── Semantic Aliases ─────────────────────────────────────────────────────── */
@@ -44,28 +44,28 @@ li {
 .light-theme {
 	/* Backgrounds */
 	--bg: var(--layer-1);
-	--tile-bg: var(--layer-2);
-	--surface: var(--layer-3);
+	--tile-bg: var(--layer-1);
+	--surface: var(--layer-2);
 
 	/* Borders */
-	--border: var(--layer-3);
+	--border: var(--layer-2);
 
 	/* Text */
-	--text-primary: var(--layer-5);
-	--text-secondary: var(--layer-4);
+	--text-primary: var(--layer-4);
+	--text-secondary: var(--layer-3);
 
 	/* Buttons */
-	--btn-primary-bg:        var(--layer-5);
-	--btn-primary-text:      var(--layer-1);
-	--btn-secondary-bg:      var(--layer-2);
-	--btn-secondary-text:    var(--layer-5);
-	--btn-secondary-border:  var(--layer-3);
-	--btn-secondary-hover:   var(--layer-3);
-	--btn-selector-bg:       transparent;
-	--btn-selector-border:   var(--layer-3);
-	--btn-selector-hover:    var(--layer-3);
-	--btn-selector-active-border: var(--layer-5);
-	--btn-selector-active-bg:     var(--layer-3);
+	--btn-primary-bg: var(--layer-4);
+	--btn-primary-text: var(--layer-1);
+	--btn-secondary-bg: var(--layer-1);
+	--btn-secondary-text: var(--layer-4);
+	--btn-secondary-border: var(--layer-2);
+	--btn-secondary-hover: var(--layer-2);
+	--btn-selector-bg: transparent;
+	--btn-selector-border: var(--layer-2);
+	--btn-selector-hover: var(--layer-2);
+	--btn-selector-active-border: var(--layer-4);
+	--btn-selector-active-bg: var(--layer-2);
 
 	--dialog-overlay: #00000080;
 }

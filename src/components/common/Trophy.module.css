@@ -61,10 +61,11 @@
 }
 
 /* Variant: Puzzle Info (when playing) */
-/* Use inset box-shadow instead of border so box size stays identical to normal/hard (no layout shift on solve) */
+/* 1px inset shadow anchors it visually without looking interactive.
+   Inset avoids layout shift on solve (box size stays identical to normal/hard). */
 .trophy.puzzleInfo {
 	background-color: transparent;
-	box-shadow: inset 0 0 0 1.5px var(--border);
+	box-shadow: inset 0 0 0 1px var(--border);
 }
 
 /* Variant: Locked Trophy */

@@ -69,7 +69,7 @@
 }
 
 .btn-secondary {
-	border: 1.5px solid var(--btn-secondary-border);
+	border: 2px solid var(--btn-secondary-border);
 	background-color: var(--btn-secondary-bg);
 	color: var(--btn-secondary-text);
 	font-size: var(--text-sm);
