@@ -7,12 +7,12 @@
  *
  * Variants:
  *  .btn-primary   — Inverted fill. Main CTA on a screen.
- *                   bg: --text-primary, text: --bg, no border.
+ *                   bg: --btn-primary-bg, text: --btn-primary-text, no border.
  *                   Hover: opacity 0.85.
  *
  *  .btn-secondary — Outlined. Standard actions (restart, confirm, feedback).
- *                   bg: --btn-secondary-bg, text: --text-primary, border: 1.5px --border.
- *                   Hover: --surface bg.
+ *                   bg: --btn-secondary-bg, text: --btn-secondary-text, border: --btn-secondary-border.
+ *                   Hover: --btn-secondary-hover bg.
  *                   Modifier .btn-cancel: mutes text to --text-secondary.
  *
  *  .btn-google    — Always-white. Google sign-in CTA.
@@ -54,8 +54,8 @@
 
 .btn-primary {
 	border: none;
-	background-color: var(--text-primary);
-	color: var(--bg);
+	background-color: var(--btn-primary-bg);
+	color: var(--btn-primary-text);
 	font-size: var(--text-base);
 }
 
@@ -69,9 +69,9 @@
 }
 
 .btn-secondary {
-	border: 1.5px solid var(--border);
+	border: 1.5px solid var(--btn-secondary-border);
 	background-color: var(--btn-secondary-bg);
-	color: var(--text-primary);
+	color: var(--btn-secondary-text);
 	font-size: var(--text-sm);
 	transition:
 		background-color 0.15s ease,
@@ -79,7 +79,7 @@
 }
 
 .btn-secondary:hover {
-	background-color: var(--surface);
+	background-color: var(--btn-secondary-hover);
 }
 
 .btn-secondary.btn-cancel {
@@ -112,9 +112,9 @@
  */
 
 .selectorBtn {
-	border: 2px solid var(--border);
+	border: 2px solid var(--btn-selector-border);
 	border-radius: 8px;
-	background-color: transparent;
+	background-color: var(--btn-selector-bg);
 	color: var(--text-primary);
 	font-size: var(--text-base);
 	font-weight: 600;
@@ -136,12 +136,12 @@
 }
 
 .selectorBtn:hover {
-	background-color: var(--surface);
+	background-color: var(--btn-selector-hover);
 }
 
 .selectorBtn.active {
-	border-color: var(--text-primary);
-	background-color: var(--surface);
+	border-color: var(--btn-selector-active-border);
+	background-color: var(--btn-selector-active-bg);
 }
 
 .selectorBtnSubtitle {

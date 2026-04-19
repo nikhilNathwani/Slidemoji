@@ -17,7 +17,7 @@ li {
 	text-wrap: pretty;
 }
 
-/* ── Layer Ramp ──────────────────────────────────────────────────────────── */
+/* ── Color Ramp ──────────────────────────────────────────────────────────── */
 /* Each theme defines --layer-1 (base) → --layer-5 (foreground).             */
 /* Same number = same position in visual hierarchy regardless of theme.       */
 .dark-theme {
@@ -54,8 +54,18 @@ li {
 	--text-primary: var(--layer-5);
 	--text-secondary: var(--layer-4);
 
-	/* Component-specific */
-	--btn-secondary-bg: var(--layer-2);
+	/* Buttons */
+	--btn-primary-bg:        var(--layer-5);
+	--btn-primary-text:      var(--layer-1);
+	--btn-secondary-bg:      var(--layer-2);
+	--btn-secondary-text:    var(--layer-5);
+	--btn-secondary-border:  var(--layer-3);
+	--btn-secondary-hover:   var(--layer-3);
+	--btn-selector-bg:       transparent;
+	--btn-selector-border:   var(--layer-3);
+	--btn-selector-hover:    var(--layer-3);
+	--btn-selector-active-border: var(--layer-5);
+	--btn-selector-active-bg:     var(--layer-3);
 
 	--dialog-overlay: #00000080;
 }
