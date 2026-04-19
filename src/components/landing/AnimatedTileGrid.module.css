@@ -4,7 +4,7 @@
 	grid-template-rows: repeat(3, 22px);
 	gap: 3px;
 	padding: 6px;
-	background-color: var(--border-primary);
+	background-color: var(--border);
 	border-radius: 8px;
 	border: 1.5px solid rgba(0, 0, 0, 0.12);
 	box-shadow:
@@ -14,7 +14,7 @@
 
 .animatedTile {
 	background-color: var(--tile-bg);
-	border: 1.5px solid var(--border-primary);
+	border: 1.5px solid var(--border);
 	border-radius: 4px;
 	display: flex;
 	align-items: center;

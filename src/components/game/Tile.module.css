@@ -1,7 +1,7 @@
 /* Base tile styles */
 .tile {
 	background-color: var(--tile-bg);
-	border: 1px solid var(--border-primary);
+	border: 1px solid var(--border);
 	color: var(--text-primary);
 	display: flex;
 	justify-content: center;

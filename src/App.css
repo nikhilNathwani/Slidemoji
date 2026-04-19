@@ -17,24 +17,38 @@ li {
 	text-wrap: pretty;
 }
 
-/* Theme Variables */
+/* ── Color Ramp ───────────────────────────────────────────────────────────── */
+/* Greyscale primitives. Referenced by semantic aliases below.                */
+:root {
+	--grey-50:  #121212;
+	--grey-100: #1a1a1a;
+	--grey-200: #242424;
+	--grey-300: #3d3d3d;
+	--grey-500: #666666;
+	--grey-600: #999999;
+	--grey-800: #cccccc;
+	--grey-900: #f2f2f2;
+	--grey-950: #ffffff;
+}
+
+/* ── Semantic Aliases ─────────────────────────────────────────────────────── */
 .dark-theme {
-	--bg: #121212;
-	--text-primary: #ffffff;
-	--text-secondary: #999999;
-	--surface: #3d3d3d;
-	--border-primary: #3d3d3d;
-	--tile-bg: #242424;
+	--bg:             var(--grey-50);
+	--tile-bg:        var(--grey-200);
+	--surface:        var(--grey-300);
+	--border:         var(--grey-300);
+	--text-secondary: var(--grey-600);
+	--text-primary:   var(--grey-950);
 	--dialog-overlay: #000000bf;
 }
 
 .light-theme {
-	--bg: #f2f2f2;
-	--text-primary: #1a1a1a;
-	--text-secondary: #666666;
-	--surface: #cccccc;
-	--border-primary: #cccccc;
-	--tile-bg: #ffffff;
+	--bg:             var(--grey-900);
+	--tile-bg:        var(--grey-950);
+	--surface:        var(--grey-800);
+	--border:         var(--grey-800);
+	--text-secondary: var(--grey-500);
+	--text-primary:   var(--grey-100);
 	--dialog-overlay: #00000080;
 }
 

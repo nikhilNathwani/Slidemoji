@@ -3,7 +3,7 @@
 	padding: 0;
 	margin: 0 auto;
 	touch-action: none;
-	border: 8px solid var(--border-primary);
+	border: 8px solid var(--border);
 	border-radius: 8px;
 	box-sizing: content-box;
 	/* CSS Grid layout - Framer Motion animates grid changes */

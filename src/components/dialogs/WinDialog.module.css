@@ -17,6 +17,6 @@
 .winDivider {
 	width: 100%;
 	height: 1px;
-	background: var(--border-primary);
+	background: var(--border);
 	margin: 36px 0 32px 0;
 }

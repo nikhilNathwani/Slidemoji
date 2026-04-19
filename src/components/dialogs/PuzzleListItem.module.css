@@ -7,7 +7,7 @@
 	min-height: 52px;
 	height: 52px;
 	border: none;
-	border-bottom: 1px solid var(--border-primary);
+	border-bottom: 1px solid var(--border);
 	background-color: transparent;
 	color: var(--text-primary);
 	cursor: pointer;
@@ -34,7 +34,7 @@
 
 /* Unsolved puzzle — full legibility, same base appearance */
 .puzzleItem.unsolved {
-	/* border-primary from base; no bg override needed */
+	/* --border from base; no bg override needed */
 }
 
 /* Locked puzzle (paywall preview) */
@@ -49,7 +49,7 @@
 
 /* Solved puzzle — checkmark is the sole solved indicator */
 .puzzleItem.solved {
-	/* border-primary from base; no bg override needed */
+	/* --border from base; no bg override needed */
 }
 
 /* Puzzle Number */
