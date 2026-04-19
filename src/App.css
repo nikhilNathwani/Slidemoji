@@ -17,35 +17,46 @@ li {
 	text-wrap: pretty;
 }
 
-/* ── Grey Ramp ────────────────────────────────────────────────────────────── */
-/* Each theme defines --shade-1 (most background) → --shade-5 (most foreground). */
-/* Same step number = same position in visual hierarchy across themes.          */
+/* ── Layer Ramp ──────────────────────────────────────────────────────────── */
+/* Each theme defines --layer-1 (base) → --layer-5 (foreground).             */
+/* Same number = same position in visual hierarchy regardless of theme.       */
 .dark-theme {
-	--shade-1: #121212; /* bg */
-	--shade-2: #242424; /* tile-bg */
-	--shade-3: #3d3d3d; /* surface / border */
-	--shade-4: #999999; /* secondary text */
-	--shade-5: #ffffff; /* primary text */
+	--layer-1: #121212; /* app background */
+	--layer-2: #242424; /* tile / card surface */
+	--layer-3: #3d3d3d; /* raised surface, border */
+	--layer-4: #999999; /* secondary text */
+	--layer-5: #ffffff; /* primary text */
 }
 
 .light-theme {
-	--shade-1: #f2f2f2; /* bg */
-	--shade-2: #ffffff; /* tile-bg */
-	--shade-3: #cccccc; /* surface / border */
-	--shade-4: #666666; /* secondary text */
-	--shade-5: #1a1a1a; /* primary text */
+	--layer-1: #f2f2f2; /* app background */
+	--layer-2: #ffffff; /* tile / card surface */
+	--layer-3: #cccccc; /* raised surface, border */
+	--layer-4: #666666; /* secondary text */
+	--layer-5: #1a1a1a; /* primary text */
 }
 
 /* ── Semantic Aliases ─────────────────────────────────────────────────────── */
-/* Identical in both themes — any component using these works across themes.   */
+/* Defined once — work in both themes. Map to layer primitives above.         */
+/* Add aliases here when a component's color should be tunable independently  */
+/* without touching component CSS.                                            */
 .dark-theme,
 .light-theme {
-	--bg:             var(--shade-1);
-	--tile-bg:        var(--shade-2);
-	--surface:        var(--shade-3);
-	--border:         var(--shade-3);
-	--text-secondary: var(--shade-4);
-	--text-primary:   var(--shade-5);
+	/* Backgrounds */
+	--bg: var(--layer-1);
+	--tile-bg: var(--layer-2);
+	--surface: var(--layer-3);
+
+	/* Borders */
+	--border: var(--layer-3);
+
+	/* Text */
+	--text-primary: var(--layer-5);
+	--text-secondary: var(--layer-4);
+
+	/* Component-specific */
+	--btn-secondary-bg: var(--layer-2);
+
 	--dialog-overlay: #00000080;
 }
 

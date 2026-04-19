@@ -11,7 +11,7 @@
  *                   Hover: opacity 0.85.
  *
  *  .btn-secondary — Outlined. Standard actions (restart, confirm, feedback).
- *                   bg: --tile-bg, text: --text-primary, border: 1.5px --border.
+ *                   bg: --btn-secondary-bg, text: --text-primary, border: 1.5px --border.
  *                   Hover: --surface bg.
  *                   Modifier .btn-cancel: mutes text to --text-secondary.
  *
@@ -70,7 +70,7 @@
 
 .btn-secondary {
 	border: 1.5px solid var(--border);
-	background-color: var(--tile-bg);
+	background-color: var(--btn-secondary-bg);
 	color: var(--text-primary);
 	font-size: var(--text-sm);
 	transition:
