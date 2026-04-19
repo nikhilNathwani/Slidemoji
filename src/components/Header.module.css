@@ -1,7 +1,7 @@
 .appHeader {
 	width: 100%;
 	background-color: var(--bg);
-	border-bottom: 1px solid var(--header-border);
+	border-bottom: 1px solid var(--border-primary);
 	padding: 16px 20px;
 	display: flex;
 	align-items: center;

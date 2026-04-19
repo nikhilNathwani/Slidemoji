@@ -28,7 +28,6 @@ li {
 	--tile-bg: #242424;
 	--tile-border: #404040;
 	--dialog-overlay: #000000bf;
-	--header-border: #333333;
 }
 
 .light-theme {
@@ -41,7 +40,6 @@ li {
 	--tile-bg: #ffffff;
 	--tile-border: #c4c4c4;
 	--dialog-overlay: #00000080;
-	--header-border: #c4c4c4;
 }
 
 :root {
