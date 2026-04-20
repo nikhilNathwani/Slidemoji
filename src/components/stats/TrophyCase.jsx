@@ -87,6 +87,7 @@ function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true }) {
 				</h3>
 			)}
 
+		<div className={styles.trophyCard}>
 			<div className={styles.emojiGrid}>
 				{trophySlots.map((slot) => {
 					return (
@@ -112,11 +113,10 @@ function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true }) {
 					);
 				})}
 			</div>
-
 			{totalPages > 1 && (
 				<div className={styles.pagination}>
 					<button
-						className={`btn btn-outline ${styles.paginationButton}`}
+						className={styles.paginationButton}
 						onClick={handlePrevPage}
 						disabled={currentPage === 1}
 						aria-label="Previous page"
@@ -127,7 +127,7 @@ function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true }) {
 						Page {currentPage} of {totalPages}
 					</span>
 					<button
-						className={`btn btn-outline ${styles.paginationButton}`}
+						className={styles.paginationButton}
 						onClick={handleNextPage}
 						disabled={currentPage === totalPages}
 						aria-label="Next page"
@@ -136,6 +136,7 @@ function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true }) {
 					</button>
 				</div>
 			)}
+		</div>
 		</div>
 	);
 }

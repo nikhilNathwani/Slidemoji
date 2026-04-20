@@ -27,6 +27,19 @@
 	font-weight: 600;
 }
 
+/* Grey card — visual container for grid + pagination */
+.trophyCard {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 16px;
+	padding: 24px;
+	background-color: var(--surface);
+	border-radius: 12px;
+	border: 1px solid var(--border);
+}
+
+/* Trophy grid — layout only, no background */
 .emojiGrid {
 	display: grid;
 	grid-template-columns: repeat(4, var(--trophy-mini-width));
@@ -34,19 +47,16 @@
 	justify-content: center;
 	gap: 16px;
 	height: fit-content;
-	padding: 24px;
-	background-color: var(--surface);
-	border-radius: 12px;
-	border: 1px solid var(--border);
-	position: relative;
 }
 
 /* Mobile: smaller trophies to fit 4 columns */
 @media (max-width: 480px) {
+	.trophyCard {
+		padding: 16px 12px;
+	}
 	.emojiGrid {
 		grid-template-columns: repeat(4, var(--trophy-mini-width-mobile));
-		gap: 8px; /* Tighter than desktop 12px — fits 4 columns on small screens */
-		padding: 8px 2px; /* Reduced inline padding to free space for horizontal gaps */
+		gap: 8px;
 	}
 }
 
@@ -55,14 +65,24 @@
 	align-items: center;
 	justify-content: center;
 	gap: 16px;
+	width: 100%;
 }
 
-/* :global(.btn).paginationButton = (0,0,2,0) — beats .btn { border-radius: 999px; padding: 12px 24px } */
-:global(.btn).paginationButton {
-	width: 36px;
-	height: 36px;
-	padding: 0;
-	border-radius: 50%; /* Circle — earned difference from pill action buttons */
+/* Bare icon buttons — no border/pill, lives inside the grey card surface */
+.paginationButton {
+	background: none;
+	border: none;
+	color: var(--text-dim);
+	padding: 4px 8px;
+	border-radius: 4px;
+	font-size: var(--text-lg);
+	cursor: pointer;
+	transition: color 0.15s ease;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.paginationButton:hover {
+	color: var(--text);
 }
 
 .paginationButton:disabled {
