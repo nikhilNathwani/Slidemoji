@@ -14,7 +14,7 @@
 
 .dialogContent {
 	background: var(--bg);
-	color: var(--text-primary);
+	color: var(--text);
 	border-radius: 12px;
 	padding: 0;
 	min-width: 300px;
@@ -40,7 +40,7 @@
 .dialogHeader h2 {
 	margin: 0;
 	font-size: var(--text-2xl);
-	color: var(--text-primary);
+	color: var(--text);
 	display: flex;
 	align-items: center;
 	gap: 0;
@@ -50,7 +50,7 @@
 	background: none;
 	border: none;
 	font-size: var(--text-xl);
-	color: var(--text-secondary);
+	color: var(--text-dim);
 	cursor: pointer;
 	padding: 0;
 	width: 40px;
@@ -64,7 +64,7 @@
 }
 
 .dialogClose:hover {
-	color: var(--text-primary);
+	color: var(--text);
 }
 
 .dialogClose:focus {
@@ -72,7 +72,7 @@
 }
 
 .dialogClose:focus-visible {
-	outline: 2px solid var(--text-secondary);
+	outline: 2px solid var(--text-dim);
 	outline-offset: 2px;
 }
 

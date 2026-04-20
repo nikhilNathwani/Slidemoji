@@ -15,7 +15,7 @@ function LandingPage({ onPlay }) {
 				</p>
 
 				<button
-					className={`btn btn-primary ${styles.playButton}`}
+					className={`btn btn-solid ${styles.playButton}`}
 					onClick={onPlay}
 				>
 					Play

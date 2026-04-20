@@ -9,12 +9,7 @@ import { DIFFICULTY } from "../../constants";
 import styles from "./TrophyCase.module.css";
 import { useState } from "react";
 
-function TrophyCase({
-	totalPuzzles = 12,
-	solvedPuzzles,
-	showTitle = true,
-	isPremium,
-}) {
+function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true }) {
 	const TROPHIES_PER_PAGE = 12;
 	const totalPages = Math.ceil(totalPuzzles / TROPHIES_PER_PAGE);
 	const numEarnedTrophies = Object.keys(solvedPuzzles || {}).length;
@@ -112,7 +107,6 @@ function TrophyCase({
 									slot.solvedDifficulty || DIFFICULTY.NORMAL
 								}
 								isMini={true}
-								isPremium={isPremium}
 							/>
 						</div>
 					);
@@ -122,7 +116,7 @@ function TrophyCase({
 			{totalPages > 1 && (
 				<div className={styles.pagination}>
 					<button
-						className={`btn btn-secondary ${styles.paginationButton}`}
+						className={`btn btn-outline ${styles.paginationButton}`}
 						onClick={handlePrevPage}
 						disabled={currentPage === 1}
 						aria-label="Previous page"
@@ -133,7 +127,7 @@ function TrophyCase({
 						Page {currentPage} of {totalPages}
 					</span>
 					<button
-						className={`btn btn-secondary ${styles.paginationButton}`}
+						className={`btn btn-outline ${styles.paginationButton}`}
 						onClick={handleNextPage}
 						disabled={currentPage === totalPages}
 						aria-label="Next page"

@@ -2,7 +2,7 @@
 .tile {
 	background-color: var(--tile-bg);
 	border: 1px solid var(--border);
-	color: var(--text-primary);
+	color: var(--text);
 	display: flex;
 	justify-content: center;
 	align-items: center;

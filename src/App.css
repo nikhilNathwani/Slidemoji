@@ -4,77 +4,53 @@
 	box-sizing: border-box;
 }
 
-/* Modern CSS text wrapping */
-h1,
-h2,
-h3,
-h4 {
-	text-wrap: balance;
-}
-
-p,
-li {
-	text-wrap: pretty;
-}
-
-/* ── Color Ramp ──────────────────────────────────────────────────────────── */
-/* Each theme defines --layer-1 (base) → --layer-4 (foreground).             */
-/* layer-1 serves as both app bg and tile surface (same unified color).       */
-/* layer-2 doubles as grid/gap background, providing tile delineation.        */
-/* Same number = same position in visual hierarchy regardless of theme.        */
 .dark-theme {
-	--layer-1: #181818; /* app / tile surface */
-	--layer-2: #3d3d3d; /* raised surface, border, grid bg */
-	--layer-3: #999999; /* secondary text */
-	--layer-4: #ffffff; /* primary text */
+	--base: #181819; /* darkest — app / tile surface        */
+	--low-contrast: #3d3d3d; /* low contrast grey — borders, grid   */
+	--mid-contrast: #999999; /* mid contrast grey — secondary text  */
+	--high-contrast: #ffffff; /* highest contrast — primary text     */
 }
 
 .light-theme {
-	--layer-1: #ffffff; /* app / tile surface */
-	--layer-2: #cccccc; /* raised surface, border, grid bg */
-	--layer-3: #666666; /* secondary text */
-	--layer-4: #1a1a1a; /* primary text */
-}
-
-/* ── Semantic Aliases ─────────────────────────────────────────────────────── */
-/* Defined once — work in both themes. Map to layer primitives above.         */
-/* Add aliases here when a component's color should be tunable independently  */
-/* without touching component CSS.                                            */
-.dark-theme,
-.light-theme {
-	/* Backgrounds */
-	--bg: var(--layer-1);
-	--tile-bg: var(--layer-1);
-	--surface: var(--layer-2);
-
-	/* Borders */
-	--border: var(--layer-2);
-
-	/* Text */
-	--text-primary: var(--layer-4);
-	--text-secondary: var(--layer-3);
-
-	/* Buttons */
-	--btn-primary-bg: var(--layer-4);
-	--btn-primary-text: var(--layer-1);
-	--btn-secondary-bg: var(--layer-1);
-	--btn-secondary-text: var(--layer-4);
-	--btn-secondary-border: var(--layer-2);
-	--btn-secondary-hover: var(--layer-2);
-	--btn-selector-bg: transparent;
-	--btn-selector-border: var(--layer-2);
-	--btn-selector-hover: var(--layer-2);
-	--btn-selector-active-border: var(--layer-4);
-	--btn-selector-active-bg: var(--layer-2);
-
-	--dialog-overlay: #00000080;
-}
-
-.dark-theme {
-	--dialog-overlay: #000000bf;
+	--base: #ffffff; /* lightest — app / tile surface       */
+	--low-contrast: #cccccc; /* low contrast grey — borders, grid   */
+	--mid-contrast: #666666; /* mid contrast grey — secondary text  */
+	--high-contrast: #181819; /* highest contrast — primary text     */
 }
 
 :root {
+	/* Surfaces */
+	--bg: var(--base);
+	--tile-bg: var(--base);
+	--surface: var(--low-contrast);
+
+	/* Borders */
+	--border: var(--low-contrast);
+
+	/* Text */
+	--text: var(--high-contrast);
+	--text-dim: var(--mid-contrast);
+
+	/* Solid (loud) Buttons */
+	--btn-solid-bg: var(--high-contrast);
+	--btn-solid-text: var(--base);
+
+	/* Shared by btn-outline and selectorBtn */
+	--btn-outline-bg: var(--base);
+	--btn-outline-text: var(--high-contrast);
+	--btn-outline-border: var(--low-contrast);
+	--btn-outline-hover: var(--low-contrast);
+
+	/* selectorBtn active state (persistent selection indicator) */
+	--btn-selector-active-border: var(--high-contrast);
+	--btn-selector-active-bg: var(--low-contrast);
+
+	/* Dialog overlay — dark theme overrides below */
+	--dialog-overlay: #00000080;
+
+	/* State Colors */
+	--color-error: #ef4444;
+
 	/* Type Scale */
 	--text-xs: 0.75rem; /* 12px */
 	--text-sm: 0.875rem; /* 14px */
@@ -86,14 +62,10 @@ li {
 	--text-4xl: 3rem; /* 48px */
 	--text-5xl: 3.75rem; /* 60px */
 	--text-6xl: 4.5rem; /* 72px */
-	/* State Colors */
-	--color-error: #ef4444;
 }
 
-button {
-	cursor: pointer;
-	-webkit-tap-highlight-color: transparent;
-	touch-action: manipulation;
+.dark-theme {
+	--dialog-overlay: #000000bf;
 }
 
 body,
@@ -107,6 +79,25 @@ html {
 		Arial, sans-serif;
 }
 
+/* Modern CSS text wrapping */
+h1,
+h2,
+h3,
+h4 {
+	text-wrap: balance;
+}
+
+p,
+li {
+	text-wrap: pretty;
+}
+
+button {
+	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
+	touch-action: manipulation;
+}
+
 .app {
 	min-height: 100dvh;
 	max-height: 100dvh;
@@ -118,7 +109,7 @@ html {
 	overflow-y: auto;
 	-webkit-overflow-scrolling: touch;
 	background-color: var(--bg);
-	color: var(--text-primary);
+	color: var(--text);
 }
 
 @media (prefers-reduced-motion: reduce) {

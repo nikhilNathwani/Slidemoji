@@ -123,7 +123,7 @@ function SettingsDialog({
 				<div className={styles.settingsActions}>
 					<a
 						href="mailto:support.slidemoji@gmail.com?subject=Slidemoji%20Feedback"
-						className="btn btn-secondary"
+						className="btn btn-outline"
 					>
 						<FontAwesomeIcon icon={faComment} />
 						Give Feedback
@@ -137,7 +137,7 @@ function SettingsDialog({
 								`Show Numbers: ${showNumbers}\n` +
 								`Timestamp: ${new Date().toISOString()}`,
 						)}`}
-						className="btn btn-secondary"
+						className="btn btn-outline"
 					>
 						<FontAwesomeIcon icon={faBug} />
 						Report an Issue

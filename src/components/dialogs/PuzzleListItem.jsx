@@ -2,7 +2,6 @@ import { usePuzzle } from "../../hooks/usePuzzle";
 import { formatPuzzleId } from "../../utils/puzzleUtils";
 import {
 	FontAwesomeIcon,
-	faLock,
 	faPlayCircle,
 	faCheck,
 } from "../../utils/icons";
@@ -12,21 +11,16 @@ function PuzzleListItem({
 	puzzleNum,
 	isSolved = false,
 	onClick,
-	isLocked = false,
 }) {
 	const { data: puzzleMetadata, isLoading } = usePuzzle(puzzleNum);
 
-	const variantClass = isLocked
-		? styles.locked
-		: isSolved
-			? styles.solved
-			: styles.unsolved;
+	const variantClass = isSolved ? styles.solved : styles.unsolved;
 
 	return (
 		<button
 			className={`${styles.puzzleItem} ${variantClass}`}
-			onClick={() => !isLocked && onClick(puzzleNum)}
-			disabled={isLoading || isLocked}
+			onClick={() => onClick(puzzleNum)}
+			disabled={isLoading}
 		>
 			<div className={styles.puzzleNumber}>
 				{formatPuzzleId(puzzleNum)}
@@ -40,7 +34,7 @@ function PuzzleListItem({
 			</div>
 			<div className={styles.iconSlot}>
 				<FontAwesomeIcon
-					icon={isLocked ? faLock : faPlayCircle}
+					icon={faPlayCircle}
 					className={`${styles.playIcon} ${isSolved ? styles.playIconSolved : ""}`}
 				/>
 				{isSolved && (

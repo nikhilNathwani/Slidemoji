@@ -9,7 +9,6 @@ export {
 	faTrophy,
 	faUserCircle,
 	faSignOutAlt,
-	faLock,
 	faComment,
 	faBug,
 	faMagic,

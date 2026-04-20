@@ -44,14 +44,14 @@
 .paywallCtaHeadline {
 	font-size: var(--text-2xl);
 	font-weight: 700;
-	color: var(--text-primary);
+	color: var(--text);
 	margin: 0;
 	line-height: 1.3;
 }
 
 .paywallCtaNote {
 	font-size: var(--text-sm);
-	color: var(--text-secondary);
+	color: var(--text-dim);
 	font-weight: 500;
 }
 
@@ -71,7 +71,7 @@
 }
 
 .featureIcon {
-	color: var(--text-secondary);
+	color: var(--text-dim);
 	font-size: var(--text-sm);
 	margin-top: 4px;
 	flex-shrink: 0;
@@ -80,12 +80,12 @@
 .featureHeadline {
 	font-size: var(--text-base);
 	font-weight: 700;
-	color: var(--text-primary);
+	color: var(--text);
 }
 
 .featureDetail {
 	font-size: var(--text-sm);
-	color: var(--text-secondary);
+	color: var(--text-dim);
 	margin-top: 4px;
 }
 
@@ -97,7 +97,7 @@
 
 .securityNote {
 	font-size: var(--text-xs);
-	color: var(--text-secondary);
+	color: var(--text-dim);
 	margin-top: 8px;
 	display: flex;
 	align-items: center;

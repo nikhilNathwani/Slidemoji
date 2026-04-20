@@ -9,7 +9,7 @@
 	border: none;
 	border-bottom: 1px solid var(--border);
 	background-color: transparent;
-	color: var(--text-primary);
+	color: var(--text);
 	cursor: pointer;
 	transition: background-color 0.2s ease;
 	text-align: left;
@@ -58,22 +58,22 @@
 	font-weight: 600;
 	min-width: 50px;
 	flex-shrink: 0;
-	color: var(--text-primary);
+	color: var(--text);
 }
 
 /* Solved items: dim text so unsolved items stand out */
 .puzzleItem.solved .puzzleNumber {
-	color: var(--text-secondary);
+	color: var(--text-dim);
 }
 
 .puzzleItem.solved .puzzleName {
-	color: var(--text-secondary);
+	color: var(--text-dim);
 }
 
 /* On hover, restore full prominence as a replay CTA */
 .puzzleItem.solved:hover .puzzleNumber,
 .puzzleItem.solved:hover .puzzleName {
-	color: var(--text-primary);
+	color: var(--text);
 }
 
 /* Puzzle Name */
@@ -84,11 +84,11 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	color: var(--text-primary);
+	color: var(--text);
 }
 
 .loading {
-	color: var(--text-secondary);
+	color: var(--text-dim);
 	font-style: italic;
 }
 
@@ -108,7 +108,7 @@
 /* Play icon — fully visible for unsolved (it's the CTA), hidden when solved at rest */
 .playIcon {
 	font-size: var(--text-lg);
-	color: var(--text-primary);
+	color: var(--text);
 	opacity: 1;
 }
 
@@ -120,7 +120,7 @@
 /* Check icon — understated at rest (solved is the recessive state) */
 .checkIcon {
 	font-size: var(--text-lg);
-	color: var(--text-secondary);
+	color: var(--text-dim);
 }
 
 /* Hover: solved item brightens fully as a replay CTA */

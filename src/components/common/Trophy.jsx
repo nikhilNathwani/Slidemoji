@@ -1,10 +1,8 @@
 import { useState } from "react";
-import { FontAwesomeIcon, faLock, faUnlock } from "../../utils/icons";
 import { DIFFICULTY } from "../../constants";
 import styles from "./Trophy.module.css";
-import { formatPuzzleId, getLatestPuzzleId } from "../../utils/puzzleUtils";
+import { formatPuzzleId } from "../../utils/puzzleUtils";
 import { usePuzzle } from "../../hooks/usePuzzle";
-import { useSubscription } from "../../payment/useSubscription";
 
 function Trophy({
 	trophyNum,
@@ -14,19 +12,9 @@ function Trophy({
 	isSolved = false, // Whether the current difficulty is solved
 	difficulty = DIFFICULTY.NORMAL, // Current difficulty being played/viewed
 	celebrationKey = 0, // Incremented by Game each time a player move solves the puzzle
-	isPremium: isPremiumProp, // Optional override (dev tools / parent propagation)
 }) {
 	// Locked: mini trophies that haven't been solved yet (trophy case unsolved slots).
 	const isLocked = isMini && !isSolved;
-	const { isPremium: firestorePremium } = useSubscription();
-	// Use prop override when provided (e.g. dev tools revoke), else read Firestore.
-	const isPremium = isPremiumProp ?? firestorePremium;
-	// Premium users can access all past puzzles → show unlock for any released-but-unsolved slot.
-	// Non-premium: only today's puzzle shows unlock (the rest are paywalled).
-	const isPastOrToday = trophyNum <= getLatestPuzzleId();
-	const showUnlock =
-		isLocked &&
-		(isPremium ? isPastOrToday : trophyNum === getLatestPuzzleId());
 
 	// Self-fetch emoji/name when not provided (trophy case displays).
 	// usePuzzle returns null when puzzleId is null, so no fetch for locked slots.
@@ -70,11 +58,7 @@ function Trophy({
 			}}
 		>
 			<div className={styles.number}>{formatPuzzleId(trophyNum)}</div>
-			{isLocked ? (
-				<div className={styles.lockIcon}>
-					<FontAwesomeIcon icon={showUnlock ? faUnlock : faLock} />
-				</div>
-			) : (
+			{!isLocked && (
 				<div className={styles.emoji}>{emoji}</div>
 			)}
 			{!isMini && name && !isLocked && (

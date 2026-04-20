@@ -22,12 +22,12 @@
 
 .archiveTitle {
 	font-size: var(--text-xl);
-	color: var(--text-primary);
+	color: var(--text);
 	margin: 0;
 }
 
 .archiveDescription {
-	color: var(--text-secondary);
+	color: var(--text-dim);
 	font-size: var(--text-base);
 	line-height: 1.5;
 	max-width: 400px;

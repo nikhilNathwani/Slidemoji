@@ -17,9 +17,8 @@ function PaywallView({ puzzleList }) {
 						<PuzzleListItem
 							key={puzzle.puzzleNum}
 							puzzleNum={puzzle.puzzleNum}
-							isSolved={puzzle.isSolved}
+							isSolved={false}
 							onClick={() => {}}
-							isLocked={true}
 						/>
 					))}
 				</div>
@@ -65,7 +64,7 @@ function PaywallView({ puzzleList }) {
 			</ul>
 
 			<button
-				className={`btn btn-primary ${styles.unlockButton}`}
+				className={`btn btn-solid ${styles.unlockButton}`}
 				onClick={startCheckout}
 				disabled={isRedirecting}
 			>

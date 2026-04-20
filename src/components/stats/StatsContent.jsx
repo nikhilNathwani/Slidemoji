@@ -47,7 +47,6 @@ function StatsContent({
 						totalPuzzles={numTotalPuzzles}
 						solvedPuzzles={solvedPuzzles}
 						showTitle={false}
-						isPremium={isPremium}
 					/>
 
 					{/* Archive section */}
@@ -74,7 +73,7 @@ function StatsContent({
 								complete your collection.
 							</p>
 							<button
-								className="btn btn-primary"
+								className="btn btn-solid"
 								onClick={onUnlockArchiveClick}
 							>
 								<FontAwesomeIcon icon={faUnlock} />

@@ -15,7 +15,7 @@
 .settingsLabel {
 	font-weight: 600;
 	font-size: var(--text-base);
-	color: var(--text-primary);
+	color: var(--text);
 	display: flex;
 	flex-direction: column;
 	gap: 4px;
@@ -84,7 +84,7 @@
 }
 
 .toggle.on {
-	background-color: var(--text-primary);
+	background-color: var(--text);
 }
 
 .slider {
@@ -110,7 +110,7 @@
 	transform: translateY(-50%);
 	font-size: 0.7rem; /* tighter than --text-xs (0.75rem) to fit inside 30px toggle pill */
 	font-weight: 600;
-	color: var(--text-primary);
+	color: var(--text);
 	pointer-events: none;
 }
 
@@ -121,5 +121,5 @@
 
 .toggle.off .label {
 	right: 6px;
-	color: var(--text-primary);
+	color: var(--text);
 }

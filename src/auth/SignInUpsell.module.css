@@ -8,25 +8,25 @@
 
 .signInUpsellTitle {
 	font-size: var(--text-xl);
-	color: var(--text-primary);
+	color: var(--text);
 }
 
 .signInUpsellDescription {
-	color: var(--text-secondary);
+	color: var(--text-dim);
 	line-height: 1.5;
 	max-width: 380px;
 }
 
 .signInUpsellDescriptionLarge {
 	font-size: var(--text-lg);
-	color: var(--text-secondary);
+	color: var(--text-dim);
 	line-height: 1.5;
 	max-width: 380px;
 }
 
 .privacyNote {
 	font-size: var(--text-sm);
-	color: var(--text-secondary);
+	color: var(--text-dim);
 	line-height: 1.6;
 	max-width: 380px;
 	margin: 0;

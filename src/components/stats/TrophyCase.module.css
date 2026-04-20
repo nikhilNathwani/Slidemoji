@@ -4,7 +4,7 @@
 
 .trophyCase h3 {
 	font-size: var(--text-xl);
-	color: var(--text-primary);
+	color: var(--text);
 	margin-bottom: 20px;
 	display: flex;
 	align-items: center;
@@ -13,12 +13,12 @@
 }
 
 .trophyCase h3 i {
-	color: var(--text-secondary);
+	color: var(--text-dim);
 }
 
 .trophyCount {
 	font-size: var(--text-base);
-	color: var(--text-primary);
+	color: var(--text);
 	padding: 4px 12px;
 	border-radius: 12px;
 	font-weight: 600;
@@ -70,7 +70,7 @@
 
 .pageInfo {
 	font-size: var(--text-sm);
-	color: var(--text-secondary);
+	color: var(--text-dim);
 	font-weight: 500;
 	min-width: 100px;
 	text-align: center;
