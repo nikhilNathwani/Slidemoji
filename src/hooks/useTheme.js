@@ -3,7 +3,7 @@ import { usePreference } from "./usePreference";
 
 function applyTheme(isDark) {
 	const root = document.documentElement;
-	const bg = isDark ? "#121212" : "#f2f2f2";
+	const bg = isDark ? "#181818" : "#ffffff";
 	root.classList.toggle("dark-theme", isDark);
 	root.classList.toggle("light-theme", !isDark);
 	// color-scheme is the most reliable browser signal for native UI color

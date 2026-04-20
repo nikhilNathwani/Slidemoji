@@ -5,7 +5,7 @@
 }
 
 .dark-theme {
-	--base: #181819; /* darkest — app / tile surface        */
+	--base: #181818; /* darkest — app / tile surface        */
 	--low-contrast: #3d3d3d; /* low contrast grey — borders, grid   */
 	--mid-contrast: #999999; /* mid contrast grey — secondary text  */
 	--high-contrast: #ffffff; /* highest contrast — primary text     */
@@ -15,7 +15,7 @@
 	--base: #ffffff; /* lightest — app / tile surface       */
 	--low-contrast: #cccccc; /* low contrast grey — borders, grid   */
 	--mid-contrast: #666666; /* mid contrast grey — secondary text  */
-	--high-contrast: #181819; /* highest contrast — primary text     */
+	--high-contrast: #181818; /* highest contrast — primary text     */
 }
 
 :root {

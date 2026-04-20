@@ -37,10 +37,10 @@
 	/* --border from base; no bg override needed */
 }
 
-/* Locked puzzle (paywall preview) */
+/* Locked puzzle (paywall preview) — static, non-interactive */
 .puzzleItem.locked {
 	opacity: 0.5;
-	cursor: default;
+	pointer-events: none;
 }
 
 .puzzleItem.locked .playIcon {

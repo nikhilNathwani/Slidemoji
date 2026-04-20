@@ -58,9 +58,7 @@ function Trophy({
 			}}
 		>
 			<div className={styles.number}>{formatPuzzleId(trophyNum)}</div>
-			{!isLocked && (
-				<div className={styles.emoji}>{emoji}</div>
-			)}
+			{!isLocked && <div className={styles.emoji}>{emoji}</div>}
 			{!isMini && name && !isLocked && (
 				<div className={styles.name}>{name}</div>
 			)}

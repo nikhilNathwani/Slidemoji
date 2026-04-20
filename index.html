@@ -33,12 +33,12 @@
 		<meta
 			name="theme-color"
 			media="(prefers-color-scheme: light)"
-			content="#f2f2f2"
+			content="#ffffff"
 		/>
 		<meta
 			name="theme-color"
 			media="(prefers-color-scheme: dark)"
-			content="#121212"
+			content="#181818"
 		/>
 
 		<!-- Apply theme class synchronously before React hydrates to prevent flash of unstyled background -->
@@ -56,7 +56,7 @@
 					).matches;
 					var isDark =
 						prefersDark !== null ? prefersDark : systemDark;
-					var bg = isDark ? "#121212" : "#f2f2f2";
+					var bg = isDark ? "#181818" : "#ffffff";
 					document.documentElement.classList.add(
 						isDark ? "dark-theme" : "light-theme",
 					);
