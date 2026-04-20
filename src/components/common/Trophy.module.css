@@ -115,8 +115,12 @@
 .trophy.trophyMini.hard {
 	box-shadow: none;
 }
-.trophy.trophyMini.normal { border: 1px solid var(--trophy-normal-number); }
-.trophy.trophyMini.hard { border: 1px solid var(--trophy-hard-number); }
+.trophy.trophyMini.normal {
+	border: 1px solid var(--trophy-normal-number);
+}
+.trophy.trophyMini.hard {
+	border: 1px solid var(--trophy-hard-number);
+}
 
 /* Shimmer overlay for earned trophies */
 .trophy.normal::before,
@@ -217,7 +221,7 @@
 }
 
 .trophy.puzzleInfo .name {
-	color: var(--text-dim);
+	color: var(--text);
 }
 
 /* Win celebration animation */
