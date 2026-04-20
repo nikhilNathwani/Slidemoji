@@ -148,3 +148,27 @@
 	font-size: var(--text-sm);
 	font-weight: 400;
 }
+
+/*
+ * .btn-icon — Bare icon-only button. No background, no border.
+ *             Used for close buttons, pagination chevrons, and similar
+ *             ghost-hover icon interactions. Apply alongside a component-
+ *             specific class that sets font-size and sizing.
+ */
+.btn-icon {
+	background: none;
+	border: none;
+	color: var(--text-dim);
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 6px;
+	transition: color 0.15s ease;
+	-webkit-tap-highlight-color: transparent;
+	touch-action: manipulation;
+}
+
+.btn-icon:hover {
+	color: var(--text);
+}

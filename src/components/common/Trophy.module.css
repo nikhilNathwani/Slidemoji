@@ -83,6 +83,7 @@
 /* Variant: Normal Trophy (3x3) */
 .trophy.normal {
 	overflow: hidden;
+	border: 1px solid var(--trophy-normal-shadow);
 	background: linear-gradient(
 		135deg,
 		var(--trophy-normal-base) 0%,
@@ -98,6 +99,7 @@
 /* Variant: Hard Trophy (4x4) */
 .trophy.hard {
 	overflow: hidden;
+	border: 1px solid var(--trophy-hard-shadow);
 	background: linear-gradient(
 		135deg,
 		var(--trophy-hard-base) 0%,

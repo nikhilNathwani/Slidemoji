@@ -50,7 +50,7 @@ function Dialog({ isOpen, onClose, title, children }: DialogProps) {
 					<div className={styles.dialogHeader}>
 						<h2>{title}</h2>
 						<button
-							className={styles.dialogClose}
+							className={`btn-icon ${styles.dialogClose}`}
 							onClick={onClose}
 						>
 							✕

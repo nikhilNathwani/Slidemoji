@@ -5,49 +5,57 @@
 }
 
 .dark-theme {
+	/* Primitives */
 	--base: #181818; /* darkest — app / tile surface        */
 	--low-contrast: #3d3d3d; /* low contrast grey — borders, grid   */
 	--mid-contrast: #999999; /* mid contrast grey — secondary text  */
 	--high-contrast: #ffffff; /* highest contrast — primary text     */
-}
-
-.light-theme {
-	--base: #ffffff; /* lightest — app / tile surface       */
-	--low-contrast: #cccccc; /* low contrast grey — borders, grid   */
-	--mid-contrast: #666666; /* mid contrast grey — secondary text  */
-	--high-contrast: #181818; /* highest contrast — primary text     */
-}
-
-:root {
-	/* Surfaces */
+	/* Semantic aliases — defined here (not :root) so any element with .dark-theme
+	   or .light-theme class becomes a complete, self-contained theming scope.
+	   This is required for forced subtree theming (e.g. LandingPage is always
+	   light-theme regardless of the user's saved preference on <html>). */
 	--bg: var(--base);
 	--tile-bg: var(--base);
 	--surface: var(--low-contrast);
-
-	/* Borders */
 	--border: var(--low-contrast);
-
-	/* Text */
 	--text: var(--high-contrast);
 	--text-dim: var(--mid-contrast);
-
-	/* Solid (loud) Buttons */
 	--btn-solid-bg: var(--high-contrast);
 	--btn-solid-text: var(--base);
-
-	/* Shared by btn-outline and selectorBtn */
 	--btn-outline-bg: var(--base);
 	--btn-outline-text: var(--high-contrast);
 	--btn-outline-border: var(--low-contrast);
 	--btn-outline-hover: var(--low-contrast);
-
-	/* selectorBtn active state (persistent selection indicator) */
 	--btn-selector-active-border: var(--high-contrast);
 	--btn-selector-active-bg: var(--low-contrast);
+	--dialog-overlay: #000000bf;
+}
 
-	/* Dialog overlay — dark theme overrides below */
+.light-theme {
+	/* Primitives */
+	--base: #ffffff; /* lightest — app / tile surface       */
+	--low-contrast: #cccccc; /* low contrast grey — borders, grid   */
+	--mid-contrast: #666666; /* mid contrast grey — secondary text  */
+	--high-contrast: #181818; /* highest contrast — primary text     */
+	/* Semantic aliases — same formulas as dark-theme */
+	--bg: var(--base);
+	--tile-bg: var(--base);
+	--surface: var(--low-contrast);
+	--border: var(--low-contrast);
+	--text: var(--high-contrast);
+	--text-dim: var(--mid-contrast);
+	--btn-solid-bg: var(--high-contrast);
+	--btn-solid-text: var(--base);
+	--btn-outline-bg: var(--base);
+	--btn-outline-text: var(--high-contrast);
+	--btn-outline-border: var(--low-contrast);
+	--btn-outline-hover: var(--low-contrast);
+	--btn-selector-active-border: var(--high-contrast);
+	--btn-selector-active-bg: var(--low-contrast);
 	--dialog-overlay: #00000080;
+}
 
+:root {
 	/* State Colors */
 	--color-error: #ef4444;
 
@@ -62,10 +70,6 @@
 	--text-4xl: 3rem; /* 48px */
 	--text-5xl: 3.75rem; /* 60px */
 	--text-6xl: 4.5rem; /* 72px */
-}
-
-.dark-theme {
-	--dialog-overlay: #000000bf;
 }
 
 body,

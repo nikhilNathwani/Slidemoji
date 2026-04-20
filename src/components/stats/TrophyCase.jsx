@@ -87,56 +87,57 @@ function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true }) {
 				</h3>
 			)}
 
-		<div className={styles.trophyCard}>
-			<div className={styles.emojiGrid}>
-				{trophySlots.map((slot) => {
-					return (
-						<div
-							key={slot.puzzleNum}
-							style={{
-								visibility: slot.isPlaceholder
-									? "hidden"
-									: "visible",
-							}}
-						>
-							<Trophy
-								trophyNum={slot.puzzleNum}
-								trophyEmoji={slot.emoji}
-								trophyName={slot.name}
-								isSolved={!!slot.solvedDifficulty}
-								difficulty={
-									slot.solvedDifficulty || DIFFICULTY.NORMAL
-								}
-								isMini={true}
-							/>
-						</div>
-					);
-				})}
-			</div>
-			{totalPages > 1 && (
-				<div className={styles.pagination}>
-					<button
-						className={styles.paginationButton}
-						onClick={handlePrevPage}
-						disabled={currentPage === 1}
-						aria-label="Previous page"
-					>
-						<FontAwesomeIcon icon={faChevronLeft} />
-					</button>
-					<span className={styles.pageInfo}>
-						Page {currentPage} of {totalPages}
-					</span>
-					<button
-						className={styles.paginationButton}
-						onClick={handleNextPage}
-						disabled={currentPage === totalPages}
-						aria-label="Next page"
-					>
-						<FontAwesomeIcon icon={faChevronRight} />
-					</button>
+			<div className={styles.trophyCard}>
+				<div className={styles.trophyGrid}>
+					{trophySlots.map((slot) => {
+						return (
+							<div
+								key={slot.puzzleNum}
+								style={{
+									visibility: slot.isPlaceholder
+										? "hidden"
+										: "visible",
+								}}
+							>
+								<Trophy
+									trophyNum={slot.puzzleNum}
+									trophyEmoji={slot.emoji}
+									trophyName={slot.name}
+									isSolved={!!slot.solvedDifficulty}
+									difficulty={
+										slot.solvedDifficulty ||
+										DIFFICULTY.NORMAL
+									}
+									isMini={true}
+								/>
+							</div>
+						);
+					})}
 				</div>
-			)}
-		</div>
+				{totalPages > 1 && (
+					<div className={styles.pagination}>
+						<button
+							className={styles.paginationButton}
+							onClick={handlePrevPage}
+							disabled={currentPage === 1}
+							aria-label="Previous page"
+						>
+							<FontAwesomeIcon icon={faChevronLeft} />
+						</button>
+						<span className={styles.pageInfo}>
+							Page {currentPage} of {totalPages}
+						</span>
+						<button
+							className={styles.paginationButton}
+							onClick={handleNextPage}
+							disabled={currentPage === totalPages}
+							aria-label="Next page"
+						>
+							<FontAwesomeIcon icon={faChevronRight} />
+						</button>
+					</div>
+				)}
+			</div>
 		</div>
 	);
 }

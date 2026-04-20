@@ -20,7 +20,8 @@
 	min-width: 300px;
 	max-width: 500px;
 	max-height: 80vh;
-	overflow: auto;
+	overflow-y: auto;
+	overflow-x: clip;
 	overscroll-behavior: contain;
 	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 	border: 1px solid var(--border);
@@ -47,24 +48,10 @@
 }
 
 .dialogClose {
-	background: none;
-	border: none;
 	font-size: var(--text-xl);
-	color: var(--text-dim);
-	cursor: pointer;
 	padding: 0;
 	width: 40px;
 	height: 40px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	border-radius: 6px;
-	transition: color 0.15s;
-	-webkit-tap-highlight-color: transparent;
-}
-
-.dialogClose:hover {
-	color: var(--text);
 }
 
 .dialogClose:focus {
