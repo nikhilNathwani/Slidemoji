@@ -19,7 +19,7 @@ function PaywallView({ puzzleList }) {
 							puzzleNum={puzzle.puzzleNum}
 							isSolved={false}
 							onClick={() => {}}
-							isLocked={true}
+							isPreviewMode={true}
 						/>
 					))}
 				</div>

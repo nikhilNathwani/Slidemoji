@@ -37,14 +37,10 @@
 	/* --border from base; no bg override needed */
 }
 
-/* Locked puzzle (paywall preview) — static, non-interactive */
-.puzzleItem.locked {
+/* Preview mode (paywall preview) — static, non-interactive */
+.puzzleItem.previewMode {
 	opacity: 0.5;
 	pointer-events: none;
-}
-
-.puzzleItem.locked .playIcon {
-	/* opacity already dimmed by parent .locked { opacity: 0.5 } */
 }
 
 /* Solved puzzle — checkmark is the sole solved indicator */

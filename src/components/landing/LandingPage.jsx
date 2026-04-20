@@ -1,25 +1,8 @@
-import { useEffect } from "react";
 import AnimatedTileGrid from "./AnimatedTileGrid";
 import styles from "./LandingPage.module.css";
 import { getLatestPuzzleId, formatPuzzleId } from "../../utils/puzzleUtils";
 
 function LandingPage({ onPlay }) {
-	useEffect(() => {
-		// Landing page is always light — override any saved dark preference on <html>.
-		// The game's useTheme hook will re-apply the user's actual preference when it mounts.
-		const root = document.documentElement;
-		root.classList.remove("dark-theme");
-		root.classList.add("light-theme");
-		root.style.colorScheme = "light";
-		root.style.background = "#ffffff";
-		document.body.style.background = "#ffffff";
-		document.querySelectorAll('meta[name="theme-color"]').forEach((m) => m.remove());
-		const meta = document.createElement("meta");
-		meta.name = "theme-color";
-		meta.content = "#ffffff";
-		document.head.appendChild(meta);
-	}, []);
-
 	return (
 		<div className={`${styles.landingPage} light-theme`}>
 			<div className={styles.landingContent}>

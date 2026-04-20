@@ -3,11 +3,16 @@ import { formatPuzzleId } from "../../utils/puzzleUtils";
 import { FontAwesomeIcon, faPlayCircle, faCheck } from "../../utils/icons";
 import styles from "./PuzzleListItem.module.css";
 
-function PuzzleListItem({ puzzleNum, isSolved = false, onClick, isLocked = false }) {
+function PuzzleListItem({
+	puzzleNum,
+	isSolved = false,
+	onClick,
+	isPreviewMode = false,
+}) {
 	const { data: puzzleMetadata, isLoading } = usePuzzle(puzzleNum);
 
-	const variantClass = isLocked
-		? styles.locked
+	const variantClass = isPreviewMode
+		? styles.previewMode
 		: isSolved
 			? styles.solved
 			: styles.unsolved;
@@ -15,7 +20,7 @@ function PuzzleListItem({ puzzleNum, isSolved = false, onClick, isLocked = false
 	return (
 		<button
 			className={`${styles.puzzleItem} ${variantClass}`}
-			onClick={() => !isLocked && onClick(puzzleNum)}
+			onClick={() => !isPreviewMode && onClick(puzzleNum)}
 			disabled={isLoading}
 		>
 			<div className={styles.puzzleNumber}>

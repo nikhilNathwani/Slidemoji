@@ -1,5 +1,8 @@
 .trophyCase {
-	text-align: center;
+	display: flex;
+	flex-flow: column nowrap;
+	align-items: center;
+	gap: 16px;
 }
 
 .trophyCase h3 {
@@ -29,9 +32,9 @@
 	grid-template-columns: repeat(4, var(--trophy-mini-width));
 	grid-template-rows: repeat(3, auto);
 	justify-content: center;
-	gap: 12px;
+	gap: 16px;
 	height: fit-content;
-	padding: 12px;
+	padding: 24px;
 	background-color: var(--surface);
 	border-radius: 12px;
 	border: 1px solid var(--border);
@@ -52,7 +55,6 @@
 	align-items: center;
 	justify-content: center;
 	gap: 16px;
-	margin-top: 16px;
 }
 
 /* :global(.btn).paginationButton = (0,0,2,0) — beats .btn { border-radius: 999px; padding: 12px 24px } */
