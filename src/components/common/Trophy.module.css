@@ -83,7 +83,6 @@
 /* Variant: Normal Trophy (3x3) */
 .trophy.normal {
 	overflow: hidden;
-	border: 1px solid var(--trophy-normal-base);
 	background: linear-gradient(
 		135deg,
 		var(--trophy-normal-base) 0%,
@@ -99,7 +98,6 @@
 /* Variant: Hard Trophy (4x4) */
 .trophy.hard {
 	overflow: hidden;
-	border: 1px solid var(--trophy-hard-base);
 	background: linear-gradient(
 		135deg,
 		var(--trophy-hard-base) 0%,
@@ -112,11 +110,13 @@
 		inset 0 -1px 0 rgba(0, 0, 0, 0.15);
 }
 
-/* Mini earned trophies: flat (no 3D shadow/glow) — color alone signals earned vs locked */
+/* Mini earned trophies: flat (no 3D shadow/glow), bordered with the variant's number color */
 .trophy.trophyMini.normal,
 .trophy.trophyMini.hard {
 	box-shadow: none;
 }
+.trophy.trophyMini.normal { border: 1px solid var(--trophy-normal-number); }
+.trophy.trophyMini.hard { border: 1px solid var(--trophy-hard-number); }
 
 /* Shimmer overlay for earned trophies */
 .trophy.normal::before,

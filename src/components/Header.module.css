@@ -27,19 +27,15 @@
 	align-items: center;
 }
 
+/* Extends .btn-icon: adds large touch target, full --text color, bg-fill hover */
 .iconButton {
 	margin-block: -16px;
 	padding-block: 16px;
 	padding-inline: 8px;
 	width: auto;
 	border-radius: 8px;
-	background-color: transparent;
-	border: none;
 	color: var(--text);
 	font-size: var(--text-2xl);
-	display: flex;
-	align-items: center;
-	justify-content: center;
 	transition: background-color 0.15s ease;
 }
 

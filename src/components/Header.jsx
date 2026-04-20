@@ -42,7 +42,7 @@ function Header({ onSettingsClick, onStatsClick, onArchiveClick }) {
 			<div className={styles.headerActions}>
 				{user && !user.isAnonymous && (
 					<button
-						className={styles.iconButton}
+						className={`btn-icon ${styles.iconButton}`}
 						onClick={onArchiveClick}
 						aria-label="Puzzle Archive"
 						title="Puzzle Archive"
@@ -51,7 +51,7 @@ function Header({ onSettingsClick, onStatsClick, onArchiveClick }) {
 					</button>
 				)}
 				<button
-					className={styles.iconButton}
+					className={`btn-icon ${styles.iconButton}`}
 					onClick={onStatsClick}
 					aria-label="Stats"
 					title="Stats"
@@ -59,7 +59,7 @@ function Header({ onSettingsClick, onStatsClick, onArchiveClick }) {
 					<FontAwesomeIcon icon={faTrophy} />
 				</button>
 				<button
-					className={styles.iconButton}
+					className={`btn-icon ${styles.iconButton}`}
 					onClick={onSettingsClick}
 					aria-label="Settings"
 					title="Settings"
