@@ -19,7 +19,14 @@
  *                   bg: #ffffff, text: #1a1a1a, border: 1.5px #c4c4c4.
  *                   Hover: opacity 0.85.
  *
- *  Icon buttons   — Ghost hover only, handled per-component (shape varies).
+ *  .btn-icon      — Bare icon-only button. No bg, no border.
+ *                   color: --text-dim. Hover: --text.
+ *                   Apply alongside a component-specific class for sizing.
+ *                   Used by: dialog close (✕), TrophyCase pagination chevrons.
+ *
+ *  Header icon buttons (iconButton in Header.module.css) are intentionally
+ *  outside this system — they use a bg-change hover, full --text color, and
+ *  a large touch-target padding specific to the header layout.
  *
  * Active state (opacity 0.7) lives on .btn and applies to all variants.
  * Transition base (opacity 0.15s) lives on .btn; secondary extends it

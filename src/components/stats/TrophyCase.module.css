@@ -49,15 +49,14 @@
 	height: fit-content;
 }
 
-/* Mobile: smaller trophies + bleed through dialog inline padding */
+/* Mobile: smaller trophies, card fills full dialog width */
 @media (max-width: 480px) {
 	.trophyCase {
 		width: 100%;
 	}
 	.trophyCard {
-		padding: 16px 24px; /* keep content aligned with dialog body content */
-		margin-inline: -24px; /* bleed through dialogBody's 24px inline padding */
-		border-radius: 0;
+		width: 100%;
+		padding: 16px;
 	}
 	.trophyGrid {
 		grid-template-columns: repeat(4, var(--trophy-mini-width-mobile));
