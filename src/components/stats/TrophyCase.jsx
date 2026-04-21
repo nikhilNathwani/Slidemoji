@@ -14,9 +14,7 @@ function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true }) {
 	const totalPages = Math.ceil(totalPuzzles / TROPHIES_PER_PAGE);
 	const numEarnedTrophies = Object.keys(solvedPuzzles || {}).length;
 
-	// Calculate initial page based on today's puzzle
-	const initialPage = Math.ceil(totalPuzzles / TROPHIES_PER_PAGE);
-	const [currentPage, setCurrentPage] = useState(initialPage);
+	const [currentPage, setCurrentPage] = useState(totalPages);
 
 	// Calculate range for current page
 	const startIndex = (currentPage - 1) * TROPHIES_PER_PAGE + 1;
@@ -30,16 +28,12 @@ function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true }) {
 		if (isPlaceholder) {
 			// Add invisible placeholder to maintain grid layout
 			trophySlots.push({
-				puzzleNum: `placeholder-${i}`,
+				puzzleNum,
 				isPlaceholder: true,
 			});
 		} else {
-			// Check if puzzle is earned and at what difficulty
 			// solvedPuzzles[id] = { DIFFICULTY.NORMAL: true, DIFFICULTY.HARD: true } | undefined
 			const puzzleSolved = solvedPuzzles?.[puzzleNum];
-			const isEarned =
-				!!puzzleSolved?.[DIFFICULTY.NORMAL] ||
-				!!puzzleSolved?.[DIFFICULTY.HARD];
 
 			// Determine max difficulty for trophy case display (DIFFICULTY.HARD > DIFFICULTY.NORMAL)
 			let solvedDifficulty = null;
@@ -52,7 +46,6 @@ function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true }) {
 			trophySlots.push({
 				puzzleNum,
 				isPlaceholder: false,
-				isEarned,
 				solvedDifficulty, // DIFFICULTY.NORMAL | DIFFICULTY.HARD | null (max difficulty)
 			});
 		}
@@ -83,16 +76,16 @@ function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true }) {
 
 			<div className={styles.trophyCard}>
 				<div className={styles.trophyGrid}>
-					{trophySlots.map((slot) => {
-						return (
-							<div
-								key={slot.puzzleNum}
-								style={{
-									visibility: slot.isPlaceholder
-										? "hidden"
-										: "visible",
-								}}
-							>
+					{trophySlots.map((slot) => (
+						<div
+							key={slot.puzzleNum}
+							style={{
+								visibility: slot.isPlaceholder
+									? "hidden"
+									: "visible",
+							}}
+						>
+							{!slot.isPlaceholder && (
 								<Trophy
 									trophyNum={slot.puzzleNum}
 									isEarned={!!slot.solvedDifficulty}
@@ -102,9 +95,9 @@ function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true }) {
 									}
 									isMini={true}
 								/>
-							</div>
-						);
-					})}
+							)}
+						</div>
+					))}
 				</div>
 				{totalPages > 1 && (
 					<div className={styles.pagination}>

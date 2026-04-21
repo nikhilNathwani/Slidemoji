@@ -43,10 +43,9 @@
 .trophyGrid {
 	display: grid;
 	grid-template-columns: repeat(4, var(--trophy-mini-width));
-	grid-template-rows: repeat(3, auto);
+	grid-template-rows: repeat(3, var(--trophy-mini-height));
 	justify-content: center;
 	gap: 16px;
-	height: fit-content;
 }
 
 /* Mobile: smaller trophies, card fills full dialog width */
@@ -60,6 +59,7 @@
 	}
 	.trophyGrid {
 		grid-template-columns: repeat(4, var(--trophy-mini-width-mobile));
+		grid-template-rows: repeat(3, var(--trophy-mini-height-mobile));
 		gap: 8px;
 	}
 }

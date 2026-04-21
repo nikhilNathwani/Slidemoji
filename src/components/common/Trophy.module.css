@@ -144,9 +144,6 @@
 }
 
 @keyframes trophyPop {
-	0% {
-		transform: scale(1);
-	}
 	40% {
 		transform: scale(1.12);
 	}
