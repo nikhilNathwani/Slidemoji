@@ -16,7 +16,7 @@
 	font-size: var(--text-2xl);
 	font-weight: 600;
 	font-family: "Fredoka", sans-serif;
-	color: var(--text-dim);
+	color: var(--text);
 	letter-spacing: 0.5px;
 	margin: 0;
 }
@@ -27,13 +27,14 @@
 	align-items: center;
 }
 
-/* Extends .btn-icon: adds large touch target, bg-fill hover, full header height tap area */
+/* Extends .btn-icon: overrides to --text (interactable), bg-fill hover, full header height tap area */
 .iconButton {
 	margin-block: -16px;
 	padding-block: 16px;
 	padding-inline: 8px;
 	width: auto;
 	border-radius: 8px;
+	color: var(--text);
 	font-size: var(--text-2xl);
 	transition: background-color 0.15s ease;
 }
