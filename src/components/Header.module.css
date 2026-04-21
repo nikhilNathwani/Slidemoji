@@ -27,23 +27,27 @@
 	align-items: center;
 }
 
-/* Extends .btn-icon: overrides to --text (interactable), bg-fill hover, full header height tap area */
-.iconButton {
+/* Extends .btn-icon: large touch target, bg-fill hover, full header height tap area.
+   Uses :global specificity to reliably override btn-icon's --text-dim color. */
+.headerButton {
 	margin-block: -16px;
 	padding-block: 16px;
 	padding-inline: 8px;
 	width: auto;
 	border-radius: 8px;
-	color: var(--text);
 	font-size: var(--text-2xl);
 	transition: background-color 0.15s ease;
 }
 
-.iconButton:hover {
+:global(.btn-icon).headerButton {
+	color: var(--text);
+}
+
+.headerButton:hover {
 	background-color: var(--surface);
 }
 
-.iconButton:active {
+.headerButton:active {
 	opacity: 0.7;
 }
 
@@ -167,7 +171,7 @@
 		padding: 16px;
 	}
 
-	.iconButton {
+	.headerButton {
 		margin-block: -16px;
 		padding-block: 16px;
 		padding-inline: 8px;

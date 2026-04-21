@@ -48,6 +48,7 @@
 .trophy.trophyMini {
 	width: var(--trophy-mini-width);
 	height: var(--trophy-mini-height);
+	border: 1px solid var(--text-dim); /* all mini trophies share one border style; earned vs locked is distinguished by fill */
 	justify-content: space-between; /* Distribute number to top, emoji to bottom */
 	gap: 0; /* Remove gap - space-between handles distribution */
 }
@@ -110,16 +111,10 @@
 		inset 0 -1px 0 rgba(0, 0, 0, 0.15);
 }
 
-/* Mini earned trophies: flat (no 3D shadow/glow), bordered with the variant's number color */
+/* Mini earned trophies: flat — no 3D shadow, color fill distinguishes from locked */
 .trophy.trophyMini.normal,
 .trophy.trophyMini.hard {
 	box-shadow: none;
-}
-.trophy.trophyMini.normal {
-	border: 1px solid var(--text-dim);
-}
-.trophy.trophyMini.hard {
-	border: 1px solid var(--text-dim);
 }
 
 /* Shimmer overlay for earned trophies */
@@ -170,10 +165,7 @@
 	text-shadow: 0 1px 1px rgba(255, 255, 255, 0.4);
 }
 
-.trophy.puzzleInfo .number {
-	color: var(--text-dim);
-}
-
+.trophy.puzzleInfo .number,
 .trophy.locked .number {
 	color: var(--text-dim);
 }
