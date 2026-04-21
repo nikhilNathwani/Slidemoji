@@ -1,4 +1,4 @@
-/* Trophy Color Variables */
+/* Trophy Variables */
 :root {
 	/* Trophy Dimensions */
 	--trophy-mini-width: 70px;
@@ -53,7 +53,7 @@
 
 /* ─── Size: Mini ───────────────────────────────────────────────── */
 
-/* All mini trophies share one border style; earned vs locked distinguished by fill */
+/* All mini trophies share one border style; earned vs unearned distinguished by fill */
 .trophy.trophyMini {
 	width: var(--trophy-mini-width);
 	height: var(--trophy-mini-height);
@@ -62,28 +62,18 @@
 	gap: 0; /* Remove gap - space-between handles distribution */
 }
 
-/* Locked mini: no emoji child, so pin number to top without a placeholder element */
-.trophy.trophyMini.locked {
-	justify-content: flex-start;
-}
+/* ─── Variant: Unearned ───────────────────────────────────────── */
 
-/* ─── Variant: Puzzle Info ─────────────────────────────────────── */
-
-/* 1px inset shadow anchors it visually without looking interactive.
+/* Non-mini: inset shadow provides the visible boundary.
    Inset avoids layout shift on solve (box size stays identical to normal/hard). */
-.trophy.puzzleInfo {
+/* Mini: border comes from .trophyMini — just reset shadow and pin number to top. */
+.trophy.unearned {
 	--trophy-text: var(--text-dim);
-	background-color: transparent;
 	box-shadow: inset 0 0 0 1px var(--border);
 }
-
-/* ─── Variant: Locked ──────────────────────────────────────────── */
-
-/* border is inherited from .trophyMini — locked is always mini by definition */
-.trophy.locked {
-	--trophy-text: var(--text-dim);
-	background-color: transparent;
-	box-shadow: none;
+.trophy.trophyMini.unearned {
+	box-shadow: none; /* .trophyMini border is sufficient */
+	justify-content: flex-start; /* number only — no emoji child */
 }
 
 /* ─── Variant: Earned (Normal / Hard) ─────────────────────────── */
@@ -119,7 +109,7 @@
 		inset 0 -1px 0 rgba(0, 0, 0, 0.15);
 }
 
-/* Mini earned: flat — no 3D shadow, color fill distinguishes from locked */
+/* Mini earned: flat — no 3D shadow, color fill distinguishes from unearned */
 .trophy.trophyMini.normal,
 .trophy.trophyMini.hard {
 	box-shadow: none;
@@ -206,7 +196,7 @@
 }
 
 @media (max-width: 600px) {
-	.trophy.puzzleInfo {
+	.trophy.unearned:not(.trophyMini) {
 		padding: 8px;
 	}
 }
