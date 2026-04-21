@@ -42,7 +42,7 @@ Play at slidemoji.vercel.app`;
 					trophyNum={puzzleId}
 					trophyEmoji={emoji}
 					trophyName={emojiName}
-					isSolved={true}
+					isEarned={true}
 					difficulty={difficulty}
 				/>
 				<h3>You earned today's emoji!</h3>

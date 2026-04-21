@@ -9,7 +9,10 @@
 
 import { useState, useEffect } from "react";
 import type { FirestorePuzzle, PuzzleData } from "../utils/puzzleUtils";
-import { getFirestorePuzzleById } from "../services/firestore/puzzle";
+import {
+	getFirestorePuzzleById,
+	getFirestorePuzzlesByIds,
+} from "../services/firestore/puzzle";
 import { useAuth } from "../auth/useAuth";
 
 interface PuzzleState {
@@ -90,4 +93,106 @@ export function usePuzzle(puzzleId: number | null): {
 	if (state.puzzleId !== puzzleId)
 		return { data: null, isLoading: true, error: null };
 	return { data: state.data, isLoading: false, error: state.error };
+}
+
+// Batch-fetches multiple puzzles in a single Firestore 'in' query and populates
+// the shared puzzleCache so that usePuzzle calls on the same IDs are instant.
+export function usePuzzles(puzzleIds: number[]): {
+	data: Map<number, PuzzleData>;
+	isLoading: boolean;
+} {
+	const { isLoading: isAuthLoading } = useAuth();
+	// Stable string key avoids array-reference churn in the effect dependency.
+	const idsKey = puzzleIds.join(",");
+
+	const [data, setData] = useState<Map<number, PuzzleData>>(() => {
+		const map = new Map<number, PuzzleData>();
+		for (const id of puzzleIds) {
+			const cached = puzzleCache.get(id);
+			if (cached) map.set(id, cached);
+		}
+		return map;
+	});
+	const [isLoading, setIsLoading] = useState(() =>
+		puzzleIds.some((id) => !puzzleCache.has(id)),
+	);
+
+	useEffect(() => {
+		if (isAuthLoading) return;
+
+		const uncached = puzzleIds.filter((id) => !puzzleCache.has(id));
+		if (uncached.length === 0) {
+			const map = new Map<number, PuzzleData>();
+			for (const id of puzzleIds) {
+				const cached = puzzleCache.get(id);
+				if (cached) map.set(id, cached);
+			}
+			setData(map);
+			setIsLoading(false);
+			return;
+		}
+
+		getFirestorePuzzlesByIds(uncached)
+			.then((rawMap) => {
+				rawMap.forEach((rawPuzzle, id) => {
+					const puzzleData: PuzzleData = {
+						id,
+						emoji: rawPuzzle.emoji,
+						emojiName: rawPuzzle.emojiName,
+						initialGrids: {
+							normal: rawPuzzle.normal,
+							hard: rawPuzzle.hard,
+						},
+					};
+					puzzleCache.set(id, puzzleData);
+				});
+				const map = new Map<number, PuzzleData>();
+				for (const id of puzzleIds) {
+					const cached = puzzleCache.get(id);
+					if (cached) map.set(id, cached);
+				}
+				setData(map);
+				setIsLoading(false);
+			})
+			.catch((err: unknown) => {
+				console.error("[usePuzzles] Error loading puzzles:", err);
+				setIsLoading(false);
+			});
+	}, [idsKey, isAuthLoading]); // eslint-disable-line react-hooks/exhaustive-deps
+
+	return { data, isLoading };
+}
+// Fire-and-forget cache warm-up for puzzle IDs not yet in the module cache.
+// Chunks into batches of 30 (Firestore 'in' query limit) and fires all in parallel.
+// Call from a useEffect once auth is settled; errors are swallowed intentionally.
+const PREFETCH_BATCH_SIZE = 30;
+export async function prefetchPuzzles(puzzleIds: number[]): Promise<void> {
+	const uncached = puzzleIds.filter((id) => !puzzleCache.has(id));
+	if (uncached.length === 0) return;
+
+	const chunks: number[][] = [];
+	for (let i = 0; i < uncached.length; i += PREFETCH_BATCH_SIZE) {
+		chunks.push(uncached.slice(i, i + PREFETCH_BATCH_SIZE));
+	}
+
+	try {
+		const results = await Promise.all(chunks.map(getFirestorePuzzlesByIds));
+		results.forEach((rawMap) => {
+			rawMap.forEach((rawPuzzle, id) => {
+				if (!puzzleCache.has(id)) {
+					puzzleCache.set(id, {
+						id,
+						emoji: rawPuzzle.emoji,
+						emojiName: rawPuzzle.emojiName,
+						initialGrids: {
+							normal: rawPuzzle.normal,
+							hard: rawPuzzle.hard,
+						},
+					});
+				}
+			});
+		});
+	} catch (err) {
+		console.error("[prefetchPuzzles] Error:", err);
+	}
 }

@@ -9,7 +9,12 @@ import { DIFFICULTY } from "../../constants";
 import styles from "./TrophyCase.module.css";
 import { useState } from "react";
 
-function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true }) {
+function TrophyCase({
+	totalPuzzles = 12,
+	solvedPuzzles,
+	showTitle = true,
+	isLoading = false,
+}) {
 	const TROPHIES_PER_PAGE = 12;
 	const totalPages = Math.ceil(totalPuzzles / TROPHIES_PER_PAGE);
 	const numEarnedTrophies = Object.keys(solvedPuzzles || {}).length;
@@ -32,9 +37,6 @@ function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true }) {
 			trophySlots.push({
 				puzzleNum: `placeholder-${i}`,
 				isPlaceholder: true,
-				isEarned: false,
-				emoji: null,
-				name: null,
 			});
 		} else {
 			// Check if puzzle is earned and at what difficulty
@@ -57,9 +59,6 @@ function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true }) {
 				isPlaceholder: false,
 				isEarned,
 				solvedDifficulty, // DIFFICULTY.NORMAL | DIFFICULTY.HARD | null (max difficulty)
-				// Emoji/name will be fetched by Trophy component via usePuzzle
-				emoji: null,
-				name: null,
 			});
 		}
 	}
@@ -88,54 +87,58 @@ function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true }) {
 			)}
 
 			<div className={styles.trophyCard}>
-				<div className={styles.trophyGrid}>
-					{trophySlots.map((slot) => {
-						return (
-							<div
-								key={slot.puzzleNum}
-								style={{
-									visibility: slot.isPlaceholder
-										? "hidden"
-										: "visible",
-								}}
-							>
-								<Trophy
-									trophyNum={slot.puzzleNum}
-									trophyEmoji={slot.emoji}
-									trophyName={slot.name}
-									isSolved={!!slot.solvedDifficulty}
-									difficulty={
-										slot.solvedDifficulty ||
-										DIFFICULTY.NORMAL
-									}
-									isMini={true}
-								/>
+				{isLoading ? (
+					<div className={styles.trophyGridSkeleton} />
+				) : (
+					<>
+						<div className={styles.trophyGrid}>
+							{trophySlots.map((slot) => {
+								return (
+									<div
+										key={slot.puzzleNum}
+										style={{
+											visibility: slot.isPlaceholder
+												? "hidden"
+												: "visible",
+										}}
+									>
+										<Trophy
+											trophyNum={slot.puzzleNum}
+											isEarned={!!slot.solvedDifficulty}
+											difficulty={
+												slot.solvedDifficulty ||
+												DIFFICULTY.NORMAL
+											}
+											isMini={true}
+										/>
+									</div>
+								);
+							})}
+						</div>
+						{totalPages > 1 && (
+							<div className={styles.pagination}>
+								<button
+									className={`btn-icon ${styles.paginationButton}`}
+									onClick={handlePrevPage}
+									disabled={currentPage === 1}
+									aria-label="Previous page"
+								>
+									<FontAwesomeIcon icon={faChevronLeft} />
+								</button>
+								<span className={styles.pageInfo}>
+									Page {currentPage} of {totalPages}
+								</span>
+								<button
+									className={`btn-icon ${styles.paginationButton}`}
+									onClick={handleNextPage}
+									disabled={currentPage === totalPages}
+									aria-label="Next page"
+								>
+									<FontAwesomeIcon icon={faChevronRight} />
+								</button>
 							</div>
-						);
-					})}
-				</div>
-				{totalPages > 1 && (
-					<div className={styles.pagination}>
-						<button
-							className={`btn-icon ${styles.paginationButton}`}
-							onClick={handlePrevPage}
-							disabled={currentPage === 1}
-							aria-label="Previous page"
-						>
-							<FontAwesomeIcon icon={faChevronLeft} />
-						</button>
-						<span className={styles.pageInfo}>
-							Page {currentPage} of {totalPages}
-						</span>
-						<button
-							className={`btn-icon ${styles.paginationButton}`}
-							onClick={handleNextPage}
-							disabled={currentPage === totalPages}
-							aria-label="Next page"
-						>
-							<FontAwesomeIcon icon={faChevronRight} />
-						</button>
-					</div>
+						)}
+					</>
 				)}
 			</div>
 		</div>

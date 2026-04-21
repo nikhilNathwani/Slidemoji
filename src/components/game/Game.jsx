@@ -67,7 +67,7 @@ function Game({
 						trophyNum={puzzleId}
 						trophyEmoji={emoji}
 						trophyName={emojiName}
-						isSolved={isSolved}
+						isEarned={isSolved}
 						difficulty={currentDifficulty}
 						celebrationKey={celebrationKey}
 					/>

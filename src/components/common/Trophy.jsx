@@ -13,10 +13,9 @@ function Trophy({
 	difficulty = DIFFICULTY.NORMAL, // Current difficulty being played/viewed
 	celebrationKey = 0, // Incremented by Game each time a player move solves the puzzle
 }) {
-	// Self-fetch emoji/name when not provided (trophy case displays).
-	// No fetch for mini+unearned slots — nothing to show.
+	// Skip fetch if caller already provided emoji, or if mini+unearned (nothing to display).
 	const { data: puzzleData } = usePuzzle(
-		!trophyEmoji && (isEarned || !isMini) ? trophyNum : null
+		!trophyEmoji && (isEarned || !isMini) ? trophyNum : null,
 	);
 
 	const emoji = trophyEmoji || puzzleData?.emoji;

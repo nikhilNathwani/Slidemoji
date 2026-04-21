@@ -10,6 +10,7 @@ import { useAuth } from "../../auth/useAuth";
 import { useSubscription } from "../../payment/useSubscription";
 import { useSolvedPuzzles } from "../../hooks/useSolvedPuzzles";
 import { getLatestPuzzleId } from "../../utils/puzzleUtils";
+import { usePuzzles } from "../../hooks/usePuzzle";
 import styles from "./StatsContent.module.css";
 
 function StatsContent({
@@ -19,11 +20,25 @@ function StatsContent({
 }) {
 	const { user } = useAuth();
 	const { isPremium: firestoreIsPremium } = useSubscription();
-	const { solvedPuzzles } = useSolvedPuzzles();
+	const { solvedPuzzles, isLoading: isSolvedPuzzlesLoading } =
+		useSolvedPuzzles();
 	const isPremium = devIsPremium ?? firestoreIsPremium;
 
 	const numTotalPuzzles = getLatestPuzzleId();
 	const numEarnedTrophies = Object.keys(solvedPuzzles || {}).length;
+
+	// usePuzzles gates TrophyCase on last page being cache-warm (fast fallback if
+	// App's background prefetch hasn't completed yet when the dialog opens).
+	const TROPHIES_PER_PAGE = 12;
+	const initialPage = Math.ceil(numTotalPuzzles / TROPHIES_PER_PAGE);
+	const lastPageStart = (initialPage - 1) * TROPHIES_PER_PAGE + 1;
+	const lastPageEnd = initialPage * TROPHIES_PER_PAGE;
+	const allEarnedIds = Object.keys(solvedPuzzles || {}).map(Number);
+	const lastPageEarnedIds = allEarnedIds.filter(
+		(id) => id >= lastPageStart && id <= lastPageEnd,
+	);
+
+	const { isLoading: isLastPageLoading } = usePuzzles(lastPageEarnedIds);
 
 	return (
 		<div className={styles.statsContent}>
@@ -42,11 +57,12 @@ function StatsContent({
 						</>
 					)}
 
-					{/* Trophy Case (signed-in only) */}
+					{/* Trophy Case — skeleton shown while data loads, then pops in fully */}
 					<TrophyCase
 						totalPuzzles={numTotalPuzzles}
 						solvedPuzzles={solvedPuzzles}
 						showTitle={false}
+						isLoading={isSolvedPuzzlesLoading || isLastPageLoading}
 					/>
 
 					{/* Archive section */}

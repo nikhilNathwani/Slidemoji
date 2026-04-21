@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 import LandingPage from "./components/landing/LandingPage";
 import Header from "./components/Header";
@@ -9,8 +9,9 @@ import ArchiveDialog from "./components/dialogs/ArchiveDialog";
 import { getLatestPuzzleId } from "./utils/puzzleUtils";
 import { checkWin } from "./utils/gridHelpers";
 import { useAuth } from "./auth/useAuth";
-import { usePuzzle } from "./hooks/usePuzzle";
+import { usePuzzle, prefetchPuzzles } from "./hooks/usePuzzle";
 import { useGameState } from "./hooks/useGameState";
+import { useSolvedPuzzles } from "./hooks/useSolvedPuzzles";
 
 function App() {
 	const { isLoading: isAuthLoading, isMerging } = useAuth();
@@ -26,7 +27,15 @@ function App() {
 		initialGrids: puzzleMetadata?.initialGrids,
 	});
 
-	// SOLVED PUZZLES is used by StatsDialog and ArchiveDialog via their own hooks
+	// SOLVED PUZZLES — prefetch all earned puzzle docs into cache as soon as
+	// auth settles, so trophy case renders instantly when the user opens Stats/Win dialog.
+	const { solvedPuzzles } = useSolvedPuzzles();
+	const allEarnedIdsKey = Object.keys(solvedPuzzles || {}).join(",");
+	useEffect(() => {
+		const ids = Object.keys(solvedPuzzles || {}).map(Number);
+		if (ids.length === 0) return;
+		prefetchPuzzles(ids);
+	}, [allEarnedIdsKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	// Dev-only: in-memory premium override (avoids Firestore write / race conditions)
 	const [devIsPremium, setDevIsPremium] = useState(null); // null = no override
