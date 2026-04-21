@@ -1208,6 +1208,199 @@ const emojiCategories = {
 		{ emoji: "🧵", name: "Thread" },
 		{ emoji: "🧶", name: "Yarn" },
 	],
+
+	// Cat Faces
+	catFaces: [
+		{ emoji: "😺", name: "Grinning Cat" },
+		{ emoji: "😸", name: "Grinning Cat with Smiling Eyes" },
+		{ emoji: "😹", name: "Cat with Tears of Joy" },
+		{ emoji: "😻", name: "Smiling Cat with Heart-Eyes" },
+		{ emoji: "😼", name: "Cat with Wry Smile" },
+		{ emoji: "😽", name: "Kissing Cat" },
+		{ emoji: "🙀", name: "Weary Cat" },
+		{ emoji: "😿", name: "Crying Cat" },
+		{ emoji: "😾", name: "Pouting Cat" },
+	],
+
+	// People — base figures, roles, professions, fantasy creatures
+	people: [
+		// Base human figures
+		{ emoji: "👶", name: "Baby" },
+		{ emoji: "🧒", name: "Child" },
+		{ emoji: "👦", name: "Boy" },
+		{ emoji: "👧", name: "Girl" },
+		{ emoji: "🧑", name: "Person" },
+		{ emoji: "👨", name: "Man" },
+		{ emoji: "👩", name: "Woman" },
+		{ emoji: "🧓", name: "Older Person" },
+		{ emoji: "👴", name: "Old Man" },
+		{ emoji: "👵", name: "Old Woman" },
+		// Roles
+		{ emoji: "👮", name: "Police Officer" },
+		{ emoji: "💂", name: "Guard" },
+		{ emoji: "🕵️", name: "Detective" },
+		{ emoji: "👷", name: "Construction Worker" },
+		{ emoji: "👸", name: "Princess" },
+		{ emoji: "🤴", name: "Prince" },
+		{ emoji: "🎅", name: "Santa Claus" },
+		{ emoji: "🤶", name: "Mrs. Claus" },
+		{ emoji: "🦸", name: "Superhero" },
+		{ emoji: "🦹", name: "Supervillain" },
+		// Professions (gender-neutral ZWJ)
+		{ emoji: "🧑‍⚕️", name: "Health Worker" },
+		{ emoji: "🧑‍🌾", name: "Farmer" },
+		{ emoji: "🧑‍🍳", name: "Cook" },
+		{ emoji: "🧑‍🔧", name: "Mechanic" },
+		{ emoji: "🧑‍🏭", name: "Factory Worker" },
+		{ emoji: "🧑‍💼", name: "Office Worker" },
+		{ emoji: "🧑‍🔬", name: "Scientist" },
+		{ emoji: "🧑‍🎨", name: "Artist" },
+		{ emoji: "🧑‍🚒", name: "Firefighter" },
+		{ emoji: "🧑‍✈️", name: "Pilot" },
+		{ emoji: "🧑‍🚀", name: "Astronaut" },
+		{ emoji: "🧑‍⚖️", name: "Judge" },
+		{ emoji: "🧑‍🎓", name: "Student" },
+		{ emoji: "🧑‍🏫", name: "Teacher" },
+		{ emoji: "🧑‍💻", name: "Technologist" },
+		// Fantasy / mythical
+		{ emoji: "🧙", name: "Mage" },
+		{ emoji: "🧝", name: "Elf" },
+		{ emoji: "🧛", name: "Vampire" },
+		{ emoji: "🧟", name: "Zombie" },
+		{ emoji: "🧜", name: "Merperson" },
+		{ emoji: "🧚", name: "Fairy" },
+		{ emoji: "🧞", name: "Genie" },
+		{ emoji: "🧌", name: "Troll" },
+		// Gestures & poses
+		{ emoji: "🤦", name: "Person Facepalming" },
+		{ emoji: "🤷", name: "Person Shrugging" },
+		{ emoji: "💆", name: "Person Getting Massage" },
+		{ emoji: "💇", name: "Person Getting Haircut" },
+		{ emoji: "🧖", name: "Person in Steamy Room" },
+		{ emoji: "🧗", name: "Person Climbing" },
+		{ emoji: "🚶", name: "Person Walking" },
+		{ emoji: "🧍", name: "Person Standing" },
+		{ emoji: "🧎", name: "Person Kneeling" },
+		{ emoji: "🏃", name: "Person Running" },
+		{ emoji: "💃", name: "Woman Dancing" },
+		{ emoji: "🕺", name: "Man Dancing" },
+		{ emoji: "🕴️", name: "Person in Suit Levitating" },
+		{ emoji: "👯", name: "People with Bunny Ears" },
+		{ emoji: "🧑‍🦯", name: "Person with White Cane" },
+		{ emoji: "🧑‍🦼", name: "Person in Motorized Wheelchair" },
+		{ emoji: "🧑‍🦽", name: "Person in Manual Wheelchair" },
+		// Activities
+		{ emoji: "🏇", name: "Horse Racing" },
+		{ emoji: "🏌️", name: "Person Golfing" },
+		{ emoji: "🏄", name: "Person Surfing" },
+		{ emoji: "🚣", name: "Person Rowing Boat" },
+		{ emoji: "🧘", name: "Person in Lotus Position" },
+		{ emoji: "🚵", name: "Person Mountain Biking" },
+		{ emoji: "🚴", name: "Person Biking" },
+		{ emoji: "🏊", name: "Person Swimming" },
+		// Together
+		{ emoji: "🫂", name: "People Hugging" },
+		{ emoji: "👫", name: "Man and Woman Holding Hands" },
+		{ emoji: "👬", name: "Men Holding Hands" },
+		{ emoji: "👭", name: "Women Holding Hands" },
+		{ emoji: "💑", name: "Couple with Heart" },
+		{ emoji: "💏", name: "Kiss" },
+		{ emoji: "👪", name: "Family" },
+	],
+
+	// Newer emojis (Emoji 13.0 – 15.1)
+	newer: [
+		// Faces
+		{ emoji: "🥲", name: "Smiling Face with Tear" },
+		{ emoji: "🥸", name: "Disguised Face" },
+		{ emoji: "🫠", name: "Melting Face" },
+		{ emoji: "🫡", name: "Saluting Face" },
+		{ emoji: "🫢", name: "Face with Open Eyes and Hand Over Mouth" },
+		{ emoji: "🫣", name: "Face with Peeking Eye" },
+		{ emoji: "🫤", name: "Face with Diagonal Mouth" },
+		{ emoji: "🫥", name: "Dotted Line Face" },
+		{ emoji: "🫨", name: "Shaking Face" },
+		{ emoji: "🥹", name: "Face Holding Back Tears" },
+		// Hands & body
+		{ emoji: "🫶", name: "Heart Hands" },
+		{ emoji: "🫵", name: "Index Pointing at the Viewer" },
+		{ emoji: "🫸", name: "Rightwards Pushing Hand" },
+		{ emoji: "🫷", name: "Leftwards Pushing Hand" },
+		{ emoji: "🤌", name: "Pinched Fingers" },
+		{ emoji: "🫀", name: "Anatomical Heart" },
+		{ emoji: "🫁", name: "Lungs" },
+		// Animals
+		{ emoji: "🦭", name: "Seal" },
+		{ emoji: "🦬", name: "Bison" },
+		{ emoji: "🦣", name: "Mammoth" },
+		{ emoji: "🦤", name: "Dodo" },
+		{ emoji: "🪶", name: "Feather" },
+		{ emoji: "🦫", name: "Beaver" },
+		{ emoji: "🪸", name: "Coral" },
+		{ emoji: "🪼", name: "Jellyfish" },
+		{ emoji: "🪲", name: "Beetle" },
+		{ emoji: "🪳", name: "Cockroach" },
+		{ emoji: "🪰", name: "Fly" },
+		{ emoji: "🪱", name: "Worm" },
+		{ emoji: "🐻‍❄️", name: "Polar Bear" },
+		{ emoji: "🐕‍🦺", name: "Service Dog" },
+		{ emoji: "🐈‍⬛", name: "Black Cat" },
+		{ emoji: "🪺", name: "Nest with Eggs" },
+		{ emoji: "🪹", name: "Empty Nest" },
+		{ emoji: "🫎", name: "Moose" },
+		{ emoji: "🪽", name: "Wings" },
+		{ emoji: "🪿", name: "Goose" },
+		{ emoji: "🫏", name: "Donkey" },
+		{ emoji: "🐦‍⬛", name: "Black Bird" },
+		// Food & drink
+		{ emoji: "🫐", name: "Blueberries" },
+		{ emoji: "🫑", name: "Bell Pepper" },
+		{ emoji: "🫒", name: "Olive" },
+		{ emoji: "🧋", name: "Bubble Tea" },
+		{ emoji: "🫖", name: "Teapot" },
+		{ emoji: "🫙", name: "Jar" },
+		{ emoji: "🫗", name: "Pouring Liquid" },
+		// Objects & tools
+		{ emoji: "🪨", name: "Rock" },
+		{ emoji: "🪵", name: "Wood" },
+		{ emoji: "🪝", name: "Hook" },
+		{ emoji: "🪣", name: "Bucket" },
+		{ emoji: "🪜", name: "Ladder" },
+		{ emoji: "🪞", name: "Mirror" },
+		{ emoji: "🪤", name: "Mouse Trap" },
+		{ emoji: "🪅", name: "Pinata" },
+		{ emoji: "🪆", name: "Nesting Dolls" },
+		{ emoji: "🪡", name: "Sewing Needle" },
+		{ emoji: "🧮", name: "Abacus" },
+		{ emoji: "🪠", name: "Plunger" },
+		{ emoji: "🪥", name: "Toothbrush" },
+		{ emoji: "🪄", name: "Magic Wand" },
+		{ emoji: "🪬", name: "Hamsa" },
+		{ emoji: "🪩", name: "Mirror Ball" },
+		{ emoji: "🪭", name: "Folding Hand Fan" },
+		{ emoji: "🪇", name: "Maracas" },
+		{ emoji: "🪮", name: "Hair Comb" },
+		{ emoji: "🪈", name: "Flute" },
+		{ emoji: "🫧", name: "Bubbles" },
+		// Travel & places
+		{ emoji: "🛖", name: "Hut" },
+		{ emoji: "🛻", name: "Pickup Truck" },
+		{ emoji: "🛼", name: "Roller Skate" },
+		{ emoji: "🌁", name: "Foggy" },
+		{ emoji: "🌃", name: "Night with Stars" },
+		{ emoji: "🏙️", name: "Cityscape" },
+		{ emoji: "🌄", name: "Sunrise Over Mountains" },
+		{ emoji: "🌅", name: "Sunrise" },
+		{ emoji: "🌆", name: "Cityscape at Dusk" },
+		{ emoji: "🌇", name: "Sunset" },
+		{ emoji: "🌉", name: "Bridge at Night" },
+		{ emoji: "🌌", name: "Milky Way" },
+		// Symbols & hearts
+		{ emoji: "♾️", name: "Infinity" },
+		{ emoji: "🩷", name: "Pink Heart" },
+		{ emoji: "🩶", name: "Grey Heart" },
+		{ emoji: "🩵", name: "Light Blue Heart" },
+	],
 };
 
 function generateCalendar() {
@@ -1227,26 +1420,12 @@ function generateCalendar() {
 
 	const uniqueEmojis = Array.from(uniqueEmojisMap.values());
 
-	console.log(`Generated ${uniqueEmojis.length} unique emojis`);
-	console.log(
-		`Target: 1096 emojis (3 years = 365 + 365 + 366 including 1 leap year)`,
-	);
+	console.log(`Total unique emojis in corpus: ${uniqueEmojis.length}`);
 
-	// Check if we have enough emojis
-	if (uniqueEmojis.length < 1096) {
-		console.error(
-			`❌ Not enough emojis! Need 1096, have ${uniqueEmojis.length}`,
-		);
-		process.exit(1);
-	}
-
-	// Simple shuffle for good distribution
+	// Shuffle for good distribution across the calendar
 	const shuffled = uniqueEmojis.sort(() => Math.random() - 0.5);
 
-	// Take first 1096
-	const result = shuffled.slice(0, 1096);
-
-	return result;
+	return shuffled;
 }
 
 // Generate and save the calendar
