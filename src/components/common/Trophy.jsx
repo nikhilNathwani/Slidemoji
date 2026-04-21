@@ -46,7 +46,12 @@ function Trophy({
 
 	return (
 		<div
-			className={`${styles.trophy} ${variantClass} ${isMini ? styles.mini : ""} ${isCelebrating ? styles.celebrating : ""}`.trim()}
+			className={[
+				styles.trophy,
+				isMini && styles.mini,
+				variantClass,
+				isCelebrating && styles.celebrating,
+			].filter(Boolean).join(" ")}
 			onAnimationEnd={() => {
 				setIsCelebrating(false);
 			}}

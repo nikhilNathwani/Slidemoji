@@ -106,7 +106,26 @@
 	box-shadow: none;
 }
 
-/* Shimmer overlay — positioned off-screen left at rest */
+/* ─── Child Elements ───────────────────────────────────────────── */
+
+/* font-size and font-weight inherited from .trophy base */
+.number {
+	letter-spacing: 0.5px;
+	font-variant-numeric: tabular-nums;
+}
+
+.emoji {
+	font-size: var(--text-4xl); /* 48px — overrides base font-size */
+	line-height: 1;
+}
+
+.mini .emoji {
+	font-size: 2rem; /* 32px — between --text-3xl (30px) and --text-4xl (48px); sized for mini trophy container */
+}
+
+/* ─── Animation ────────────────────────────────────────────────── */
+
+/* Shimmer overlay on earned trophies — parked off-screen left at rest, slides right on hover */
 .trophy.normal::before,
 .trophy.hard::before {
 	content: "";
@@ -122,31 +141,11 @@
 		transparent
 	);
 }
-
-/* Hover: slide shimmer left-to-right once */
 .trophy.normal:hover::before,
 .trophy.hard:hover::before {
 	left: 100%;
 	transition: left 0.5s ease;
 }
-
-/* ─── Child Elements ───────────────────────────────────────────── */
-
-/* font-size and font-weight inherited from .trophy base */
-.number {
-	letter-spacing: 0.5px;
-}
-
-.emoji {
-	font-size: var(--text-4xl); /* 48px — overrides base font-size */
-	line-height: 1;
-}
-
-.mini .emoji {
-	font-size: 2rem; /* 32px — between --text-3xl (30px) and --text-4xl (48px); sized for mini trophy container */
-}
-
-/* ─── Animation ────────────────────────────────────────────────── */
 
 @keyframes trophyPop {
 	0% {
