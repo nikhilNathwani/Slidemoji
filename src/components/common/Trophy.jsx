@@ -16,12 +16,9 @@ function Trophy({
 	// Self-fetch emoji/name when not provided (trophy case displays).
 	// No fetch for mini+unearned slots — nothing to show.
 	const puzzleId =
-		!trophyEmoji && (isEarned || !isMini) && trophyNum != null
-			? typeof trophyNum === "string"
-				? parseInt(trophyNum, 10)
-				: trophyNum
-			: null;
-	const { data: puzzleData } = usePuzzle(puzzleId);
+		typeof trophyNum === "string" ? parseInt(trophyNum, 10) : trophyNum;
+	const shouldFetch = !trophyEmoji && (isEarned || !isMini);
+	const { data: puzzleData } = usePuzzle(shouldFetch ? puzzleId : null);
 
 	const emoji = trophyEmoji || puzzleData?.emoji;
 	const name = trophyName || puzzleData?.emojiName;
@@ -37,16 +34,13 @@ function Trophy({
 		setIsCelebrating(true);
 	}
 
-	// .earned + .normal/.hard always travel together — earned provides shared visuals,
-	// .normal/.hard bind the color palette tokens. DIFFICULTY values match CSS class names.
-
 	return (
 		<div
 			className={[
 				styles.trophy,
 				isMini && styles.mini,
 				isEarned && styles.earned,
-				isEarned && styles[difficulty],
+				isEarned && styles[difficulty], //'difficulty' values match CSS class names
 				isCelebrating && styles.celebrating,
 			]
 				.filter(Boolean)
