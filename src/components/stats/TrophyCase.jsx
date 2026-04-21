@@ -9,12 +9,7 @@ import { DIFFICULTY } from "../../constants";
 import styles from "./TrophyCase.module.css";
 import { useState } from "react";
 
-function TrophyCase({
-	totalPuzzles = 12,
-	solvedPuzzles,
-	showTitle = true,
-	isLoading = false,
-}) {
+function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true }) {
 	const TROPHIES_PER_PAGE = 12;
 	const totalPages = Math.ceil(totalPuzzles / TROPHIES_PER_PAGE);
 	const numEarnedTrophies = Object.keys(solvedPuzzles || {}).length;
@@ -87,58 +82,52 @@ function TrophyCase({
 			)}
 
 			<div className={styles.trophyCard}>
-				{isLoading ? (
-					<div className={styles.trophyGridSkeleton} />
-				) : (
-					<>
-						<div className={styles.trophyGrid}>
-							{trophySlots.map((slot) => {
-								return (
-									<div
-										key={slot.puzzleNum}
-										style={{
-											visibility: slot.isPlaceholder
-												? "hidden"
-												: "visible",
-										}}
-									>
-										<Trophy
-											trophyNum={slot.puzzleNum}
-											isEarned={!!slot.solvedDifficulty}
-											difficulty={
-												slot.solvedDifficulty ||
-												DIFFICULTY.NORMAL
-											}
-											isMini={true}
-										/>
-									</div>
-								);
-							})}
-						</div>
-						{totalPages > 1 && (
-							<div className={styles.pagination}>
-								<button
-									className={`btn-icon ${styles.paginationButton}`}
-									onClick={handlePrevPage}
-									disabled={currentPage === 1}
-									aria-label="Previous page"
-								>
-									<FontAwesomeIcon icon={faChevronLeft} />
-								</button>
-								<span className={styles.pageInfo}>
-									Page {currentPage} of {totalPages}
-								</span>
-								<button
-									className={`btn-icon ${styles.paginationButton}`}
-									onClick={handleNextPage}
-									disabled={currentPage === totalPages}
-									aria-label="Next page"
-								>
-									<FontAwesomeIcon icon={faChevronRight} />
-								</button>
+				<div className={styles.trophyGrid}>
+					{trophySlots.map((slot) => {
+						return (
+							<div
+								key={slot.puzzleNum}
+								style={{
+									visibility: slot.isPlaceholder
+										? "hidden"
+										: "visible",
+								}}
+							>
+								<Trophy
+									trophyNum={slot.puzzleNum}
+									isEarned={!!slot.solvedDifficulty}
+									difficulty={
+										slot.solvedDifficulty ||
+										DIFFICULTY.NORMAL
+									}
+									isMini={true}
+								/>
 							</div>
-						)}
-					</>
+						);
+					})}
+				</div>
+				{totalPages > 1 && (
+					<div className={styles.pagination}>
+						<button
+							className={`btn-icon ${styles.paginationButton}`}
+							onClick={handlePrevPage}
+							disabled={currentPage === 1}
+							aria-label="Previous page"
+						>
+							<FontAwesomeIcon icon={faChevronLeft} />
+						</button>
+						<span className={styles.pageInfo}>
+							Page {currentPage} of {totalPages}
+						</span>
+						<button
+							className={`btn-icon ${styles.paginationButton}`}
+							onClick={handleNextPage}
+							disabled={currentPage === totalPages}
+							aria-label="Next page"
+						>
+							<FontAwesomeIcon icon={faChevronRight} />
+						</button>
+					</div>
 				)}
 			</div>
 		</div>

@@ -19,8 +19,7 @@ function StatsContent({
 }) {
 	const { user } = useAuth();
 	const { isPremium: firestoreIsPremium } = useSubscription();
-	const { solvedPuzzles, isLoading: isSolvedPuzzlesLoading } =
-		useSolvedPuzzles();
+	const { solvedPuzzles } = useSolvedPuzzles();
 	const isPremium = devIsPremium ?? firestoreIsPremium;
 
 	const numTotalPuzzles = getLatestPuzzleId();
@@ -48,7 +47,6 @@ function StatsContent({
 						totalPuzzles={numTotalPuzzles}
 						solvedPuzzles={solvedPuzzles}
 						showTitle={false}
-						isLoading={isSolvedPuzzlesLoading}
 					/>
 
 					{/* Archive section */}

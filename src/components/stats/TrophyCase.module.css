@@ -49,14 +49,6 @@
 	height: fit-content;
 }
 
-/* Loading skeleton — same footprint as grid + pagination so the card height is stable */
-.trophyGridSkeleton {
-	/* 3 trophy rows + 2 gaps + card gap + pagination row */
-	min-height: calc(3 * var(--trophy-mini-height) + 2 * 16px + 24px + 32px);
-	width: calc(4 * var(--trophy-mini-width) + 3 * 16px);
-	border-radius: 8px;
-}
-
 /* Mobile: smaller trophies, card fills full dialog width */
 @media (max-width: 480px) {
 	.trophyCase {
@@ -69,12 +61,6 @@
 	.trophyGrid {
 		grid-template-columns: repeat(4, var(--trophy-mini-width-mobile));
 		gap: 8px;
-	}
-	.trophyGridSkeleton {
-		min-height: calc(
-			3 * var(--trophy-mini-height-mobile) + 2 * 8px + 24px + 32px
-		);
-		width: 100%;
 	}
 }
 
