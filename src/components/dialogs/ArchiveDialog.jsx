@@ -12,7 +12,7 @@ import styles from "./ArchiveDialog.module.css";
 
 function ArchiveDialog({ isOpen, onClose, onPuzzleSelect, devIsPremium }) {
 	const { isPremium: firestoreIsPremium } = useSubscription();
-	const { solvedPuzzles } = useSolvedGames();
+	const { solvedGames } = useSolvedGames();
 	const isPremium = devIsPremium ?? firestoreIsPremium;
 	const [filter, setFilter] = useState("all");
 	const todayPuzzleId = getLatestPuzzleId();
@@ -32,7 +32,7 @@ function ArchiveDialog({ isOpen, onClose, onPuzzleSelect, devIsPremium }) {
 	// Generate list of all puzzles (1 to current puzzle number)
 	const puzzleList = Array.from({ length: totalPuzzles }, (_, i) => {
 		const puzzleNum = i + 1;
-		const solved = solvedPuzzles?.[puzzleNum];
+		const solved = solvedGames?.[puzzleNum];
 		return {
 			puzzleNum,
 			isSolved: !!solved,

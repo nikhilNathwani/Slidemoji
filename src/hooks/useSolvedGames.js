@@ -6,7 +6,7 @@ import { checkWin } from "../utils/gridHelpers";
 export function useSolvedGames() {
 	const { userDoc, isLoading, error } = useUserDoc();
 
-	const solvedPuzzles = useMemo(() => {
+	const solvedGames = useMemo(() => {
 		if (!userDoc?.savedGames) return {};
 
 		return Object.entries(userDoc.savedGames).reduce(
@@ -27,5 +27,5 @@ export function useSolvedGames() {
 		);
 	}, [userDoc]);
 
-	return { solvedPuzzles, isLoading, error };
+	return { solvedGames, isLoading, error };
 }

@@ -19,11 +19,11 @@ function StatsContent({
 }) {
 	const { user } = useAuth();
 	const { isPremium: firestoreIsPremium } = useSubscription();
-	const { solvedPuzzles } = useSolvedGames();
+	const { solvedGames } = useSolvedGames();
 	const isPremium = devIsPremium ?? firestoreIsPremium;
 
 	const numTotalPuzzles = getLatestPuzzleId();
-	const numEarnedTrophies = Object.keys(solvedPuzzles || {}).length;
+	const numEarnedTrophies = Object.keys(solvedGames || {}).length;
 
 	return (
 		<div className={styles.statsContent}>
@@ -45,7 +45,7 @@ function StatsContent({
 					{/* Trophy Case */}
 					<TrophyCase
 						totalPuzzles={numTotalPuzzles}
-						solvedPuzzles={solvedPuzzles}
+						solvedGames={solvedGames}
 						showTitle={false}
 					/>
 

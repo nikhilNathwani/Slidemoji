@@ -5,8 +5,8 @@ import { useSolvedGames } from "../../hooks/useSolvedGames";
 import { getLatestPuzzleId } from "../../utils/puzzleUtils";
 
 function StatsDialog({ isOpen, onClose, onUnlockArchiveClick, devIsPremium }) {
-	const { solvedPuzzles } = useSolvedGames();
-	const numEarnedTrophies = Object.keys(solvedPuzzles || {}).length;
+	const { solvedGames } = useSolvedGames();
+	const numEarnedTrophies = Object.keys(solvedGames || {}).length;
 
 	return (
 		<Dialog
@@ -22,7 +22,7 @@ function StatsDialog({ isOpen, onClose, onUnlockArchiveClick, devIsPremium }) {
 		>
 			<StatsContent
 				showTitle={false}
-				solvedPuzzles={solvedPuzzles}
+				solvedGames={solvedGames}
 				onUnlockArchiveClick={onUnlockArchiveClick}
 				devIsPremium={devIsPremium}
 			/>

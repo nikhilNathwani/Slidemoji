@@ -9,10 +9,10 @@ import { DIFFICULTY } from "../../constants";
 import styles from "./TrophyCase.module.css";
 import { useState } from "react";
 
-function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true }) {
+function TrophyCase({ totalPuzzles = 12, solvedGames, showTitle = true }) {
 	const TROPHIES_PER_PAGE = 12;
 	const totalPages = Math.ceil(totalPuzzles / TROPHIES_PER_PAGE);
-	const numEarnedTrophies = Object.keys(solvedPuzzles || {}).length;
+	const numEarnedTrophies = Object.keys(solvedGames || {}).length;
 
 	const [currentPage, setCurrentPage] = useState(totalPages);
 
@@ -32,8 +32,8 @@ function TrophyCase({ totalPuzzles = 12, solvedPuzzles, showTitle = true }) {
 				isPlaceholder: true,
 			});
 		} else {
-			// solvedPuzzles[id] = { DIFFICULTY.NORMAL: true, DIFFICULTY.HARD: true } | undefined
-			const puzzleSolved = solvedPuzzles?.[puzzleNum];
+			// solvedGames[id] = { DIFFICULTY.NORMAL: true, DIFFICULTY.HARD: true } | undefined
+			const puzzleSolved = solvedGames?.[puzzleNum];
 
 			// Determine max difficulty for trophy case display (DIFFICULTY.HARD > DIFFICULTY.NORMAL)
 			let solvedDifficulty = null;

@@ -27,28 +27,28 @@ function App() {
 		initialGrids: puzzleMetadata?.initialGrids,
 	});
 
-	// SOLVED PUZZLES — prefetch all earned puzzle docs into cache as soon as
-	// auth settles, so trophy case renders instantly when the user opens Stats/Win dialog.
-	const { solvedPuzzles } = useSolvedGames();
-	const allEarnedIdsKey = Object.keys(solvedPuzzles || {}).join(",");
+	// ARCHIVE — puzzle docs are public; prefetch latest N immediately on mount
+	// so the top of the archive list renders instantly before the user opens it.
+	const ARCHIVE_PREFETCH_COUNT = 30;
 	useEffect(() => {
-		const ids = Object.keys(solvedPuzzles || {}).map(Number);
-		if (ids.length === 0) return;
-		prefetchPuzzles(ids);
-	}, [allEarnedIdsKey]); // eslint-disable-line react-hooks/exhaustive-deps
-
-	// ARCHIVE — eagerly prefetch the latest 30 puzzles so the top of the archive
-	// list renders instantly on first open, before the user ever taps the button.
-	const ARCHIVE_EAGER_COUNT = 30;
-	useEffect(() => {
-		if (isAuthLoading) return;
 		const latest = getLatestPuzzleId();
-		const ids = Array.from(
-			{ length: Math.min(ARCHIVE_EAGER_COUNT, latest) },
-			(_, i) => latest - i,
+		prefetchPuzzles(
+			Array.from(
+				{ length: Math.min(ARCHIVE_PREFETCH_COUNT, latest) },
+				(_, i) => latest - i,
+			),
 		);
-		prefetchPuzzles(ids);
-	}, [isAuthLoading]); // eslint-disable-line react-hooks/exhaustive-deps
+	}, []);
+
+	// TROPHY CASE — prefetch earned puzzle docs once auth settles; re-runs when
+	// a new game is solved so the trophy is warm before the user opens Stats.
+	const { solvedGames } = useSolvedGames();
+	const solvedGamesKey = Object.keys(solvedGames || {}).join(",");
+	useEffect(() => {
+		const earnedIds = Object.keys(solvedGames || {}).map(Number);
+		if (earnedIds.length === 0) return;
+		prefetchPuzzles(earnedIds);
+	}, [solvedGamesKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	// Dev-only: in-memory premium override (avoids Firestore write / race conditions)
 	const [devIsPremium, setDevIsPremium] = useState(null); // null = no override
