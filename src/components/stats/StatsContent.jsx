@@ -8,7 +8,7 @@ import {
 } from "../../utils/icons";
 import { useAuth } from "../../auth/useAuth";
 import { useSubscription } from "../../payment/useSubscription";
-import { useSolvedPuzzles } from "../../hooks/useSolvedPuzzles";
+import { useSolvedGames } from "../../hooks/useSolvedGames";
 import { getLatestPuzzleId } from "../../utils/puzzleUtils";
 import styles from "./StatsContent.module.css";
 
@@ -19,7 +19,7 @@ function StatsContent({
 }) {
 	const { user } = useAuth();
 	const { isPremium: firestoreIsPremium } = useSubscription();
-	const { solvedPuzzles } = useSolvedPuzzles();
+	const { solvedPuzzles } = useSolvedGames();
 	const isPremium = devIsPremium ?? firestoreIsPremium;
 
 	const numTotalPuzzles = getLatestPuzzleId();

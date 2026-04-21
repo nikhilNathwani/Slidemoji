@@ -11,7 +11,7 @@ import { checkWin } from "./utils/gridHelpers";
 import { useAuth } from "./auth/useAuth";
 import { usePuzzle, prefetchPuzzles } from "./hooks/usePuzzle";
 import { useGameState } from "./hooks/useGameState";
-import { useSolvedPuzzles } from "./hooks/useSolvedPuzzles";
+import { useSolvedGames } from "./hooks/useSolvedGames";
 
 function App() {
 	const { isLoading: isAuthLoading, isMerging } = useAuth();
@@ -29,7 +29,7 @@ function App() {
 
 	// SOLVED PUZZLES — prefetch all earned puzzle docs into cache as soon as
 	// auth settles, so trophy case renders instantly when the user opens Stats/Win dialog.
-	const { solvedPuzzles } = useSolvedPuzzles();
+	const { solvedPuzzles } = useSolvedGames();
 	const allEarnedIdsKey = Object.keys(solvedPuzzles || {}).join(",");
 	useEffect(() => {
 		const ids = Object.keys(solvedPuzzles || {}).map(Number);

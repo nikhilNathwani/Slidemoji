@@ -3,7 +3,7 @@ import { useUserDoc } from "./useUserDoc";
 import { DIFFICULTY } from "../constants";
 import { checkWin } from "../utils/gridHelpers";
 
-export function useSolvedPuzzles() {
+export function useSolvedGames() {
 	const { userDoc, isLoading, error } = useUserDoc();
 
 	const solvedPuzzles = useMemo(() => {
