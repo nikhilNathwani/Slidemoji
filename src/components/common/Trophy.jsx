@@ -13,13 +13,10 @@ function Trophy({
 	difficulty = DIFFICULTY.NORMAL, // Current difficulty being played/viewed
 	celebrationKey = 0, // Incremented by Game each time a player move solves the puzzle
 }) {
-	// Locked: mini trophies that haven't been solved yet (trophy case unsolved slots).
-	const isLocked = isMini && !isEarned;
-
 	// Self-fetch emoji/name when not provided (trophy case displays).
-	// usePuzzle returns null when puzzleId is null, so no fetch for locked slots.
+	// No fetch for mini+unearned slots — nothing to show.
 	const puzzleId =
-		!trophyEmoji && !isLocked && trophyNum != null
+		!trophyEmoji && (isEarned || !isMini) && trophyNum != null
 			? typeof trophyNum === "string"
 				? parseInt(trophyNum, 10)
 				: trophyNum
@@ -55,10 +52,8 @@ function Trophy({
 			}}
 		>
 			<div className={styles.number}>{formatPuzzleId(trophyNum)}</div>
-			{!isLocked && <div className={styles.emoji}>{emoji}</div>}
-			{!isMini && name && (
-				<div className={styles.name}>{name}</div>
-			)}
+			{(isEarned || !isMini) && <div className={styles.emoji}>{emoji}</div>}
+			{!isMini && name && <div className={styles.name}>{name}</div>}
 		</div>
 	);
 }
