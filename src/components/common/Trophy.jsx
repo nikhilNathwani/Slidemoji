@@ -37,18 +37,18 @@ function Trophy({
 		setIsCelebrating(true);
 	}
 
-	// Determine variant-specific class based on difficulty
-	const variantClass = !isEarned
-		? styles.unearned
-		: difficulty === DIFFICULTY.HARD
-			? styles.hard
-			: styles.normal;
+	// .earned: shared visual class for both normal and hard
+	// .normal/.hard: color token bindings only (background, text, shadow palette)
+	const variantClass = isEarned
+		? (difficulty === DIFFICULTY.HARD ? styles.hard : styles.normal)
+		: null;
 
 	return (
 		<div
 			className={[
 				styles.trophy,
 				isMini && styles.mini,
+				isEarned && styles.earned,
 				variantClass,
 				isCelebrating && styles.celebrating,
 			].filter(Boolean).join(" ")}

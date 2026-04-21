@@ -73,20 +73,19 @@
 /* Non-mini: inset shadow provides the visible boundary.
    Inset avoids layout shift on solve (box size stays identical to normal/hard). */
 /* Mini: border comes from .mini — just reset shadow and pin number to top. */
-.trophy.unearned {
+.trophy:not(.earned) {
 	box-shadow: inset 0 0 0 1px var(--border);
 }
-.trophy.mini.unearned {
+.trophy.mini:not(.earned) {
 	box-shadow: none; /* .mini border is sufficient */
 	justify-content: flex-start; /* number only — no emoji child */
 }
 
-/* ─── Variant: Earned (Normal / Hard) ─────────────────────────── */
+/* ─── Variant: Earned ─────────────────────────────────────────── */
 
 /* Shared earned styles — consumed via component tokens */
 /* overflow:hidden clips the shimmer pseudo-element which starts positioned off-screen */
-.trophy.normal,
-.trophy.hard {
+.trophy.earned {
 	overflow: hidden;
 	background: linear-gradient(
 		135deg,
@@ -101,8 +100,7 @@
 }
 
 /* Mini earned: flat — no 3D shadow, color fill distinguishes from unearned */
-.trophy.mini.normal,
-.trophy.mini.hard {
+.trophy.mini.earned {
 	box-shadow: none;
 }
 
@@ -126,8 +124,7 @@
 /* ─── Animation ────────────────────────────────────────────────── */
 
 /* Shimmer overlay on earned trophies — parked off-screen left at rest, slides right on hover */
-.trophy.normal::before,
-.trophy.hard::before {
+.trophy.earned::before {
 	content: "";
 	position: absolute;
 	top: 0;
@@ -141,8 +138,7 @@
 		transparent
 	);
 }
-.trophy.normal:hover::before,
-.trophy.hard:hover::before {
+.trophy.earned:hover::before {
 	left: 100%;
 	transition: left 0.5s ease;
 }
@@ -186,7 +182,7 @@
 }
 
 @media (max-width: 600px) {
-	.trophy.unearned:not(.mini) {
+	.trophy:not(.earned):not(.mini) {
 		padding: 8px;
 	}
 }
