@@ -38,20 +38,15 @@ function Trophy({
 	}
 
 	// .earned + .normal/.hard always travel together — earned provides shared visuals,
-	// .normal/.hard bind the color palette tokens.
-	const earnedClasses = isEarned
-		? [
-				styles.earned,
-				difficulty === DIFFICULTY.HARD ? styles.hard : styles.normal,
-			]
-		: [];
+	// .normal/.hard bind the color palette tokens. DIFFICULTY values match CSS class names.
 
 	return (
 		<div
 			className={[
 				styles.trophy,
 				isMini && styles.mini,
-				...earnedClasses,
+				isEarned && styles.earned,
+				isEarned && styles[difficulty],
 				isCelebrating && styles.celebrating,
 			]
 				.filter(Boolean)
