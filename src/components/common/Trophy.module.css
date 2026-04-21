@@ -148,9 +148,11 @@
 	letter-spacing: 0.5px;
 }
 
-/* Earned trophy number color */
+/* Earned trophy text color (number + name share identical rules) */
 .trophy.normal .number,
-.trophy.hard .number {
+.trophy.normal .name,
+.trophy.hard .number,
+.trophy.hard .name {
 	transition:
 		color 0.8s ease,
 		text-shadow 0.8s ease;
@@ -186,16 +188,6 @@
 	text-align: center;
 	line-height: 1.3;
 	font-weight: 600;
-}
-
-/* Earned trophy name color */
-.trophy.normal .name,
-.trophy.hard .name {
-	transition:
-		color 0.8s ease,
-		text-shadow 0.8s ease;
-	color: var(--trophy-earned-number);
-	text-shadow: 0 1px 1px rgba(255, 255, 255, 0.3);
 }
 
 .trophy.puzzleInfo .name {
