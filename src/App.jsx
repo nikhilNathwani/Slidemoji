@@ -37,6 +37,19 @@ function App() {
 		prefetchPuzzles(ids);
 	}, [allEarnedIdsKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
+	// ARCHIVE — eagerly prefetch the latest 30 puzzles so the top of the archive
+	// list renders instantly on first open, before the user ever taps the button.
+	const ARCHIVE_EAGER_COUNT = 30;
+	useEffect(() => {
+		if (isAuthLoading) return;
+		const latest = getLatestPuzzleId();
+		const ids = Array.from(
+			{ length: Math.min(ARCHIVE_EAGER_COUNT, latest) },
+			(_, i) => latest - i,
+		);
+		prefetchPuzzles(ids);
+	}, [isAuthLoading]); // eslint-disable-line react-hooks/exhaustive-deps
+
 	// Dev-only: in-memory premium override (avoids Firestore write / race conditions)
 	const [devIsPremium, setDevIsPremium] = useState(null); // null = no override
 

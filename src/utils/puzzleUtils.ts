@@ -23,14 +23,13 @@ export function getLatestPuzzleId(): number {
 
 /**
  * Formats a puzzle ID number into a display string.
- * E.g. 1 -> "#001", 24 -> "#024", 673 -> "#673"
+ * E.g. 1 -> "#1", 24 -> "#24", 673 -> "#673"
  */
 export function formatPuzzleId(
 	puzzleId: number,
 	{ includeHash = true }: { includeHash?: boolean } = {},
 ): string {
-	const padded = String(puzzleId).padStart(3, "0");
-	return includeHash ? `#${padded}` : padded;
+	return includeHash ? `#${puzzleId}` : String(puzzleId);
 }
 
 /** Shape of a puzzle document as it lives in Firestore. */

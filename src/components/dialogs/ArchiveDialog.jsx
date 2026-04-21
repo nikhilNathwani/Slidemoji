@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Dialog from "./Dialog";
 import PuzzleListItem from "./PuzzleListItem";
 import PaywallView from "../../payment/PaywallView";
 import { useSubscription } from "../../payment/useSubscription";
 import { useSolvedGames } from "../../hooks/useSolvedGames";
 import { getLatestPuzzleId } from "../../utils/puzzleUtils";
+import { prefetchPuzzles } from "../../hooks/usePuzzle";
 import { DIFFICULTY } from "../../constants";
 import { FontAwesomeIcon, faClockRotateLeft } from "../../utils/icons";
 import styles from "./ArchiveDialog.module.css";
@@ -16,6 +17,17 @@ function ArchiveDialog({ isOpen, onClose, onPuzzleSelect, devIsPremium }) {
 	const [filter, setFilter] = useState("all");
 	const todayPuzzleId = getLatestPuzzleId();
 	const totalPuzzles = todayPuzzleId;
+
+	// On first open, fire-and-forget prefetch of ALL puzzle docs not yet cached.
+	// The latest 30 are already warm (eager prefetch in App.jsx), so this only
+	// fetches the older ones and completes in the background while the user scrolls.
+	const hasPrefetchedRef = useRef(false);
+	useEffect(() => {
+		if (!isOpen || hasPrefetchedRef.current) return;
+		hasPrefetchedRef.current = true;
+		const allIds = Array.from({ length: totalPuzzles }, (_, i) => i + 1);
+		prefetchPuzzles(allIds);
+	}, [isOpen, totalPuzzles]);
 
 	// Generate list of all puzzles (1 to current puzzle number)
 	const puzzleList = Array.from({ length: totalPuzzles }, (_, i) => {
