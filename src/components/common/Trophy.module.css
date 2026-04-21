@@ -5,18 +5,24 @@
 	--trophy-mini-height: 85px;
 	--trophy-mini-width-mobile: 60px;
 	--trophy-mini-height-mobile: 75px;
+	/* Default text color (unearned); earned variants override */
+	--trophy-text: var(--text-dim);
+}
 
-	/* Normal Trophy (3x3) — gold */
-	--trophy-normal-base: oklch(88% 0.168 70);
-	--trophy-normal-highlight: oklch(92% 0.13 82);
-	--trophy-normal-text: oklch(35% 0.11 52);
-	--trophy-normal-shadow: oklch(77% 0.168 70 / 0.4);
+/* Normal Trophy (3x3) — gold */
+.trophy.normal {
+	--trophy-text: oklch(35% 0.11 52);
+	--trophy-earned-base: oklch(88% 0.168 70);
+	--trophy-earned-highlight: oklch(92% 0.13 82);
+	--trophy-earned-shadow: oklch(77% 0.168 70 / 0.4);
+}
 
-	/* Hard Trophy (4x4) — light blue / diamond (matched L to gold) */
-	--trophy-hard-base: oklch(86% 0.09 215);
-	--trophy-hard-highlight: oklch(93% 0.06 215);
-	--trophy-hard-text: oklch(27% 0.08 259);
-	--trophy-hard-shadow: oklch(72% 0.1 215 / 0.4);
+/* Hard Trophy (4x4) — light blue / diamond (matched L to gold) */
+.trophy.hard {
+	--trophy-text: oklch(27% 0.08 259);
+	--trophy-earned-base: oklch(86% 0.09 215);
+	--trophy-earned-highlight: oklch(93% 0.06 215);
+	--trophy-earned-shadow: oklch(72% 0.1 215 / 0.4);
 }
 
 /* ─── Base Layout ──────────────────────────────────────────────── */
@@ -47,14 +53,14 @@
 }
 
 /* Non-mini trophies have min-width */
-.trophy:not(.trophyMini) {
+.trophy:not(.mini) {
 	min-width: 108px;
 }
 
 /* ─── Size: Mini ───────────────────────────────────────────────── */
 
 /* All mini trophies share one border style; earned vs unearned distinguished by fill */
-.trophy.trophyMini {
+.trophy.mini {
 	width: var(--trophy-mini-width);
 	height: var(--trophy-mini-height);
 	border: 1px solid var(--text-dim);
@@ -66,31 +72,16 @@
 
 /* Non-mini: inset shadow provides the visible boundary.
    Inset avoids layout shift on solve (box size stays identical to normal/hard). */
-/* Mini: border comes from .trophyMini — just reset shadow and pin number to top. */
+/* Mini: border comes from .mini — just reset shadow and pin number to top. */
 .trophy.unearned {
-	--trophy-text: var(--text-dim);
 	box-shadow: inset 0 0 0 1px var(--border);
 }
-.trophy.trophyMini.unearned {
-	box-shadow: none; /* .trophyMini border is sufficient */
+.trophy.mini.unearned {
+	box-shadow: none; /* .mini border is sufficient */
 	justify-content: flex-start; /* number only — no emoji child */
 }
 
 /* ─── Variant: Earned (Normal / Hard) ─────────────────────────── */
-
-/* Token bindings — map palette vars to shared component tokens */
-.trophy.normal {
-	--trophy-text: var(--trophy-normal-text);
-	--trophy-earned-base: var(--trophy-normal-base);
-	--trophy-earned-highlight: var(--trophy-normal-highlight);
-	--trophy-earned-shadow: var(--trophy-normal-shadow);
-}
-.trophy.hard {
-	--trophy-text: var(--trophy-hard-text);
-	--trophy-earned-base: var(--trophy-hard-base);
-	--trophy-earned-highlight: var(--trophy-hard-highlight);
-	--trophy-earned-shadow: var(--trophy-hard-shadow);
-}
 
 /* Shared earned styles — consumed via component tokens */
 /* overflow:hidden clips the shimmer pseudo-element which starts positioned off-screen */
@@ -110,8 +101,8 @@
 }
 
 /* Mini earned: flat — no 3D shadow, color fill distinguishes from unearned */
-.trophy.trophyMini.normal,
-.trophy.trophyMini.hard {
+.trophy.mini.normal,
+.trophy.mini.hard {
 	box-shadow: none;
 }
 
@@ -151,7 +142,7 @@
 	line-height: 1;
 }
 
-.trophyMini .emoji {
+.mini .emoji {
 	font-size: 2rem; /* 32px — between --text-3xl (30px) and --text-4xl (48px); sized for mini trophy container */
 }
 
@@ -185,18 +176,18 @@
 /* ─── Media Queries ────────────────────────────────────────────── */
 
 @media (max-width: 480px) {
-	.trophy.trophyMini {
+	.trophy.mini {
 		width: var(--trophy-mini-width-mobile);
 		height: var(--trophy-mini-height-mobile);
 	}
 
-	.trophyMini .emoji {
+	.mini .emoji {
 		font-size: 1.75rem;
 	}
 }
 
 @media (max-width: 600px) {
-	.trophy.unearned:not(.trophyMini) {
+	.trophy.unearned:not(.mini) {
 		padding: 8px;
 	}
 }

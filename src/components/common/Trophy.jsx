@@ -46,14 +46,16 @@ function Trophy({
 
 	return (
 		<div
-			className={`${styles.trophy} ${variantClass} ${isMini ? styles.trophyMini : ""} ${isCelebrating ? styles.celebrating : ""}`.trim()}
+			className={`${styles.trophy} ${variantClass} ${isMini ? styles.mini : ""} ${isCelebrating ? styles.celebrating : ""}`.trim()}
 			onAnimationEnd={() => {
 				setIsCelebrating(false);
 			}}
 		>
 			<div className={styles.number}>{formatPuzzleId(trophyNum)}</div>
-			{(isEarned || !isMini) && <div className={styles.emoji}>{emoji}</div>}
-			{!isMini && name && <div className={styles.name}>{name}</div>}
+			{(isEarned || !isMini) && (
+				<div className={styles.emoji}>{emoji}</div>
+			)}
+			{!isMini && name && <div>{name}</div>}
 		</div>
 	);
 }
