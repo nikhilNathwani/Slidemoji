@@ -12,8 +12,8 @@
 /* Normal Trophy (3x3) — gold */
 .trophy.normal {
 	--trophy-text: oklch(35% 0.11 52);
-	--trophy-earned-base: oklch(88% 0.168 70);
-	--trophy-earned-highlight: oklch(92% 0.13 82);
+	--trophy-earned-base: oklch(88% 0.28 70);
+	--trophy-earned-highlight: oklch(92% 0.23 82);
 	--trophy-earned-shadow: oklch(77% 0.168 70 / 0.4);
 }
 

@@ -1,9 +1,14 @@
+import emojiCalendar from "../../data/emoji_calendar.json";
+
+// Update this to the actual launch date before shipping.
+export const LAUNCH_DATE = "2026-01-01";
+
 /**
  * Get the latest puzzle ID (today's puzzle number) based on start date.
  * Rolls over at local midnight by accounting for the user's timezone offset.
  */
 export function getLatestPuzzleId(): number {
-	const startDate = new Date("2026-01-01"); // First puzzle date (UTC midnight)
+	const startDate = new Date(LAUNCH_DATE);
 	const now = new Date();
 	// Subtract timezone offset so the day boundary falls at local midnight,
 	// not UTC midnight. getTimezoneOffset() is positive for zones behind UTC (e.g.
@@ -13,7 +18,7 @@ export function getLatestPuzzleId(): number {
 		(now.getTime() - tzOffsetMs - startDate.getTime()) /
 			(1000 * 60 * 60 * 24),
 	);
-	return (daysSinceStart % 365) + 1; // Cycle after 365 puzzles
+	return (daysSinceStart % emojiCalendar.length) + 1;
 }
 
 /**

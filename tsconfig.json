@@ -10,7 +10,8 @@
 		"allowImportingTsExtensions": true,
 		"jsx": "react-jsx",
 		"skipLibCheck": true,
-		"allowJs": true
+		"allowJs": true,
+		"resolveJsonModule": true
 	},
 	"include": ["src"]
 }

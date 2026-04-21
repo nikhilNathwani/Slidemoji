@@ -1,20 +1,20 @@
 import emojiCalendar from "../../data/emoji_calendar.json";
+import { LAUNCH_DATE } from "./puzzleUtils";
 
 // SVG canvas configuration
 const EMOJI_SVG_SIZE = 2048;
 const EMOJI_SVG_FONT_SIZE = 1600;
 
-// Get daily emoji based on current date
+// Get today's emoji based on days elapsed since launch.
 export function getDailyEmoji() {
-	// Get day of year (0-365)
+	const startDate = new Date(LAUNCH_DATE);
 	const now = new Date();
-	const start = new Date(now.getFullYear(), 0, 0);
-	const diff = now - start;
-	const oneDay = 1000 * 60 * 60 * 24;
-	const dayOfYear = Math.floor(diff / oneDay);
-
-	// Pick emoji based on day of year
-	return emojiCalendar[dayOfYear % emojiCalendar.length];
+	const tzOffsetMs = now.getTimezoneOffset() * 60 * 1000;
+	const daysSinceStart = Math.floor(
+		(now.getTime() - tzOffsetMs - startDate.getTime()) /
+			(1000 * 60 * 60 * 24),
+	);
+	return emojiCalendar[daysSinceStart % emojiCalendar.length];
 }
 
 // Generate SVG data URL for emoji (to be created once and reused by all tiles)
