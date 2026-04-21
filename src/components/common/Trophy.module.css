@@ -81,32 +81,32 @@
 	box-shadow: none;
 }
 
-/* Variant: Normal Trophy (3x3) */
+/* Earned variant token bindings — map palette vars to shared --trophy-earned-* names */
 .trophy.normal {
-	overflow: hidden;
-	background: linear-gradient(
-		135deg,
-		var(--trophy-normal-base) 0%,
-		var(--trophy-normal-highlight) 50%,
-		var(--trophy-normal-base) 100%
-	);
-	box-shadow:
-		0 4px 8px var(--trophy-normal-shadow),
-		inset 0 1px 0 rgba(255, 255, 255, 0.5),
-		inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+	--trophy-earned-base: var(--trophy-normal-base);
+	--trophy-earned-highlight: var(--trophy-normal-highlight);
+	--trophy-earned-number: var(--trophy-normal-number);
+	--trophy-earned-shadow: var(--trophy-normal-shadow);
+}
+.trophy.hard {
+	--trophy-earned-base: var(--trophy-hard-base);
+	--trophy-earned-highlight: var(--trophy-hard-highlight);
+	--trophy-earned-number: var(--trophy-hard-number);
+	--trophy-earned-shadow: var(--trophy-hard-shadow);
 }
 
-/* Variant: Hard Trophy (4x4) */
+/* Shared earned trophy styles — consumed via --trophy-earned-* */
+.trophy.normal,
 .trophy.hard {
 	overflow: hidden;
 	background: linear-gradient(
 		135deg,
-		var(--trophy-hard-base) 0%,
-		var(--trophy-hard-highlight) 50%,
-		var(--trophy-hard-base) 100%
+		var(--trophy-earned-base) 0%,
+		var(--trophy-earned-highlight) 50%,
+		var(--trophy-earned-base) 100%
 	);
 	box-shadow:
-		0 4px 8px var(--trophy-hard-shadow),
+		0 4px 8px var(--trophy-earned-shadow),
 		inset 0 1px 0 rgba(255, 255, 255, 0.5),
 		inset 0 -1px 0 rgba(0, 0, 0, 0.15);
 }
@@ -148,20 +148,13 @@
 	letter-spacing: 0.5px;
 }
 
-/* Variant-specific number colors */
-.trophy.normal .number {
-	transition:
-		color 0.8s ease,
-		text-shadow 0.8s ease;
-	color: var(--trophy-normal-number);
-	text-shadow: 0 1px 1px rgba(255, 255, 255, 0.4);
-}
-
+/* Earned trophy number color */
+.trophy.normal .number,
 .trophy.hard .number {
 	transition:
 		color 0.8s ease,
 		text-shadow 0.8s ease;
-	color: var(--trophy-hard-number);
+	color: var(--trophy-earned-number);
 	text-shadow: 0 1px 1px rgba(255, 255, 255, 0.4);
 }
 
@@ -195,20 +188,13 @@
 	font-weight: 600;
 }
 
-/* Variant-specific name colors */
-.trophy.normal .name {
-	transition:
-		color 0.8s ease,
-		text-shadow 0.8s ease;
-	color: var(--trophy-normal-number);
-	text-shadow: 0 1px 1px rgba(255, 255, 255, 0.3);
-}
-
+/* Earned trophy name color */
+.trophy.normal .name,
 .trophy.hard .name {
 	transition:
 		color 0.8s ease,
 		text-shadow 0.8s ease;
-	color: var(--trophy-hard-number);
+	color: var(--trophy-earned-number);
 	text-shadow: 0 1px 1px rgba(255, 255, 255, 0.3);
 }
 
