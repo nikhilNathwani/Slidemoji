@@ -37,21 +37,22 @@ function Trophy({
 		setIsCelebrating(true);
 	}
 
-	// .earned: shared visual class for both normal and hard
-	// .normal/.hard: color token bindings only (background, text, shadow palette)
-	const variantClass = isEarned
-		? (difficulty === DIFFICULTY.HARD ? styles.hard : styles.normal)
-		: null;
+	// .earned + .normal/.hard always travel together — earned provides shared visuals,
+	// .normal/.hard bind the color palette tokens.
+	const earnedClasses = isEarned
+		? [styles.earned, difficulty === DIFFICULTY.HARD ? styles.hard : styles.normal]
+		: [];
 
 	return (
 		<div
 			className={[
 				styles.trophy,
 				isMini && styles.mini,
-				isEarned && styles.earned,
-				variantClass,
+				...earnedClasses,
 				isCelebrating && styles.celebrating,
-			].filter(Boolean).join(" ")}
+			]
+				.filter(Boolean)
+				.join(" ")}
 			onAnimationEnd={() => {
 				setIsCelebrating(false);
 			}}
