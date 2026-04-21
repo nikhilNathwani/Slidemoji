@@ -15,8 +15,9 @@ function Trophy({
 }) {
 	// Self-fetch emoji/name when not provided (trophy case displays).
 	// No fetch for mini+unearned slots — nothing to show.
-	const shouldFetch = !trophyEmoji && (isEarned || !isMini);
-	const { data: puzzleData } = usePuzzle(shouldFetch ? trophyNum : null);
+	const { data: puzzleData } = usePuzzle(
+		!trophyEmoji && (isEarned || !isMini) ? trophyNum : null
+	);
 
 	const emoji = trophyEmoji || puzzleData?.emoji;
 	const name = trophyName || puzzleData?.emojiName;
