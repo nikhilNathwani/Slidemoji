@@ -42,7 +42,7 @@ function StatsContent({
 						</>
 					)}
 
-					{/* Trophy Case — skeleton shown while data loads, then pops in fully */}
+					{/* Trophy Case */}
 					<TrophyCase
 						totalPuzzles={numTotalPuzzles}
 						solvedPuzzles={solvedPuzzles}
