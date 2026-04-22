@@ -158,6 +158,9 @@
 	   Order must match the transition shorthand: transform, opacity, background, border, box-shadow, color.
 	   Matches WIN_TROPHY_ANIMATION_PEAK_MS in constants.js */
 	transition-delay: 0s, 0s, 550ms, 550ms, 550ms, 550ms;
+	/* background/box-shadow can't interpolate (CSS vars inside gradient/shadow); they jump at the delay.
+	   Set color duration to 0s so it also jumps at 550ms instead of slowly transitioning after. */
+	transition-duration: 0.2s, 0.5s, 0s, 0s, 0s, 0s;
 }
 
 /* ─── Media Queries ────────────────────────────────────────────── */
