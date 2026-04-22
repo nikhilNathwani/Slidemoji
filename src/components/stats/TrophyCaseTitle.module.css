@@ -12,28 +12,4 @@
 	top: 0.025em;
 }
 
-.trophyCountPill {
-	margin-left: 0.825em;
 
-	/* Pill background */
-	padding: 0.2875rem 0.5rem;
-	border-radius: 999px;
-	background-color: var(--surface);
-
-	font-size: 0.625em;
-	font-variant-numeric: tabular-nums;
-	font-weight: bold;
-	color: var(--text);
-
-	position: relative;
-	top: 0.05em;
-}
-
-.trophyCountDenominator {
-	color: var(--text-dim);
-	font-weight: normal;
-}
-
-.trophyCountSlash {
-	margin-inline: 0.375em;
-}

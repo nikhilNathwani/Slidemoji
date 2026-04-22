@@ -43,11 +43,7 @@ function StatsContent({
 					)}
 
 					{/* Trophy Case */}
-					<TrophyCase
-						totalPuzzles={numTotalPuzzles}
-						solvedGames={solvedGames}
-						showTitle={false}
-					/>
+					<TrophyCase solvedGames={solvedGames} />
 
 					{/* Archive section */}
 					<div className={styles.statsDivider}></div>

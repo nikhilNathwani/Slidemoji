@@ -1,6 +1,5 @@
 import {
 	FontAwesomeIcon,
-	faTrophy,
 	faChevronLeft,
 	faChevronRight,
 } from "../../utils/icons";
@@ -9,7 +8,7 @@ import { DIFFICULTY } from "../../constants";
 import styles from "./TrophyCase.module.css";
 import { useState } from "react";
 
-function TrophyCase({ totalPuzzles = 12, solvedGames, showTitle = true }) {
+function TrophyCase({ solvedGames }) {
 	const TROPHIES_PER_PAGE = 12;
 
 	// Build a sorted list of earned trophies only (ascending by puzzle ID).
@@ -27,12 +26,18 @@ function TrophyCase({ totalPuzzles = 12, solvedGames, showTitle = true }) {
 		.sort((a, b) => a.puzzleNum - b.puzzleNum);
 
 	const numEarnedTrophies = earnedTrophies.length;
-	const totalPages = Math.max(1, Math.ceil(numEarnedTrophies / TROPHIES_PER_PAGE));
+	const totalPages = Math.max(
+		1,
+		Math.ceil(numEarnedTrophies / TROPHIES_PER_PAGE),
+	);
 
 	const [currentPage, setCurrentPage] = useState(totalPages);
 
 	const startIndex = (currentPage - 1) * TROPHIES_PER_PAGE;
-	const trophySlots = earnedTrophies.slice(startIndex, startIndex + TROPHIES_PER_PAGE);
+	const trophySlots = earnedTrophies.slice(
+		startIndex,
+		startIndex + TROPHIES_PER_PAGE,
+	);
 
 	const handlePrevPage = () => {
 		if (currentPage > 1) {
@@ -48,38 +53,16 @@ function TrophyCase({ totalPuzzles = 12, solvedGames, showTitle = true }) {
 
 	return (
 		<div className={styles.trophyCase}>
-			{showTitle && (
-				<h3>
-					<FontAwesomeIcon icon={faTrophy} /> Trophy Case
-					<span className={styles.trophyCount}>
-						{numEarnedTrophies}/{totalPuzzles}
-					</span>
-				</h3>
-			)}
-
 			<div className={styles.trophyCard}>
 				<div className={styles.trophyGrid}>
 					{trophySlots.map((slot) => (
-						<div
+						<Trophy
 							key={slot.puzzleNum}
-							style={{
-								visibility: slot.isPlaceholder
-									? "hidden"
-									: "visible",
-							}}
-						>
-							{!slot.isPlaceholder && (
-								<Trophy
-									trophyNum={slot.puzzleNum}
-									isEarned={!!slot.solvedDifficulty}
-									difficulty={
-										slot.solvedDifficulty ||
-										DIFFICULTY.NORMAL
-									}
-									isMini={true}
-								/>
-							)}
-						</div>
+							trophyNum={slot.puzzleNum}
+							isEarned={true}
+							difficulty={slot.solvedDifficulty || DIFFICULTY.NORMAL}
+							isMini={true}
+						/>
 					))}
 				</div>
 				{totalPages > 1 && (
@@ -93,7 +76,7 @@ function TrophyCase({ totalPuzzles = 12, solvedGames, showTitle = true }) {
 							<FontAwesomeIcon icon={faChevronLeft} />
 						</button>
 						<span className={styles.pageInfo}>
-							Page {currentPage} of {totalPages}
+							#{trophySlots[0].puzzleNum}–#{trophySlots[trophySlots.length - 1].puzzleNum}
 						</span>
 						<button
 							className={`btn-icon ${styles.paginationButton}`}
