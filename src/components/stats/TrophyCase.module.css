@@ -64,6 +64,27 @@
 	}
 }
 
+/* Card footer: pagination on left (when present), count on right.
+   When count is the only child (single page), it centers itself. */
+.cardFooter {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+	gap: 16px;
+}
+
+.trophyCount {
+	font-size: var(--text-sm);
+	color: var(--text-dim);
+	font-weight: 500;
+	white-space: nowrap;
+}
+
+.trophyCount:only-child {
+	margin: 0 auto;
+}
+
 .pagination {
 	display: flex;
 	align-items: center;

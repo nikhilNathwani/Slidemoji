@@ -60,34 +60,42 @@ function TrophyCase({ solvedGames }) {
 							key={slot.puzzleNum}
 							trophyNum={slot.puzzleNum}
 							isEarned={true}
-							difficulty={slot.solvedDifficulty || DIFFICULTY.NORMAL}
+							difficulty={
+								slot.solvedDifficulty || DIFFICULTY.NORMAL
+							}
 							isMini={true}
 						/>
 					))}
 				</div>
-				{totalPages > 1 && (
-					<div className={styles.pagination}>
-						<button
-							className={`btn-icon ${styles.paginationButton}`}
-							onClick={handlePrevPage}
-							disabled={currentPage === 1}
-							aria-label="Previous page"
-						>
-							<FontAwesomeIcon icon={faChevronLeft} />
-						</button>
-						<span className={styles.pageInfo}>
-							Page {currentPage} of {totalPages}
-						</span>
-						<button
-							className={`btn-icon ${styles.paginationButton}`}
-							onClick={handleNextPage}
-							disabled={currentPage === totalPages}
-							aria-label="Next page"
-						>
-							<FontAwesomeIcon icon={faChevronRight} />
-						</button>
-					</div>
-				)}
+				<div className={styles.cardFooter}>
+					{totalPages > 1 && (
+						<div className={styles.pagination}>
+							<button
+								className={`btn-icon ${styles.paginationButton}`}
+								onClick={handlePrevPage}
+								disabled={currentPage === 1}
+								aria-label="Previous page"
+							>
+								<FontAwesomeIcon icon={faChevronLeft} />
+							</button>
+							<span className={styles.pageInfo}>
+								Page {currentPage} of {totalPages}
+							</span>
+							<button
+								className={`btn-icon ${styles.paginationButton}`}
+								onClick={handleNextPage}
+								disabled={currentPage === totalPages}
+								aria-label="Next page"
+							>
+								<FontAwesomeIcon icon={faChevronRight} />
+							</button>
+						</div>
+					)}
+					<span className={styles.trophyCount}>
+						{numEarnedTrophies}{" "}
+						{numEarnedTrophies === 1 ? "trophy" : "trophies"}
+					</span>
+				</div>
 			</div>
 		</div>
 	);
