@@ -7,8 +7,7 @@ function TrophyStats({ currentRun, bestRun }) {
 				Current run:{" "}
 				<span className={styles.statValue}>{currentRun}</span>
 				<span className={styles.separator}>|</span>
-				Best run:{" "}
-				<span className={styles.statValue}>{bestRun}</span>
+				Best run: <span className={styles.statValue}>{bestRun}</span>
 			</span>
 		</div>
 	);
