@@ -44,7 +44,7 @@ function StatsContent({
 					/>
 
 					{/* Archive section */}
-					<div className={styles.statsDivider}></div>
+					{/* <div className={styles.statsDivider}></div> */}
 					{isPremium ? (
 						<div className={styles.archiveSection}>
 							<p className={styles.archiveDescription}>
