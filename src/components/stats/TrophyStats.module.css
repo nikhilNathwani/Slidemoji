@@ -1,17 +1,14 @@
 .statsRow {
 	display: flex;
 	justify-content: space-between;
-	align-items: baseline;
+	align-items: center;
 	width: 100%;
 	font-size: var(--text-sm);
 	color: var(--text-dim);
 }
 
-.statGroup {
-	white-space: nowrap;
-}
-
-.sep {
-	margin: 0 0.4em;
-	opacity: 0.4;
+.runStats {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
 }

@@ -63,9 +63,9 @@
 .trophy.mini {
 	width: var(--trophy-mini-width);
 	height: var(--trophy-mini-height);
-	border: 1px solid var(--text-dim);
-	justify-content: space-between; /* Distribute number to top, emoji to bottom */
-	gap: 0; /* Remove gap - space-between handles distribution */
+	border: 1px solid var(--trophy-text);
+	justify-content: space-between;
+	gap: 0;
 }
 
 /* ─── Variant: Unearned ───────────────────────────────────────── */
