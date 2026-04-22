@@ -4,14 +4,16 @@
 	width: 100%;
 	font-size: var(--text-sm);
 	color: var(--text-dim);
+	padding-bottom: 4px;
+	border-bottom: 1px solid var(--text-dim);
 }
 
-.val {
+.statValue {
 	color: var(--text);
 	font-weight: 700;
 }
 
-.sep {
-	margin: 0 0.4em;
-	opacity: 0.4;
+.separator {
+	margin: 0 0.5em;
+	opacity: 0.5;
 }
