@@ -86,7 +86,9 @@ function TrophyCase({ solvedGames }) {
 					</p>
 				) : (
 					<>
-						<div className={`${styles.trophyGrid}${totalPages > 1 ? ` ${styles.gridFixed}` : ""}`}>
+						<div
+							className={`${styles.trophyGrid}${totalPages > 1 ? ` ${styles.gridFixed}` : ""}`}
+						>
 							{trophySlots.map((slot) => (
 								<Trophy
 									key={slot.puzzleNum}
