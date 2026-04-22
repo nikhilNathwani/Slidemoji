@@ -4,11 +4,12 @@ function TrophyStats({ total, currentRun, bestRun }) {
 	return (
 		<div className={styles.statsRow}>
 			<span>
-				Current run: <strong className={styles.val}>{currentRun}</strong>
+				Current run:{" "}
+				<strong className={styles.val}>{currentRun}</strong>
 				<span className={styles.sep}>·</span>
 				Best run: <strong className={styles.val}>{bestRun}</strong>
 			</span>
-			<span>Total: <strong className={styles.val}>{total}</strong></span>
+			<span>Total: {total}</span>
 		</div>
 	);
 }
