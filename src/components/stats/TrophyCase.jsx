@@ -58,7 +58,9 @@ function TrophyCase({ solvedGames, highlightPuzzleId }) {
 							key={slot.puzzleNum}
 							trophyNum={slot.puzzleNum}
 							isEarned={slot.solvedDifficulty !== null}
-							difficulty={slot.solvedDifficulty || DIFFICULTY.NORMAL}
+							difficulty={
+								slot.solvedDifficulty || DIFFICULTY.NORMAL
+							}
 							isMini={true}
 						/>
 					))}

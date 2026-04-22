@@ -48,13 +48,13 @@ function StatsContent({
 					{isPremium ? (
 						<div className={styles.archiveSection}>
 							<p className={styles.archiveDescription}>
-								Archive unlocked! Use the{" "}
+								Use the{" "}
 								<strong>
 									Puzzle Archive{" "}
 									<FontAwesomeIcon icon={faClockRotateLeft} />
 								</strong>{" "}
 								button in the header to play past puzzles and
-								complete your trophy collection.
+								add to your trophy collection.
 							</p>
 						</div>
 					) : (

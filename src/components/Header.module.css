@@ -172,6 +172,7 @@
 	}
 
 	.headerButton {
+		font-size: var(--text-xl);
 		margin-block: -16px;
 		padding-block: 16px;
 		padding-inline: 8px;
