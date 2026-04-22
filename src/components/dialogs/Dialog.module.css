@@ -1,3 +1,5 @@
+/* ─── Overlay ──────────────────────────────────────────────────────── */
+
 .dialogOverlay {
 	position: fixed;
 	top: 0;
@@ -11,6 +13,8 @@
 	z-index: 1000;
 	animation: fadeIn 0.2s ease;
 }
+
+/* ─── Content ──────────────────────────────────────────────────────── */
 
 .dialogContent {
 	background: var(--bg);
@@ -30,6 +34,8 @@
 	scrollbar-color: var(--border) transparent;
 }
 
+/* ─── Header ────────────────────────────────────────────────────────── */
+
 .dialogHeader {
 	display: flex;
 	justify-content: space-between;
@@ -47,6 +53,8 @@
 	gap: 0;
 }
 
+/* ─── Close Button ──────────────────────────────────────────────── */
+
 .dialogClose {
 	font-size: var(--text-xl);
 	padding: 0;
@@ -63,9 +71,13 @@
 	outline-offset: 2px;
 }
 
+/* ─── Body ──────────────────────────────────────────────────────────── */
+
 .dialogBody {
 	padding: 36px 24px;
 }
+
+/* ─── Animation ─────────────────────────────────────────────────── */
 
 @keyframes fadeIn {
 	from {
@@ -87,7 +99,8 @@
 	}
 }
 
-/* Mobile adjustments */
+/* ─── Media Queries ─────────────────────────────────────────────── */
+
 @media (max-width: 600px) {
 	.dialogContent {
 		margin: 0 20px;

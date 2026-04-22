@@ -1,3 +1,5 @@
+/* ─── Layout ───────────────────────────────────────────────────── */
+
 .appHeader {
 	width: 100%;
 	background-color: var(--bg);
@@ -27,9 +29,11 @@
 	align-items: center;
 }
 
+/* ─── Header Button ─────────────────────────────────────────────── */
+
 /* Extends .btn-icon: large touch target, bg-fill hover, full header height tap area.
    Uses :global specificity to reliably override btn-icon's --text-dim color. */
-.headerButton {
+:global(.btn-icon).headerButton {
 	margin-block: -16px;
 	padding-block: 16px;
 	padding-inline: 8px;
@@ -37,9 +41,6 @@
 	border-radius: 8px;
 	font-size: var(--text-2xl);
 	transition: background-color 0.15s ease;
-}
-
-:global(.btn-icon).headerButton {
 	color: var(--text);
 }
 
@@ -50,6 +51,8 @@
 .headerButton:active {
 	opacity: 0.7;
 }
+
+/* ─── Avatar Button ─────────────────────────────────────────────── */
 
 .avatarButton {
 	width: 48px;
@@ -82,6 +85,8 @@
 	object-fit: cover;
 }
 
+/* ─── Account Menu ──────────────────────────────────────────────── */
+
 .accountContainer {
 	position: relative;
 }
@@ -98,17 +103,6 @@
 	overflow: hidden;
 	z-index: 1000;
 	animation: slideDown 0.15s ease-out;
-}
-
-@keyframes slideDown {
-	from {
-		opacity: 0;
-		transform: translateY(-8px);
-	}
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
 }
 
 .accountMenuHeader {
@@ -161,7 +155,21 @@
 	width: 18px;
 }
 
-/* Mobile Responsive */
+/* ─── Animation ─────────────────────────────────────────────────── */
+
+@keyframes slideDown {
+	from {
+		opacity: 0;
+		transform: translateY(-8px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* ─── Media Queries ─────────────────────────────────────────────── */
+
 @media (max-width: 600px) {
 	.appTitle {
 		font-size: var(--text-xl);
@@ -171,10 +179,8 @@
 		padding: 16px;
 	}
 
-	.headerButton {
+	:global(.btn-icon).headerButton {
 		font-size: var(--text-xl);
-		margin-block: -16px;
-		padding-block: 16px;
 		padding-inline: 4px;
 	}
 

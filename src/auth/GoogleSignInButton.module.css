@@ -6,8 +6,8 @@
 	flex-shrink: 0;
 }
 
-/* Hide header variant on mobile.
-   :global(.btn).headerVariant = (0,0,2,0) — beats .btn { display: inline-flex } (0,0,1,0) */
+/* ─── Media Queries ─────────────────────────────────────────────── */
+
 @media (max-width: 600px) {
 	:global(.btn).headerVariant {
 		display: none;

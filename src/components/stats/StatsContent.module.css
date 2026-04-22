@@ -1,3 +1,5 @@
+/* ─── Layout ─────────────────────────────────────────────────────── */
+
 .statsContent {
 	display: flex;
 	flex-direction: column;
@@ -10,7 +12,8 @@
 	margin: 0;
 }
 
-/* Archive Section */
+/* ─── Archive Section ───────────────────────────────────────────── */
+
 .archiveSection {
 	text-align: center;
 	display: flex;

@@ -1,3 +1,5 @@
+/* ─── Layout ─────────────────────────────────────────────────────── */
+
 .trophyCase {
 	display: flex;
 	flex-flow: column nowrap;
@@ -17,7 +19,8 @@
 	border: 1px solid var(--border);
 }
 
-/* Empty state — shown when no trophies earned yet */
+/* ─── Empty State ───────────────────────────────────────────────── */
+
 .emptyState {
 	font-size: var(--text-sm);
 	color: var(--text-dim);
@@ -26,7 +29,8 @@
 	margin: 0;
 }
 
-/* Trophy grid — layout only, no background */
+/* ─── Trophy Grid ───────────────────────────────────────────────── */
+
 .trophyGrid {
 	display: grid;
 	grid-template-columns: repeat(4, var(--trophy-mini-width));
@@ -40,24 +44,7 @@
 	grid-template-rows: repeat(3, var(--trophy-mini-height));
 }
 
-/* Mobile: smaller trophies, card fills full dialog width */
-@media (max-width: 480px) {
-	.trophyCase {
-		width: 100%;
-	}
-	.trophyCard {
-		width: 100%;
-		padding: 16px;
-	}
-	.trophyGrid {
-		grid-template-columns: repeat(4, var(--trophy-mini-width-mobile));
-		grid-auto-rows: var(--trophy-mini-height-mobile);
-		gap: 8px;
-	}
-	.trophyGrid.gridFixed {
-		grid-template-rows: repeat(3, var(--trophy-mini-height-mobile));
-	}
-}
+/* ─── Pagination ────────────────────────────────────────────────── */
 
 .pagination {
 	display: flex;
@@ -84,4 +71,25 @@
 	font-weight: 500;
 	min-width: 100px;
 	text-align: center;
+}
+
+/* ─── Media Queries ─────────────────────────────────────────────── */
+
+/* Mobile: smaller trophies, card fills full dialog width */
+@media (max-width: 480px) {
+	.trophyCase {
+		width: 100%;
+	}
+	.trophyCard {
+		width: 100%;
+		padding: 16px;
+	}
+	.trophyGrid {
+		grid-template-columns: repeat(4, var(--trophy-mini-width-mobile));
+		grid-auto-rows: var(--trophy-mini-height-mobile);
+		gap: 8px;
+	}
+	.trophyGrid.gridFixed {
+		grid-template-rows: repeat(3, var(--trophy-mini-height-mobile));
+	}
 }

@@ -1,9 +1,13 @@
+/* ─── Layout ─────────────────────────────────────────────────────── */
+
 .paywallContent {
 	display: flex;
 	flex-direction: column;
 	width: 352px;
 	max-width: calc(100vw - 88px);
 }
+
+/* ─── Preview List ──────────────────────────────────────────────── */
 
 /* Real puzzle list, clipped and faded at the bottom */
 .paywallListWrapper {
@@ -32,6 +36,8 @@
 	pointer-events: none;
 }
 
+/* ─── CTA ───────────────────────────────────────────────────────────── */
+
 /* CTA headline below the faded list */
 .paywallCta {
 	display: flex;
@@ -54,6 +60,8 @@
 	color: var(--text-dim);
 	font-weight: 500;
 }
+
+/* ─── Feature List ──────────────────────────────────────────────── */
 
 /* Feature list */
 .featureList {
@@ -88,6 +96,8 @@
 	color: var(--text-dim);
 	margin-top: 4px;
 }
+
+/* ─── Actions ──────────────────────────────────────────────────────── */
 
 /* Layout only — no .btn property overrides, so no :global(.btn) needed */
 .unlockButton {

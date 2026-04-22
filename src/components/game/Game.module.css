@@ -1,3 +1,5 @@
+/* ─── Layout ─────────────────────────────────────────────────────── */
+
 /* Main game container */
 .main {
 	display: flex;
@@ -27,6 +29,8 @@
 	align-items: flex-start; /* Align to top for equal spacing from grid */
 	justify-content: center;
 }
+
+/* ─── Media Queries ─────────────────────────────────────────────── */
 
 @media (max-width: 600px) {
 	/* .main {

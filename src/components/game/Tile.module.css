@@ -1,4 +1,5 @@
-/* Base tile styles */
+/* ─── Base ──────────────────────────────────────────────────────────── */
+
 .tile {
 	background-color: var(--tile-bg);
 	border: 1px solid var(--border);
@@ -23,6 +24,8 @@
 	backface-visibility: hidden;
 }
 
+/* ─── Theme Variants ─────────────────────────────────────────────── */
+
 /* Theme-specific text shadows */
 :global(.dark-theme) .tile {
 	text-shadow:
@@ -37,6 +40,8 @@
 		0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
+/* ─── States ────────────────────────────────────────────────────────── */
+
 /* State: Clickable */
 .clickable {
 	cursor: pointer;
@@ -49,7 +54,8 @@
 	pointer-events: none;
 }
 
-/* Win celebration animation */
+/* ─── Animation ─────────────────────────────────────────────────── */
+
 @keyframes tilePop {
 	0% {
 		transform: scale(1);
@@ -85,7 +91,8 @@
 	animation-delay: var(--celebration-delay, 0ms);
 }
 
-/* Mobile Responsive */
+/* ─── Media Queries ─────────────────────────────────────────────── */
+
 @media (max-width: 600px) {
 	.tile {
 		font-size: var(--text-2xl);
