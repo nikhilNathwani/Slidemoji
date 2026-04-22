@@ -23,7 +23,7 @@
 	--btn-solid-bg: var(--high-contrast);
 	--btn-solid-text: var(--base);
 	--btn-outline-bg: var(--base);
-	--btn-outline-text: var(--high-contrast);
+	--btn-outline-text: var(--text-dim);
 	--btn-outline-border: var(--low-contrast);
 	--btn-outline-hover: var(--low-contrast);
 	--btn-selector-active-border: var(--high-contrast);
@@ -47,7 +47,7 @@
 	--btn-solid-bg: var(--high-contrast);
 	--btn-solid-text: var(--base);
 	--btn-outline-bg: var(--base);
-	--btn-outline-text: var(--high-contrast);
+	--btn-outline-text: var(--text-dim);
 	--btn-outline-border: var(--low-contrast);
 	--btn-outline-hover: var(--low-contrast);
 	--btn-selector-active-border: var(--high-contrast);

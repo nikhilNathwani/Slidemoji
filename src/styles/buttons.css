@@ -11,9 +11,8 @@
  *                   Hover: opacity 0.85.
  *
  *  .btn-outline   — Outlined. Standard actions (restart, confirm, feedback).
- *                   bg: --btn-outline-bg, text: --btn-outline-text, border: --btn-outline-border.
+ *                   bg: --btn-outline-bg, text: --btn-outline-text (--text-dim), border: --btn-outline-border.
  *                   Hover: --btn-outline-hover bg.
- *                   Modifier .btn-cancel: mutes text to --text-dim.
  *
  *  .btn-google    — Always-white. Google sign-in CTA.
  *                   bg: #ffffff, text: #1a1a1a, border: 1.5px #c4c4c4.
@@ -87,10 +86,6 @@
 
 .btn-outline:hover {
 	background-color: var(--btn-outline-hover);
-}
-
-.btn-outline.btn-cancel {
-	color: var(--text-dim);
 }
 
 .btn-google {
