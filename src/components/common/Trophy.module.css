@@ -159,14 +159,10 @@
 	animation: trophyPop 500ms ease both;
 	/* Delay matches WIN_TILE_ANIM_START_DELAY_MS in constants.js */
 	animation-delay: 350ms;
-	/* Delay colour/border/shadow/color transitions to the animation peak (350ms delay + 500ms * 40% peak = 550ms).
-	   Order must match the transition shorthand: transform, opacity, background, border, box-shadow, color.
-	   Matches WIN_TROPHY_ANIMATION_PEAK_MS in constants.js */
-	transition-delay: 0s, 0s, 550ms, 550ms, 550ms, 550ms;
-	/* background/box-shadow can't interpolate (CSS vars inside gradient/shadow); they jump at the delay.
-	   Set color duration to 0s so it also jumps at 550ms instead of slowly transitioning after. */
-	transition-duration: 0.2s, 0.5s, 0s, 0s, 0s, 0s;
 }
+
+/* Note: no transition rules needed. background can't interpolate (transparent → gradient),
+   color has no base transition to override, so both snap instantly when .earned is applied. */
 
 /* ─── Media Queries ────────────────────────────────────────────── */
 
