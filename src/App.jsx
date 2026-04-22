@@ -153,6 +153,7 @@ function App() {
 				isAppDialogOpen={
 					showSettingsDialog || showStatsDialog || showArchiveDialog
 				}
+				devIsPremium={devIsPremium}
 			/>
 
 			<SettingsDialog

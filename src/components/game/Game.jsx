@@ -20,6 +20,7 @@ function Game({
 	setGameState, // Function to update game state: setGameState({ currentDifficulty?, normal?, hard? })
 	onOpenStats,
 	isAppDialogOpen = false,
+	devIsPremium,
 }) {
 	const [showNumbers] = usePreference("showNumbers");
 	const [soundEnabled] = usePreference("soundEnabled");
@@ -105,6 +106,7 @@ function Game({
 				emoji={emoji}
 				emojiName={emojiName}
 				difficulty={currentDifficulty}
+				devIsPremium={devIsPremium}
 			/>
 		</>
 	);
