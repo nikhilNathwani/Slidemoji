@@ -43,7 +43,7 @@
 .trophyGrid {
 	display: grid;
 	grid-template-columns: repeat(4, var(--trophy-mini-width));
-	grid-template-rows: repeat(3, var(--trophy-mini-height));
+	grid-auto-rows: var(--trophy-mini-height);
 	justify-content: center;
 	gap: 16px;
 }
@@ -59,7 +59,7 @@
 	}
 	.trophyGrid {
 		grid-template-columns: repeat(4, var(--trophy-mini-width-mobile));
-		grid-template-rows: repeat(3, var(--trophy-mini-height-mobile));
+		grid-auto-rows: var(--trophy-mini-height-mobile);
 		gap: 8px;
 	}
 }

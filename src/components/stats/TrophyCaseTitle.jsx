@@ -13,8 +13,10 @@ function TrophyCaseTitle({
 			Trophy Case{" "}
 			<span className={styles.trophyCountPill}>
 				{numEarnedTrophies}
-				<span className={styles.trophyCountSlash}>⁄</span>
-				{numTotalTrophies}
+				<span className={styles.trophyCountDenominator}>
+					<span className={styles.trophyCountSlash}>⁄</span>
+					{numTotalTrophies}
+				</span>
 			</span>
 		</Wrapper>
 	);

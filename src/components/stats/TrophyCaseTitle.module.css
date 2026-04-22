@@ -29,6 +29,11 @@
 	top: 0.05em;
 }
 
+.trophyCountDenominator {
+	color: var(--text-dim);
+	font-weight: normal;
+}
+
 .trophyCountSlash {
 	margin-inline: 0.375em;
 }

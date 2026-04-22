@@ -11,45 +11,28 @@ import { useState } from "react";
 
 function TrophyCase({ totalPuzzles = 12, solvedGames, showTitle = true }) {
 	const TROPHIES_PER_PAGE = 12;
-	const totalPages = Math.ceil(totalPuzzles / TROPHIES_PER_PAGE);
-	const numEarnedTrophies = Object.keys(solvedGames || {}).length;
 
-	const [currentPage, setCurrentPage] = useState(totalPages);
-
-	// Calculate range for current page
-	const startIndex = (currentPage - 1) * TROPHIES_PER_PAGE + 1;
-
-	// Generate trophy slots for current page - always show 12 slots
-	const trophySlots = [];
-	for (let i = 0; i < TROPHIES_PER_PAGE; i++) {
-		const puzzleNum = startIndex + i;
-		const isPlaceholder = puzzleNum > totalPuzzles;
-
-		if (isPlaceholder) {
-			// Add invisible placeholder to maintain grid layout
-			trophySlots.push({
-				puzzleNum,
-				isPlaceholder: true,
-			});
-		} else {
-			// solvedGames[id] = { DIFFICULTY.NORMAL: true, DIFFICULTY.HARD: true } | undefined
-			const puzzleSolved = solvedGames?.[puzzleNum];
-
-			// Determine max difficulty for trophy case display (DIFFICULTY.HARD > DIFFICULTY.NORMAL)
+	// Build a sorted list of earned trophies only (ascending by puzzle ID).
+	// No placeholders — unearned puzzles are not shown.
+	const earnedTrophies = Object.entries(solvedGames || {})
+		.map(([id, puzzleSolved]) => {
 			let solvedDifficulty = null;
 			if (puzzleSolved?.[DIFFICULTY.HARD]) {
 				solvedDifficulty = DIFFICULTY.HARD;
 			} else if (puzzleSolved?.[DIFFICULTY.NORMAL]) {
 				solvedDifficulty = DIFFICULTY.NORMAL;
 			}
+			return { puzzleNum: Number(id), solvedDifficulty };
+		})
+		.sort((a, b) => a.puzzleNum - b.puzzleNum);
 
-			trophySlots.push({
-				puzzleNum,
-				isPlaceholder: false,
-				solvedDifficulty, // DIFFICULTY.NORMAL | DIFFICULTY.HARD | null (max difficulty)
-			});
-		}
-	}
+	const numEarnedTrophies = earnedTrophies.length;
+	const totalPages = Math.max(1, Math.ceil(numEarnedTrophies / TROPHIES_PER_PAGE));
+
+	const [currentPage, setCurrentPage] = useState(totalPages);
+
+	const startIndex = (currentPage - 1) * TROPHIES_PER_PAGE;
+	const trophySlots = earnedTrophies.slice(startIndex, startIndex + TROPHIES_PER_PAGE);
 
 	const handlePrevPage = () => {
 		if (currentPage > 1) {
