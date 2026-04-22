@@ -63,7 +63,6 @@ function TrophyCase({ solvedGames }) {
 		<div className={styles.trophyCase}>
 			<div className={styles.trophyCard}>
 				<TrophyStats
-					total={numEarnedTrophies}
 					currentRun={currentRun}
 					bestRun={bestRun}
 				/>

@@ -1,6 +1,6 @@
 import styles from "./TrophyStats.module.css";
 
-function TrophyStats({ total, currentRun, bestRun }) {
+function TrophyStats({ currentRun, bestRun }) {
 	return (
 		<div className={styles.statsRow}>
 			<span>
@@ -9,7 +9,6 @@ function TrophyStats({ total, currentRun, bestRun }) {
 				<span className={styles.sep}>·</span>
 				Best run: <strong className={styles.val}>{bestRun}</strong>
 			</span>
-			<span>Total: {total}</span>
 		</div>
 	);
 }

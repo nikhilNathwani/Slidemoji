@@ -1,7 +1,5 @@
 .statsRow {
 	display: flex;
-	justify-content: space-between;
-	align-items: baseline;
 	width: 100%;
 	font-size: var(--text-sm);
 	color: var(--text-dim);
