@@ -1,5 +1,6 @@
 .statsRow {
 	display: flex;
+	justify-content: center;
 	width: 100%;
 	font-size: var(--text-sm);
 	color: var(--text-dim);
