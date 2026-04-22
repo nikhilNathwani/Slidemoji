@@ -4,7 +4,6 @@ export { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 export {
 	faRedo,
 	faCheck,
-	faCircleCheck,
 	faCog,
 	faTrophy,
 	faUserCircle,

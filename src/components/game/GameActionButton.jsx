@@ -1,5 +1,5 @@
 import SignInUpsell from "../../auth/SignInUpsell";
-import { FontAwesomeIcon, faCircleCheck, faRedo } from "../../utils/icons";
+import { FontAwesomeIcon, faTrophy, faRedo } from "../../utils/icons";
 import styles from "./Game.module.css";
 
 /**
@@ -29,7 +29,7 @@ function GameActionButton({ isSolved, isSignedIn, onShowResults, onRestart }) {
 				onClick={onShowResults}
 				title="See your results and share"
 			>
-				<FontAwesomeIcon icon={faCircleCheck} />
+				<FontAwesomeIcon icon={faTrophy} />
 				See Results
 			</button>
 		);
