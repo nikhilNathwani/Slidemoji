@@ -14,9 +14,7 @@ function Trophy({
 	celebrationKey = 0, // Incremented by Game each time a player move solves the puzzle
 }) {
 	// Skip fetch if caller already provided emoji, or if mini+unearned (nothing to display).
-	const { data: puzzleData } = usePuzzle(
-		!trophyEmoji && (isEarned || !isMini) ? trophyNum : null,
-	);
+	const { data: puzzleData } = usePuzzle(!trophyEmoji ? trophyNum : null);
 
 	const emoji = trophyEmoji || puzzleData?.emoji;
 	const name = trophyName || puzzleData?.emojiName;

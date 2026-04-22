@@ -9,11 +9,11 @@ import {
 import { useAuth } from "../../auth/useAuth";
 import { useSubscription } from "../../payment/useSubscription";
 import { useSolvedGames } from "../../hooks/useSolvedGames";
-import { getLatestPuzzleId } from "../../utils/puzzleUtils";
 import styles from "./StatsContent.module.css";
 
 function StatsContent({
 	showTitle = false,
+	puzzleId = null,
 	onUnlockArchiveClick,
 	devIsPremium,
 }) {
@@ -21,9 +21,6 @@ function StatsContent({
 	const { isPremium: firestoreIsPremium } = useSubscription();
 	const { solvedGames } = useSolvedGames();
 	const isPremium = devIsPremium ?? firestoreIsPremium;
-
-	const numTotalPuzzles = getLatestPuzzleId();
-	const numEarnedTrophies = Object.keys(solvedGames || {}).length;
 
 	return (
 		<div className={styles.statsContent}>
@@ -35,8 +32,6 @@ function StatsContent({
 					{showTitle && (
 						<>
 							<TrophyCaseTitle
-								numEarnedTrophies={numEarnedTrophies}
-								numTotalTrophies={numTotalPuzzles}
 								isDialogHeader={false}
 							></TrophyCaseTitle>
 						</>
@@ -44,13 +39,12 @@ function StatsContent({
 
 					{/* Trophy Case */}
 					<TrophyCase
-						totalPuzzles={numTotalPuzzles}
 						solvedGames={solvedGames}
-						showTitle={false}
+						highlightPuzzleId={puzzleId}
 					/>
 
 					{/* Archive section */}
-					<div className={styles.statsDivider}></div>
+					{/* <div className={styles.statsDivider}></div> */}
 					{isPremium ? (
 						<div className={styles.archiveSection}>
 							<p className={styles.archiveDescription}>

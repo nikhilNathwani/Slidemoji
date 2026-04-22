@@ -43,13 +43,6 @@
 	font-weight: 600;
 	/* Color token — each variant sets --trophy-text */
 	color: var(--trophy-text);
-	transition:
-		transform 0.2s ease,
-		opacity 0.5s ease,
-		background 0.8s ease,
-		border 0.8s ease,
-		box-shadow 0.8s ease,
-		color 0.8s ease;
 }
 
 /* Non-mini trophies have min-width */
@@ -63,22 +56,17 @@
 .trophy.mini {
 	width: var(--trophy-mini-width);
 	height: var(--trophy-mini-height);
-	border: 1px solid var(--text-dim);
-	justify-content: space-between; /* Distribute number to top, emoji to bottom */
-	gap: 0; /* Remove gap - space-between handles distribution */
+	border: 1px solid var(--trophy-text);
+	justify-content: space-between;
+	gap: 0;
 }
 
 /* ─── Variant: Unearned ───────────────────────────────────────── */
 
 /* Non-mini: inset shadow provides the visible boundary.
    Inset avoids layout shift on solve (box size stays identical to normal/hard). */
-/* Mini: border comes from .mini — just reset shadow and pin number to top. */
 .trophy:not(.earned) {
 	box-shadow: inset 0 0 0 1px var(--border);
-}
-.trophy.mini:not(.earned) {
-	box-shadow: none; /* .mini border is sufficient */
-	justify-content: flex-start; /* number only — no emoji child */
 }
 
 /* ─── Variant: Earned ─────────────────────────────────────────── */
