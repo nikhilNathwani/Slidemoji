@@ -12,7 +12,6 @@ function TrophyCase({ solvedGames }) {
 	const TROPHIES_PER_PAGE = 12;
 
 	// Build a sorted list of earned trophies only (ascending by puzzle ID).
-	// No placeholders — unearned puzzles are not shown.
 	const earnedTrophies = Object.entries(solvedGames || {})
 		.map(([id, puzzleSolved]) => {
 			let solvedDifficulty = null;
@@ -26,6 +25,18 @@ function TrophyCase({ solvedGames }) {
 		.sort((a, b) => a.puzzleNum - b.puzzleNum);
 
 	const numEarnedTrophies = earnedTrophies.length;
+
+	// Compute current run (ending at the latest solved puzzle) and best run.
+	// A run is a consecutive sequence of puzzle IDs with no gaps.
+	const puzzleIds = earnedTrophies.map((t) => t.puzzleNum);
+	let bestRun = numEarnedTrophies > 0 ? 1 : 0;
+	let tempRun = numEarnedTrophies > 0 ? 1 : 0;
+	for (let i = 1; i < puzzleIds.length; i++) {
+		tempRun = puzzleIds[i] === puzzleIds[i - 1] + 1 ? tempRun + 1 : 1;
+		if (tempRun > bestRun) bestRun = tempRun;
+	}
+	const currentRun = tempRun; // run ending at the highest solved puzzle ID
+
 	const totalPages = Math.max(
 		1,
 		Math.ceil(numEarnedTrophies / TROPHIES_PER_PAGE),
@@ -40,62 +51,78 @@ function TrophyCase({ solvedGames }) {
 	);
 
 	const handlePrevPage = () => {
-		if (currentPage > 1) {
-			setCurrentPage(currentPage - 1);
-		}
+		if (currentPage > 1) setCurrentPage(currentPage - 1);
 	};
 
 	const handleNextPage = () => {
-		if (currentPage < totalPages) {
-			setCurrentPage(currentPage + 1);
-		}
+		if (currentPage < totalPages) setCurrentPage(currentPage + 1);
 	};
 
 	return (
 		<div className={styles.trophyCase}>
 			<div className={styles.trophyCard}>
-				<div className={styles.trophyGrid}>
-					{trophySlots.map((slot) => (
-						<Trophy
-							key={slot.puzzleNum}
-							trophyNum={slot.puzzleNum}
-							isEarned={true}
-							difficulty={
-								slot.solvedDifficulty || DIFFICULTY.NORMAL
-							}
-							isMini={true}
-						/>
-					))}
+				<div className={styles.statsRow}>
+					<div className={styles.statChip}>
+						<span className={styles.statValue}>{numEarnedTrophies}</span>
+						<span className={styles.statLabel}>Total</span>
+					</div>
+					<div className={styles.statDivider} />
+					<div className={styles.statChip}>
+						<span className={styles.statValue}>{currentRun}</span>
+						<span className={styles.statLabel}>Current run</span>
+					</div>
+					<div className={styles.statDivider} />
+					<div className={styles.statChip}>
+						<span className={styles.statValue}>{bestRun}</span>
+						<span className={styles.statLabel}>Best run</span>
+					</div>
 				</div>
-				<div className={styles.cardFooter}>
-					{totalPages > 1 && (
-						<div className={styles.pagination}>
-							<button
-								className={`btn-icon ${styles.paginationButton}`}
-								onClick={handlePrevPage}
-								disabled={currentPage === 1}
-								aria-label="Previous page"
-							>
-								<FontAwesomeIcon icon={faChevronLeft} />
-							</button>
-							<span className={styles.pageInfo}>
-								Page {currentPage} of {totalPages}
-							</span>
-							<button
-								className={`btn-icon ${styles.paginationButton}`}
-								onClick={handleNextPage}
-								disabled={currentPage === totalPages}
-								aria-label="Next page"
-							>
-								<FontAwesomeIcon icon={faChevronRight} />
-							</button>
+
+				{numEarnedTrophies === 0 ? (
+					<p className={styles.emptyState}>
+						Solve a puzzle to earn your first trophy!
+					</p>
+				) : (
+					<>
+						<div className={styles.trophyGrid}>
+							{trophySlots.map((slot) => (
+								<Trophy
+									key={slot.puzzleNum}
+									trophyNum={slot.puzzleNum}
+									isEarned={true}
+									difficulty={
+										slot.solvedDifficulty ||
+										DIFFICULTY.NORMAL
+									}
+									isMini={true}
+								/>
+							))}
 						</div>
-					)}
-					<span className={styles.trophyCount}>
-						{numEarnedTrophies}{" "}
-						{numEarnedTrophies === 1 ? "trophy" : "trophies"}
-					</span>
-				</div>
+						{totalPages > 1 && (
+							<div className={styles.pagination}>
+								<button
+									className={`btn-icon ${styles.paginationButton}`}
+									onClick={handlePrevPage}
+									disabled={currentPage === 1}
+									aria-label="Previous page"
+								>
+									<FontAwesomeIcon icon={faChevronLeft} />
+								</button>
+								<span className={styles.pageInfo}>
+									Page {currentPage} of {totalPages}
+								</span>
+								<button
+									className={`btn-icon ${styles.paginationButton}`}
+									onClick={handleNextPage}
+									disabled={currentPage === totalPages}
+									aria-label="Next page"
+								>
+									<FontAwesomeIcon icon={faChevronRight} />
+								</button>
+							</div>
+						)}
+					</>
+				)}
 			</div>
 		</div>
 	);
