@@ -55,7 +55,11 @@ Play at slidemoji.vercel.app`;
 
 				<div className={styles.winDivider}></div>
 
-				<StatsContent showTitle={true} puzzleId={puzzleId} devIsPremium={devIsPremium} />
+				<StatsContent
+					showTitle={true}
+					puzzleId={puzzleId}
+					devIsPremium={devIsPremium}
+				/>
 			</div>
 		</Dialog>
 	);

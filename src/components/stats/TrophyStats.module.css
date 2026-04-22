@@ -5,6 +5,4 @@
 	width: 100%;
 	font-size: var(--text-sm);
 	color: var(--text-dim);
-	padding-bottom: 8px;
-	border-bottom: 1px solid var(--text-dim);
 }
