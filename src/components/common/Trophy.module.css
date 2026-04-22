@@ -11,18 +11,20 @@
 
 /* Normal Trophy (3x3) — gold */
 .trophy.normal {
-	--trophy-text: oklch(32% 0.10 55);
-	--trophy-earned-base: oklch(84% 0.22 58);
-	--trophy-earned-highlight: oklch(93% 0.12 72);
-	--trophy-earned-shadow: oklch(72% 0.16 58 / 0.4);
+	--trophy-text: oklch(28% 0.1 74);
+	--trophy-earned-dark: oklch(79% 0.1 74);
+	--trophy-earned-base: oklch(83% 0.1 74);
+	--trophy-earned-highlight: oklch(95% 0.07 74);
+	--trophy-earned-shadow: oklch(65% 0.1 74 / 0.4);
 }
 
 /* Hard Trophy (4x4) — diamond / ice blue */
 .trophy.hard {
-	--trophy-text: oklch(27% 0.06 220);
-	--trophy-earned-base: oklch(84% 0.08 210);
-	--trophy-earned-highlight: oklch(95% 0.02 205);
-	--trophy-earned-shadow: oklch(70% 0.07 210 / 0.35);
+	--trophy-text: oklch(27% 0.04 215);
+	--trophy-earned-dark: oklch(78% 0.06 205);
+	--trophy-earned-base: oklch(86% 0.06 207);
+	--trophy-earned-highlight: oklch(100% 0.05 200);
+	--trophy-earned-shadow: oklch(70% 0.05 208 / 0.3);
 }
 
 /* ─── Base Layout ──────────────────────────────────────────────── */
@@ -75,11 +77,14 @@
 /* overflow:hidden clips the shimmer pseudo-element which starts positioned off-screen */
 .trophy.earned {
 	overflow: hidden;
+	/* 4-stop asymmetric gradient: dark edge → base → off-center highlight → base
+	   Simulates light hitting a convex surface from upper-left */
 	background: linear-gradient(
 		135deg,
-		var(--trophy-earned-highlight) 0%,
-		var(--trophy-earned-base) 45%,
-		var(--trophy-earned-highlight) 100%
+		var(--trophy-earned-dark) 0%,
+		var(--trophy-earned-base) 25%,
+		var(--trophy-earned-highlight) 55%,
+		var(--trophy-earned-base) 100%
 	);
 	box-shadow:
 		0 4px 8px var(--trophy-earned-shadow),

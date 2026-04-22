@@ -29,9 +29,7 @@ function StatsContent({
 				<SignInUpsell />
 			) : (
 				<>
-					{showTitle && (
-						<TrophyCaseTitle isDialogHeader={false} />
-					)}
+					{showTitle && <TrophyCaseTitle isDialogHeader={false} />}
 
 					{/* Trophy Case */}
 					<TrophyCase
