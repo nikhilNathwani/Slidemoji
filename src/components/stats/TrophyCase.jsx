@@ -9,7 +9,7 @@ import { DIFFICULTY } from "../../constants";
 import styles from "./TrophyCase.module.css";
 import { useState } from "react";
 
-function TrophyCase({ solvedGames }) {
+function TrophyCase({ solvedGames, highlightPuzzleId }) {
 	const TROPHIES_PER_PAGE = 12;
 
 	// Build a sorted list of earned trophies only (ascending by puzzle ID).
@@ -43,21 +43,33 @@ function TrophyCase({ solvedGames }) {
 		Math.ceil(numEarnedTrophies / TROPHIES_PER_PAGE),
 	);
 
-	const [currentPage, setCurrentPage] = useState(totalPages);
+	// Track manual pagination. null = user hasn't navigated yet.
+	const [userSelectedPage, setUserSelectedPage] = useState(null);
+
+	// Derive the "smart" default: the page containing highlightPuzzleId if found,
+	// else the last page. Recomputed each render so it responds to Firestore updates
+	// without needing an effect.
+	const highlightPage = (() => {
+		if (!highlightPuzzleId) return null;
+		const idx = earnedTrophies.findIndex(
+			(t) => t.puzzleNum === highlightPuzzleId,
+		);
+		return idx !== -1 ? Math.floor(idx / TROPHIES_PER_PAGE) + 1 : null;
+	})();
+
+	// User selection wins; else show highlight page; else show last page.
+	const currentPage = userSelectedPage ?? highlightPage ?? totalPages;
+
+	const handlePrevPage = () =>
+		setUserSelectedPage(Math.max(1, currentPage - 1));
+	const handleNextPage = () =>
+		setUserSelectedPage(Math.min(totalPages, currentPage + 1));
 
 	const startIndex = (currentPage - 1) * TROPHIES_PER_PAGE;
 	const trophySlots = earnedTrophies.slice(
 		startIndex,
 		startIndex + TROPHIES_PER_PAGE,
 	);
-
-	const handlePrevPage = () => {
-		if (currentPage > 1) setCurrentPage(currentPage - 1);
-	};
-
-	const handleNextPage = () => {
-		if (currentPage < totalPages) setCurrentPage(currentPage + 1);
-	};
 
 	return (
 		<div className={styles.trophyCase}>

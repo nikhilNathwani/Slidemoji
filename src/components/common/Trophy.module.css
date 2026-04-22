@@ -154,13 +154,20 @@
 	animation: trophyPop 500ms ease both;
 	/* Delay matches WIN_TILE_ANIM_START_DELAY_MS in constants.js */
 	animation-delay: 350ms;
-	/* Delay colour/border/shadow/color transitions to the animation peak (350ms delay + 500ms * 40% peak = 550ms).
-	   Order must match the transition shorthand: transform, opacity, background, border, box-shadow, color.
-	   Matches WIN_TROPHY_ANIMATION_PEAK_MS in constants.js */
-	transition-delay: 0s, 0s, 550ms, 550ms, 550ms, 550ms;
-	/* background/box-shadow can't interpolate (CSS vars inside gradient/shadow); they jump at the delay.
-	   Set color duration to 0s so it also jumps at 550ms instead of slowly transitioning after. */
-	transition-duration: 0.2s, 0.5s, 0s, 0s, 0s, 0s;
+}
+
+/* Two-class specificity (0,2,0) beats base .trophy (0,1,0), ensuring this
+   transition override wins without relying on cascade order.
+   All visual properties snap at the animation peak (350ms + 500ms*40% = 550ms).
+   Matches WIN_TROPHY_ANIMATION_PEAK_MS in constants.js */
+.trophy.celebrating {
+	transition:
+		transform 0.2s ease 0s,
+		opacity 0.5s ease 0s,
+		background 0s ease 550ms,
+		border 0s ease 550ms,
+		box-shadow 0s ease 550ms,
+		color 0s ease 550ms;
 }
 
 /* ─── Media Queries ────────────────────────────────────────────── */

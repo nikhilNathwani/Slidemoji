@@ -9,11 +9,11 @@ import {
 import { useAuth } from "../../auth/useAuth";
 import { useSubscription } from "../../payment/useSubscription";
 import { useSolvedGames } from "../../hooks/useSolvedGames";
-import { getLatestPuzzleId } from "../../utils/puzzleUtils";
 import styles from "./StatsContent.module.css";
 
 function StatsContent({
 	showTitle = false,
+	puzzleId = null,
 	onUnlockArchiveClick,
 	devIsPremium,
 }) {
@@ -21,9 +21,6 @@ function StatsContent({
 	const { isPremium: firestoreIsPremium } = useSubscription();
 	const { solvedGames } = useSolvedGames();
 	const isPremium = devIsPremium ?? firestoreIsPremium;
-
-	const numTotalPuzzles = getLatestPuzzleId();
-	const numEarnedTrophies = Object.keys(solvedGames || {}).length;
 
 	return (
 		<div className={styles.statsContent}>
@@ -41,7 +38,10 @@ function StatsContent({
 					)}
 
 					{/* Trophy Case */}
-					<TrophyCase solvedGames={solvedGames} />
+					<TrophyCase
+						solvedGames={solvedGames}
+						highlightPuzzleId={puzzleId}
+					/>
 
 					{/* Archive section */}
 					<div className={styles.statsDivider}></div>
