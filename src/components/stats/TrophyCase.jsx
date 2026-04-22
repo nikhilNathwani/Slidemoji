@@ -76,7 +76,7 @@ function TrophyCase({ solvedGames }) {
 							<FontAwesomeIcon icon={faChevronLeft} />
 						</button>
 						<span className={styles.pageInfo}>
-							#{trophySlots[0].puzzleNum}–#{trophySlots[trophySlots.length - 1].puzzleNum}
+							{currentPage} / {totalPages}
 						</span>
 						<button
 							className={`btn-icon ${styles.paginationButton}`}
