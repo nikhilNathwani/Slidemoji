@@ -1,14 +1,18 @@
 .statsRow {
 	display: flex;
 	justify-content: space-between;
-	align-items: center;
+	align-items: baseline;
 	width: 100%;
 	font-size: var(--text-sm);
 	color: var(--text-dim);
 }
 
-.runStats {
-	display: flex;
-	flex-direction: column;
-	gap: 2px;
+.val {
+	color: var(--text);
+	font-weight: 700;
+}
+
+.sep {
+	margin: 0 0.4em;
+	opacity: 0.4;
 }
