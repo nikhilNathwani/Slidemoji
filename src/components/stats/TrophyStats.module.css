@@ -1,12 +1,17 @@
-.statsLine {
-	margin: 0;
+.statsRow {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	width: 100%;
 	font-size: var(--text-sm);
 	color: var(--text-dim);
-	text-align: center;
+}
+
+.statGroup {
 	white-space: nowrap;
 }
 
 .sep {
-	margin: 0 0.5em;
+	margin: 0 0.4em;
 	opacity: 0.4;
 }
