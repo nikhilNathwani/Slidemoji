@@ -63,7 +63,9 @@ function TrophyCase({ solvedGames }) {
 			<div className={styles.trophyCard}>
 				<div className={styles.statsRow}>
 					<div className={styles.statChip}>
-						<span className={styles.statValue}>{numEarnedTrophies}</span>
+						<span className={styles.statValue}>
+							{numEarnedTrophies}
+						</span>
 						<span className={styles.statLabel}>Total</span>
 					</div>
 					<div className={styles.statDivider} />
@@ -84,7 +86,7 @@ function TrophyCase({ solvedGames }) {
 					</p>
 				) : (
 					<>
-						<div className={styles.trophyGrid}>
+						<div className={`${styles.trophyGrid}${totalPages > 1 ? ` ${styles.gridFixed}` : ""}`}>
 							{trophySlots.map((slot) => (
 								<Trophy
 									key={slot.puzzleNum}

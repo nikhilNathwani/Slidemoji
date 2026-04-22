@@ -76,6 +76,11 @@
 	gap: 16px;
 }
 
+/* Lock to exactly 3 rows when paginated, preventing height shift on partial last page */
+.trophyGrid.gridFixed {
+	grid-template-rows: repeat(3, var(--trophy-mini-height));
+}
+
 /* Mobile: smaller trophies, card fills full dialog width */
 @media (max-width: 480px) {
 	.trophyCase {
@@ -89,6 +94,9 @@
 		grid-template-columns: repeat(4, var(--trophy-mini-width-mobile));
 		grid-auto-rows: var(--trophy-mini-height-mobile);
 		gap: 8px;
+	}
+	.trophyGrid.gridFixed {
+		grid-template-rows: repeat(3, var(--trophy-mini-height-mobile));
 	}
 }
 
