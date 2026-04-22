@@ -149,16 +149,8 @@
 	animation-delay: 350ms;
 }
 
-/* All visual properties snap at the animation peak (350ms + 500ms*40% = 550ms).
-   Defined here (not on .trophy) to avoid a transition race when .earned and
-   .celebrating are added in the same render. Matches WIN_TROPHY_ANIMATION_PEAK_MS. */
-.trophy.celebrating {
-	transition:
-		background 0s ease 550ms,
-		border 0s ease 550ms,
-		box-shadow 0s ease 550ms,
-		color 0s ease 550ms;
-}
+/* Note: no transition rules needed. background can't interpolate (transparent → gradient),
+   color has no base transition to override, so both snap instantly when .earned is applied. */
 
 /* ─── Media Queries ────────────────────────────────────────────── */
 
