@@ -30,11 +30,7 @@ function StatsContent({
 			) : (
 				<>
 					{showTitle && (
-						<>
-							<TrophyCaseTitle
-								isDialogHeader={false}
-							></TrophyCaseTitle>
-						</>
+						<TrophyCaseTitle isDialogHeader={false} />
 					)}
 
 					{/* Trophy Case */}
