@@ -32,6 +32,6 @@
 .statDivider {
 	width: 1px;
 	height: 32px;
-	background: var(--border);
+	background: var(--text-dim);
 	flex-shrink: 0;
 }
