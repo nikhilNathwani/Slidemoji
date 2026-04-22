@@ -43,13 +43,6 @@
 	font-weight: 600;
 	/* Color token — each variant sets --trophy-text */
 	color: var(--trophy-text);
-	transition:
-		transform 0.2s ease,
-		opacity 0.5s ease,
-		background 0.8s ease,
-		border 0.8s ease,
-		box-shadow 0.8s ease,
-		color 0.8s ease;
 }
 
 /* Non-mini trophies have min-width */
@@ -156,14 +149,11 @@
 	animation-delay: 350ms;
 }
 
-/* Two-class specificity (0,2,0) beats base .trophy (0,1,0), ensuring this
-   transition override wins without relying on cascade order.
-   All visual properties snap at the animation peak (350ms + 500ms*40% = 550ms).
-   Matches WIN_TROPHY_ANIMATION_PEAK_MS in constants.js */
+/* All visual properties snap at the animation peak (350ms + 500ms*40% = 550ms).
+   Defined here (not on .trophy) to avoid a transition race when .earned and
+   .celebrating are added in the same render. Matches WIN_TROPHY_ANIMATION_PEAK_MS. */
 .trophy.celebrating {
 	transition:
-		transform 0.2s ease 0s,
-		opacity 0.5s ease 0s,
 		background 0s ease 550ms,
 		border 0s ease 550ms,
 		box-shadow 0s ease 550ms,
