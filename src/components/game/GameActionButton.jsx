@@ -49,7 +49,10 @@ function GameActionButton({
 					onClick={onOpenArchive}
 					title="Play another puzzle"
 				>
-					<FontAwesomeIcon icon={faClockRotateLeft} />
+					<FontAwesomeIcon
+						icon={faClockRotateLeft}
+						style={{ fontSize: "1.125em" }}
+					/>
 					Play Another
 				</button>
 			</div>

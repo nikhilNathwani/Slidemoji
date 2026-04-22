@@ -20,9 +20,6 @@
 	display: flex;
 	flex-direction: column;
 	overflow: hidden;
-	padding: 8px;
-	padding-bottom: 0;
-	gap: 8px;
 }
 
 /* Gradient fade at the bottom of the preview list */

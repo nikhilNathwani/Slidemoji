@@ -13,6 +13,8 @@ import styles from "./StatsContent.module.css";
 
 function StatsContent({
 	showTitle = false,
+	showArchiveSection = true,
+	showPremiumArchiveHint = true,
 	puzzleId = null,
 	onUnlockArchiveClick,
 	devIsPremium,
@@ -39,7 +41,8 @@ function StatsContent({
 
 					{/* Archive section */}
 					{/* <div className={styles.statsDivider}></div> */}
-					{isPremium ? (
+					{showArchiveSection && (isPremium ? (
+						showPremiumArchiveHint && (
 						<div className={styles.archiveSection}>
 							<p className={styles.archiveDescription}>
 								Use the{" "}
@@ -51,6 +54,7 @@ function StatsContent({
 								add to your trophy collection.
 							</p>
 						</div>
+						)
 					) : (
 						<div className={styles.archiveSection}>
 							<h3 className={styles.archiveTitle}>
@@ -68,7 +72,7 @@ function StatsContent({
 								Unlock Archive
 							</button>
 						</div>
-					)}
+					))}
 				</>
 			)}
 		</div>

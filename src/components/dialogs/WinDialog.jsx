@@ -14,6 +14,7 @@ function WinDialog({
 	emojiName,
 	difficulty,
 	devIsPremium,
+	onUnlockArchiveClick,
 }) {
 	const [copied, setCopied] = useState(false);
 
@@ -57,8 +58,10 @@ Play at slidemoji.vercel.app`;
 
 				<StatsContent
 					showTitle={true}
+					showPremiumArchiveHint={false}
 					puzzleId={puzzleId}
 					devIsPremium={devIsPremium}
+					onUnlockArchiveClick={onUnlockArchiveClick}
 				/>
 			</div>
 		</Dialog>

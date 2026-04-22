@@ -109,6 +109,7 @@ function Game({
 				emojiName={emojiName}
 				difficulty={currentDifficulty}
 				devIsPremium={devIsPremium}
+				onUnlockArchiveClick={onOpenArchive}
 			/>
 		</>
 	);
