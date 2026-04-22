@@ -62,12 +62,6 @@ function TrophyCase({ solvedGames }) {
 	return (
 		<div className={styles.trophyCase}>
 			<div className={styles.trophyCard}>
-				<TrophyStats
-					total={numEarnedTrophies}
-					currentRun={currentRun}
-					bestRun={bestRun}
-				/>
-
 				{numEarnedTrophies === 0 ? (
 					<p className={styles.emptyState}>
 						Solve a puzzle to earn your first trophy!
@@ -115,6 +109,13 @@ function TrophyCase({ solvedGames }) {
 						)}
 					</>
 				)}
+			</div>
+			<div className={styles.statsCard}>
+				<TrophyStats
+					total={numEarnedTrophies}
+					currentRun={currentRun}
+					bestRun={bestRun}
+				/>
 			</div>
 		</div>
 	);
