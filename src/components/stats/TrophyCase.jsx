@@ -4,6 +4,7 @@ import {
 	faChevronRight,
 } from "../../utils/icons";
 import Trophy from "../common/Trophy";
+import TrophyStats from "./TrophyStats";
 import { DIFFICULTY } from "../../constants";
 import styles from "./TrophyCase.module.css";
 import { useState } from "react";
@@ -61,24 +62,11 @@ function TrophyCase({ solvedGames }) {
 	return (
 		<div className={styles.trophyCase}>
 			<div className={styles.trophyCard}>
-				<div className={styles.statsRow}>
-					<div className={styles.statChip}>
-						<span className={styles.statValue}>
-							{numEarnedTrophies}
-						</span>
-						<span className={styles.statLabel}>Total</span>
-					</div>
-					<div className={styles.statDivider} />
-					<div className={styles.statChip}>
-						<span className={styles.statValue}>{currentRun}</span>
-						<span className={styles.statLabel}>Current run</span>
-					</div>
-					<div className={styles.statDivider} />
-					<div className={styles.statChip}>
-						<span className={styles.statValue}>{bestRun}</span>
-						<span className={styles.statLabel}>Best run</span>
-					</div>
-				</div>
+				<TrophyStats
+					total={numEarnedTrophies}
+					currentRun={currentRun}
+					bestRun={bestRun}
+				/>
 
 				{numEarnedTrophies === 0 ? (
 					<p className={styles.emptyState}>

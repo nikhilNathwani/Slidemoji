@@ -35,8 +35,6 @@ function StatsContent({
 					{showTitle && (
 						<>
 							<TrophyCaseTitle
-								numEarnedTrophies={numEarnedTrophies}
-								numTotalTrophies={numTotalPuzzles}
 								isDialogHeader={false}
 							></TrophyCaseTitle>
 						</>
