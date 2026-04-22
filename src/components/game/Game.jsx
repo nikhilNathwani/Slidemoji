@@ -19,6 +19,7 @@ function Game({
 	currentDifficulty, // Current difficulty ("normal"|"hard")
 	setGameState, // Function to update game state: setGameState({ currentDifficulty?, normal?, hard? })
 	onOpenStats,
+	onOpenArchive,
 	isAppDialogOpen = false,
 	devIsPremium,
 }) {
@@ -88,6 +89,7 @@ function Game({
 						isSolved={isSolved}
 						isSignedIn={user?.isAnonymous === false}
 						onShowResults={() => setShowWinDialog(true)}
+						onOpenArchive={onOpenArchive}
 						onRestart={handleRestartClick}
 					/>
 				</div>

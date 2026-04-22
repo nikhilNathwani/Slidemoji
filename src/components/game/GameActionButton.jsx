@@ -1,5 +1,10 @@
 import SignInUpsell from "../../auth/SignInUpsell";
-import { FontAwesomeIcon, faTrophy, faRedo } from "../../utils/icons";
+import {
+	FontAwesomeIcon,
+	faTrophy,
+	faClockRotateLeft,
+	faRedo,
+} from "../../utils/icons";
 import styles from "./Game.module.css";
 
 /**
@@ -7,10 +12,16 @@ import styles from "./Game.module.css";
  *
  * Shows different actions based on game state:
  * - Sign in upsell (when solved while signed out)
- * - See Results (when solved while signed in — reopens the win dialog)
+ * - See Results + Play Another (when solved while signed in)
  * - Restart (when game is in progress)
  */
-function GameActionButton({ isSolved, isSignedIn, onShowResults, onRestart }) {
+function GameActionButton({
+	isSolved,
+	isSignedIn,
+	onShowResults,
+	onOpenArchive,
+	onRestart,
+}) {
 	// Signed out and solved - show sign-in upsell
 	if (isSolved && !isSignedIn) {
 		return (
@@ -21,17 +32,27 @@ function GameActionButton({ isSolved, isSignedIn, onShowResults, onRestart }) {
 		);
 	}
 
-	// Solved and signed in - show See Results (reopens win dialog)
+	// Solved and signed in - show See Results + Play Another
 	if (isSolved) {
 		return (
-			<button
-				className={`btn btn-outline ${styles.visible}`}
-				onClick={onShowResults}
-				title="See your results and share"
-			>
-				<FontAwesomeIcon icon={faTrophy} />
-				See Results
-			</button>
+			<div className={styles.solvedButtons}>
+				<button
+					className={`btn btn-outline ${styles.visible}`}
+					onClick={onShowResults}
+					title="See your results and share"
+				>
+					<FontAwesomeIcon icon={faTrophy} />
+					See Results
+				</button>
+				<button
+					className={`btn btn-outline ${styles.visible}`}
+					onClick={onOpenArchive}
+					title="Play another puzzle"
+				>
+					<FontAwesomeIcon icon={faClockRotateLeft} />
+					Play Another
+				</button>
+			</div>
 		);
 	}
 

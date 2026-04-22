@@ -30,6 +30,12 @@
 	justify-content: center;
 }
 
+/* Two-button row shown when signed-in user has solved */
+.solvedButtons {
+	display: flex;
+	gap: 8px;
+}
+
 /* ─── Media Queries ─────────────────────────────────────────────── */
 
 @media (max-width: 600px) {

@@ -150,6 +150,7 @@ function App() {
 				currentDifficulty={gameState.currentDifficulty}
 				setGameState={setGameState}
 				onOpenStats={() => setShowStatsDialog(true)}
+				onOpenArchive={() => setShowArchiveDialog(true)}
 				isAppDialogOpen={
 					showSettingsDialog || showStatsDialog || showArchiveDialog
 				}
