@@ -66,7 +66,6 @@ function GameActionButton({
 			onClick={onRestart}
 			title="Restart Puzzle"
 		>
-			<FontAwesomeIcon icon={faRedo} />
 			Restart
 		</button>
 	);
