@@ -1,10 +1,4 @@
 import SignInUpsell from "../../auth/SignInUpsell";
-import {
-	FontAwesomeIcon,
-	faTrophy,
-	faClockRotateLeft,
-	faRedo,
-} from "../../utils/icons";
 import styles from "./Game.module.css";
 
 /**
@@ -41,7 +35,6 @@ function GameActionButton({
 					onClick={onShowResults}
 					title="See your results and share"
 				>
-					<FontAwesomeIcon icon={faTrophy} />
 					See Results
 				</button>
 				<button
@@ -49,10 +42,6 @@ function GameActionButton({
 					onClick={onOpenArchive}
 					title="Play another puzzle"
 				>
-					<FontAwesomeIcon
-						icon={faClockRotateLeft}
-						style={{ fontSize: "1.125em" }}
-					/>
 					Play Another
 				</button>
 			</div>
