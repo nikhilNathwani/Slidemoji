@@ -87,7 +87,7 @@ function Game({
 					<GameActionButton
 						isSolved={isSolved}
 						isSignedIn={user?.isAnonymous === false}
-						onOpenStats={onOpenStats}
+						onShowResults={() => setShowWinDialog(true)}
 						onRestart={handleRestartClick}
 					/>
 				</div>

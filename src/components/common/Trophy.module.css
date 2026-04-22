@@ -11,20 +11,24 @@
 
 /* Normal Trophy (3x3) — gold */
 .trophy.normal {
-	--trophy-text: oklch(28% 0.1 74);
-	--trophy-earned-dark: oklch(79% 0.1 74);
-	--trophy-earned-base: oklch(83% 0.1 74);
-	--trophy-earned-highlight: oklch(95% 0.07 74);
-	--trophy-earned-shadow: oklch(65% 0.1 74 / 0.4);
+	--trophy-text: oklch(28% 0.14 74);
+	--trophy-earned-dark: oklch(78% 0.14 74);
+	--trophy-earned-base: oklch(86% 0.14 74);
+	--trophy-earned-highlight: oklch(98% 0.14 74);
+	--trophy-earned-shadow: oklch(65% 0.14 74 / 0.35);
+	/* Solid fill for flat (mini) usage — lighter + less chroma to match gradient's perceived brightness */
+	--trophy-earned-solid: oklch(92% 0.14 74);
 }
 
 /* Hard Trophy (4x4) — diamond / ice blue */
 .trophy.hard {
-	--trophy-text: oklch(27% 0.04 215);
-	--trophy-earned-dark: oklch(78% 0.06 205);
-	--trophy-earned-base: oklch(86% 0.06 207);
-	--trophy-earned-highlight: oklch(100% 0.05 200);
-	--trophy-earned-shadow: oklch(70% 0.05 208 / 0.3);
+	--trophy-text: oklch(27% 0.07 210);
+	--trophy-earned-dark: oklch(82% 0.07 210);
+	--trophy-earned-base: oklch(88% 0.07 210);
+	--trophy-earned-highlight: oklch(100% 0.07 210);
+	--trophy-earned-shadow: oklch(70% 0.07 210 / 0.35);
+	/* Solid fill for flat (mini) usage */
+	--trophy-earned-solid: oklch(90% 0.07 210);
 }
 
 /* ─── Base Layout ──────────────────────────────────────────────── */
@@ -92,8 +96,9 @@
 		inset 0 -1px 0 rgba(0, 0, 0, 0.15);
 }
 
-/* Mini earned: flat — no 3D shadow, color fill distinguishes from unearned */
+/* Mini earned: flat fill — no gradient or 3D shadow; reads cleaner in grid context */
 .trophy.mini.earned {
+	background: var(--trophy-earned-solid);
 	box-shadow: none;
 }
 

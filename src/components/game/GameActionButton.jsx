@@ -1,5 +1,5 @@
 import SignInUpsell from "../../auth/SignInUpsell";
-import { FontAwesomeIcon, faTrophy, faRedo } from "../../utils/icons";
+import { FontAwesomeIcon, faCircleCheck, faRedo } from "../../utils/icons";
 import styles from "./Game.module.css";
 
 /**
@@ -7,10 +7,10 @@ import styles from "./Game.module.css";
  *
  * Shows different actions based on game state:
  * - Sign in upsell (when solved while signed out)
- * - View Trophies (when solved while signed in)
+ * - See Results (when solved while signed in — reopens the win dialog)
  * - Restart (when game is in progress)
  */
-function GameActionButton({ isSolved, isSignedIn, onOpenStats, onRestart }) {
+function GameActionButton({ isSolved, isSignedIn, onShowResults, onRestart }) {
 	// Signed out and solved - show sign-in upsell
 	if (isSolved && !isSignedIn) {
 		return (
@@ -21,16 +21,16 @@ function GameActionButton({ isSolved, isSignedIn, onOpenStats, onRestart }) {
 		);
 	}
 
-	// Solved and signed in - show View Trophies
+	// Solved and signed in - show See Results (reopens win dialog)
 	if (isSolved) {
 		return (
 			<button
 				className={`btn btn-outline ${styles.visible}`}
-				onClick={onOpenStats}
-				title="View your trophy collection"
+				onClick={onShowResults}
+				title="See your results and share"
 			>
-				<FontAwesomeIcon icon={faTrophy} />
-				View Trophies
+				<FontAwesomeIcon icon={faCircleCheck} />
+				See Results
 			</button>
 		);
 	}
