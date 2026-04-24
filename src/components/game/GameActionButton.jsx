@@ -12,6 +12,7 @@ import styles from "./Game.module.css";
 function GameActionButton({
 	isSolved,
 	isSignedIn,
+	puzzleId,
 	onShowResults,
 	onOpenArchive,
 	onRestart,
@@ -37,13 +38,15 @@ function GameActionButton({
 				>
 					See Results
 				</button>
-				<button
-					className={`btn btn-outline ${styles.visible}`}
-					onClick={onOpenArchive}
-					title="Play another puzzle"
-				>
-					Play Another
-				</button>
+				{puzzleId !== 1 && (
+					<button
+						className={`btn btn-outline ${styles.visible}`}
+						onClick={onOpenArchive}
+						title="Play another puzzle"
+					>
+						Play Another
+					</button>
+				)}
 			</div>
 		);
 	}

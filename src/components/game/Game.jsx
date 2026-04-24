@@ -88,6 +88,7 @@ function Game({
 					<GameActionButton
 						isSolved={isSolved}
 						isSignedIn={user?.isAnonymous === false}
+						puzzleId={puzzleId}
 						onShowResults={() => setShowWinDialog(true)}
 						onOpenArchive={onOpenArchive}
 						onRestart={handleRestartClick}

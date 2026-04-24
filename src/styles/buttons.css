@@ -161,6 +161,10 @@
 	background-color: var(--btn-outline-hover);
 }
 
+.selectorBtn:active {
+	opacity: 0.7;
+}
+
 .selectorBtn.active {
 	box-shadow: 0 0 0 2px var(--text);
 	background-color: var(--low-contrast);

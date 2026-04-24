@@ -50,7 +50,12 @@ function TrophyCase({ solvedGames, highlightPuzzleId }) {
 				solvedDifficulty = DIFFICULTY.NORMAL;
 			}
 		}
-		return { puzzleNum, solvedDifficulty, isFuture };
+		return {
+			puzzleNum,
+			solvedDifficulty,
+			isFuture,
+			isToday: !isFuture && puzzleNum === totalPuzzles,
+		};
 	});
 
 	return (
@@ -68,6 +73,7 @@ function TrophyCase({ solvedGames, highlightPuzzleId }) {
 								slot.solvedDifficulty || DIFFICULTY.NORMAL
 							}
 							isFuture={slot.isFuture}
+							isToday={slot.isToday}
 							isMini={true}
 						/>
 					))}

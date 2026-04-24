@@ -51,9 +51,15 @@
 	color: var(--trophy-text);
 }
 
-/* Non-mini trophies have min-width */
+/* Non-mini trophies have min-width; shared padding-inline keeps width stable on earn */
 .trophy:not(.mini) {
 	min-width: 108px;
+	padding-inline: 16px;
+	/* Smooth earn reveal: border fades out, box-shadow fades in, top padding expands */
+	transition:
+		border-color 250ms ease,
+		box-shadow 250ms ease,
+		padding-top 250ms ease;
 }
 
 /* ─── Size: Mini ───────────────────────────────────────────────── */
@@ -69,10 +75,14 @@
 
 /* ─── Variant: Unearned ───────────────────────────────────────── */
 
-/* Mini unearned: dashed border matches future slots — both are unfilled.
-   Inset shadow kept for legibility against the card surface. */
+/* Mini unearned: dashed border — same as future slots, both unfilled. */
 .trophy.mini:not(.earned) {
 	border-style: dashed;
+}
+
+/* Today's unearned mini: solid border distinguishes it from past/future empty slots. */
+.trophy.mini.today:not(.earned) {
+	border-style: solid;
 }
 
 /* Full-size (game view) unearned: fieldset-legend style.
@@ -80,25 +90,46 @@
    The puzzle number floats on the top border, centered, with --bg behind it
    to visually cut the line. */
 .trophy:not(.mini):not(.earned) {
-	position: relative;
 	background-color: transparent;
 	color: var(--text);
 	padding-block: 12px;
-	padding-inline: 16px;
 	padding-top: 20px;
 	border: 1px solid var(--border);
 	border-radius: 8px;
 }
 
-/* Absolutely centered on the top border; --bg masks the border behind the text. */
-.trophy:not(.mini):not(.earned) .number {
+/* Number is always absolutely positioned for non-mini trophies so it smoothly
+   slides into the box on earn instead of snapping between layout modes. */
+.trophy:not(.mini) .number {
 	position: absolute;
-	top: 0;
 	left: 50%;
-	transform: translate(-50%, -50%);
-	background-color: var(--bg);
-	padding-inline: 8px;
 	white-space: nowrap;
+	transition:
+		top 250ms ease,
+		transform 250ms ease,
+		padding-inline 250ms ease;
+}
+
+/* Unearned: float on the top border; --bg behind the text cuts through the border line. */
+.trophy:not(.mini):not(.earned) .number {
+	top: 0;
+	transform: translate(-50%, -50%);
+	padding-inline: 8px;
+	background-color: var(--bg);
+}
+
+/* Earned: number sits inside the box; --bg snaps away instantly (no transition)
+   so the gradient shows through as soon as the class toggles. */
+.trophy:not(.mini).earned .number {
+	top: 12px;
+	transform: translateX(-50%);
+	padding-inline: 0;
+	background-color: transparent;
+}
+
+/* Extra top padding when earned clears the absolute number (12px top + ~15px height + 9px gap). */
+.trophy:not(.mini).earned {
+	padding-top: 36px;
 }
 
 /* ─── Variant: Future (placeholder) ──────────────────────────── */
@@ -200,8 +231,9 @@
 	animation-delay: 350ms;
 }
 
-/* Note: no transition rules needed. background can't interpolate (transparent → gradient),
-   color has no base transition to override, so both snap instantly when .earned is applied. */
+/* Note: background gradient (transparent → linear-gradient) cannot be CSS-interpolated,
+   so it snaps instantly. The border, box-shadow, and number position all transition
+   smoothly, masking the snap during the trophyPop scale animation. */
 
 /* ─── Media Queries ────────────────────────────────────────────── */
 

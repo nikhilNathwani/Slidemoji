@@ -13,6 +13,7 @@ function Trophy({
 	difficulty = DIFFICULTY.NORMAL, // Current difficulty being played/viewed
 	celebrationKey = 0, // Incremented by Game each time a player move solves the puzzle
 	isFuture = false, // True for placeholder slots not yet released
+	isToday = false, // True for today's puzzle slot in TrophyCase
 }) {
 	// Skip fetch if caller already provided emoji, or if mini+unearned (nothing to display), or future.
 	const skipFetch = trophyEmoji || (isMini && !isEarned) || isFuture;
@@ -41,6 +42,7 @@ function Trophy({
 				isEarned && styles[difficulty], //'difficulty' values match CSS class names
 				isCelebrating && styles.celebrating,
 				isFuture && styles.future,
+				isToday && styles.today,
 			]
 				.filter(Boolean)
 				.join(" ")}
