@@ -126,16 +126,15 @@
  * .selectorBtn         — Tile-shaped choice button (filter bar, difficulty selector).
  *                        Two-line layout: primary label + smaller sub-label.
  *                        Apply alongside a component-specific class for size overrides.
- *                        Unselected: 1px var(--text-dim) border. Active: 2px var(--text) + low-contrast bg.
+ *                        Unselected: 1px box-shadow ring var(--text-dim). Active: 2px ring var(--text) + low-contrast bg.
  *
  * .selectorBtnSubtitle  — Secondary sub-label inside a .selectorBtn.
  */
 
 .selectorBtn {
-	/* Always reserve 2px border space — inactive border is transparent so nothing
-	   shifts when the active state changes border width. */
-	border: 2px solid transparent;
-	outline: 1px solid var(--text-dim);
+	/* box-shadow ring doesn't affect layout, so 1px ↔ 2px never shifts siblings. */
+	border: none;
+	box-shadow: 0 0 0 1px var(--text-dim);
 	border-radius: 8px;
 	background-color: var(--btn-outline-bg);
 	color: var(--text-dim);
@@ -144,7 +143,7 @@
 	cursor: pointer;
 	transition:
 		background-color 0.2s ease,
-		outline-color 0.2s ease;
+		box-shadow 0.2s ease;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -163,8 +162,7 @@
 }
 
 .selectorBtn.active {
-	border: 2px solid var(--text);
-	outline: none;
+	box-shadow: 0 0 0 2px var(--text);
 	background-color: var(--low-contrast);
 	color: var(--text);
 }
