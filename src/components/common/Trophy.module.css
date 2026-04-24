@@ -218,6 +218,6 @@
 	.trophy:not(.mini):not(.earned) {
 		padding-block: 12px;
 		padding-inline: 12px;
-		padding-top: 20px;
+		padding-top: 18px;
 	}
 }
