@@ -28,7 +28,7 @@
  *                   Hover: opacity 0.85.
  *
  *  .btn-outline   — Outlined. Standard actions (restart, confirm, feedback).
- *                   bg: --btn-outline-bg, text: --text, border: 1px var(--text).
+ *                   bg: --btn-outline-bg, text/border: var(--text-dim).
  *                   Hover: --btn-outline-hover bg.
  *
  *  .btn-google    — Always-white. Google sign-in CTA.
@@ -92,9 +92,9 @@
 }
 
 .btn-outline {
-	border: 1px solid var(--text);
+	border: 1px solid var(--text-dim);
 	background-color: var(--btn-outline-bg);
-	color: var(--text);
+	color: var(--text-dim);
 	font-size: var(--text-sm);
 	transition:
 		background-color 0.15s ease,
@@ -126,16 +126,16 @@
  * .selectorBtn         — Tile-shaped choice button (filter bar, difficulty selector).
  *                        Two-line layout: primary label + smaller sub-label.
  *                        Apply alongside a component-specific class for size overrides.
- *                        Unselected: 1px var(--text) border. Active: 2px border + low-contrast bg.
+ *                        Unselected: 1px var(--text-dim) border. Active: 2px var(--text) + low-contrast bg.
  *
  * .selectorBtnSubtitle  — Secondary sub-label inside a .selectorBtn.
  */
 
 .selectorBtn {
-	border: 1px solid var(--text);
+	border: 1px solid var(--text-dim);
 	border-radius: 8px;
 	background-color: var(--btn-outline-bg);
-	color: var(--text);
+	color: var(--text-dim);
 	font-size: var(--text-base);
 	font-weight: 600;
 	cursor: pointer;
@@ -160,8 +160,9 @@
 }
 
 .selectorBtn.active {
-	border-width: 2px;
+	border: 2px solid var(--text);
 	background-color: var(--low-contrast);
+	color: var(--text);
 }
 
 .selectorBtnSubtitle {

@@ -78,10 +78,10 @@
 /* ─── Variant: Future (placeholder) ──────────────────────────── */
 
 /* Future slots on the last TrophyCase page — not yet released.
-   Uses the lowest-contrast border color and dashed style to signal "coming soon".
-   Color-only approach — no opacity — consistent with the rest of the token system. */
+   Uses --text-dim (mid-contrast) so the dashed border is visible against the
+   card surface without drawing attention. Color-only — no opacity. */
 .trophy.future {
-	--trophy-text: var(--border);
+	--trophy-text: var(--text-dim);
 	border-style: dashed;
 }
 

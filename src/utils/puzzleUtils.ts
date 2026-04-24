@@ -1,7 +1,7 @@
 import emojiCalendar from "../../data/emoji_calendar.json";
 
 // Update this to the actual launch date before shipping.
-export const LAUNCH_DATE = "2026-01-01";
+export const LAUNCH_DATE = "2026-04-24";
 
 /**
  * Get the latest puzzle ID (today's puzzle number) based on start date.
