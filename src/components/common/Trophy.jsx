@@ -54,7 +54,7 @@ function Trophy({
 			{!isFuture && (isEarned || !isMini) && (
 				<div className={styles.emoji}>{emoji}</div>
 			)}
-			{!isMini && name && <div>{name}</div>}
+			{!isMini && name && <div className={styles.name}>{name}</div>}
 		</div>
 	);
 }
