@@ -75,9 +75,12 @@
 }
 
 /* Full-size (game view) unearned: soft surface fill, no hard border edge.
-   Anchors the trophy visually without competing with the restart button border. */
+   Uses --text color (not --text-dim) for legibility against the surface bg.
+   Extra inline padding gives it a wider chip shape. */
 .trophy:not(.mini):not(.earned) {
 	background-color: var(--surface);
+	color: var(--text);
+	padding-inline: 20px;
 }
 
 /* ─── Variant: Future (placeholder) ──────────────────────────── */
