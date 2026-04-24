@@ -74,14 +74,30 @@
 	box-shadow: inset 0 0 0 1px var(--border);
 }
 
-/* Full-size (game view) unearned: soft surface fill, no hard border edge.
-   Uses --text color (not --text-dim) for legibility against the surface bg.
-   Extra inline padding gives it a wider chip shape. */
+/* Full-size (game view) unearned: fieldset-legend style.
+   Full rounded-corner border surrounds the emoji + name.
+   The puzzle number floats on the top border, centered, with --bg behind it
+   to visually cut the line. */
 .trophy:not(.mini):not(.earned) {
-	background-color: var(--surface);
+	position: relative;
+	background-color: transparent;
 	color: var(--text);
 	padding-block: 12px;
 	padding-inline: 16px;
+	padding-top: 20px;
+	border: 1px solid var(--border);
+	border-radius: 8px;
+}
+
+/* Absolutely centered on the top border; --bg masks the border behind the text. */
+.trophy:not(.mini):not(.earned) .number {
+	position: absolute;
+	top: 0;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background-color: var(--bg);
+	padding-inline: 8px;
+	white-space: nowrap;
 }
 
 /* ─── Variant: Future (placeholder) ──────────────────────────── */
