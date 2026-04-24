@@ -32,18 +32,27 @@ function TrophyCase({ solvedGames, highlightPuzzleId }) {
 		setUserSelectedPage(Math.min(totalPages, currentPage + 1));
 
 	const startIndex = (currentPage - 1) * TROPHIES_PER_PAGE;
+	// Always fill the last page to a full TROPHIES_PER_PAGE so the grid never
+	// looks sparse. Slots beyond totalPuzzles are "future" placeholders.
+	const isLastPage = currentPage === totalPages;
+	const slotsOnPage = isLastPage
+		? TROPHIES_PER_PAGE
+		: Math.min(TROPHIES_PER_PAGE, totalPuzzles - startIndex);
 	const trophySlots = Array.from(
-		{ length: Math.min(TROPHIES_PER_PAGE, totalPuzzles - startIndex) },
+		{ length: slotsOnPage },
 		(_, i) => {
 			const puzzleNum = startIndex + i + 1;
+			const isFuture = puzzleNum > totalPuzzles;
 			const puzzleSolved = solvedGames?.[puzzleNum];
 			let solvedDifficulty = null;
-			if (puzzleSolved?.[DIFFICULTY.HARD]) {
-				solvedDifficulty = DIFFICULTY.HARD;
-			} else if (puzzleSolved?.[DIFFICULTY.NORMAL]) {
-				solvedDifficulty = DIFFICULTY.NORMAL;
+			if (!isFuture) {
+				if (puzzleSolved?.[DIFFICULTY.HARD]) {
+					solvedDifficulty = DIFFICULTY.HARD;
+				} else if (puzzleSolved?.[DIFFICULTY.NORMAL]) {
+					solvedDifficulty = DIFFICULTY.NORMAL;
+				}
 			}
-			return { puzzleNum, solvedDifficulty };
+			return { puzzleNum, solvedDifficulty, isFuture };
 		},
 	);
 
@@ -61,6 +70,7 @@ function TrophyCase({ solvedGames, highlightPuzzleId }) {
 							difficulty={
 								slot.solvedDifficulty || DIFFICULTY.NORMAL
 							}
+							isFuture={slot.isFuture}
 							isMini={true}
 						/>
 					))}

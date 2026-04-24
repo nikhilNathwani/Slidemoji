@@ -75,6 +75,15 @@
 	box-shadow: inset 0 0 0 1px var(--border);
 }
 
+/* ─── Variant: Future (placeholder) ──────────────────────────── */
+
+/* Future slots on the last TrophyCase page — not yet released.
+   Dimmed and dashed to signal "coming soon" without showing details. */
+.trophy.future {
+	opacity: 0.3;
+	border-style: dashed;
+}
+
 /* ─── Variant: Earned ─────────────────────────────────────────── */
 
 /* Shared earned styles — consumed via component tokens */

@@ -1,7 +1,6 @@
 import { FontAwesomeIcon, faShieldAlt } from "../utils/icons";
 import GoogleSignInButton from "./GoogleSignInButton";
 import styles from "./SignInUpsell.module.css";
-import "../App.css";
 
 function SignInUpsell({ isCondensed = false }) {
 	return isCondensed ? (

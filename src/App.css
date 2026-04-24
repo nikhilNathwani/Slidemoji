@@ -20,14 +20,6 @@
 	--border: var(--low-contrast);
 	--text: var(--high-contrast);
 	--text-dim: var(--mid-contrast);
-	--btn-solid-bg: var(--high-contrast);
-	--btn-solid-text: var(--base);
-	--btn-outline-bg: var(--base);
-	--btn-outline-text: var(--text-dim);
-	--btn-outline-border: var(--low-contrast);
-	--btn-outline-hover: var(--low-contrast);
-	--btn-selector-active-border: var(--high-contrast);
-	--btn-selector-active-bg: var(--low-contrast);
 	--dialog-overlay: #000000bf;
 }
 
@@ -44,14 +36,6 @@
 	--border: var(--low-contrast);
 	--text: var(--high-contrast);
 	--text-dim: var(--mid-contrast);
-	--btn-solid-bg: var(--high-contrast);
-	--btn-solid-text: var(--base);
-	--btn-outline-bg: var(--base);
-	--btn-outline-text: var(--text-dim);
-	--btn-outline-border: var(--low-contrast);
-	--btn-outline-hover: var(--low-contrast);
-	--btn-selector-active-border: var(--high-contrast);
-	--btn-selector-active-bg: var(--low-contrast);
 	--dialog-overlay: #00000080;
 }
 

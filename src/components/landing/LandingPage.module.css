@@ -80,12 +80,6 @@
 
 .landingFooter a {
 	color: var(--text);
-	text-decoration: none;
-	transition: opacity 0.2s ease;
-}
-
-.landingFooter a:hover {
-	text-decoration: underline;
 }
 
 /* ─── Media Queries ─────────────────────────────────────────────── */

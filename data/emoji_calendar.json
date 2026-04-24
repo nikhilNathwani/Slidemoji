@@ -1,5 +1,101 @@
 [
   {
+    "emoji": "😂",
+    "name": "Face with Tears of Joy"
+  },
+  {
+    "emoji": "🍕",
+    "name": "Pizza"
+  },
+  {
+    "emoji": "🐶",
+    "name": "Dog Face"
+  },
+  {
+    "emoji": "🌈",
+    "name": "Rainbow"
+  },
+  {
+    "emoji": "🎸",
+    "name": "Guitar"
+  },
+  {
+    "emoji": "⚽",
+    "name": "Soccer Ball"
+  },
+  {
+    "emoji": "🦁",
+    "name": "Lion"
+  },
+  {
+    "emoji": "🍦",
+    "name": "Soft Ice Cream"
+  },
+  {
+    "emoji": "🚀",
+    "name": "Rocket"
+  },
+  {
+    "emoji": "🎂",
+    "name": "Birthday Cake"
+  },
+  {
+    "emoji": "🦋",
+    "name": "Butterfly"
+  },
+  {
+    "emoji": "❤️",
+    "name": "Red Heart"
+  },
+  {
+    "emoji": "🐱",
+    "name": "Cat Face"
+  },
+  {
+    "emoji": "🍎",
+    "name": "Red Apple"
+  },
+  {
+    "emoji": "✈️",
+    "name": "Airplane"
+  },
+  {
+    "emoji": "🎮",
+    "name": "Video Game"
+  },
+  {
+    "emoji": "🌺",
+    "name": "Hibiscus"
+  },
+  {
+    "emoji": "🏆",
+    "name": "Trophy"
+  },
+  {
+    "emoji": "🐸",
+    "name": "Frog"
+  },
+  {
+    "emoji": "🎵",
+    "name": "Musical Note"
+  },
+  {
+    "emoji": "🌙",
+    "name": "Crescent Moon"
+  },
+  {
+    "emoji": "🍓",
+    "name": "Strawberry"
+  },
+  {
+    "emoji": "🎨",
+    "name": "Artist Palette"
+  },
+  {
+    "emoji": "🏖️",
+    "name": "Beach with Umbrella"
+  },
+  {
     "emoji": "🔏",
     "name": "Locked with Pen"
   },
@@ -30,10 +126,6 @@
   {
     "emoji": "🥡",
     "name": "Takeout Box"
-  },
-  {
-    "emoji": "🎸",
-    "name": "Guitar"
   },
   {
     "emoji": "🍶",
@@ -628,10 +720,6 @@
     "name": "Chair"
   },
   {
-    "emoji": "😂",
-    "name": "Face with Tears of Joy"
-  },
-  {
     "emoji": "💑",
     "name": "Couple with Heart"
   },
@@ -748,10 +836,6 @@
     "name": "Expressionless Face"
   },
   {
-    "emoji": "🐶",
-    "name": "Dog Face"
-  },
-  {
     "emoji": "🚹",
     "name": "Mens Room"
   },
@@ -790,10 +874,6 @@
   {
     "emoji": "⏳",
     "name": "Hourglass Not Done"
-  },
-  {
-    "emoji": "🚀",
-    "name": "Rocket"
   },
   {
     "emoji": "🚑",
@@ -1084,10 +1164,6 @@
     "name": "Right Arrow Curving Down"
   },
   {
-    "emoji": "⚽",
-    "name": "Soccer Ball"
-  },
-  {
     "emoji": "🕸️",
     "name": "Spider Web"
   },
@@ -1210,14 +1286,6 @@
   {
     "emoji": "🍑",
     "name": "Peach"
-  },
-  {
-    "emoji": "🌈",
-    "name": "Rainbow"
-  },
-  {
-    "emoji": "🏆",
-    "name": "Trophy"
   },
   {
     "emoji": "🍞",
@@ -1748,10 +1816,6 @@
     "name": "Ten O'Clock"
   },
   {
-    "emoji": "🎮",
-    "name": "Video Game"
-  },
-  {
     "emoji": "🧑‍🌾",
     "name": "Farmer"
   },
@@ -1850,10 +1914,6 @@
   {
     "emoji": "🆘",
     "name": "SOS Button"
-  },
-  {
-    "emoji": "🎂",
-    "name": "Birthday Cake"
   },
   {
     "emoji": "🧑‍🏭",
@@ -2126,10 +2186,6 @@
   {
     "emoji": "📘",
     "name": "Blue Book"
-  },
-  {
-    "emoji": "🍦",
-    "name": "Soft Ice Cream"
   },
   {
     "emoji": "🪲",
@@ -2552,10 +2608,6 @@
     "name": "Chestnut"
   },
   {
-    "emoji": "✈️",
-    "name": "Airplane"
-  },
-  {
     "emoji": "🙀",
     "name": "Weary Cat"
   },
@@ -2764,10 +2816,6 @@
     "name": "Straight Ruler"
   },
   {
-    "emoji": "🦋",
-    "name": "Butterfly"
-  },
-  {
     "emoji": "🙆",
     "name": "Person Gesturing OK"
   },
@@ -2858,10 +2906,6 @@
   {
     "emoji": "🔲",
     "name": "Black Square Button"
-  },
-  {
-    "emoji": "🎨",
-    "name": "Artist Palette"
   },
   {
     "emoji": "🏹",
@@ -3036,10 +3080,6 @@
     "name": "Top Hat"
   },
   {
-    "emoji": "🍕",
-    "name": "Pizza"
-  },
-  {
     "emoji": "🥜",
     "name": "Peanuts"
   },
@@ -3158,10 +3198,6 @@
   {
     "emoji": "🐟",
     "name": "Fish"
-  },
-  {
-    "emoji": "🍎",
-    "name": "Red Apple"
   },
   {
     "emoji": "🫣",
@@ -3784,10 +3820,6 @@
     "name": "Service Dog"
   },
   {
-    "emoji": "❤️",
-    "name": "Red Heart"
-  },
-  {
     "emoji": "🏴",
     "name": "Black Flag"
   },
@@ -3928,10 +3960,6 @@
     "name": "Cactus"
   },
   {
-    "emoji": "🐱",
-    "name": "Cat Face"
-  },
-  {
     "emoji": "🫔",
     "name": "Tamale"
   },
@@ -3980,20 +4008,12 @@
     "name": "Candle"
   },
   {
-    "emoji": "🎵",
-    "name": "Musical Note"
-  },
-  {
     "emoji": "🌜",
     "name": "Last Quarter Moon Face"
   },
   {
     "emoji": "🍯",
     "name": "Honey Pot"
-  },
-  {
-    "emoji": "🦁",
-    "name": "Lion"
   },
   {
     "emoji": "🧶",
@@ -4240,10 +4260,6 @@
     "name": "Hand Index Thumb Crossed"
   },
   {
-    "emoji": "🏖️",
-    "name": "Beach with Umbrella"
-  },
-  {
     "emoji": "🥫",
     "name": "Canned Food"
   },
@@ -4396,20 +4412,12 @@
     "name": "Globe Showing Asia-Australia"
   },
   {
-    "emoji": "🌺",
-    "name": "Hibiscus"
-  },
-  {
     "emoji": "🪥",
     "name": "Toothbrush"
   },
   {
     "emoji": "🪺",
     "name": "Nest with Eggs"
-  },
-  {
-    "emoji": "🍓",
-    "name": "Strawberry"
   },
   {
     "emoji": "🫸",
@@ -5368,10 +5376,6 @@
     "name": "Wolf"
   },
   {
-    "emoji": "🐸",
-    "name": "Frog"
-  },
-  {
     "emoji": "⏩",
     "name": "Fast-Forward Button"
   },
@@ -5626,10 +5630,6 @@
   {
     "emoji": "🫷",
     "name": "Leftwards Pushing Hand"
-  },
-  {
-    "emoji": "🌙",
-    "name": "Crescent Moon"
   },
   {
     "emoji": "⛪",

@@ -12,9 +12,10 @@ function Trophy({
 	isEarned = false, // Whether the current difficulty is solved
 	difficulty = DIFFICULTY.NORMAL, // Current difficulty being played/viewed
 	celebrationKey = 0, // Incremented by Game each time a player move solves the puzzle
+	isFuture = false, // True for placeholder slots not yet released
 }) {
-	// Skip fetch if caller already provided emoji, or if mini+unearned (nothing to display).
-	const skipFetch = trophyEmoji || (isMini && !isEarned);
+	// Skip fetch if caller already provided emoji, or if mini (nothing to display).
+	const skipFetch = trophyEmoji || isMini || isFuture;
 	const { data: puzzleData } = usePuzzle(skipFetch ? null : trophyNum);
 
 	const emoji = trophyEmoji || puzzleData?.emoji;
@@ -39,6 +40,7 @@ function Trophy({
 				isEarned && styles.earned,
 				isEarned && styles[difficulty], //'difficulty' values match CSS class names
 				isCelebrating && styles.celebrating,
+				isFuture && styles.future,
 			]
 				.filter(Boolean)
 				.join(" ")}
@@ -46,8 +48,8 @@ function Trophy({
 				setIsCelebrating(false);
 			}}
 		>
-			<div className={styles.number}>{formatPuzzleId(trophyNum)}</div>
-			{(isEarned || !isMini) && (
+			{!isFuture && <div className={styles.number}>{formatPuzzleId(trophyNum)}</div>}
+			{!isFuture && (isEarned || !isMini) && (
 				<div className={styles.emoji}>{emoji}</div>
 			)}
 			{!isMini && name && <div>{name}</div>}
