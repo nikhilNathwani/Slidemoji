@@ -80,7 +80,8 @@
 .trophy:not(.mini):not(.earned) {
 	background-color: var(--surface);
 	color: var(--text);
-	padding: 16px;
+	padding-block: 12px;
+	padding-inline: 16px;
 }
 
 /* ─── Variant: Future (placeholder) ──────────────────────────── */
@@ -198,8 +199,3 @@
 	}
 }
 
-@media (max-width: 600px) {
-	.trophy:not(.earned):not(.mini) {
-		padding: 12px;
-	}
-}
