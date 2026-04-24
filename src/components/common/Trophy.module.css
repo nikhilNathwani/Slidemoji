@@ -74,9 +74,11 @@
 	box-shadow: inset 0 0 0 1px var(--border);
 }
 
-/* Full-size (game view) unearned: no border — emoji + number are self-contained
-   as an info display and don't need visual containment. Removes competition with
-   the restart button border and keeps the grid as the visual focus. */
+/* Full-size (game view) unearned: soft surface fill, no hard border edge.
+   Anchors the trophy visually without competing with the restart button border. */
+.trophy:not(.mini):not(.earned) {
+	background-color: var(--surface);
+}
 
 /* ─── Variant: Future (placeholder) ──────────────────────────── */
 
