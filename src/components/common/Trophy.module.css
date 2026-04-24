@@ -69,9 +69,10 @@
 
 /* ─── Variant: Unearned ───────────────────────────────────────── */
 
-/* Mini unearned: inset shadow gives a visible slot in the TrophyCase grid. */
+/* Mini unearned: dashed border matches future slots — both are unfilled.
+   Inset shadow kept for legibility against the card surface. */
 .trophy.mini:not(.earned) {
-	box-shadow: inset 0 0 0 1px var(--border);
+	border-style: dashed;
 }
 
 /* Full-size (game view) unearned: fieldset-legend style.
@@ -217,5 +218,6 @@
 	.trophy:not(.mini):not(.earned) {
 		padding-block: 8px;
 		padding-inline: 12px;
+		padding-top: 12px;
 	}
 }

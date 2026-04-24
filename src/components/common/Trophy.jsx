@@ -14,8 +14,8 @@ function Trophy({
 	celebrationKey = 0, // Incremented by Game each time a player move solves the puzzle
 	isFuture = false, // True for placeholder slots not yet released
 }) {
-	// Skip fetch if caller already provided emoji, or if mini (nothing to display).
-	const skipFetch = trophyEmoji || isMini || isFuture;
+	// Skip fetch if caller already provided emoji, or if mini+unearned (nothing to display), or future.
+	const skipFetch = trophyEmoji || (isMini && !isEarned) || isFuture;
 	const { data: puzzleData } = usePuzzle(skipFetch ? null : trophyNum);
 
 	const emoji = trophyEmoji || puzzleData?.emoji;
@@ -48,7 +48,7 @@ function Trophy({
 				setIsCelebrating(false);
 			}}
 		>
-			{!isFuture && (
+			{!isFuture && !(isMini && !isEarned) && (
 				<div className={styles.number}>{formatPuzzleId(trophyNum)}</div>
 			)}
 			{!isFuture && (isEarned || !isMini) && (
