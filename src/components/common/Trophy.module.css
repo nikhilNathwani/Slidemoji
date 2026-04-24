@@ -197,5 +197,9 @@
 	.mini .emoji {
 		font-size: 1.75rem;
 	}
-}
 
+	.trophy:not(.mini):not(.earned) {
+		padding-block: 8px;
+		padding-inline: 12px;
+	}
+}
