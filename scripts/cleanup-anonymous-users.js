@@ -35,14 +35,23 @@ envContent.split("\n").forEach((line) => {
 	const eqIdx = trimmed.indexOf("=");
 	if (eqIdx === -1) return;
 	const key = trimmed.slice(0, eqIdx).trim();
-	const value = trimmed.slice(eqIdx + 1).trim().replace(/^"|"$/g, "");
+	const value = trimmed
+		.slice(eqIdx + 1)
+		.trim()
+		.replace(/^"|"$/g, "");
 	envVars[key] = value;
 });
 
 const privateKey = envVars.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n");
-if (!envVars.FIREBASE_PROJECT_ID || !envVars.FIREBASE_CLIENT_EMAIL || !privateKey) {
+if (
+	!envVars.FIREBASE_PROJECT_ID ||
+	!envVars.FIREBASE_CLIENT_EMAIL ||
+	!privateKey
+) {
 	console.error("❌ Missing Admin SDK credentials in .env.local");
-	console.error("Run: node scripts/import-firebase-key.js <service-account.json>");
+	console.error(
+		"Run: node scripts/import-firebase-key.js <service-account.json>",
+	);
 	process.exit(1);
 }
 

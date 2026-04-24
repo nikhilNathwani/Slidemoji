@@ -8,9 +8,8 @@
  * using the emoji calendar and generating scrambled grids for both 3x3 and 4x4 difficulties.
  */
 
-import { initializeApp } from "firebase/app";
-import { getFirestore, doc, setDoc } from "firebase/firestore";
-import { getAuth, signInAnonymously } from "firebase/auth";
+import { initializeApp, cert } from "firebase-admin/app";
+import { getFirestore } from "firebase-admin/firestore";
 import { readFileSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
@@ -44,44 +43,31 @@ envFile.split("\n").forEach((line) => {
 
 	const [key, ...valueParts] = trimmed.split("=");
 	if (key && valueParts.length) {
-		envVars[key.trim()] = valueParts.join("=").trim();
+		envVars[key.trim()] = valueParts.join("=").trim().replace(/^"|"$/g, "");
 	}
 });
 
 console.log("Loaded environment variables:", Object.keys(envVars));
 
-// Firebase configuration
-const firebaseConfig = {
-	apiKey: envVars.VITE_FIREBASE_API_KEY,
-	authDomain: envVars.VITE_FIREBASE_AUTH_DOMAIN,
-	projectId: envVars.VITE_FIREBASE_PROJECT_ID,
-	storageBucket: envVars.VITE_FIREBASE_STORAGE_BUCKET,
-	messagingSenderId: envVars.VITE_FIREBASE_MESSAGING_SENDER_ID,
-	appId: envVars.VITE_FIREBASE_APP_ID,
-};
-
-// Check for Firebase config
-if (!firebaseConfig.apiKey) {
-	console.error("❌ Error: Firebase configuration not found!");
-	console.error(
-		"Make sure you have a .env.local file with your Firebase credentials.",
-	);
-	console.error("\nRequired variables:");
-	console.error("  VITE_FIREBASE_API_KEY");
-	console.error("  VITE_FIREBASE_AUTH_DOMAIN");
-	console.error("  VITE_FIREBASE_PROJECT_ID");
-	console.error("  VITE_FIREBASE_STORAGE_BUCKET");
-	console.error("  VITE_FIREBASE_MESSAGING_SENDER_ID");
-	console.error("  VITE_FIREBASE_APP_ID\n");
+// Admin SDK credentials — bypasses Firestore security rules
+const privateKey = envVars.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n");
+if (!envVars.FIREBASE_PROJECT_ID || !envVars.FIREBASE_CLIENT_EMAIL || !privateKey) {
+	console.error("❌ Missing Admin SDK credentials in .env.local");
+	console.error("Run: node scripts/import-firebase-key.js <service-account.json>");
 	process.exit(1);
 }
 
 console.log("Firebase config loaded successfully ✓\n");
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// Initialize Admin SDK
+const app = initializeApp({
+	credential: cert({
+		projectId: envVars.FIREBASE_PROJECT_ID,
+		clientEmail: envVars.FIREBASE_CLIENT_EMAIL,
+		privateKey,
+	}),
+});
 const db = getFirestore(app);
-const auth = getAuth(app);
 
 /**
  * Scramble puzzle grid - creates a solvable random configuration
@@ -176,8 +162,8 @@ function generatePuzzle(puzzleId) {
  * Upload a single puzzle to Firestore
  */
 async function uploadPuzzle(puzzle) {
-	const puzzleRef = doc(db, "puzzles", puzzle.id.toString());
-	await setDoc(puzzleRef, puzzle);
+	const puzzleRef = db.collection("puzzles").doc(puzzle.id.toString());
+	await puzzleRef.set(puzzle);
 	console.log(
 		`✓ Uploaded puzzle ${puzzle.id}: ${puzzle.emoji} ${puzzle.emojiName}`,
 	);
@@ -197,10 +183,7 @@ async function uploadAllPuzzles() {
 	console.log(`🎨 Using ${emojiCalendar.length} emojis from calendar\n`);
 
 	try {
-		// Sign in anonymously to get through security rules
-		console.log("🔐 Signing in anonymously...");
-		await signInAnonymously(auth);
-		console.log("✅ Signed in successfully\n");
+		console.log("✅ Using Admin SDK — security rules bypassed\n");
 
 		// Generate and upload puzzles in batches to avoid overwhelming Firestore
 		const batchSize = 10;
