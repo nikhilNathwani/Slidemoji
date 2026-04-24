@@ -2,10 +2,12 @@
 
 .tile {
 	background-color: var(--tile-bg);
-	/* Inset shadow used instead of a real border so the visual border is painted
-	   on top of the background. This prevents sub-pixel background-clip rounding
-	   from causing the emoji image to bleed into the border area. */
-	box-shadow: inset 0 0 0 1px var(--border);
+	/* Real border with background-clip:border-box — the border is spec-guaranteed
+	   to paint on top of the background, so the emoji image cannot bleed at any
+	   edge regardless of sub-pixel rounding or compositor layering on mobile.
+	   (The previous inset box-shadow approach caused left/right bleed on mobile
+	   because the shadow renders as a separate composited layer; real borders don't.) */
+	border: 1px solid var(--border);
 	color: var(--text);
 	display: flex;
 	justify-content: center;
