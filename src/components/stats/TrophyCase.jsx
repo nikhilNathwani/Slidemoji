@@ -38,23 +38,20 @@ function TrophyCase({ solvedGames, highlightPuzzleId }) {
 	const slotsOnPage = isLastPage
 		? TROPHIES_PER_PAGE
 		: Math.min(TROPHIES_PER_PAGE, totalPuzzles - startIndex);
-	const trophySlots = Array.from(
-		{ length: slotsOnPage },
-		(_, i) => {
-			const puzzleNum = startIndex + i + 1;
-			const isFuture = puzzleNum > totalPuzzles;
-			const puzzleSolved = solvedGames?.[puzzleNum];
-			let solvedDifficulty = null;
-			if (!isFuture) {
-				if (puzzleSolved?.[DIFFICULTY.HARD]) {
-					solvedDifficulty = DIFFICULTY.HARD;
-				} else if (puzzleSolved?.[DIFFICULTY.NORMAL]) {
-					solvedDifficulty = DIFFICULTY.NORMAL;
-				}
+	const trophySlots = Array.from({ length: slotsOnPage }, (_, i) => {
+		const puzzleNum = startIndex + i + 1;
+		const isFuture = puzzleNum > totalPuzzles;
+		const puzzleSolved = solvedGames?.[puzzleNum];
+		let solvedDifficulty = null;
+		if (!isFuture) {
+			if (puzzleSolved?.[DIFFICULTY.HARD]) {
+				solvedDifficulty = DIFFICULTY.HARD;
+			} else if (puzzleSolved?.[DIFFICULTY.NORMAL]) {
+				solvedDifficulty = DIFFICULTY.NORMAL;
 			}
-			return { puzzleNum, solvedDifficulty, isFuture };
-		},
-	);
+		}
+		return { puzzleNum, solvedDifficulty, isFuture };
+	});
 
 	return (
 		<div className={styles.trophyCase}>

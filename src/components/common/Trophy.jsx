@@ -48,7 +48,9 @@ function Trophy({
 				setIsCelebrating(false);
 			}}
 		>
-			{!isFuture && <div className={styles.number}>{formatPuzzleId(trophyNum)}</div>}
+			{!isFuture && (
+				<div className={styles.number}>{formatPuzzleId(trophyNum)}</div>
+			)}
 			{!isFuture && (isEarned || !isMini) && (
 				<div className={styles.emoji}>{emoji}</div>
 			)}

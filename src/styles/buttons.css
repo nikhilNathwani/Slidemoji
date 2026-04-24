@@ -5,22 +5,14 @@
 	--btn-solid-bg: var(--high-contrast);
 	--btn-solid-text: var(--base);
 	--btn-outline-bg: var(--base);
-	--btn-outline-text: var(--text);
-	--btn-outline-border: var(--text);
 	--btn-outline-hover: var(--low-contrast);
-	--btn-selector-active-border: var(--high-contrast);
-	--btn-selector-active-bg: var(--low-contrast);
 }
 
 .light-theme {
 	--btn-solid-bg: var(--high-contrast);
 	--btn-solid-text: var(--base);
 	--btn-outline-bg: var(--base);
-	--btn-outline-text: var(--text-dim);
-	--btn-outline-border: var(--low-contrast);
 	--btn-outline-hover: var(--low-contrast);
-	--btn-selector-active-border: var(--high-contrast);
-	--btn-selector-active-bg: var(--low-contrast);
 }
 
 /**
@@ -36,7 +28,7 @@
  *                   Hover: opacity 0.85.
  *
  *  .btn-outline   — Outlined. Standard actions (restart, confirm, feedback).
- *                   bg: --btn-outline-bg, text: --text, border: 1px --text.
+ *                   bg: --btn-outline-bg, text: --text, border: 1px var(--text).
  *                   Hover: --btn-outline-hover bg.
  *
  *  .btn-google    — Always-white. Google sign-in CTA.
@@ -134,15 +126,16 @@
  * .selectorBtn         — Tile-shaped choice button (filter bar, difficulty selector).
  *                        Two-line layout: primary label + smaller sub-label.
  *                        Apply alongside a component-specific class for size overrides.
+ *                        Unselected: 1px var(--text) border. Active: 2px border + low-contrast bg.
  *
  * .selectorBtnSubtitle  — Secondary sub-label inside a .selectorBtn.
  */
 
 .selectorBtn {
-	border: 2px solid var(--btn-outline-border);
+	border: 1px solid var(--text);
 	border-radius: 8px;
 	background-color: var(--btn-outline-bg);
-	color: var(--btn-outline-text);
+	color: var(--text);
 	font-size: var(--text-base);
 	font-weight: 600;
 	cursor: pointer;
@@ -167,9 +160,8 @@
 }
 
 .selectorBtn.active {
-	border-color: var(--btn-selector-active-border);
-	background-color: var(--btn-selector-active-bg);
-	color: var(--text);
+	border-width: 2px;
+	background-color: var(--low-contrast);
 }
 
 .selectorBtnSubtitle {

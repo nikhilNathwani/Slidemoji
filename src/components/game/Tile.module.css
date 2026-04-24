@@ -2,7 +2,10 @@
 
 .tile {
 	background-color: var(--tile-bg);
-	border: 1px solid var(--border);
+	/* Inset shadow used instead of a real border so the visual border is painted
+	   on top of the background. This prevents sub-pixel background-clip rounding
+	   from causing the emoji image to bleed into the border area. */
+	box-shadow: inset 0 0 0 1px var(--border);
 	color: var(--text);
 	display: flex;
 	justify-content: center;
@@ -14,9 +17,8 @@
 	cursor: default;
 	/* Static background styles for emoji tiles */
 	background-repeat: no-repeat;
-	/* Background image is clipped to content box so the emoji never bleeds over the tile border */
-	background-origin: content-box;
-	background-clip: content-box;
+	background-origin: border-box;
+	background-clip: border-box;
 	/* Keep tile permanently on a compositing layer so it is never de-promoted
 	   between Framer Motion's spring end and the celebration CSS animation start.
 	   Without this, the layer promotion gap causes a 0.5–1px sub-pixel snap
