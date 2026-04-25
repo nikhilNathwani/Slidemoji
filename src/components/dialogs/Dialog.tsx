@@ -38,14 +38,32 @@ function Dialog({ isOpen, onClose, title, children }: DialogProps) {
 					allowOutsideClick: true,
 					escapeDeactivates: false,
 					fallbackFocus: "body",
+					initialFocus: "#dialog-container",
 				}}
 			>
 				<div
+					id="dialog-container"
+					tabIndex={-1}
 					role="dialog"
 					aria-modal="true"
 					aria-label={typeof title === "string" ? title : undefined}
 					className={styles.dialogContent}
 					onClick={(e) => e.stopPropagation()}
+					onKeyDown={(e) => {
+						if (e.key === "ArrowDown") {
+							e.preventDefault();
+							e.currentTarget.scrollBy({
+								top: 80,
+								behavior: "smooth",
+							});
+						} else if (e.key === "ArrowUp") {
+							e.preventDefault();
+							e.currentTarget.scrollBy({
+								top: -80,
+								behavior: "smooth",
+							});
+						}
+					}}
 				>
 					<div className={styles.dialogHeader}>
 						<h2>{title}</h2>

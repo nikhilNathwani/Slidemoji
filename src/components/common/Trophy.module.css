@@ -14,7 +14,6 @@
 	--trophy-text: oklch(35% 0.11 52);
 	--trophy-earned-base: oklch(88% 0.168 70);
 	--trophy-earned-highlight: oklch(92% 0.13 82);
-	--trophy-earned-number: oklch(35% 0.11 52);
 	--trophy-earned-shadow: oklch(77% 0.168 70 / 0.4);
 	/* Solid fill for flat (mini) usage — lighter + less chroma to match gradient's perceived brightness */
 	--trophy-earned-solid: oklch(92% 0.14 74);
@@ -25,7 +24,6 @@
 	--trophy-text: oklch(27% 0.08 259);
 	--trophy-earned-base: oklch(86% 0.09 215);
 	--trophy-earned-highlight: oklch(93% 0.06 215);
-	--trophy-earned-number: oklch(27% 0.08 259);
 	--trophy-earned-shadow: oklch(72% 0.1 215 / 0.4);
 	/* Solid fill for flat (mini) usage */
 	--trophy-earned-solid: oklch(90% 0.07 210);
