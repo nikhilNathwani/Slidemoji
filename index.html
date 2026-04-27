@@ -7,6 +7,8 @@
 		<link rel="manifest" href="/site.webmanifest" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+		<link rel="canonical" href="https://slidemoji.com/" />
+
 		<!-- Preload Google Font for faster loading -->
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -40,6 +42,23 @@
 			media="(prefers-color-scheme: dark)"
 			content="#181818"
 		/>
+
+		<!-- Structure data (JSON-LD) -->
+		<script type="application/ld+json">
+			{
+				"@context": "https://schema.org",
+				"@type": "WebApplication",
+				"name": "Slidemoji",
+				"url": "https://slidemoji.com",
+				"description": "Slide the tiles to unscramble the daily emoji puzzle.",
+				"applicationCategory": "Game",
+				"operatingSystem": "All",
+				"author": {
+					"@type": "Person",
+					"name": "Nikhil Nathwani"
+				}
+			}
+		</script>
 
 		<!-- Apply theme class synchronously before React hydrates to prevent flash of unstyled background -->
 		<script>

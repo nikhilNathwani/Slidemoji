@@ -45,7 +45,7 @@ function WinDialog({
 
 I unscrambled today's emoji! ${emoji}
 
-Play at slidemoji.com`;
+Play at https://slidemoji.com`;
 
 		// Copy to clipboard
 		navigator.clipboard
