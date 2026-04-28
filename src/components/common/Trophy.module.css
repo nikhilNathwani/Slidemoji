@@ -177,6 +177,7 @@
 /* Emoji name — lighter weight than the puzzle number to create visual hierarchy */
 .name {
 	font-weight: 400;
+	color: var(--text-dim);
 }
 
 .emoji {
