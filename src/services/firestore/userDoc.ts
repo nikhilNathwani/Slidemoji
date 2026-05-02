@@ -26,6 +26,7 @@ export interface UserDoc {
 	preferences: {
 		darkMode: boolean;
 		soundEnabled: boolean;
+		showNumbers?: boolean;
 	};
 	createdAt?: unknown; // Firestore server timestamp — written by app, never read
 	updatedAt?: unknown;

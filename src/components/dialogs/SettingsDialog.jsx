@@ -117,7 +117,7 @@ function SettingsDialog({
 								</button>
 							</div>
 						</div>
-							<div className={styles.settingsDivider} />
+						<div className={styles.settingsDivider} />
 					</>
 				)}
 				<div className={styles.settingsActions}>

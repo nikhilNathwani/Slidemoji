@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import styles from "./Tile.module.css";
 
 function getTileStyle(tileNumber, gridSize, emojiSvgUrl) {

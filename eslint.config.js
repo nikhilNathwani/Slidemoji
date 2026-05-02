@@ -48,6 +48,7 @@ export default defineConfig([
 		rules: {
 			"no-unused-vars": ["error", { varsIgnorePattern: "^[A-Z_]" }],
 			"react/jsx-key": "error",
+			"react/jsx-uses-vars": "error",
 			"react/no-array-index-key": "warn",
 			"react/self-closing-comp": "warn",
 		},
