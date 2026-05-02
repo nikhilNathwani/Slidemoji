@@ -23,7 +23,7 @@ function WinDialog({
 
 I unscrambled today's emoji! ${emoji}
 
-Play at https://slidemoji.com`;
+Play here: https://slidemoji.com`;
 
 		// Copy to clipboard
 		navigator.clipboard
@@ -54,7 +54,7 @@ Play at https://slidemoji.com`;
 					{copied ? "Copied!" : "Share"}
 				</button>
 
-				<div className={styles.winDivider}></div>
+				<div className={styles.winDivider} />
 
 				<StatsContent
 					showTitle={true}

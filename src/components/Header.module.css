@@ -57,6 +57,10 @@
 .avatarButton {
 	width: 48px;
 	height: 48px;
+	/* Negative margin cancels the extra height so the avatar doesn't push the
+	   header taller than its natural icon-button height (same trick as .headerButton).
+	   (48px - 24px natural content height) / 2 = 12px. */
+	margin-block: -12px;
 	border-radius: 50%;
 	background-color: var(--bg);
 	border: 1px solid var(--text-dim);
@@ -68,6 +72,16 @@
 	transition: opacity 0.2s ease;
 	flex-shrink: 0;
 	overflow: hidden; /* Ensure image stays within border */
+}
+
+@media (max-width: 600px) {
+	.avatarButton {
+		width: 36px;
+		height: 36px;
+		/* (36px - 24px) / 2 = 6px */
+		margin-block: -6px;
+		font-size: var(--text-xl);
+	}
 }
 
 .avatarButton:hover {

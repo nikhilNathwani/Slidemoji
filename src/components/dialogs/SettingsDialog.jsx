@@ -79,7 +79,7 @@ function SettingsDialog({
 						onToggle={() => setDarkMode(!darkMode)}
 					/>
 				</div>
-				<div className={styles.settingsDivider}></div>
+				<div className={styles.settingsDivider} />
 				{isDevMode && onAlmostSolve && (
 					<>
 						<div className={styles.settingsItem}>
@@ -117,7 +117,7 @@ function SettingsDialog({
 								</button>
 							</div>
 						</div>
-						<div className={styles.settingsDivider}></div>
+							<div className={styles.settingsDivider} />
 					</>
 				)}
 				<div className={styles.settingsActions}>
@@ -153,7 +153,7 @@ function Toggle({ isOn, onToggle, disabled = false }) {
 			onClick={onToggle}
 			disabled={disabled}
 		>
-			<span className={styles.slider}></span>
+			<span className={styles.slider} />
 			<span className={styles.label}>{isOn ? "ON" : "OFF"}</span>
 		</button>
 	);

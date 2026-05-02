@@ -125,6 +125,7 @@ export async function syncFirestoreUserData(firebaseUser: User): Promise<void> {
 					preferences: {
 						darkMode: readLocalPref("darkMode", false),
 						soundEnabled: readLocalPref("soundEnabled", false),
+						showNumbers: readLocalPref("showNumbers", true),
 					},
 					savedGames: null,
 					isPremium: false,

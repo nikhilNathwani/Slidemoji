@@ -14,10 +14,23 @@ import { useGameState } from "./hooks/useGameState";
 import { useSolvedGames } from "./hooks/useSolvedGames";
 
 function App() {
-	const { isLoading: isAuthLoading, isMerging } = useAuth();
+	const { isLoading: isAuthLoading, isMerging, user } = useAuth();
 
 	// PUZZLE contains: id, emoji, emoji name, initialGrids (normal and hard)
 	const [puzzleId, setPuzzleId] = useState(() => getLatestPuzzleId());
+
+	// When the user signs out while viewing an archive puzzle, reset to today's puzzle.
+	// Anonymous users have no premium so keeping them on a past puzzle is inconsistent.
+	// Tracking via useState (not useRef) to avoid react-hooks/refs; setState-during-render
+	// is the documented React pattern for detecting value transitions mid-render.
+	const isSignedIn = user?.isAnonymous === false;
+	const [prevIsSignedIn, setPrevIsSignedIn] = useState(false);
+	if (user && prevIsSignedIn !== isSignedIn) {
+		setPrevIsSignedIn(isSignedIn);
+		if (prevIsSignedIn && !isSignedIn) {
+			setPuzzleId(getLatestPuzzleId());
+		}
+	}
 	const { data: puzzleMetadata, isLoading: isLoadingPuzzle } =
 		usePuzzle(puzzleId);
 
@@ -155,7 +168,6 @@ function App() {
 				currentGrid={gameState[gameState.currentDifficulty]}
 				currentDifficulty={gameState.currentDifficulty}
 				setGameState={setGameState}
-				onOpenStats={() => setShowStatsDialog(true)}
 				onOpenArchive={() => setShowArchiveDialog(true)}
 				isAppDialogOpen={
 					showSettingsDialog || showStatsDialog || showArchiveDialog

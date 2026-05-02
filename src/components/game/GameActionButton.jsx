@@ -21,8 +21,8 @@ function GameActionButton({
 	if (isSolved && !isSignedIn) {
 		return (
 			<>
-				<div style={{ height: 0.5 + "rem" }}></div>
-				<SignInUpsell isCondensed={true}></SignInUpsell>
+				<div style={{ height: "0.5rem" }} />
+				<SignInUpsell isCondensed={true} />
 			</>
 		);
 	}

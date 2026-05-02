@@ -18,7 +18,6 @@ function Game({
 	currentGrid, // Current grid array
 	currentDifficulty, // Current difficulty ("normal"|"hard")
 	setGameState, // Function to update game state: setGameState({ currentDifficulty?, normal?, hard? })
-	onOpenStats,
 	onOpenArchive,
 	isAppDialogOpen = false,
 	devIsPremium,

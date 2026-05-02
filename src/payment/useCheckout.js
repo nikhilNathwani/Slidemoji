@@ -50,7 +50,7 @@ export function useCheckout() {
 			} catch {
 				throw new Error(
 					`Server returned an unexpected response (${res.status}). ` +
-						"API routes require \'vercel dev\' locally.",
+						"API routes require 'vercel dev' locally.",
 				);
 			}
 

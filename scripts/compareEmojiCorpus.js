@@ -1608,7 +1608,6 @@ console.log(
 );
 console.log(`════════════════════════════════════════════════════════════`);
 for (const e of notInWiki.sort()) {
-	const cp = showCodepoints(e);
 	const entry = calendar.find((c) => normalize(c.emoji) === e);
 	console.log(`  ${e}  ${showCodepoints(e)}  "${entry?.name ?? "?"}"`);
 }

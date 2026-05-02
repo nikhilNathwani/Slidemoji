@@ -99,9 +99,7 @@ function Header({ onSettingsClick, onStatsClick, onArchiveClick }) {
 										</div>
 									</div>
 								</div>
-								<div
-									className={styles.accountMenuDivider}
-								></div>
+								<div className={styles.accountMenuDivider} />
 								<button
 									className={styles.accountMenuItem}
 									onClick={handleSignOut}

@@ -14,7 +14,7 @@ interface UserDocState {
 }
 
 export default function UserDocProvider({ children }: { children: ReactNode }) {
-	const { user } = useAuth();
+	const { user, isMerging } = useAuth();
 	const userId = user?.uid ?? null;
 	const [state, setState] = useState<UserDocState>({
 		userId: null,
@@ -53,11 +53,19 @@ export default function UserDocProvider({ children }: { children: ReactNode }) {
 
 	const value: UseUserDocResult = useMemo(
 		() => ({
-			userDoc: state.userId === userId ? state.userData : null,
+			// During a merge (anonymous → Google sign-in) the Google user's Firestore
+			// doc hasn't streamed in yet. Show the anonymous user's last-known data to
+			// prevent the trophy case from flashing empty while waiting for the new doc.
+			userDoc:
+				state.userId === userId
+					? state.userData
+					: isMerging
+						? state.userData
+						: null,
 			isLoading: !!userId && state.userId !== userId,
 			error: state.userId === userId ? state.error : null,
 		}),
-		[state, userId],
+		[state, userId, isMerging],
 	);
 
 	return (

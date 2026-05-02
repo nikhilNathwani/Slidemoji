@@ -60,13 +60,13 @@ function AnimatedTileGrid() {
 		<div className={styles.animatedTileGrid}>
 			{tiles.map((tile, index) => (
 				<div
-					key={index}
+					key={index} // eslint-disable-line react/no-array-index-key
 					className={
 						tile === 8
 							? styles.animatedTileGap
 							: styles.animatedTile
 					}
-				></div>
+				/>
 			))}
 		</div>
 	);
