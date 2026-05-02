@@ -1,0 +1,68 @@
+First time playing ever
+-signed in user
+--start game: show initial 3x3 grid from firestore (initial grid always exists). Set latestDifficulty in firestore to 3x3. Initialize 3x3 gameState firestore entry with initial 3x3 grid
+--playing & not won yet: save 3x3 progress in firestore with each move. 3x3 gameState exists in firestore because it was already initialized
+--difficulty change to hard: Set latestDifficulty in firestore to 4x4. show initial 4x4 grid. Initialize 4x4 gameState firestore entry with initial 4x4 grid. 
+--game won: marked as solved (for given difficulty) in fire store. If won 4x4, replace "Restart" button with "View Trophies" button which launches statsDialog (trophy case). If won 3x3, replace "Restart" button with "Try Hard mode?" button which functions as changing difficulty setting to 4x4 (unless 4x4 is also won, in which case replace "Restart" button with "View Trophies" button). 
+-signed out user
+--start game: show initial 3x3 grid from firestore
+--playing & not won yet: don't save progress in firestore
+--difficulty change: show initial 4x4 grid. Don't save anything in firestore
+--game won: don't save trophy, show sign-in upsell in win dialog. Replace "Restart" button with the sign-in upsell.
+
+First time playing a day's game (but not first time playing ever)
+-signed in user
+--start game: show initial NxN grid from firestore, where NxN is the latestDifficulty from firestore. Initialize NxN gameState firestore entry with initial NxN grid
+--playing & not won yet: save NxN progress in firestore with each move. NxN gameState exists in firestore because it was already initialized
+--difficulty change: Set latestDifficulty in firestore to MxM. Show initial MxM grid. Initialize MxM gameState firestore entry with initial MxM grid. 
+--game won: marked as solved (for given difficulty) in fire store. If won 4x4, replace "Restart" button with "View Trophies" button which launches statsDialog (trophy case). If won 3x3, replace "Restart" button with "Try Hard mode?" button which functions as changing difficulty setting to 4x4 (unless 4x4 is also won, in which case replace "Restart" button with "View Trophies" button). 
+-signed out user
+--start game: show initial 3x3 grid from firestore
+--playing & not won yet: don't save progress in firestore
+--difficulty change: show initial 4x4 grid. Don't save anything in firestore
+--game won: don't save trophy, show sign-in upsell in win dialog. Replace "Restart" button with the sign-in upsell.
+
+Returning to a game that has started (by launching/refreshing app, or by changing difficulty to NxN in settings which sets latestDifficulty to NxN in firestore)
+-signed in user
+--start game: show saved NxN grid from firestore, where NxN is the latestDifficulty played according to firestore.
+--playing & not won yet: save NxN progress in firestore with each move. NxN gameState exists in firestore because it's what we loaded initially
+--difficulty change: Set latestDifficulty in firestore to MxM. Show saved MxM grid if exists, else initial MxM grid. Initialize/set MxM gameState firestore entry with the shown MxM grid. 
+--game won: marked as solved (for given difficulty) in fire store. If won 4x4, replace "Restart" button with "View Trophies" button which launches statsDialog (trophy case). If won 3x3, replace "Restart" button with "Try Hard mode?" button which functions as changing difficulty setting to 4x4 (unless 4x4 is also won, in which case replace "Restart" button with "View Trophies" button). 
+-signed out user
+--n/a, because this will appear as a first time playing the day's game. Handle as such.
+
+Returning to a game that was won (by launching/refreshing app, or by changing difficulty to NxN in settings which sets latestDifficulty to NxN in firestore)
+-signed in user
+--start game: show saved (solved) NxN grid from firestore, where NxN is the latestDifficulty played according to firestore. If NxN is 4x4, replace "Restart" button with "View Trophies" button which launches statsDialog (trophy case). If NxN is 3x3, replace "Restart" button with "Try Hard mode?" button which functions as changing difficulty setting to 4x4 (unless 4x4 is also won, in which case replace "Restart" button with "View Trophies" button). 
+--playing & not won yet: n/a
+--game solved: n/a (already solved per scenario)
+--difficulty change: Set latestDifficulty in firestore to MxM. Show saved MxM grid if exists, else initial MxM grid. Initialize/set MxM gameState firestore entry with the shown MxM grid. 
+-signed out user
+--n/a, because this will appear as a first time playing the day's game. Handle as such.
+
+Toggling sign-in state
+-signed out to signed in
+--playing NxN and not won yet: save latestDifficulty NxN and save current progress in NxN gameState. Play continues from latest grid state without any resetting. Unless firestore also has progress
+--game solved: save latestDifficulty NxN and save current progress (solved grid) in NxN gameState. marked as solved (for given difficulty) in fire store.
+-signed in to signed out
+--return to default difficulty (3x3) and display initial 3x3 grid. No earned trophies, so puzzleInfo should be in its default grey state
+
+Dark/Light Mode, Sound, and ShowNumbers settings:
+-principle: these settings should be respected for both signed in and signed out users. 
+-defaults: light mode, sound on, ShowNumbers on. 
+-signed out user
+--app boot: if no localStorage value, then set localStorage to default value, and boot with this setting 
+--change settings: save settings changes in localStorage 
+--puzzle won: trigger hide numbers (if not already hidden) so you can clearly see the solved image, but do not update ShowNumbers setting in localStorage.
+-signed in user
+--app boot: 
+----if firestore value exist, then use firestore value
+----else if no firestore value, then check localStorage
+------if localStorage value exists, then set firestore to be the localStorage value, and boot with this setting
+------else if no localStorage value, then set firestore and localStorage to default value, and boot with this setting 
+--change settings: save settings in firestore and in localStorage
+--puzzle won: trigger hide numbers (if not already hidden) so you can clearly see the solved image, but do not update ShowNumbers setting in firestore or localStorage.
+
+
+Playing an archive game
+-we'll come back to define this scenario later

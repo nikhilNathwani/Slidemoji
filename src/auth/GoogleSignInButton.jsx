@@ -58,8 +58,11 @@ function GoogleSignInButton({ isCondensed = false }) {
 			? "Sign out"
 			: "Sign in with Google";
 
-	// Show loading spinner or button content
-	const buttonContent = isProcessing ? (
+	// Show loading when any auth operation is in-flight (covers both this button's
+	// local click and global auth transitions), so all visible sign-in buttons
+	// show "Loading…" simultaneously.
+	const isShowingLoading = isLoading || isProcessing;
+	const buttonContent = isShowingLoading ? (
 		<span>Loading...</span>
 	) : (
 		<>

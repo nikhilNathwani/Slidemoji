@@ -174,10 +174,12 @@
 	font-variant-numeric: tabular-nums;
 }
 
-/* Emoji name — lighter weight than the puzzle number to create visual hierarchy */
+/* Emoji name — lighter weight than the puzzle number to create visual hierarchy.
+   Uses --trophy-text so earned trophies show the earned color (gold/blue).
+   For unearned trophies --trophy-text defaults to --text-dim, same as before. */
 .name {
 	font-weight: 400;
-	color: var(--text-dim);
+	color: var(--trophy-text);
 }
 
 .emoji {

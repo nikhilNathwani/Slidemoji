@@ -65,7 +65,13 @@ function App() {
 	});
 	const [showSettingsDialog, setShowSettingsDialog] = useState(false);
 	const [showStatsDialog, setShowStatsDialog] = useState(false);
-	const [showArchiveDialog, setShowArchiveDialog] = useState(false);
+	// Auto-open archive after a successful payment redirect (?payment=success).
+	// Stripe processes the webhook before redirecting, so isPremium should already
+	// be true by the time the user lands here.
+	const [showArchiveDialog, setShowArchiveDialog] = useState(() => {
+		const params = new URLSearchParams(window.location.search);
+		return params.get("payment") === "success";
+	});
 
 	const isLoading =
 		isLoadingPuzzle || isLoadingGameState || !gameState || !puzzleMetadata;
