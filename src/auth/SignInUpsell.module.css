@@ -31,8 +31,7 @@
 	line-height: 1.6;
 	max-width: 380px;
 	margin: 0;
-	display: none;
-	/* ^Hidden for now - re-evaluate if UI balance improves */
+	display: flex;
 	align-items: flex-start;
 	gap: 8px;
 	text-align: left;
