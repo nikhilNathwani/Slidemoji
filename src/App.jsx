@@ -70,8 +70,13 @@ function App() {
 	// Lazy initializer: skip landing page when returning from Stripe checkout.
 	const [showLandingPage, setShowLandingPage] = useState(() => {
 		const params = new URLSearchParams(window.location.search);
-		if (params.get("payment") === "success") {
+		const payment = params.get("payment");
+		// Clean the param from the URL in all cases so it never lingers.
+		if (payment) {
 			window.history.replaceState({}, "", window.location.pathname);
+		}
+		// cancelled → stay on landing page (user chose not to pay; just clean the URL)
+		if (payment === "success") {
 			return false;
 		}
 		return true;

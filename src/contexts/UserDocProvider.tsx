@@ -29,6 +29,24 @@ export default function UserDocProvider({ children }: { children: ReactNode }) {
 
 		const unsubscribe = subscribeToFirestoreUserData(userId, {
 			onData: (userData) => {
+				// Mirror preferences to localStorage so they survive sign-out.
+				// usePreference already does this on setPreference, but if the user
+				// has never toggled a preference manually (e.g. dark mode was set on
+				// a different device), localStorage would be empty after sign-out.
+				if (userData?.preferences) {
+					try {
+						for (const [key, value] of Object.entries(
+							userData.preferences,
+						)) {
+							localStorage.setItem(
+								`pref_${key}`,
+								JSON.stringify(value),
+							);
+						}
+					} catch {
+						/* localStorage may be unavailable; best-effort */
+					}
+				}
 				setState({
 					userId,
 					userData,
