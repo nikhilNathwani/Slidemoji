@@ -25,6 +25,9 @@ import {
 import { auth } from "../services/firebaseConfig";
 
 const googleProvider = new GoogleAuthProvider();
+// Force account chooser every time so users can pick any Google account,
+// even if the browser has remembered a previous session.
+googleProvider.setCustomParameters({ prompt: "select_account" });
 
 /**
  * Wraps a Firebase popup call and rejects within ~200ms of the popup closing,

@@ -89,7 +89,8 @@ function App() {
 	// NOTE: showLandingPage is false only when payment=success, so !showLandingPage
 	// correctly initializes showArchiveDialog without re-reading the URL (which was
 	// already cleaned by showLandingPage's initializer above).
-	const [showArchiveDialog, setShowArchiveDialog] = useState(!showLandingPage);
+	const [showArchiveDialog, setShowArchiveDialog] =
+		useState(!showLandingPage);
 
 	const isLoading =
 		isLoadingPuzzle || isLoadingGameState || !gameState || !puzzleMetadata;

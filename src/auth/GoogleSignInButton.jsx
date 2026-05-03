@@ -75,7 +75,23 @@ function GoogleSignInButton({ isCondensed = false }) {
 		</>
 	);
 
-	return (
+	return isCondensed ? (
+		<div className={styles.condensedWrapper}>
+			<button
+				className={className}
+				onClick={handleClick}
+				disabled={isDisabled}
+				aria-label={isSignedInWithGoogle ? "Sign Out" : "Sign In"}
+			>
+				{buttonContent}
+			</button>
+			{errorMessage && (
+				<p className={styles.errorMessageCondensed} role="alert">
+					{errorMessage}
+				</p>
+			)}
+		</div>
+	) : (
 		<>
 			<button
 				className={className}
