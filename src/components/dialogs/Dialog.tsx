@@ -1,4 +1,6 @@
 import { useEffect } from "react";
+import { FontAwesomeIcon } from "../../utils/icons";
+import { faXmark } from "../../utils/icons";
 import { FocusTrap } from "focus-trap-react";
 import styles from "./Dialog.module.css";
 
@@ -72,7 +74,7 @@ function Dialog({ isOpen, onClose, title, children }: DialogProps) {
 							className={`btn-icon ${styles.dialogClose}`}
 							onClick={onClose}
 						>
-							✕
+							<FontAwesomeIcon icon={faXmark} />
 						</button>
 					</div>
 					<div className={styles.dialogBody}>{children}</div>

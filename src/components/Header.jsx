@@ -99,7 +99,7 @@ function Header({ onSettingsClick, onStatsClick, onArchiveClick }) {
 									className={styles.avatarImage}
 									referrerPolicy="no-referrer"
 								/>
-							) : (user.displayName || user.email) ? (
+							) : user.displayName || user.email ? (
 								<div
 									className={styles.avatarInitial}
 									style={{
@@ -109,7 +109,8 @@ function Header({ onSettingsClick, onStatsClick, onArchiveClick }) {
 									}}
 									aria-hidden="true"
 								>
-									{(user.displayName || user.email)[0].toUpperCase()}
+									{(user.displayName ||
+										user.email)[0].toUpperCase()}
 								</div>
 							) : (
 								<FontAwesomeIcon icon={faUserCircle} />

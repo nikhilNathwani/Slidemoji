@@ -15,4 +15,5 @@ export {
 	faChevronRight,
 	faClockRotateLeft,
 	faPlayCircle,
+	faXmark,
 } from "@fortawesome/free-solid-svg-icons";
