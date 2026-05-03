@@ -21,8 +21,7 @@ if (!uid) {
 	process.exit(1);
 }
 
-const keyPath = new URL("./service-account-key.json", import.meta.url)
-	.pathname;
+const keyPath = new URL("./service-account-key.json", import.meta.url).pathname;
 
 let serviceAccount;
 try {
@@ -39,12 +38,13 @@ initializeApp({ credential: cert(serviceAccount) });
 const db = getFirestore();
 
 const isPremium = !revoke;
-await db.collection("users").doc(uid).update({
-	isPremium,
-	premiumGrantedAt: isPremium ? new Date().toISOString() : null,
-});
+await db
+	.collection("users")
+	.doc(uid)
+	.update({
+		isPremium,
+		premiumGrantedAt: isPremium ? new Date().toISOString() : null,
+	});
 
-console.log(
-	`✅ User ${uid} isPremium=${isPremium} (premiumGrantedAt updated)`,
-);
+console.log(`✅ User ${uid} isPremium=${isPremium} (premiumGrantedAt updated)`);
 process.exit(0);
