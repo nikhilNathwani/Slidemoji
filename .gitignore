@@ -26,6 +26,9 @@ firebase-debug*.log
 *.sln
 *.sw?
 
+# Firebase service account key — never commit credentials
+scripts/service-account-key.json
+
 # Tutorial and progress files
 PROGRESS.md
 tutorial/
