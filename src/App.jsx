@@ -63,9 +63,6 @@ function App() {
 		prefetchPuzzles(earnedIds);
 	}, [solvedGamesKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
-	// Dev-only: in-memory premium override (avoids Firestore write / race conditions)
-	const [devIsPremium, setDevIsPremium] = useState(null); // null = no override
-
 	// Show Page / Dialog
 	// Lazy initializer: skip landing page when returning from Stripe checkout.
 	const [showLandingPage, setShowLandingPage] = useState(() => {
@@ -100,34 +97,6 @@ function App() {
 	const shouldShowLoading =
 		isLoading &&
 		!((isAuthLoading || isMerging) && gameState && puzzleMetadata);
-
-	// Dev helper: Set grid to one move away from solved
-	const setAlmostSolved = () => {
-		if (!gameState || !puzzleMetadata) {
-			console.log("[Dev] Can't set almost solved - missing data");
-			return;
-		}
-
-		const currentDiff = gameState.currentDifficulty;
-		const currentGrid = gameState[currentDiff];
-		if (!currentGrid) {
-			console.log("[Dev] Can't set almost solved - no current grid");
-			return;
-		}
-
-		const size = currentGrid.length;
-
-		// Create almost-solved grid: [1, 2, 3, 4, 5, 6, 7, 0, 8]
-		// Gap in second-to-last position, one move away from solved
-		const almostSolvedGrid = Array.from({ length: size }, (_, i) => {
-			if (i === size - 2) return 0; // Gap in second-to-last position
-			if (i === size - 1) return size - 1; // Last tile goes in last position
-			return i + 1; // Everything else in order: 1, 2, 3, ...
-		});
-
-		console.log("[Dev] Setting almost solved grid:", almostSolvedGrid);
-		setGameState({ [currentDiff]: almostSolvedGrid });
-	};
 
 	if (showLandingPage) {
 		return (
@@ -178,7 +147,6 @@ function App() {
 				isAppDialogOpen={
 					showSettingsDialog || showStatsDialog || showArchiveDialog
 				}
-				devIsPremium={devIsPremium}
 			/>
 
 			<SettingsDialog
@@ -191,15 +159,12 @@ function App() {
 				isPuzzleSolved={checkWin(
 					gameState?.[gameState?.currentDifficulty],
 				)}
-				onAlmostSolve={setAlmostSolved}
-				onTogglePremium={(grant) => setDevIsPremium(grant)}
 			/>
 
 			<ArchiveDialog
 				isOpen={showArchiveDialog}
 				onClose={() => setShowArchiveDialog(false)}
 				onPuzzleSelect={setPuzzleId}
-				devIsPremium={devIsPremium}
 			/>
 
 			<StatsDialog
@@ -209,7 +174,6 @@ function App() {
 					setShowStatsDialog(false);
 					setShowArchiveDialog(true);
 				}}
-				devIsPremium={devIsPremium}
 			/>
 		</div>
 	);

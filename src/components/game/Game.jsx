@@ -20,7 +20,6 @@ function Game({
 	setGameState, // Function to update game state: setGameState({ currentDifficulty?, normal?, hard? })
 	onOpenArchive,
 	isAppDialogOpen = false,
-	devIsPremium,
 }) {
 	const [showNumbers] = usePreference("showNumbers");
 	const [soundEnabled] = usePreference("soundEnabled");
@@ -108,7 +107,6 @@ function Game({
 				emoji={emoji}
 				emojiName={emojiName}
 				difficulty={currentDifficulty}
-				devIsPremium={devIsPremium}
 				onUnlockArchiveClick={() => {
 					setShowWinDialog(false);
 					onOpenArchive();

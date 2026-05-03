@@ -17,12 +17,10 @@ function StatsContent({
 	showPremiumArchiveHint = true,
 	puzzleId = null,
 	onUnlockArchiveClick,
-	devIsPremium,
 }) {
 	const { user } = useAuth();
-	const { isPremium: firestoreIsPremium } = useSubscription();
+	const { isPremium } = useSubscription();
 	const { solvedGames } = useSolvedGames();
-	const isPremium = devIsPremium ?? firestoreIsPremium;
 
 	return (
 		<div className={styles.statsContent}>

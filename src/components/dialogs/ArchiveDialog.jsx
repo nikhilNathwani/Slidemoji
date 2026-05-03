@@ -10,10 +10,9 @@ import { DIFFICULTY } from "../../constants";
 import { FontAwesomeIcon, faClockRotateLeft } from "../../utils/icons";
 import styles from "./ArchiveDialog.module.css";
 
-function ArchiveDialog({ isOpen, onClose, onPuzzleSelect, devIsPremium }) {
-	const { isPremium: firestoreIsPremium } = useSubscription();
+function ArchiveDialog({ isOpen, onClose, onPuzzleSelect }) {
+	const { isPremium } = useSubscription();
 	const { solvedGames } = useSolvedGames();
-	const isPremium = devIsPremium ?? firestoreIsPremium;
 	const [filter, setFilter] = useState("all");
 	const todayPuzzleId = getLatestPuzzleId();
 	const totalPuzzles = todayPuzzleId;

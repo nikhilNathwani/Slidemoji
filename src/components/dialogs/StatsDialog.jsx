@@ -2,7 +2,7 @@ import Dialog from "./Dialog";
 import StatsContent from "../stats/StatsContent";
 import TrophyCaseTitle from "../stats/TrophyCaseTitle";
 
-function StatsDialog({ isOpen, onClose, onUnlockArchiveClick, devIsPremium }) {
+function StatsDialog({ isOpen, onClose, onUnlockArchiveClick }) {
 	return (
 		<Dialog
 			isOpen={isOpen}
@@ -12,7 +12,6 @@ function StatsDialog({ isOpen, onClose, onUnlockArchiveClick, devIsPremium }) {
 			<StatsContent
 				showTitle={false}
 				onUnlockArchiveClick={onUnlockArchiveClick}
-				devIsPremium={devIsPremium}
 			/>
 		</Dialog>
 	);

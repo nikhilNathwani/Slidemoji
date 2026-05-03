@@ -13,7 +13,6 @@ function WinDialog({
 	emoji,
 	emojiName,
 	difficulty,
-	devIsPremium,
 	onUnlockArchiveClick,
 }) {
 	const [copied, setCopied] = useState(false);
@@ -60,7 +59,6 @@ Play here: https://slidemoji.com`;
 					showTitle={true}
 					showPremiumArchiveHint={false}
 					puzzleId={puzzleId}
-					devIsPremium={devIsPremium}
 					onUnlockArchiveClick={onUnlockArchiveClick}
 				/>
 			</div>

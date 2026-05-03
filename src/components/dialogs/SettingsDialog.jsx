@@ -2,7 +2,6 @@ import Dialog from "./Dialog";
 import styles from "./SettingsDialog.module.css";
 import { FontAwesomeIcon, faCog } from "../../utils/icons";
 import { DIFFICULTIES } from "../../constants";
-import { useUserDoc } from "../../hooks/useUserDoc";
 import { usePreference } from "../../hooks/usePreference";
 import { useTheme } from "../../hooks/useTheme";
 
@@ -12,14 +11,10 @@ function SettingsDialog({
 	difficulty,
 	onDifficultyChange,
 	isPuzzleSolved = false,
-	onAlmostSolve,
-	onTogglePremium,
 }) {
 	const [showNumbers, setShowNumbers] = usePreference("showNumbers");
 	const [soundEnabled, setSoundEnabled] = usePreference("soundEnabled");
 	const [darkMode, setDarkMode] = useTheme();
-	const { userDoc } = useUserDoc();
-	const isDevMode = import.meta.env.DEV || userDoc?.isDevMode === true;
 	return (
 		<Dialog
 			isOpen={isOpen}
@@ -82,46 +77,6 @@ function SettingsDialog({
 					/>
 				</div>
 				<div className={styles.settingsDivider} />
-				{isDevMode && onAlmostSolve && (
-					<>
-						<div className={styles.settingsItem}>
-							<label className={styles.settingsLabel}>
-								Dev Tools
-							</label>
-							<div
-								style={{
-									display: "flex",
-									gap: "8px",
-									flexDirection: "column",
-									alignItems: "flex-end",
-								}}
-							>
-								<button
-									onClick={() => {
-										onAlmostSolve();
-										setTimeout(() => onClose(), 300);
-									}}
-									className={styles.devButton}
-								>
-									Almost Solved
-								</button>
-								<button
-									onClick={() => onTogglePremium?.(true)}
-									className={styles.devButton}
-								>
-									Grant Premium
-								</button>
-								<button
-									onClick={() => onTogglePremium?.(false)}
-									className={styles.devButton}
-								>
-									Revoke Premium
-								</button>
-							</div>
-						</div>
-						<div className={styles.settingsDivider} />
-					</>
-				)}
 				<div className={styles.settingsActions}>
 					<a
 						href="mailto:support.slidemoji@gmail.com?subject=Slidemoji%20Feedback"
