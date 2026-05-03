@@ -63,15 +63,17 @@ function SettingsDialog({
 						/>
 					</div>
 				)}
-				<div className={styles.settingsItem}>
-					<label className={styles.settingsLabel}>
-						Sound Effects
-					</label>
-					<Toggle
-						isOn={soundEnabled}
-						onToggle={() => setSoundEnabled(!soundEnabled)}
-					/>
-				</div>
+				{!isPuzzleSolved && (
+					<div className={styles.settingsItem}>
+						<label className={styles.settingsLabel}>
+							Sound Effects
+						</label>
+						<Toggle
+							isOn={soundEnabled}
+							onToggle={() => setSoundEnabled(!soundEnabled)}
+						/>
+					</div>
+				)}
 				<div className={styles.settingsItem}>
 					<label className={styles.settingsLabel}>Dark Mode</label>
 					<Toggle

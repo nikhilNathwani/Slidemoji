@@ -39,6 +39,7 @@ function Dialog({ isOpen, onClose, title, children }: DialogProps) {
 					escapeDeactivates: false,
 					fallbackFocus: "body",
 					initialFocus: "#dialog-container",
+					returnFocusOnDeactivate: false,
 				}}
 			>
 				<div

@@ -86,10 +86,10 @@ function App() {
 	// Auto-open archive after a successful payment redirect (?payment=success).
 	// Stripe processes the webhook before redirecting, so isPremium should already
 	// be true by the time the user lands here.
-	const [showArchiveDialog, setShowArchiveDialog] = useState(() => {
-		const params = new URLSearchParams(window.location.search);
-		return params.get("payment") === "success";
-	});
+	// NOTE: showLandingPage is false only when payment=success, so !showLandingPage
+	// correctly initializes showArchiveDialog without re-reading the URL (which was
+	// already cleaned by showLandingPage's initializer above).
+	const [showArchiveDialog, setShowArchiveDialog] = useState(!showLandingPage);
 
 	const isLoading =
 		isLoadingPuzzle || isLoadingGameState || !gameState || !puzzleMetadata;

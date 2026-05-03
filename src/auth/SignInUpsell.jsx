@@ -7,8 +7,7 @@ function SignInUpsell({ isCondensed = false }) {
 		<div className={styles.signInUpsell}>
 			<GoogleSignInButton />
 			<p className={styles.signInUpsellDescription}>
-				Sign in to save your trophies across devices and complete your
-				collection!
+				Sign in to save your trophies across devices
 			</p>
 		</div>
 	) : (
@@ -21,8 +20,7 @@ function SignInUpsell({ isCondensed = false }) {
 						: styles.signInUpsellDescriptionLarge
 				}
 			>
-				Sign in to save your trophies across devices and complete your
-				collection!
+				Sign in to save your trophies across devices
 			</p>
 			<GoogleSignInButton />
 			<p className={styles.privacyNote}>

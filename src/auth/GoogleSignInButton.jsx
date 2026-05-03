@@ -82,9 +82,6 @@ function GoogleSignInButton({ isCondensed = false }) {
 				onClick={handleClick}
 				disabled={isDisabled}
 				aria-label={isSignedInWithGoogle ? "Sign Out" : "Sign In"}
-				title={
-					isSignedInWithGoogle ? "Sign Out" : "Sign In with Google"
-				}
 			>
 				{buttonContent}
 			</button>
