@@ -24,6 +24,16 @@ export default async function handler(req, res) {
 	if (!returnUrl || typeof returnUrl !== "string") {
 		return res.status(400).json({ error: "returnUrl is required" });
 	}
+	// Validate returnUrl is a legitimate https URL to prevent open-redirect attacks
+	let parsedReturnUrl;
+	try {
+		parsedReturnUrl = new URL(returnUrl);
+	} catch {
+		return res.status(400).json({ error: "returnUrl is not a valid URL" });
+	}
+	if (parsedReturnUrl.protocol !== "https:") {
+		return res.status(400).json({ error: "returnUrl must use https" });
+	}
 
 	if (!process.env.STRIPE_SECRET_KEY) {
 		return res.status(500).json({ error: "Stripe is not configured" });
@@ -43,6 +53,13 @@ export default async function handler(req, res) {
 	const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 	try {
+		// Build success/cancel URLs safely so any existing query params on
+		// returnUrl are preserved rather than overwritten by ?key=value string concat.
+		const successUrl = new URL(parsedReturnUrl);
+		successUrl.searchParams.set("payment", "success");
+		const cancelUrl = new URL(parsedReturnUrl);
+		cancelUrl.searchParams.set("payment", "cancelled");
+
 		const session = await stripe.checkout.sessions.create({
 			mode: "payment", // one-time purchase; change to "subscription" for recurring
 			payment_method_types: ["card"],
@@ -56,8 +73,8 @@ export default async function handler(req, res) {
 				// Stored on the session so the webhook can find the right Firestore user
 				firebaseUid: uid,
 			},
-			success_url: `${returnUrl}?payment=success`,
-			cancel_url: `${returnUrl}?payment=cancelled`,
+			success_url: successUrl.toString(),
+			cancel_url: cancelUrl.toString(),
 		});
 
 		return res.status(200).json({ url: session.url });

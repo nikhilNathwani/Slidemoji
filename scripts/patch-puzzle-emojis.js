@@ -46,7 +46,9 @@ if (
 	!envVars.FIREBASE_CLIENT_EMAIL ||
 	!privateKey
 ) {
-	console.error("❌ Missing FIREBASE_PROJECT_ID / FIREBASE_CLIENT_EMAIL / FIREBASE_PRIVATE_KEY in .env.local");
+	console.error(
+		"❌ Missing FIREBASE_PROJECT_ID / FIREBASE_CLIENT_EMAIL / FIREBASE_PRIVATE_KEY in .env.local",
+	);
 	process.exit(1);
 }
 
