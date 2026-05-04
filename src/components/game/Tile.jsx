@@ -44,10 +44,11 @@ function Tile({
 		width: tileSize,
 		height: tileSize,
 		transform: `translate(${x}px, ${y}px)`,
-		// Spring-like cubic-bezier: slight overshoot matches previous Framer spring feel
+		// Ease-out: fast start, smooth deceleration, no overshoot — matches
+		// the feel of the previous Framer Motion spring (stiffness:400, damping:35)
 		transition: isGap
 			? "none"
-			: "transform 220ms cubic-bezier(0.34, 1.4, 0.64, 1)",
+			: "transform 180ms cubic-bezier(0.25, 0.46, 0.45, 0.94)",
 		willChange: "transform",
 	};
 
