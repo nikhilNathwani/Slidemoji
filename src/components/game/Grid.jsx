@@ -139,28 +139,31 @@ function Grid({
 	// calcBoardSizePx guarantees gridSizePx is divisible by gridSize, so tileSize is always an integer.
 	const tileSize = gridSizePx / gridSize;
 
-	// Pre-compute pixel position for every grid index. Derived entirely from
-	// tileSize + gridSize so no per-tile math is needed in Tile.
-	const positions = Array.from({ length: gridSize * gridSize }, (_, i) => ({
-		x: (i % gridSize) * tileSize,
-		y: Math.floor(i / gridSize) * tileSize,
-	}));
+	// Pre-compute pixel position for every grid index.
+	// Memoized on tileSize+gridSize — only recalculates on resize or difficulty change.
+	const positions = useMemo(
+		() =>
+			Array.from({ length: gridSize * gridSize }, (_, i) => ({
+				x: (i % gridSize) * tileSize,
+				y: Math.floor(i / gridSize) * tileSize,
+			})),
+		[gridSize, tileSize],
+	);
 
-	// Build a map from tile value → current grid index so we can render tiles
-	// in stable value order (1…N-1, then gap). Stable DOM order is essential:
-	// if tiles render in grid-index order, React moves DOM nodes when a tile
-	// shifts to a higher index, which resets the CSS transition and causes the
-	// tile to snap instead of animate.
+	// Stable value list: 1…(N²-1) then 0 (gap). Never reorders — memoized on gridSize.
+	const tileValues = useMemo(
+		() =>
+			Array.from({ length: gridSize * gridSize - 1 }, (_, i) => i + 1).concat(
+				0,
+			),
+		[gridSize],
+	);
+
+	// Map tile value → current grid index. Recomputed every render (grid changes every move).
 	const valueToIndex = {};
 	grid.forEach((value, index) => {
 		valueToIndex[value] = index;
 	});
-
-	// Stable value list: 1…(N²-1) then 0 (gap) — never changes order.
-	const tileValues = Array.from(
-		{ length: gridSize * gridSize - 1 },
-		(_, i) => i + 1,
-	).concat(0);
 
 	if (!grid || !Array.isArray(grid)) {
 		return <div>Loading grid...</div>;

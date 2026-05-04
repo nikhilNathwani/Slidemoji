@@ -56,24 +56,30 @@ function Tile({
 		return <div style={positionStyle} className="tile gap" />;
 	}
 
+	// Two-div structure: outer handles positioning (transform:translate),
+	// inner handles the win celebration (transform:scale via tilePop keyframe).
+	// Keeping them separate means the scale animation never clobbers the translate.
 	return (
-		<div
-			className={classNames.join(" ")}
-			{...(isClickable && { onPointerDown })}
-			onTransitionEnd={onTransitionEnd}
-			style={{
-				...positionStyle,
-				...getTileStyle(tileNumber, gridSize, emojiSvgUrl),
-				...(celebrating && {
-					animationDelay: `${celebrationDelay}ms`,
-					"--celebration-delay": `${celebrationDelay}ms`,
-				}),
-			}}
-			data-tile-number={tileNumber}
-		>
-			{hasNumbersShown && tileNumber ? (
-				<span className={styles.tileNumber}>{tileNumber}</span>
-			) : null}
+		<div style={positionStyle}>
+			<div
+				className={classNames.join(" ")}
+				{...(isClickable && { onPointerDown })}
+				onTransitionEnd={onTransitionEnd}
+				style={{
+					width: "100%",
+					height: "100%",
+					...getTileStyle(tileNumber, gridSize, emojiSvgUrl),
+					...(celebrating && {
+						animationDelay: `${celebrationDelay}ms`,
+						"--celebration-delay": `${celebrationDelay}ms`,
+					}),
+				}}
+				data-tile-number={tileNumber}
+			>
+				{hasNumbersShown && tileNumber ? (
+					<span className={styles.tileNumber}>{tileNumber}</span>
+				) : null}
+			</div>
 		</div>
 	);
 }
