@@ -30,7 +30,7 @@
 /* ─── Media Queries ─────────────────────────────────────────────── */
 
 @media (max-width: 600px) {
-	:global(.btn).headerVariant {
+	.condensedWrapper {
 		display: none;
 	}
 }

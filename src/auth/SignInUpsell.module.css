@@ -41,6 +41,7 @@
 	gap: 8px;
 	text-align: left;
 	background-color: var(--surface);
-	border-radius: 0 0 10px 10px; /* follow dialog's 12px outer corner */
+	/* No border-radius needed — the dialog's overflow:auto + border-radius:12px
+	   clips children to rounded corners automatically. */
 	padding: 14px 24px;
 }
