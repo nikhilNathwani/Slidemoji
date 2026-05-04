@@ -27,7 +27,8 @@ function Tile({
 	hasNumbersShown,
 	isClickable,
 	isGap = false,
-	currentIndex,
+	x,
+	y,
 	tileSize,
 	onPointerDown,
 	onTransitionEnd,
@@ -37,11 +38,6 @@ function Tile({
 	const classNames = [styles.tile];
 	if (isClickable) classNames.push(styles.clickable);
 	if (celebrating) classNames.push(styles.celebrating);
-
-	const col = currentIndex % gridSize;
-	const row = Math.floor(currentIndex / gridSize);
-	const x = col * tileSize;
-	const y = row * tileSize;
 
 	const positionStyle = {
 		position: "absolute",

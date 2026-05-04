@@ -139,6 +139,29 @@ function Grid({
 	// calcBoardSizePx guarantees gridSizePx is divisible by gridSize, so tileSize is always an integer.
 	const tileSize = gridSizePx / gridSize;
 
+	// Pre-compute pixel position for every grid index. Derived entirely from
+	// tileSize + gridSize so no per-tile math is needed in Tile.
+	const positions = Array.from({ length: gridSize * gridSize }, (_, i) => ({
+		x: (i % gridSize) * tileSize,
+		y: Math.floor(i / gridSize) * tileSize,
+	}));
+
+	// Build a map from tile value → current grid index so we can render tiles
+	// in stable value order (1…N-1, then gap). Stable DOM order is essential:
+	// if tiles render in grid-index order, React moves DOM nodes when a tile
+	// shifts to a higher index, which resets the CSS transition and causes the
+	// tile to snap instead of animate.
+	const valueToIndex = {};
+	grid.forEach((value, index) => {
+		valueToIndex[value] = index;
+	});
+
+	// Stable value list: 1…(N²-1) then 0 (gap) — never changes order.
+	const tileValues = Array.from(
+		{ length: gridSize * gridSize - 1 },
+		(_, i) => i + 1,
+	).concat(0);
+
 	if (!grid || !Array.isArray(grid)) {
 		return <div>Loading grid...</div>;
 	}
@@ -151,17 +174,18 @@ function Grid({
 				height: `${gridSizePx}px`,
 			}}
 		>
-			{grid.map((value, index) => {
-				const isGap = value === 0;
+			{tileValues.map((value) => {
+				const index = valueToIndex[value];
+				const pos = positions[index];
 
-				if (isGap) {
+				if (value === 0) {
 					return (
 						<Tile
 							key="gap"
 							isGap={true}
-							currentIndex={index}
+							x={pos.x}
+							y={pos.y}
 							tileSize={tileSize}
-							gridSize={gridSize}
 						/>
 					);
 				}
@@ -182,7 +206,8 @@ function Grid({
 							WIN_TILE_ANIM_START_DELAY_MS +
 							index * WIN_TILE_ANIM_STAGGER_MS
 						}
-						currentIndex={index}
+						x={pos.x}
+						y={pos.y}
 						tileSize={tileSize}
 						{...(isClickable && {
 							onPointerDown: () => handleTileSelect(index),
