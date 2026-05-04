@@ -13,11 +13,6 @@
 .paywallListWrapper {
 	position: relative;
 	overflow: hidden;
-	/* Explicit height = 3 preview items × 52px each.
-	   Without this, overflow:hidden sets min-height:0 on this flex item, allowing
-	   it to collapse when the parent flex container is height-constrained. */
-	height: 156px;
-	flex-shrink: 0;
 }
 
 /* Puzzle list inside the clipped wrapper — no scroll, tighter spacing */

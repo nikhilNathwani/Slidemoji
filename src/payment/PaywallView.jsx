@@ -5,8 +5,14 @@ import styles from "./PaywallView.module.css";
 
 function PaywallView({ puzzleList }) {
 	const { startCheckout, isRedirecting, error } = useCheckout();
-	// Show earliest puzzles first (#001, #002...) — ascending order
-	const previewItems = [...puzzleList].reverse().slice(0, 3);
+	// Show earliest puzzles first (#001, #002...) — ascending order.
+	// Always show exactly 3 items; on day 1 or 2 there may be fewer real
+	// puzzles, so pad with synthetic placeholder entries so the preview
+	// always looks full (they're locked in isPreviewMode anyway).
+	const sorted = [...puzzleList].reverse(); // ascending: #1, #2, #3…
+	const previewItems = Array.from({ length: 3 }, (_, i) =>
+		sorted[i] ?? { puzzleNum: i + 1, isSolved: false }
+	);
 
 	return (
 		<div className={styles.paywallContent}>
