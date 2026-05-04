@@ -1,6 +1,7 @@
 /* ─── Layout ─────────────────────────────────────────────────────── */
 
 .landingPage {
+	min-height: 100vh; /* fallback for browsers without dvh */
 	min-height: 100dvh;
 	width: 100%;
 	display: flex;
