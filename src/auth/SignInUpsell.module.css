@@ -1,4 +1,5 @@
 .signInUpsell {
+	width: 100%;
 	text-align: center;
 	display: flex;
 	flex-direction: column;
@@ -30,10 +31,16 @@
 	font-size: var(--text-sm);
 	color: var(--text-dim);
 	line-height: 1.6;
-	max-width: 380px;
-	margin: 0;
+	/* Break out of dialogBody's padding: 36px 24px on left, right, and bottom.
+	   margin-top: 8px adds extra breathing room above the grey banner. */
+	margin: 8px -24px -36px;
+	max-width: calc(380px + 48px); /* 380px content + 24px padding on each side */
+	width: calc(100% + 48px);
 	display: flex;
 	align-items: flex-start;
 	gap: 8px;
 	text-align: left;
+	background-color: var(--surface);
+	border-radius: 0 0 10px 10px; /* follow dialog's 12px outer corner */
+	padding: 14px 24px;
 }

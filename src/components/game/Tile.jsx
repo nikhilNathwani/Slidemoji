@@ -31,7 +31,6 @@ function Tile({
 	y,
 	tileSize,
 	onPointerDown,
-	onTransitionEnd,
 	celebrating = false,
 	celebrationDelay = 0,
 }) {
@@ -64,7 +63,6 @@ function Tile({
 			<div
 				className={classNames.join(" ")}
 				{...(isClickable && { onPointerDown })}
-				onTransitionEnd={onTransitionEnd}
 				style={{
 					width: "100%",
 					height: "100%",
