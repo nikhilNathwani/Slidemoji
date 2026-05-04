@@ -32,9 +32,12 @@
 	color: var(--text-dim);
 	line-height: 1.6;
 	/* Break out of dialogBody's padding: 36px 24px on left, right, and bottom.
-	   margin-top: 8px adds extra breathing room above the grey banner. */
-	margin: 8px -24px -36px;
-	max-width: calc(380px + 48px); /* 380px content + 24px padding on each side */
+	   margin-top: 0 lets the normal flex gap (16px) provide spacing above —
+	   matching the gap between the subtitle and the Google button. */
+	margin: 0 -24px -36px;
+	max-width: calc(
+		380px + 48px
+	); /* 380px content + 24px padding on each side */
 	width: calc(100% + 48px);
 	display: flex;
 	align-items: flex-start;

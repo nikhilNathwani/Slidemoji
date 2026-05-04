@@ -5,7 +5,7 @@
 	flex-flow: column nowrap;
 	align-items: center;
 	text-align: center;
-	padding-block: 8px;
+	padding-top: 8px; /* bottom padding removed — privacyNote's negative margin cancels dialogBody's padding-bottom */
 }
 
 /* Target only direct h3 children to avoid affecting nested components */

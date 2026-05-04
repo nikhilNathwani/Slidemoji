@@ -1,6 +1,7 @@
 /* ─── Layout ─────────────────────────────────────────────────────── */
 
 .statsContent {
+	width: 100%; /* ensures full-width even inside align-items:center flex containers (e.g. WinDialog) */
 	display: flex;
 	flex-direction: column;
 	gap: 24px;
