@@ -31,13 +31,10 @@
 	font-size: var(--text-sm);
 	color: var(--text-dim);
 	line-height: 1.6;
-	/* Break out of dialogBody's padding: 36px 24px on left, right, and bottom.
-	   margin-top: 0 lets the normal flex gap (16px) provide spacing above —
-	   matching the gap between the subtitle and the Google button. */
-	margin: 0 -24px -36px;
-	max-width: calc(
-		380px + 48px
-	); /* 380px content + 24px padding on each side */
+	/* Escape dialogBody's 24px inline padding and 36px bottom padding.
+	   margin-top: 20px + signInUpsell's 16px flex gap = 36px above the banner,
+	   matching the dialogBody's 36px top padding (the visual rhythm of the dialog). */
+	margin: 20px -24px -36px;
 	width: calc(100% + 48px);
 	display: flex;
 	align-items: flex-start;
