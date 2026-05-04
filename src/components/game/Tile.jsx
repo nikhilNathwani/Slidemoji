@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import styles from "./Tile.module.css";
 
 function getTileStyle(tileNumber, gridSize, emojiSvgUrl) {
@@ -28,6 +27,8 @@ function Tile({
 	hasNumbersShown,
 	isClickable,
 	isGap = false,
+	currentIndex,
+	tileSize,
 	onPointerDown,
 	onTransitionEnd,
 	celebrating = false,
@@ -37,28 +38,34 @@ function Tile({
 	if (isClickable) classNames.push(styles.clickable);
 	if (celebrating) classNames.push(styles.celebrating);
 
-	const springTransition = {
-		layout: { type: "spring", stiffness: 400, damping: 35 },
+	const col = currentIndex % gridSize;
+	const row = Math.floor(currentIndex / gridSize);
+	const x = col * tileSize;
+	const y = row * tileSize;
+
+	const positionStyle = {
+		position: "absolute",
+		width: tileSize,
+		height: tileSize,
+		transform: `translate(${x}px, ${y}px)`,
+		// Spring-like cubic-bezier: slight overshoot matches previous Framer spring feel
+		transition: isGap
+			? "none"
+			: "transform 220ms cubic-bezier(0.34, 1.4, 0.64, 1)",
+		willChange: "transform",
 	};
 
 	if (isGap) {
-		return (
-			<motion.div
-				layout
-				transition={springTransition}
-				className="tile gap"
-			/>
-		);
+		return <div style={positionStyle} className="tile gap" />;
 	}
 
 	return (
-		<motion.div
-			layout
-			transition={springTransition}
-			onLayoutAnimationComplete={onTransitionEnd}
+		<div
 			className={classNames.join(" ")}
 			{...(isClickable && { onPointerDown })}
+			onTransitionEnd={onTransitionEnd}
 			style={{
+				...positionStyle,
 				...getTileStyle(tileNumber, gridSize, emojiSvgUrl),
 				...(celebrating && {
 					animationDelay: `${celebrationDelay}ms`,
@@ -70,7 +77,7 @@ function Tile({
 			{hasNumbersShown && tileNumber ? (
 				<span className={styles.tileNumber}>{tileNumber}</span>
 			) : null}
-		</motion.div>
+		</div>
 	);
 }
 

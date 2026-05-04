@@ -136,6 +136,9 @@ function Grid({
 	const numbersVisible =
 		hasNumbersShown || (celebrating && hadNumbersOnSolve);
 
+	// calcBoardSizePx guarantees gridSizePx is divisible by gridSize, so tileSize is always an integer.
+	const tileSize = gridSizePx / gridSize;
+
 	if (!grid || !Array.isArray(grid)) {
 		return <div>Loading grid...</div>;
 	}
@@ -146,15 +149,21 @@ function Grid({
 			style={{
 				width: `${gridSizePx}px`,
 				height: `${gridSizePx}px`,
-				gridTemplateColumns: `repeat(${gridSize}, 1fr)`,
-				gridTemplateRows: `repeat(${gridSize}, 1fr)`,
 			}}
 		>
 			{grid.map((value, index) => {
 				const isGap = value === 0;
 
 				if (isGap) {
-					return <Tile key="gap" isGap={true} />;
+					return (
+						<Tile
+							key="gap"
+							isGap={true}
+							currentIndex={index}
+							tileSize={tileSize}
+							gridSize={gridSize}
+						/>
+					);
 				}
 
 				const isClickable =
@@ -173,6 +182,8 @@ function Grid({
 							WIN_TILE_ANIM_START_DELAY_MS +
 							index * WIN_TILE_ANIM_STAGGER_MS
 						}
+						currentIndex={index}
+						tileSize={tileSize}
 						{...(isClickable && {
 							onPointerDown: () => handleTileSelect(index),
 						})}

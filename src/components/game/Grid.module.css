@@ -6,13 +6,9 @@
 	border: 8px solid var(--border);
 	border-radius: 8px;
 	box-sizing: content-box;
-	/* CSS Grid layout - Framer Motion animates grid changes */
-	display: grid;
-	gap: 0;
-	/* Anchor the grid to a pixel-aligned compositing layer.
-	   Child tiles promote to compositing layers on CSS animation;
-	   if the grid itself had a fractional offset, those child layers
-	   would snap to different sub-pixel positions on each promotion,
-	   causing the emoji image to appear to shift on solve. */
+	/* Absolutely-positioned tiles live inside this container */
+	position: relative;
+	/* Anchor the grid to a pixel-aligned compositing layer so child tile
+	   layers promote at integer offsets — no sub-pixel snapping on animation. */
 	transform: translateZ(0);
 }
