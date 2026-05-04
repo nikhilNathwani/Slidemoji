@@ -53,7 +53,6 @@ function Tile({
 
 	return (
 		<motion.div
-			layoutId={`tile-${tileNumber}`}
 			layout
 			transition={springTransition}
 			onLayoutAnimationComplete={onTransitionEnd}
