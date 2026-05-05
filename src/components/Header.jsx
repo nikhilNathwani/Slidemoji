@@ -84,11 +84,6 @@ function Header({ onSettingsClick, onStatsClick, onArchiveClick }) {
 							) : user.displayName || user.email ? (
 								<div
 									className={styles.avatarInitial}
-									style={{
-										backgroundColor: getAvatarColor(
-											user.displayName || user.email,
-										),
-									}}
 									aria-hidden="true"
 								>
 									{(user.displayName ||

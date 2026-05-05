@@ -139,16 +139,10 @@ function Grid({
 	// calcBoardSizePx guarantees gridSizePx is divisible by gridSize, so tileSize is always an integer.
 	const tileSize = gridSizePx / gridSize;
 
-	// Pre-compute pixel position for every grid index.
-	// Memoized on tileSize+gridSize — only recalculates on resize or difficulty change.
-	const positions = useMemo(
-		() =>
-			Array.from({ length: gridSize * gridSize }, (_, i) => ({
-				x: (i % gridSize) * tileSize,
-				y: Math.floor(i / gridSize) * tileSize,
-			})),
-		[gridSize, tileSize],
-	);
+	const tilePos = (index) => ({
+		x: (index % gridSize) * tileSize,
+		y: Math.floor(index / gridSize) * tileSize,
+	});
 
 	if (!grid || !Array.isArray(grid)) {
 		return <div>Loading grid...</div>;
@@ -165,15 +159,15 @@ function Grid({
 			{/* key={value} is stable across renders — React never moves DOM nodes,
 			    only transform changes, so CSS transitions always fire correctly. */}
 			{grid.map((value, index) => {
-				const pos = positions[index];
+				const { x, y } = tilePos(index);
 
 				if (value === 0) {
 					return (
 						<Tile
 							key="gap"
 							isGap={true}
-							x={pos.x}
-							y={pos.y}
+							x={x}
+							y={y}
 							tileSize={tileSize}
 						/>
 					);
@@ -195,8 +189,8 @@ function Grid({
 							WIN_TILE_ANIM_START_DELAY_MS +
 							index * WIN_TILE_ANIM_STAGGER_MS
 						}
-						x={pos.x}
-						y={pos.y}
+						x={x}
+						y={y}
 						tileSize={tileSize}
 						{...(isClickable && {
 							onPointerDown: () => handleTileSelect(index),
