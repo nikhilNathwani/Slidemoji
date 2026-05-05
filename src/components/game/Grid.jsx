@@ -144,12 +144,6 @@ function Grid({
 		y: Math.floor(index / gridSize) * tileSize,
 	});
 
-	// Map tile value → current grid index. Rebuilt each render (grid changes every move).
-	const valueToIndex = {};
-	grid.forEach((value, index) => {
-		valueToIndex[value] = index;
-	});
-
 	if (!grid || !Array.isArray(grid)) {
 		return <div>Loading grid...</div>;
 	}
@@ -165,11 +159,10 @@ function Grid({
 			{/* Rendered in stable value order [1…N²-1, gap] so React never reorders
 			    DOM nodes — only the transform prop changes, so CSS transitions fire
 			    correctly for all directions. key={value} keeps the same DOM node per tile. */}
-			{[...Array(gridSize * gridSize - 1).keys()]
-				.map((i) => i + 1)
+			{Array.from({ length: gridSize * gridSize - 1 }, (_, i) => i + 1)
 				.concat(0)
 				.map((value) => {
-					const index = valueToIndex[value];
+					const index = grid.indexOf(value);
 					const { x, y } = calcTilePosition(index);
 
 					if (value === 0) {
