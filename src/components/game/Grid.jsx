@@ -139,9 +139,15 @@ function Grid({
 	// calcBoardSizePx guarantees gridSizePx is divisible by gridSize, so tileSize is always an integer.
 	const tileSize = gridSizePx / gridSize;
 
-	const tilePos = (index) => ({
+	const calcTilePosition = (index) => ({
 		x: (index % gridSize) * tileSize,
 		y: Math.floor(index / gridSize) * tileSize,
+	});
+
+	// Map tile value → current grid index. Rebuilt each render (grid changes every move).
+	const valueToIndex = {};
+	grid.forEach((value, index) => {
+		valueToIndex[value] = index;
 	});
 
 	if (!grid || !Array.isArray(grid)) {
@@ -156,48 +162,53 @@ function Grid({
 				height: `${gridSizePx}px`,
 			}}
 		>
-			{/* key={value} is stable across renders — React never moves DOM nodes,
-			    only transform changes, so CSS transitions always fire correctly. */}
-			{grid.map((value, index) => {
-				const { x, y } = tilePos(index);
+			{/* Rendered in stable value order [1…N²-1, gap] so React never reorders
+			    DOM nodes — only the transform prop changes, so CSS transitions fire
+			    correctly for all directions. key={value} keeps the same DOM node per tile. */}
+			{[...Array(gridSize * gridSize - 1).keys()]
+				.map((i) => i + 1)
+				.concat(0)
+				.map((value) => {
+					const index = valueToIndex[value];
+					const { x, y } = calcTilePosition(index);
 
-				if (value === 0) {
+					if (value === 0) {
+						return (
+							<Tile
+								key="gap"
+								isGap={true}
+								x={x}
+								y={y}
+								tileSize={tileSize}
+							/>
+						);
+					}
+
+					const isClickable =
+						!isSolved && isAdjacent(gridSize, gapIndex, index);
+
 					return (
 						<Tile
-							key="gap"
-							isGap={true}
+							key={value}
+							tileNumber={value}
+							gridSize={gridSize}
+							emojiSvgUrl={emojiSvgUrl}
+							isClickable={isClickable}
+							hasNumbersShown={numbersVisible}
+							celebrating={celebrating}
+							celebrationDelay={
+								WIN_TILE_ANIM_START_DELAY_MS +
+								index * WIN_TILE_ANIM_STAGGER_MS
+							}
 							x={x}
 							y={y}
 							tileSize={tileSize}
+							{...(isClickable && {
+								onPointerDown: () => handleTileSelect(index),
+							})}
 						/>
 					);
-				}
-
-				const isClickable =
-					!isSolved && isAdjacent(gridSize, gapIndex, index);
-
-				return (
-					<Tile
-						key={value}
-						tileNumber={value}
-						gridSize={gridSize}
-						emojiSvgUrl={emojiSvgUrl}
-						isClickable={isClickable}
-						hasNumbersShown={numbersVisible}
-						celebrating={celebrating}
-						celebrationDelay={
-							WIN_TILE_ANIM_START_DELAY_MS +
-							index * WIN_TILE_ANIM_STAGGER_MS
-						}
-						x={x}
-						y={y}
-						tileSize={tileSize}
-						{...(isClickable && {
-							onPointerDown: () => handleTileSelect(index),
-						})}
-					/>
-				);
-			})}
+				})}
 		</div>
 	);
 }
