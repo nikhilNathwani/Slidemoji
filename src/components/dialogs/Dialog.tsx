@@ -41,6 +41,8 @@ function Dialog({ isOpen, onClose, title, children }: DialogProps) {
 					escapeDeactivates: false,
 					fallbackFocus: "body",
 					initialFocus: "#dialog-container",
+					// Don't return focus to the header button that opened the dialog.
+					// Without this, the button retains a visible focus ring after the dialog closes.
 					returnFocusOnDeactivate: false,
 				}}
 			>
