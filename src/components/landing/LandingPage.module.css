@@ -79,6 +79,13 @@
 	font-weight: 600;
 }
 
+.portfolioLink {
+	color: var(--text);
+	text-decoration: underline;
+	text-underline-offset: 5px;
+	text-decoration-skip-ink: none;
+}
+
 .landingFooter a {
 	color: var(--text);
 }

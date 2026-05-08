@@ -42,16 +42,14 @@ function LandingFooter() {
 		<footer className={styles.landingFooter}>
 			<div className={styles.footerDate}>{currentDate}</div>
 			<div className={styles.footerPuzzleNumber}>No. {puzzleNumber}</div>
-			<p>
-				Made by{" "}
-				<a
-					href="https://nikhilnathwani.com"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					Nikhil Nathwani
-				</a>
-			</p>
+			<a
+				className={styles.portfolioLink}
+				href="https://nikhilnathwani.com"
+				target="_blank"
+				rel="noopener noreferrer"
+			>
+				More by Nikhil Nathwani
+			</a>
 		</footer>
 	);
 }
