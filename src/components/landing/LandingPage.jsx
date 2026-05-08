@@ -48,7 +48,7 @@ function LandingFooter() {
 				target="_blank"
 				rel="noopener noreferrer"
 			>
-				More by Nikhil Nathwani
+				nikhilnathwani.com
 			</a>
 		</footer>
 	);
