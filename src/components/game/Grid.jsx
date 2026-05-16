@@ -9,6 +9,7 @@ import {
 	calcBoardSizePx,
 } from "../../utils/gridHelpers";
 import { createEmojiSvgUrl } from "../../utils/emoji";
+import { usePreference } from "../../hooks/usePreference";
 import { playTileMoveSound } from "../../utils/sound";
 import {
 	WIN_TILE_ANIM_START_DELAY_MS,
@@ -58,9 +59,14 @@ function Grid({
 		return () => clearTimeout(id);
 	}, [celebrating, gridSize]);
 
+	// Show the orientation gradient only when numbers are hidden and the puzzle
+	// is not yet solved. Gradient disappears on solve to reveal the clean emoji.
+	const showGradient = !hasNumbersShown && !isSolved;
+	const [darkMode] = usePreference("darkMode");
+	const bgColor = darkMode ? "#181818" : "#ffffff";
 	const emojiSvgUrl = useMemo(
-		() => (emoji ? createEmojiSvgUrl(emoji) : null),
-		[emoji],
+		() => (emoji ? createEmojiSvgUrl(emoji, showGradient, bgColor) : null),
+		[emoji, showGradient, bgColor],
 	);
 
 	const gapIndex = grid ? getGapIndex(grid) : -1;
