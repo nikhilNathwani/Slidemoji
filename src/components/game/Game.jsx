@@ -7,7 +7,7 @@ import WinDialog from "../dialogs/WinDialog";
 import GameActionButton from "./GameActionButton";
 import { useAuth } from "../../auth/useAuth";
 import { usePreference } from "../../hooks/usePreference";
-import { checkWin } from "../../utils/gridHelpers";
+import { useIsSolved } from "../../hooks/useEquivalentTiles";
 import { WIN_DIALOG_DELAY_MS } from "../../utils/constants";
 
 function Game({
@@ -24,7 +24,7 @@ function Game({
 	const [showNumbers] = usePreference("showNumbers");
 	const [soundEnabled] = usePreference("soundEnabled");
 	const { user } = useAuth();
-	const isSolved = checkWin(currentGrid);
+	const isSolved = useIsSolved(currentGrid, emoji);
 
 	// Dialog state
 	const [showRestartDialog, setShowRestartDialog] = useState(false);
@@ -43,6 +43,11 @@ function Game({
 
 	// Handle puzzle solve — delay dialog so the user can relish the solved state
 	const handleSolve = () => {
+		// Persist a solved flag so useSolvedGames detects fuzzy wins that don't
+		// pass the strict checkWin test (e.g. blank tile occupying the gap slot).
+		const solvedField =
+			currentDifficulty === "hard" ? "hardSolved" : "normalSolved";
+		setGameState({ [solvedField]: true });
 		setCelebrationKey((k) => k + 1);
 		setTimeout(() => setShowWinDialog(true), WIN_DIALOG_DELAY_MS);
 	};

@@ -9,7 +9,7 @@ import {
 	calcBoardSizePx,
 } from "../../utils/gridHelpers";
 import { createEmojiSvgUrl } from "../../utils/emoji";
-import { usePreference } from "../../hooks/usePreference";
+import { useCanonicalMap } from "../../hooks/useEquivalentTiles";
 import { playTileMoveSound } from "../../utils/sound";
 import {
 	WIN_TILE_ANIM_START_DELAY_MS,
@@ -28,7 +28,19 @@ function Grid({
 	isDialogOpen = false,
 }) {
 	const gridSize = Math.floor(Math.sqrt(grid?.length || 9));
-	const isSolved = checkWin(grid);
+	const canonicalMap = useCanonicalMap(emoji, gridSize);
+	const isSolved = checkWin(grid, canonicalMap);
+	// Tiles the analysis deemed blank (canonical 0) are rendered without the emoji
+	// so that even tiny edge slivers don't appear, making the blank status unambiguous.
+	const blankTileValues = useMemo(
+		() =>
+			new Set(
+				[...canonicalMap.entries()]
+					.filter(([, c]) => c === 0)
+					.map(([t]) => t),
+			),
+		[canonicalMap],
+	);
 
 	const [gridSizePx, setGridSizePx] = useState(() =>
 		calcBoardSizePx(gridSize),
@@ -36,6 +48,9 @@ function Grid({
 
 	// Tracks whether the win happened interactively this session (not on page load)
 	const [isJustSolved, setIsJustSolved] = useState(false);
+	// True once the user has made at least one move this session. Guards the
+	// late-canonicalMap effect from re-triggering a win on page load.
+	const [hasMoved, setHasMoved] = useState(false);
 	// Captures whether numbers were visible at the moment of the win, so spans
 	// stay mounted during the numberFade animation instead of disappearing instantly.
 	const [hadNumbersOnSolve, setHadNumbersOnSolve] = useState(false);
@@ -59,36 +74,48 @@ function Grid({
 		return () => clearTimeout(id);
 	}, [celebrating, gridSize]);
 
-	// Show the orientation gradient only when numbers are hidden and the puzzle
-	// is not yet solved. Gradient disappears on solve to reveal the clean emoji.
-	const showGradient = !hasNumbersShown && !isSolved;
-	const [darkMode] = usePreference("darkMode");
-	const bgColor = darkMode ? "#181818" : "#ffffff";
 	const emojiSvgUrl = useMemo(
-		() => (emoji ? createEmojiSvgUrl(emoji, showGradient, bgColor) : null),
-		[emoji, showGradient, bgColor],
+		() => (emoji ? createEmojiSvgUrl(emoji) : null),
+		[emoji],
 	);
 
 	const gapIndex = grid ? getGapIndex(grid) : -1;
+
+	// Handle the case where the winning move was made before canvas analysis
+	// finished (canonicalMap was empty). When it populates, re-check the current
+	// grid. Only fires for new wins this session — hasMoved guards against
+	// re-triggering the win animation for a puzzle already solved in a prior session.
+	useEffect(() => {
+		if (canonicalMap.size === 0) return;
+		if (isJustSolved) return;
+		if (!hasMoved) return;
+		if (grid && checkWin(grid, canonicalMap)) {
+			setHadNumbersOnSolve(hasNumbersShown);
+			setIsJustSolved(true);
+			onWin();
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [canonicalMap]);
 
 	const moveTile = useCallback(
 		(tileIndex) => {
 			const currentGapIndex = getGapIndex(grid);
 			const newGrid = swapTiles(grid, tileIndex, currentGapIndex);
 
+			setHasMoved(true);
 			onMove(newGrid);
 
 			if (hasSoundEnabled) {
 				playTileMoveSound();
 			}
 
-			if (checkWin(newGrid)) {
+			if (checkWin(newGrid, canonicalMap)) {
 				setHadNumbersOnSolve(hasNumbersShown);
 				setIsJustSolved(true);
 				onWin();
 			}
 		},
-		[grid, onMove, hasSoundEnabled, onWin, hasNumbersShown],
+		[grid, onMove, hasSoundEnabled, onWin, hasNumbersShown, canonicalMap],
 	);
 
 	const handleTileSelect = useCallback(
@@ -191,7 +218,9 @@ function Grid({
 							key={value}
 							tileNumber={value}
 							gridSize={gridSize}
-							emojiSvgUrl={emojiSvgUrl}
+							emojiSvgUrl={
+								blankTileValues.has(value) ? null : emojiSvgUrl
+							}
 							isClickable={isClickable}
 							hasNumbersShown={numbersVisible}
 							celebrating={celebrating}

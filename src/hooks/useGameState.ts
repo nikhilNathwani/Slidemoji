@@ -131,14 +131,23 @@ export function useGameState({
 			currentDifficulty,
 			normal,
 			hard,
+			normalSolved,
+			hardSolved,
 		}: Partial<GameState>): Promise<void> => {
 			if (!userId || !initialGrids || !gameState) return;
 
 			try {
 				const hasNormalUpdate = Array.isArray(normal);
 				const hasHardUpdate = Array.isArray(hard);
+				const hasSolvedFlag =
+					normalSolved === true || hardSolved === true;
 
-				if (currentDifficulty && !hasNormalUpdate && !hasHardUpdate) {
+				if (
+					currentDifficulty &&
+					!hasNormalUpdate &&
+					!hasHardUpdate &&
+					!hasSolvedFlag
+				) {
 					// Difficulty switch: only persist the selected difficulty.
 					await saveFirestoreGameState(userId, puzzleId, {
 						currentDifficulty,
@@ -164,6 +173,13 @@ export function useGameState({
 							userDoc?.savedGames ?? null,
 						);
 					}
+				}
+
+				if (hasSolvedFlag) {
+					await saveFirestoreGameState(userId, puzzleId, {
+						normalSolved,
+						hardSolved,
+					});
 				}
 			} catch (error) {
 				console.error("[useGameState] Error saving game state:", error);

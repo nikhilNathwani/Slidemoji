@@ -12,10 +12,12 @@ export function useSolvedGames() {
 		return Object.entries(userDoc.savedGames).reduce(
 			(acc, [puzzleId, puzzleData]) => {
 				const solved = {
-					[DIFFICULTY.NORMAL]: checkWin(
-						puzzleData?.[DIFFICULTY.NORMAL],
-					),
-					[DIFFICULTY.HARD]: checkWin(puzzleData?.[DIFFICULTY.HARD]),
+					[DIFFICULTY.NORMAL]:
+						checkWin(puzzleData?.[DIFFICULTY.NORMAL]) ||
+						!!puzzleData?.normalSolved,
+					[DIFFICULTY.HARD]:
+						checkWin(puzzleData?.[DIFFICULTY.HARD]) ||
+						!!puzzleData?.hardSolved,
 				};
 
 				if (solved[DIFFICULTY.NORMAL] || solved[DIFFICULTY.HARD]) {

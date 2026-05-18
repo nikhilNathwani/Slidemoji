@@ -23,7 +23,11 @@ export function getDailyEmoji() {
 // Blue (horizontal) and teal (vertical) are analogous colours — their intersection
 // produces teal, not grey. 3.6:1 V:H opacity ratio guarantees no two (row, col)
 // positions produce the same combined tonal value in both 3×3 and 4×4 grids.
-export function createEmojiSvgUrl(emoji, showGradient = false, bgColor = "#ffffff") {
+export function createEmojiSvgUrl(
+	emoji,
+	showGradient = false,
+	bgColor = "#ffffff",
+) {
 	const gradientMarkup = showGradient
 		? `<defs>
 			<linearGradient id="hg" x1="0%" y1="0%" x2="100%" y2="0%">
