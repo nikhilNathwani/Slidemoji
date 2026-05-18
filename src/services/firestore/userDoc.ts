@@ -14,6 +14,10 @@ export interface GameState {
 	normal: number[];
 	hard: number[];
 	currentDifficulty: string;
+	/** Set to true when a puzzle is won (including via fuzzy win). Used by
+	 *  useSolvedGames to detect wins that don't pass the strict checkWin test. */
+	normalSolved?: boolean;
+	hardSolved?: boolean;
 }
 
 /** Firestore app-data document for a user. Auth identity fields live in UserObject via useAuth(). */

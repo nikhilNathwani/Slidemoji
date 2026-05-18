@@ -7,7 +7,7 @@ import SettingsDialog from "./components/dialogs/SettingsDialog";
 import StatsDialog from "./components/dialogs/StatsDialog";
 import ArchiveDialog from "./components/dialogs/ArchiveDialog";
 import { getLatestPuzzleId } from "./utils/puzzleUtils";
-import { checkWin } from "./utils/gridHelpers";
+import { useIsSolved } from "./hooks/useEquivalentTiles";
 import { useAuth } from "./auth/useAuth";
 import { usePuzzle, prefetchPuzzles } from "./hooks/usePuzzle";
 import { useGameState } from "./hooks/useGameState";
@@ -55,6 +55,12 @@ function App() {
 
 	// TROPHY CASE — prefetch earned puzzle docs once auth settles; re-runs when
 	// a new game is solved so the trophy is warm before the user opens Stats.
+	const currentGrid = gameState?.[gameState?.currentDifficulty];
+	const isCurrentPuzzleSolved = useIsSolved(
+		currentGrid,
+		puzzleMetadata?.emoji,
+	);
+
 	const { solvedGames } = useSolvedGames();
 	const solvedGamesKey = Object.keys(solvedGames || {}).join(",");
 	useEffect(() => {
@@ -156,9 +162,7 @@ function App() {
 				onDifficultyChange={(diff) =>
 					setGameState({ currentDifficulty: diff })
 				}
-				isPuzzleSolved={checkWin(
-					gameState?.[gameState?.currentDifficulty],
-				)}
+				isPuzzleSolved={isCurrentPuzzleSolved}
 			/>
 
 			<ArchiveDialog

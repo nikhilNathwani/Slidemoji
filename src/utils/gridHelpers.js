@@ -123,23 +123,41 @@ export function swapTiles(tiles, index1, index2) {
 }
 
 /**
- * Check if the current grid state is solved
- * Grid is solved if elements are monotonically increasing with gap (0) at the end
+ * Check if the current grid state is solved.
+ *
+ * Without a canonicalMap: strict check — gap at last position, tiles 1…N in order.
+ *
+ * With a canonicalMap: fuzzy check — tiles in the same equivalence group are
+ * interchangeable. Blank tiles and the gap all share canonical 0, so a blank
+ * tile may occupy the gap's solved position and vice versa. Falls back to the
+ * strict check if canonicalMap is absent or empty (e.g. before async analysis
+ * completes).
+ *
  * @param {Array} tiles - Current tiles array
+ * @param {Map} [canonicalMap] - Optional map from tile number → group representative
  * @returns {boolean} True if grid is solved
  */
-export function checkWin(tiles) {
+export function checkWin(tiles, canonicalMap = null) {
 	if (!Array.isArray(tiles) || tiles.length === 0) return false;
 
-	// Gap must be in the last position
-	if (tiles[tiles.length - 1] !== 0) return false;
-
-	// All other elements must be strictly monotonically increasing (1, 2, 3, ...)
-	for (let i = 0; i < tiles.length - 1; i++) {
-		if (tiles[i] !== i + 1) return false;
+	if (!canonicalMap || canonicalMap.size === 0) {
+		// Strict check: gap at last position, all other tiles in order
+		if (tiles[tiles.length - 1] !== 0) return false;
+		for (let i = 0; i < tiles.length - 1; i++) {
+			if (tiles[i] !== i + 1) return false;
+		}
+		return true;
 	}
 
-	return true;
+	const canonical = (v) => canonicalMap.get(v) ?? v;
+
+	// Check all positions except the last via solved-order rule
+	for (let i = 0; i < tiles.length - 1; i++) {
+		if (canonical(tiles[i]) !== canonical(i + 1)) return false;
+	}
+
+	// Last position must be the gap (0) or a blank tile (both have canonical 0)
+	return canonical(tiles[tiles.length - 1]) === 0;
 }
 
 /**
