@@ -29,6 +29,9 @@ firebase-debug*.log
 # Firebase service account key — never commit credentials
 scripts/service-account-key.json
 
+# Personal notes
+INTERVIEW_STORIES.md
+
 # Tutorial and progress files
 PROGRESS.md
 tutorial/
