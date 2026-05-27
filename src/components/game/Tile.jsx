@@ -43,13 +43,12 @@ function Tile({
 
 	const transition = { type: "spring", stiffness: 400, damping: 35 };
 	const Wrapper = shouldReduceMotion ? "div" : motion.div;
-	const wrapperProps = shouldReduceMotion
-		? {}
-		: { layout: true, transition };
+	const wrapperProps = shouldReduceMotion ? {} : { layout: true, transition };
 
-	// Two-div structure: outer handles positioning (transform:translate),
-	// inner handles the win celebration (transform:scale via tilePop keyframe).
-	// Keeping them separate means the scale animation never clobbers Framer Motion's translate.
+	// Two-div structure: outer wrapper handles layout movement (Motion layout in
+	// normal mode, plain wrapper in reduced-motion mode), while the inner tile
+	// handles win celebration scale via CSS keyframes.
+	// Keeping them separate prevents celebration scale from clobbering layout movement.
 	return (
 		<Wrapper {...wrapperProps}>
 			<div
