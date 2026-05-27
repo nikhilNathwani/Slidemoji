@@ -17,7 +17,6 @@ export function useAmbiguousTiles(emoji, gridSize) {
 
 	useEffect(() => {
 		if (!emoji) {
-			setAmbiguousTiles(new Set());
 			return;
 		}
 		let cancelled = false;
@@ -29,7 +28,7 @@ export function useAmbiguousTiles(emoji, gridSize) {
 		};
 	}, [emoji, gridSize]);
 
-	return ambiguousTiles;
+	return emoji ? ambiguousTiles : new Set();
 }
 
 /**
@@ -42,7 +41,6 @@ export function useCanonicalMap(emoji, gridSize) {
 
 	useEffect(() => {
 		if (!emoji) {
-			setCanonicalMap(new Map());
 			return;
 		}
 		let cancelled = false;
@@ -54,7 +52,7 @@ export function useCanonicalMap(emoji, gridSize) {
 		};
 	}, [emoji, gridSize]);
 
-	return canonicalMap;
+	return emoji ? canonicalMap : new Map();
 }
 
 /**
