@@ -41,9 +41,15 @@ function Tile({
 		return <div className={styles.gap} aria-hidden="true" />;
 	}
 
-	const transition = { type: "spring", stiffness: 400, damping: 35 };
+	const transition = {
+		type: "tween",
+		duration: 0.18,
+		ease: [0.25, 0.46, 0.45, 0.94],
+	};
 	const Wrapper = shouldReduceMotion ? "div" : motion.div;
-	const wrapperProps = shouldReduceMotion ? {} : { layout: true, transition };
+	const wrapperProps = shouldReduceMotion
+		? {}
+		: { layout: "position", transition };
 
 	// Two-div structure: outer wrapper handles layout movement (Motion layout in
 	// normal mode, plain wrapper in reduced-motion mode), while the inner tile
