@@ -6,9 +6,5 @@
 	border: 8px solid var(--border);
 	border-radius: 8px;
 	box-sizing: content-box;
-	/* Absolutely-positioned tiles live inside this container */
-	position: relative;
-	/* Anchor the grid to a pixel-aligned compositing layer so child tile
-	   layers promote at integer offsets — no sub-pixel snapping on animation. */
-	transform: translateZ(0);
+	display: grid;
 }

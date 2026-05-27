@@ -1,4 +1,5 @@
 import styles from "./Tile.module.css";
+import { motion, useReducedMotion } from "framer-motion";
 
 function getTileStyle(tileNumber, gridSize, emojiSvgUrl) {
 	const style = {};
@@ -27,39 +28,29 @@ function Tile({
 	hasNumbersShown,
 	isClickable,
 	isGap = false,
-	x,
-	y,
-	tileSize,
 	onPointerDown,
 	celebrating = false,
 	celebrationDelay = 0,
 }) {
+	const shouldReduceMotion = useReducedMotion();
 	const classNames = [styles.tile];
 	if (isClickable) classNames.push(styles.clickable);
 	if (celebrating) classNames.push(styles.celebrating);
 
-	const positionStyle = {
-		position: "absolute",
-		width: tileSize,
-		height: tileSize,
-		transform: `translate(${x}px, ${y}px)`,
-		// Ease-out: fast start, smooth deceleration, no overshoot — matches
-		// the feel of the previous Framer Motion spring (stiffness:400, damping:35)
-		transition: isGap
-			? "none"
-			: "transform 180ms cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-		willChange: "transform",
-	};
-
 	if (isGap) {
-		return <div style={positionStyle} className="tile gap" />;
+		return <div className={styles.gap} aria-hidden="true" />;
 	}
 
-	// Two-div structure: outer handles positioning (transform:translate),
-	// inner handles the win celebration (transform:scale via tilePop keyframe).
-	// Keeping them separate means the scale animation never clobbers the translate.
+	const transition = { type: "spring", stiffness: 400, damping: 35 };
+	const Wrapper = shouldReduceMotion ? "div" : motion.div;
+	const wrapperProps = shouldReduceMotion ? {} : { layout: true, transition };
+
+	// Two-div structure: outer wrapper handles layout movement (Motion layout in
+	// normal mode, plain wrapper in reduced-motion mode), while the inner tile
+	// handles win celebration scale via CSS keyframes.
+	// Keeping them separate prevents celebration scale from clobbering layout movement.
 	return (
-		<div style={positionStyle}>
+		<Wrapper {...wrapperProps}>
 			<div
 				className={classNames.join(" ")}
 				{...(isClickable && { onPointerDown })}
@@ -78,7 +69,7 @@ function Tile({
 					<span className={styles.tileNumber}>{tileNumber}</span>
 				) : null}
 			</div>
-		</div>
+		</Wrapper>
 	);
 }
 
