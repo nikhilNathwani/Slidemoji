@@ -1,4 +1,5 @@
 import styles from "./Tile.module.css";
+import { motion, useReducedMotion } from "framer-motion";
 
 function getTileStyle(tileNumber, gridSize, emojiSvgUrl) {
 	const style = {};
@@ -27,39 +28,28 @@ function Tile({
 	hasNumbersShown,
 	isClickable,
 	isGap = false,
-	x,
-	y,
-	tileSize,
 	onPointerDown,
 	celebrating = false,
 	celebrationDelay = 0,
 }) {
+	const shouldReduceMotion = useReducedMotion();
 	const classNames = [styles.tile];
 	if (isClickable) classNames.push(styles.clickable);
 	if (celebrating) classNames.push(styles.celebrating);
 
-	const positionStyle = {
-		position: "absolute",
-		width: tileSize,
-		height: tileSize,
-		transform: `translate(${x}px, ${y}px)`,
-		// Ease-out: fast start, smooth deceleration, no overshoot — matches
-		// the feel of the previous Framer Motion spring (stiffness:400, damping:35)
-		transition: isGap
-			? "none"
-			: "transform 180ms cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-		willChange: "transform",
-	};
-
 	if (isGap) {
-		return <div style={positionStyle} className="tile gap" />;
+		return <div className={styles.gap} aria-hidden="true" />;
 	}
+
+	const transition = shouldReduceMotion
+		? { duration: 0 }
+		: { type: "spring", stiffness: 400, damping: 35 };
 
 	// Two-div structure: outer handles positioning (transform:translate),
 	// inner handles the win celebration (transform:scale via tilePop keyframe).
-	// Keeping them separate means the scale animation never clobbers the translate.
+	// Keeping them separate means the scale animation never clobbers Framer Motion's translate.
 	return (
-		<div style={positionStyle}>
+		<motion.div layout={!shouldReduceMotion} transition={transition}>
 			<div
 				className={classNames.join(" ")}
 				{...(isClickable && { onPointerDown })}
@@ -78,7 +68,7 @@ function Tile({
 					<span className={styles.tileNumber}>{tileNumber}</span>
 				) : null}
 			</div>
-		</div>
+		</motion.div>
 	);
 }
 

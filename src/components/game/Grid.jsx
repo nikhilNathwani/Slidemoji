@@ -169,14 +169,6 @@ function Grid({
 	const numbersVisible =
 		hasNumbersShown || (celebrating && hadNumbersOnSolve);
 
-	// calcBoardSizePx guarantees gridSizePx is divisible by gridSize, so tileSize is always an integer.
-	const tileSize = gridSizePx / gridSize;
-
-	const calcTilePosition = (index) => ({
-		x: (index % gridSize) * tileSize,
-		y: Math.floor(index / gridSize) * tileSize,
-	});
-
 	if (!grid || !Array.isArray(grid)) {
 		return <div>Loading grid...</div>;
 	}
@@ -187,56 +179,40 @@ function Grid({
 			style={{
 				width: `${gridSizePx}px`,
 				height: `${gridSizePx}px`,
+				gridTemplateColumns: `repeat(${gridSize}, 1fr)`,
 			}}
 		>
-			{/* Rendered in stable value order [1…N²-1, gap] so React never reorders
-			    DOM nodes — only the transform prop changes, so CSS transitions fire
-			    correctly for all directions. key={value} keeps the same DOM node per tile. */}
-			{Array.from({ length: gridSize * gridSize - 1 }, (_, i) => i + 1)
-				.concat(0)
-				.map((value) => {
-					const index = grid.indexOf(value);
-					const { x, y } = calcTilePosition(index);
+			{/* Grid order is the board order. Framer Motion animates re-layout when
+			    tiles move between cells. key is stable per tile value. */}
+			{grid.map((value, index) => {
+				if (value === 0) {
+					return <Tile key="gap" isGap={true} />;
+				}
 
-					if (value === 0) {
-						return (
-							<Tile
-								key="gap"
-								isGap={true}
-								x={x}
-								y={y}
-								tileSize={tileSize}
-							/>
-						);
-					}
+				const isClickable =
+					!isSolved && isAdjacent(gridSize, gapIndex, index);
 
-					const isClickable =
-						!isSolved && isAdjacent(gridSize, gapIndex, index);
-
-					return (
-						<Tile
-							key={value}
-							tileNumber={value}
-							gridSize={gridSize}
-							emojiSvgUrl={
-								blankTileValues.has(value) ? null : emojiSvgUrl
-							}
-							isClickable={isClickable}
-							hasNumbersShown={numbersVisible}
-							celebrating={celebrating}
-							celebrationDelay={
-								WIN_TILE_ANIM_START_DELAY_MS +
-								index * WIN_TILE_ANIM_STAGGER_MS
-							}
-							x={x}
-							y={y}
-							tileSize={tileSize}
-							{...(isClickable && {
-								onPointerDown: () => handleTileSelect(index),
-							})}
-						/>
-					);
-				})}
+				return (
+					<Tile
+						key={value}
+						tileNumber={value}
+						gridSize={gridSize}
+						emojiSvgUrl={
+							blankTileValues.has(value) ? null : emojiSvgUrl
+						}
+						isClickable={isClickable}
+						hasNumbersShown={numbersVisible}
+						celebrating={celebrating}
+						celebrationDelay={
+							WIN_TILE_ANIM_START_DELAY_MS +
+							index * WIN_TILE_ANIM_STAGGER_MS
+						}
+						{...(isClickable && {
+							onPointerDown: () => handleTileSelect(index),
+						})}
+					/>
+				);
+			})}
 		</div>
 	);
 }

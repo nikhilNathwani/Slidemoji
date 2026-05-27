@@ -60,6 +60,12 @@
 	pointer-events: none;
 }
 
+.gap {
+	background-color: transparent;
+	border: none;
+	pointer-events: none;
+}
+
 /* ─── Animation ─────────────────────────────────────────────────── */
 
 @keyframes tilePop {
