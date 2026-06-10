@@ -1,67 +1,103 @@
 # Slidemoji
 
-A daily emoji puzzle game. Swap emoji tiles on a grid to match a hidden target arrangement.
+Daily emoji sliding puzzle game with account progression, stats tracking, and premium unlock flow.
+
+## Overview
+
+Slidemoji is a React + Vite game where players solve a daily puzzle by sliding emoji tiles into the correct arrangement. The project combines game logic, Firebase-backed user progression, and Stripe-based premium access.
+
+## Highlights
+
+- Daily puzzle model with archive/history access
+- Firebase Auth with anonymous-to-Google account upgrade path
+- Firestore-backed user data and progression
+- Stripe checkout and webhook flow for premium unlock
+- Clear feature boundaries using vertical slices (`auth`, `payment`)
 
 ## Tech Stack
 
-- **React + Vite** — component framework and dev server
-- **Firebase** — Auth (Anonymous + Google), Firestore (user data, puzzles), Hosting
-- **Stripe** — premium subscription via Checkout Sessions (Vercel serverless functions in `api/`)
-- **CSS Modules** + a shared `src/styles/buttons.css` design system
+- React 19 + Vite
+- Firebase (Auth, Firestore)
+- Stripe (Vercel serverless functions in `api/`)
+- CSS Modules + shared style tokens
+- Vitest + ESLint
 
 ## Project Structure
 
-```
+```text
 src/
-  auth/           # Vertical slice — all authentication concerns
-  │   AuthContext.ts        — React context type + createContext
-  │   AuthProvider.tsx      — state machine, Google sign-in, anonymous upgrade
-  │   useAuth.ts            — hook to consume AuthContext
-  │   auth.js               — Firebase Auth service (signIn, signOut, onAuthChange)
-  │   accountMerge.js       — Firestore transaction merging anonymous → Google progress
-  │   GoogleSignInButton.jsx — sign-in / sign-out button component
-  │   SignInUpsell.jsx       — "sign in to save trophies" prompt
-  │
-  payment/        # Vertical slice — all subscription / paywall concerns
-  │   useCheckout.js        — initiates Stripe Checkout session
-  │   useSubscription.js    — reads isPremium from Firestore userDoc
-  │   PaywallView.jsx        — paywall UI with feature list and unlock button
-  │
-  components/     # Horizontal — UI components grouped by type
-  │   Header.jsx / Header.module.css
-  │   common/     Trophy, (auth UI lives in src/auth/)
-  │   dialogs/    SettingsDialog, StatsDialog, ArchiveDialog, ConfirmRestartDialog, ...
-  │   game/       Game, Grid, Tile, GameActionButton
-  │   landing/    LandingPage, AnimatedTileGrid
-  │   stats/      StatsContent, TrophyCase, ...
-  │
-  contexts/       # UserDocContext + UserDocProvider (shared, not auth-specific)
-  hooks/          # useGameState, usePuzzle, usePreference, useTheme, useUserDoc, ...
-  services/       # firebaseConfig.js + firestore/ sub-services
-  utils/          # pure helpers: emoji, grid, puzzle, icons, sound
-  styles/         # buttons.css global design tokens
+  auth/              # Auth context, providers, account merge, sign-in UI
+  payment/           # Checkout hooks, paywall view, subscription state
+  components/        # Game UI, dialogs, landing, stats
+  contexts/          # Shared user document context
+  hooks/             # App/game-specific hooks
+  services/          # Firebase config + Firestore service layer
+  utils/             # Pure helpers (emoji/grid/puzzle/sound)
+  styles/            # Shared global style tokens
 
-api/              # Vercel serverless functions (Stripe webhook, checkout session)
-data/             # emoji_calendar.json, exclusion lists
-scripts/          # one-off data migration / upload scripts
+api/
+  create-checkout-session.js
+  stripe-webhook.js
+  dev-grant-premium.js
+
+data/                # Puzzle data sources
+scripts/             # One-off migration/maintenance utilities
 ```
 
-### Codebase conventions
+## Environment Variables
 
-- **Vertical slices** for domains with multiple layers and clear boundaries (`src/auth/`, `src/payment/`). Everything a feature needs — service, state, context, hooks, UI — lives together.
-- **Horizontal grouping** for shared infrastructure (`hooks/`, `components/`, `utils/`) that has no single owner.
-- **Global button classes** (`.btn`, `.btn-primary`, `.btn-secondary`, `.btn-cancel`, `.btn-google`) in `src/styles/buttons.css`. Module CSS overrides use `:global(.btn).moduleClass` to stay one specificity level above the base.
+### Frontend (`VITE_`)
 
-## Development
+- `VITE_FIREBASE_API_KEY`
+- `VITE_FIREBASE_AUTH_DOMAIN`
+- `VITE_FIREBASE_PROJECT_ID`
+- `VITE_FIREBASE_STORAGE_BUCKET`
+- `VITE_FIREBASE_MESSAGING_SENDER_ID`
+- `VITE_FIREBASE_APP_ID`
+
+### Serverless (`api/`)
+
+- `STRIPE_SECRET_KEY`
+- `STRIPE_PRICE_ID`
+- `STRIPE_WEBHOOK_SECRET`
+- `FIREBASE_PROJECT_ID`
+- `FIREBASE_CLIENT_EMAIL`
+- `FIREBASE_PRIVATE_KEY`
+
+## Getting Started
+
+### 1. Install dependencies
 
 ```bash
 npm install
-npm run dev       # Vite dev server at http://localhost:5173
-npm run build     # Production build to dist/
 ```
 
-Firebase emulators (optional):
+### 2. Run the app locally
 
 ```bash
-firebase emulators:start
+npm run dev
 ```
+
+Vite runs at http://localhost:5173.
+
+### 3. Run API + Stripe webhook locally (optional, payments)
+
+```bash
+npm run dev:payments
+```
+
+## Scripts
+
+```bash
+npm run dev            # Frontend only
+npm run dev:api        # Vercel serverless local runtime
+npm run dev:stripe     # Stripe webhook forwarding
+npm run dev:payments   # API + Stripe in parallel
+npm run build
+npm run test
+npm run lint
+```
+
+## Why This Project
+
+Slidemoji demonstrates end-to-end product engineering: game-state architecture, authentication lifecycle handling, secure payment integration, and production-minded service boundaries in a modern frontend stack.
