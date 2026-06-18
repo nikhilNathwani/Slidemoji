@@ -17,8 +17,9 @@
 
 **What Gets Used in the Game:**
 -  corpus.csv joins the source corpora minus the emojis in source/exclusion_list.csv
+    - I.e. This list gets shuffled to determine the emoji_calendar.json ordering.
+-  corpus_ordered.csv is shuffled in the order that the game (emoji_calendar.json) uses. It achieves a varied mix of emojis so that same-subcategory/similar-emojis aren't clustered together in the calendar. Shuffled via a combination of manual adjustments and an algorithmic shuffling approach (which ensures emojis from the same subcategory are spaced apart as much as possible, while still maintaining a somewhat random order overall).
     - THIS is the source-of-truth corpus for the game. 
-    - I.e. this list gets shuffled to determine the emoji_calendar.json ordering.
     - Wherever a variant selector is available, the emoji variant (not the base variant) is used, since that will render best (as opposed to a wingdings-like plain text character which would look odd/broken in the game grid).
         -  The variant is produced by adding the unicode character '\ufe0f' after the base emoji. For example, the base emoji for "grinning face" is "😀" (unicode U+1F600), and the variant emoji is "😀️" (unicode U+1F600 U+FE0F). The variant selector ensures that the emoji renders as a colorful image rather than a plain text character.
     - Note: the the following emojis sometimes showed up as unicode strings in terminal, so should test them in the game to ensure they render as proper emojis: and other misc. emojis that are at risk of not rendering properly across platforms (e.g. because they showed up as unicode strings when printed in terminal: 🫪 '\U0001fac8', 🫈 '\U0001facd', 🪊 '\U0001faea', 🛘 '\U0001f6d8', 🪎 '\U0001fa8e', 🫍 '\U0001fa8a',🫯,🛝,🧵,🧊).
