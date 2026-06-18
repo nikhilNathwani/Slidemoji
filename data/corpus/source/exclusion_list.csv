@@ -1,0 +1,75 @@
+Symbols,Alphanumeric,#️⃣,Keycap Number Sign,risk of poor rendering
+Symbols,Alphanumeric,*️⃣,Keycap Asterisk,risk of poor rendering
+Symbols,Alphanumeric,0️⃣,Keycap Digit Zero,risk of poor rendering
+Symbols,Alphanumeric,1️⃣,Keycap Digit One,risk of poor rendering
+Symbols,Alphanumeric,2️⃣,Keycap Digit Two,risk of poor rendering
+Symbols,Alphanumeric,3️⃣,Keycap Digit Three,risk of poor rendering
+Symbols,Alphanumeric,4️⃣,Keycap Digit Four,risk of poor rendering
+Symbols,Alphanumeric,5️⃣,Keycap Digit Five,risk of poor rendering
+Symbols,Alphanumeric,6️⃣,Keycap Digit Six,risk of poor rendering
+Symbols,Alphanumeric,7️⃣,Keycap Digit Seven,risk of poor rendering
+Symbols,Alphanumeric,8️⃣,Keycap Digit Eight,risk of poor rendering
+Symbols,Alphanumeric,9️⃣,Keycap Digit Nine,risk of poor rendering
+People & Body,People & Appearance,🦰,Red Hair,risk of poor rendering
+People & Body,People & Appearance,🦱,Curly Hair,risk of poor rendering
+People & Body,People & Appearance,🦳,White Hair,risk of poor rendering
+People & Body,People & Appearance,🦲,Bald,risk of poor rendering
+People & Body,People & Appearance,🏻,Light Skin Tone,risk of poor rendering
+People & Body,People & Appearance,🏼,Medium-Light Skin Tone,risk of poor rendering
+People & Body,People & Appearance,🏽,Medium Skin Tone,risk of poor rendering
+People & Body,People & Appearance,🏾,Medium-Dark Skin Tone,risk of poor rendering
+People & Body,People & Appearance,🏿,Dark Skin Tone,risk of poor rendering
+Objects,time,🕧,Twelve-Thirty, redundant
+Objects,time,🕜,One-Thirty, redundant
+Objects,time,🕝,Two-Thirty, redundant
+Objects,time,🕞,Three-Thirty, redundant
+Objects,time,🕟,Four-Thirty, redundant
+Objects,time,🕠,Five-Thirty, redundant
+Objects,time,🕡,Six-Thirty, redundant
+Objects,time,🕢,Seven-Thirty, redundant
+Objects,time,🕣,Eight-Thirty, redundant
+Objects,time,🕤,Nine-Thirty, redundant
+Objects,time,🕥,Ten-Thirty, redundant
+Objects,time,🕦,Eleven-Thirty, redundant
+Symbols,Unknown,⬛️,Black Large Square, low visibility
+Symbols,Unknown,⬜️,White Large Square, low visibility
+Symbols,geometric,◼️,Black Medium Square, low visibility
+Symbols,geometric,◻️,White Medium Square, low visibility
+Symbols,Unknown,◾️,Black Medium-Small Square, low visibility
+Symbols,Unknown,◽️,White Medium-Small Square, low visibility
+Symbols,geometric,▪️,Black Small Square, low visibility & too small
+Symbols,geometric,▫️,White Small Square, low visibility & too small
+Symbols,Location & Warning,⚠️,Warning, can look like game is broken
+Symbols,warning,🚫,Prohibited, can look like game is broken
+Symbols,heart,🖤,Black Heart, low visibility
+Symbols,heart,🤍,White Heart, low visibility
+Symbols,Unknown,⚫️,Black Circle, low visibility
+Symbols,Unknown,⚪️,White Circle, low visibility    
+Symbols,math,✖️,Multiply, low visibility
+Symbols,Unknown,➕️,Plus, low visibility
+Symbols,Unknown,➖️,Minus, low visibility
+Symbols,Unknown,➗️,Divide, low visibility
+Symbols,math,🟰,Equals Sign, low visibility
+Symbols,currency,💲,Dollar Sign, low visibility
+Symbols,other-symbol,✔️,Check Mark, low visibility
+Symbols,other-symbol,©️,Copyright, low visibility
+Symbols,other-symbol,®️,Registered, low visibility
+Symbols,other-symbol,™️,Trade Mark, low visibility
+Symbols,Unknown,❔️,White Question Mark, low visibility
+Symbols,Unknown,❕️,White Exclamation Mark, low visibility
+Symbols,emotion,🕳️,Hole, too small & visibility
+Symbols,geometric,🔳,White Square Button, low visibility
+Symbols,geometric,🔲,Black Square Button, low visibility
+Symbols,Unknown,➰️,Curly Loop, low visibility
+Symbols,Unknown,➿️,Double Curly Loop, low visibility
+Symbols,punctuation,〰️,Wavy Dash, low visibility
+Symbols,geometric,🔸,Small Orange Diamond, too small & redundant
+Symbols,geometric,🔹,Small Blue Diamond, too small & redundant
+Symbols,arrow,🔙,BACK Arrow, low visibility
+Symbols,arrow,🔚,END Arrow, low visibility
+Symbols,arrow,🔛,ON! Arrow, low visibility
+Symbols,arrow,🔜,SOON Arrow, low visibility
+Symbols,arrow,🔝,TOP Arrow, low visibility
+Symbols,currency,💱,Currency Exchange, low visibility
+People & Body,person-symbol,👣,Footprints, low visibility
+Animals & Nature,animal-mammal,🐾,Paw Prints, low visibility

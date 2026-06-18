@@ -1,5 +1,5 @@
 /**
- * Script to upload 1096 puzzles to Firestore
+ * Script to upload 1337 puzzles to Firestore
  *
  * Run with: node scripts/uploadPuzzles.js
  * (Make sure you have .env.local with Firebase credentials)
@@ -153,12 +153,14 @@ function scramblePuzzle(size) {
 function generatePuzzle(puzzleId) {
 	// Get emoji from calendar (cycles after 365)
 	const emojiIndex = (puzzleId - 1) % emojiCalendar.length;
-	const { emoji, name } = emojiCalendar[emojiIndex];
+	const { emoji, name, category, subcategory } = emojiCalendar[emojiIndex];
 
 	return {
 		id: puzzleId,
 		emoji: emoji,
 		emojiName: name,
+		category: category,
+		subcategory: subcategory,
 		normal: scramblePuzzle(3),
 		hard: scramblePuzzle(4),
 	};
@@ -168,7 +170,7 @@ function generatePuzzle(puzzleId) {
  * Upload a single puzzle to Firestore
  */
 async function uploadPuzzle(puzzle) {
-	const puzzleRef = db.collection("puzzles").doc(puzzle.id.toString());
+	const puzzleRef = db.collection("puzzles2").doc(puzzle.id.toString());
 	await puzzleRef.set(puzzle);
 	console.log(
 		`✓ Uploaded puzzle ${puzzle.id}: ${puzzle.emoji} ${puzzle.emojiName}`,
@@ -176,16 +178,17 @@ async function uploadPuzzle(puzzle) {
 }
 
 /**
- * Upload all 1096 puzzles (3 years: 2026-2028)
+ * Upload all 1337 puzzles (4 years: 2026-2029))
  */
 async function uploadAllPuzzles() {
-	const totalPuzzles = 1096; // 365 + 365 + 366 (2028 is leap year)
+	const totalPuzzles = 1337; // 365 + 365 + 366 + 241 (2029 is partial year)
 
 	console.log("🚀 Starting puzzle upload...\n");
-	console.log(`📅 Generating ${totalPuzzles} puzzles for years 2026-2028`);
+	console.log(`📅 Generating ${totalPuzzles} puzzles for years 2026-2029`);
 	console.log(`   Year 1 (2026): Days 1-365`);
 	console.log(`   Year 2 (2027): Days 366-730`);
 	console.log(`   Year 3 (2028, leap year): Days 731-1096`);
+	console.log(`   Year 4 (2029, partial year): Days 1097-1337`);
 	console.log(`🎨 Using ${emojiCalendar.length} emojis from calendar\n`);
 
 	try {
@@ -194,7 +197,7 @@ async function uploadAllPuzzles() {
 		// Generate and upload puzzles in batches to avoid overwhelming Firestore
 		const batchSize = 10;
 
-		for (let i = 1; i <= totalPuzzles; i += batchSize) {
+		for (let i = 48; i <= totalPuzzles; i += batchSize) {
 			const batch = [];
 
 			// Generate batch
@@ -244,4 +247,304 @@ async function uploadAllPuzzles() {
 }
 
 // Run the upload
-uploadAllPuzzles();
+// uploadAllPuzzles();
+
+// Copy puzzle documents 1 through 47 from puzzles collection into puzzles2 collection
+function copyPuzzleDocsFromPuzzlesToPuzzles2(startId = 1, endId = 47) {
+	const puzzlesRef = db.collection("puzzles");
+	const puzzles2Ref = db.collection("puzzles2");
+
+	puzzlesRef
+		.where("id", ">=", startId)
+		.where("id", "<=", endId)
+		.get()
+		.then((snapshot) => {
+			const batch = db.batch();
+			snapshot.forEach((doc) => {
+				const data = doc.data();
+				const newDocRef = puzzles2Ref.doc(doc.id);
+				batch.set(newDocRef, data);
+				console.log(`Prepared copy of puzzle ${data.id} to puzzles2`);
+			});
+			return batch.commit();
+		})
+		.then(() => {
+			console.log(
+				`✅ Successfully copied puzzles ${startId}-${endId} to puzzles2!`,
+			);
+			process.exit(0);
+		})
+		.catch((error) => {
+			console.error("\n❌ Error copying puzzles:", error);
+			process.exit(1);
+		});
+}
+
+// Run the copy
+// copyPuzzleDocsFromPuzzlesToPuzzles2(1, 47);
+
+// Count unique puzzle docs IDs and min/max puzzle doc IDs in puzzles2 collection
+function countUniquePuzzleIDsInPuzzles2() {
+	const puzzles2Ref = db.collection("puzzles2");
+	puzzles2Ref
+		.get()
+		.then((snapshot) => {
+			const ids = new Set();
+			let minId = Infinity;
+			let maxId = -Infinity;
+
+			snapshot.forEach((doc) => {
+				const data = doc.data();
+				if (data.id !== undefined) {
+					ids.add(data.id);
+					if (data.id < minId) minId = data.id;
+					if (data.id > maxId) maxId = data.id;
+				}
+			});
+
+			console.log(`✅ Unique puzzle IDs in puzzles2: ${ids.size}`);
+			console.log(`📉 Min puzzle ID: ${minId}`);
+			console.log(`📈 Max puzzle ID: ${maxId}`);
+			process.exit(0);
+		})
+		.catch((error) => {
+			console.error("\n❌ Error counting puzzle IDs:", error);
+			process.exit(1);
+		});
+}
+
+function addCategoryAndSubcategoryToPuzzles2LegacyDocs(
+	startId = 1,
+	endId = 47,
+) {
+	const puzzles2Ref = db.collection("puzzles2");
+
+	puzzles2Ref
+		.where("id", ">=", startId)
+		.where("id", "<=", endId)
+		.get()
+		.then((snapshot) => {
+			const batch = db.batch();
+			snapshot.forEach((doc) => {
+				const data = doc.data();
+				const emojiInfo = emojiCalendar.find(
+					(item) => item.emoji === data.emoji,
+				);
+				if (emojiInfo) {
+					const newData = {
+						...data,
+						category: emojiInfo.category,
+						subcategory: emojiInfo.subcategory,
+					};
+					batch.set(doc.ref, newData);
+					console.log(
+						`Prepared update of puzzle ${data.id} with category and subcategory`,
+					);
+				} else {
+					console.warn(
+						`⚠️ Emoji ${data.emoji} not found in calendar for puzzle ${data.id}`,
+					);
+				}
+			});
+			return batch.commit();
+		})
+		.then(() => {
+			console.log(
+				`✅ Successfully updated puzzles ${startId}-${endId} with category and subcategory!`,
+			);
+			//print puzzle docs 1 through 47 to verify
+			return puzzles2Ref
+				.where("id", ">=", startId)
+				.where("id", "<=", endId)
+				.get();
+		})
+		.then((snapshot) => {
+			console.log(`\n📄 Updated puzzle documents in puzzles2:`);
+			snapshot.forEach((doc) => {
+				console.log(doc.data());
+			});
+			process.exit(0);
+		})
+		.catch((error) => {
+			console.error("\n❌ Error updating puzzles:", error);
+			process.exit(1);
+		});
+}
+
+function confirmNormalAndHardAreEqualInPuzzlesAndPuzzles2LegacyDocs(
+	startId = 1,
+	endId = 47,
+) {
+	const puzzlesRef = db.collection("puzzles");
+	const puzzles2Ref = db.collection("puzzles2");
+
+	Promise.all([
+		puzzlesRef.where("id", ">=", startId).where("id", "<=", endId).get(),
+		puzzles2Ref.where("id", ">=", startId).where("id", "<=", endId).get(),
+	])
+		.then(([snapshot1, snapshot2]) => {
+			const puzzlesMap = new Map();
+			snapshot1.forEach((doc) => {
+				const data = doc.data();
+				puzzlesMap.set(data.id, data);
+			});
+
+			let allMatch = true;
+			snapshot2.forEach((doc) => {
+				const data = doc.data();
+				const originalData = puzzlesMap.get(data.id);
+				if (
+					JSON.stringify(data.normal) !==
+						JSON.stringify(originalData.normal) ||
+					JSON.stringify(data.hard) !==
+						JSON.stringify(originalData.hard)
+				) {
+					console.error(
+						`❌ Mismatch in normal or hard grid for puzzle ID ${data.id}`,
+					);
+					allMatch = false;
+				} else {
+					console.log(
+						`✓ Puzzle ID ${data.id} has matching normal and hard grids`,
+					);
+				}
+			});
+
+			if (allMatch) {
+				console.log(
+					"\n✅ All puzzles have matching normal and hard grids in puzzles and puzzles2!",
+				);
+			} else {
+				console.warn(
+					"\n⚠️ Some puzzles have mismatches in normal or hard grids between puzzles and puzzles2. Check logs above for details.",
+				);
+			}
+			process.exit(0);
+		})
+		.catch((error) => {
+			console.error("\n❌ Error comparing puzzles:", error);
+			process.exit(1);
+		});
+}
+
+function getWikiCorpusVersionOfEmoji(emoji) {
+	const wikiCorpus = readFileSync(
+		join(__dirname, "../data/corpus/source/wikipedia_corpus.csv"),
+		"utf-8",
+	)
+		.split("\n")
+		.map((line) => line.trim())
+		.filter((line) => line);
+
+	for (const row of wikiCorpus) {
+		const wikiEmoji = row.split(",")[0].trim();
+		if (wikiEmoji.replace(/\ufe0f/g, "") === emoji.replace(/\ufe0f/g, "")) {
+			return wikiEmoji;
+		}
+	}
+	console.log(`⚠️ Emoji ${emoji} not found in wiki corpus`);
+	return null; // Not found in wiki corpus
+}
+
+function useWikiCorpusVersionsOfEmojisForAll1337PuzzlesInPuzzles2() {
+	//wiki corpus is in ../data/corpus/source/wikipedia_corpus.csv, each row is just the emoji in column 0
+
+	const puzzles2Ref = db.collection("puzzles2");
+	puzzles2Ref
+		.get()
+		.then((snapshot) => {
+			const batch = db.batch();
+			snapshot.forEach((doc) => {
+				const data = doc.data();
+				const wikiEmoji = getWikiCorpusVersionOfEmoji(data.emoji);
+				if (wikiEmoji && wikiEmoji !== data.emoji) {
+					const newData = {
+						...data,
+						emoji: wikiEmoji,
+					};
+					batch.set(doc.ref, newData);
+					console.log(
+						`Prepared update of puzzle ${data.id} with wiki corpus version of emoji`,
+					);
+				}
+			});
+			return batch.commit();
+		})
+		.then(() => {
+			console.log(
+				`✅ Successfully updated all puzzles in puzzles2 with wiki corpus versions of emojis!`,
+			);
+			process.exit(0);
+		})
+		.catch((error) => {
+			console.error(
+				"\n❌ Error updating puzzles with wiki corpus emojis:",
+				error,
+			);
+			process.exit(1);
+		});
+}
+
+function renamePuzzlesToPuzzles_OLD() {
+	const puzzlesRef = db.collection("puzzles");
+	const puzzlesOldRef = db.collection("puzzles_old");
+
+	puzzlesRef
+		.get()
+		.then((snapshot) => {
+			const batch = db.batch();
+			snapshot.forEach((doc) => {
+				const data = doc.data();
+				const newDocRef = puzzlesOldRef.doc(doc.id);
+				batch.set(newDocRef, data);
+				console.log(
+					`Prepared copy of puzzle ${data.id} to puzzles_old`,
+				);
+			});
+			return batch.commit();
+		})
+		.then(() => {
+			console.log(
+				`✅ Successfully renamed puzzles collection to puzzles_old!`,
+			);
+			process.exit(0);
+		})
+		.catch((error) => {
+			console.error("\n❌ Error renaming puzzles collection:", error);
+			process.exit(1);
+		});
+}
+
+function renamePuzzles2ToPuzzles() {
+	const puzzles2Ref = db.collection("puzzles2");
+	const puzzlesRef = db.collection("puzzles");
+
+	puzzles2Ref
+		.get()
+		.then((snapshot) => {
+			const batch = db.batch();
+			snapshot.forEach((doc) => {
+				const data = doc.data();
+				const newDocRef = puzzlesRef.doc(doc.id);
+				batch.set(newDocRef, data);
+				console.log(
+					`Prepared copy of puzzle ${data.id} from puzzles2 to puzzles`,
+				);
+			});
+			return batch.commit();
+		})
+		.then(() => {
+			console.log(
+				`✅ Successfully renamed puzzles2 collection to puzzles!`,
+			);
+			process.exit(0);
+		})
+		.catch((error) => {
+			console.error("\n❌ Error renaming puzzles2 collection:", error);
+			process.exit(1);
+		});
+}
+
+// Run the count
+// addCategoryAndSubcategoryToPuzzles2LegacyDocs();
+renamePuzzles2ToPuzzles();
