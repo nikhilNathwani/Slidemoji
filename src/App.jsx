@@ -40,10 +40,15 @@ function App() {
 		initialGrids: puzzleMetadata?.initialGrids,
 	});
 
-	// ARCHIVE — puzzle docs are public; prefetch latest N immediately on mount
-	// so the top of the archive list renders instantly before the user opens it.
+	// ARCHIVE — puzzle docs require auth (firestore.rules: allow read: if
+	// isAuthenticated()), so this must wait for the anonymous sign-in that
+	// useAuth() fires on mount to resolve first. Without the isAuthLoading
+	// gate, this fired immediately on every mount and always lost the race,
+	// permanently failing with "Missing or insufficient permissions" (swallowed,
+	// so silent) instead of ever actually warming the cache.
 	const ARCHIVE_PREFETCH_COUNT = 30;
 	useEffect(() => {
+		if (isAuthLoading) return;
 		const latest = getLatestPuzzleId();
 		prefetchPuzzles(
 			Array.from(
@@ -51,7 +56,7 @@ function App() {
 				(_, i) => latest - i,
 			),
 		);
-	}, []);
+	}, [isAuthLoading]);
 
 	// TROPHY CASE — prefetch earned puzzle docs once auth settles; re-runs when
 	// a new game is solved so the trophy is warm before the user opens Stats.
