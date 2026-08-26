@@ -33,12 +33,18 @@ export function useCheckout() {
 		setError(null);
 
 		try {
+			// Generated once per checkout attempt and passed through to Stripe as
+			// the idempotency key, so a retried/duplicated request can't create a
+			// second Checkout Session for the same attempt.
+			const checkoutRequestId = crypto.randomUUID();
+
 			const res = await fetch("/api/create-checkout-session", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
 					uid: user.uid,
 					returnUrl: window.location.origin,
+					checkoutRequestId,
 				}),
 			});
 

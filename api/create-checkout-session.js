@@ -16,13 +16,16 @@ export default async function handler(req, res) {
 		return res.status(405).json({ error: "Method not allowed" });
 	}
 
-	const { uid, returnUrl } = req.body ?? {};
+	const { uid, returnUrl, checkoutRequestId } = req.body ?? {};
 
 	if (!uid || typeof uid !== "string") {
 		return res.status(400).json({ error: "uid is required" });
 	}
 	if (!returnUrl || typeof returnUrl !== "string") {
 		return res.status(400).json({ error: "returnUrl is required" });
+	}
+	if (!checkoutRequestId || typeof checkoutRequestId !== "string") {
+		return res.status(400).json({ error: "checkoutRequestId is required" });
 	}
 	// Validate returnUrl is a legitimate https URL to prevent open-redirect attacks
 	let parsedReturnUrl;
@@ -60,22 +63,28 @@ export default async function handler(req, res) {
 		const cancelUrl = new URL(parsedReturnUrl);
 		cancelUrl.searchParams.set("payment", "cancelled");
 
-		const session = await stripe.checkout.sessions.create({
-			mode: "payment", // one-time purchase; change to "subscription" for recurring
-			payment_method_types: ["card"],
-			line_items: [
-				{
-					price: process.env.STRIPE_PRICE_ID,
-					quantity: 1,
+		const session = await stripe.checkout.sessions.create(
+			{
+				mode: "payment", // one-time purchase; change to "subscription" for recurring
+				payment_method_types: ["card"],
+				line_items: [
+					{
+						price: process.env.STRIPE_PRICE_ID,
+						quantity: 1,
+					},
+				],
+				metadata: {
+					// Stored on the session so the webhook can find the right Firestore user
+					firebaseUid: uid,
 				},
-			],
-			metadata: {
-				// Stored on the session so the webhook can find the right Firestore user
-				firebaseUid: uid,
+				success_url: successUrl.toString(),
+				cancel_url: cancelUrl.toString(),
 			},
-			success_url: successUrl.toString(),
-			cancel_url: cancelUrl.toString(),
-		});
+			// Client generates checkoutRequestId once per attempt and resends it on
+			// retry, so a retried request reuses the original session instead of
+			// creating a second one.
+			{ idempotencyKey: checkoutRequestId },
+		);
 
 		return res.status(200).json({ url: session.url });
 	} catch (err) {

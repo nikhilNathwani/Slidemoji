@@ -137,6 +137,44 @@ export default async function handler(req, res) {
 		}
 	}
 
+	let db;
+	try {
+		db = getAdminDb();
+	} catch (err) {
+		console.error(
+			"[stripe-webhook] Firebase Admin init failed:",
+			err.message,
+		);
+		console.error(
+			"[stripe-webhook] Check FIREBASE_PRIVATE_KEY — it must include",
+			"the full PEM header/footer and use literal \\\\n for newlines.",
+		);
+		return res
+			.status(500)
+			.json({ error: "Firebase Admin initialization failed" });
+	}
+
+	// Stripe explicitly documents at-least-once delivery — the same event can
+	// arrive more than once (e.g. if our response is slow and Stripe times out
+	// waiting for it). doc.create() is atomic and throws ALREADY_EXISTS if this
+	// event.id was already recorded, so this dedup check itself can't race.
+	try {
+		await db.collection("processedStripeEvents").doc(event.id).create({
+			type: event.type,
+			processedAt: new Date().toISOString(),
+		});
+	} catch (err) {
+		if (err.code === 6) {
+			console.log(`[stripe-webhook] Duplicate event ${event.id}, skipping`);
+			return res.status(200).json({ received: true, duplicate: true });
+		}
+		console.error(
+			"[stripe-webhook] Failed to record processed event:",
+			err.message,
+		);
+		return res.status(500).json({ error: "Failed to record event" });
+	}
+
 	if (event.type === "checkout.session.completed") {
 		const session = event.data.object;
 		const firebaseUid = session.metadata?.firebaseUid;
@@ -149,23 +187,6 @@ export default async function handler(req, res) {
 			return res
 				.status(400)
 				.json({ error: "Missing firebaseUid in session metadata" });
-		}
-
-		let db;
-		try {
-			db = getAdminDb();
-		} catch (err) {
-			console.error(
-				"[stripe-webhook] Firebase Admin init failed:",
-				err.message,
-			);
-			console.error(
-				"[stripe-webhook] Check FIREBASE_PRIVATE_KEY — it must include",
-				"the full PEM header/footer and use literal \\\\n for newlines.",
-			);
-			return res
-				.status(500)
-				.json({ error: "Firebase Admin initialization failed" });
 		}
 
 		try {
