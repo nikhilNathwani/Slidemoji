@@ -23,6 +23,19 @@ function LandingPage({ onPlay }) {
 			</div>
 
 			<LandingFooter />
+
+			<a
+				className={styles.playlinBadge}
+				href="https://playlin.io/game/slidemoji/"
+				target="_blank"
+				rel="noopener noreferrer"
+			>
+				<img
+					src="https://cdn.playlin.io/creators/featured-dark.svg"
+					alt="Slidemoji featured on Playlin"
+					width="200"
+				/>
+			</a>
 		</div>
 	);
 }

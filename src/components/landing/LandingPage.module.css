@@ -71,7 +71,7 @@
 
 	display: flex;
 	flex-flow: column nowrap;
-	gap: 8px;
+	gap: 5px;
 	text-align: center;
 }
 
@@ -87,6 +87,25 @@
 
 .landingFooter a {
 	color: var(--text);
+}
+
+.playlinBadge {
+	position: absolute;
+	bottom: 16px;
+	right: 16px;
+	line-height: 0;
+	opacity: 0.7;
+	transition: opacity 0.15s ease;
+}
+
+.playlinBadge:hover {
+	opacity: 1;
+}
+
+.playlinBadge img {
+	display: block;
+	width: 130px;
+	height: auto;
 }
 
 /* ─── Media Queries ─────────────────────────────────────────────── */
