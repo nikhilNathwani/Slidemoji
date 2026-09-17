@@ -19,6 +19,14 @@ function applyTheme(isDark) {
 	// Remove existing theme-color metas and create a fresh one.
 	// Safari iOS only reliably re-reads theme-color on a genuine DOM change in <head>,
 	// not when an existing element's attribute is mutated in-place.
+	// KNOWN PLATFORM LIMITATION (not fixable from app code — confirmed after ~6 prior fix
+	// attempts across this file's history, see git log): Safari iOS still only *reliably*
+	// re-samples theme-color at real navigation/paint boundaries, not from JS DOM mutations
+	// mid-session, so toggling in-app can require a refresh before Safari's chrome catches up.
+	// Chrome for iOS never supports theme-color for its own chrome at all (its toolbar is
+	// native Chrome UI, not delegated to WebKit) and will always track the OS light/dark
+	// setting regardless of what this app requests, refresh or not. Don't re-attempt a
+	// JS-only fix for either without testing on real hardware first.
 	document
 		.querySelectorAll('meta[name="theme-color"]')
 		.forEach((m) => m.remove());
