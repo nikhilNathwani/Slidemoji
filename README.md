@@ -68,6 +68,8 @@ scripts/             # One-off migration/maintenance utilities
 
 ### 1. Install dependencies
 
+Requires Node 24 (pinned in `.nvmrc`; fnm switches to it automatically).
+
 ```bash
 npm install
 ```
