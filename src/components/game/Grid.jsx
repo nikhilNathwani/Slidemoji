@@ -90,8 +90,13 @@ function Grid({
 		if (isJustSolved) return;
 		if (!hasMoved) return;
 		if (grid && checkWin(grid, canonicalMap)) {
+			// setState here is deliberate: this effect reacts to the async canvas
+			// analysis finishing (an external system), which is the only moment a
+			// win made while canonicalMap was still empty can be detected.
+			/* eslint-disable react-hooks/set-state-in-effect */
 			setHadNumbersOnSolve(hasNumbersShown);
 			setIsJustSolved(true);
+			/* eslint-enable react-hooks/set-state-in-effect */
 			onWin();
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
