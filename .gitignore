@@ -41,3 +41,8 @@ tutorial/
 public/favicon-archive/
 Slidemoji-Demo.mp4
 media/
+
+# Environment files hold secrets; only the example template is committed
+.env
+.env.*
+!.env.example
