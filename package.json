@@ -53,7 +53,8 @@
 		"not op_mini all"
 	],
 	"overrides": {
-		"uuid": "^11.1.1"
+		"uuid": "^11.1.1",
+		"@grpc/grpc-js": "^1.13.6"
 	},
 	"engines": {
 		"node": "24.x"
