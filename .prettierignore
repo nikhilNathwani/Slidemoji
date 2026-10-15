@@ -1,0 +1,7 @@
+# npm owns this file's formatting
+package-lock.json
+# Installed agent skills (third-party) and their lockfile
+.agents/
+skills-lock.json
+# Data files
+data/
