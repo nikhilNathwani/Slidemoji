@@ -165,7 +165,9 @@ export default async function handler(req, res) {
 		});
 	} catch (err) {
 		if (err.code === 6) {
-			console.log(`[stripe-webhook] Duplicate event ${event.id}, skipping`);
+			console.log(
+				`[stripe-webhook] Duplicate event ${event.id}, skipping`,
+			);
 			return res.status(200).json({ received: true, duplicate: true });
 		}
 		console.error(

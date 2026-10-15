@@ -53,11 +53,7 @@ import {
 // ─── State ───────────────────────────────────────────────────────────────────
 
 type AuthStatus =
-	| "initializing"
-	| "ready"
-	| "signing-in"
-	| "merging"
-	| "signing-out";
+	"initializing" | "ready" | "signing-in" | "merging" | "signing-out";
 
 interface AuthState {
 	user: UserObject | null;
