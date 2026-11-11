@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://slidemoji.com/sitemap.xml
+Sitemap: https://slidemoji.vercel.app/sitemap.xml

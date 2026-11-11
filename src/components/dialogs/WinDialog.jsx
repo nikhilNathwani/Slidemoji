@@ -22,7 +22,7 @@ function WinDialog({
 
 I unscrambled today's emoji! ${emoji}
 
-Play here: https://slidemoji.com`;
+Play here: https://slidemoji.vercel.app`;
 
 		// Copy to clipboard
 		navigator.clipboard
