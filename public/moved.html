@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Slidemoji has a new home</title>
+		<meta
+			name="description"
+			content="Slidemoji, the daily emoji sliding puzzle, now lives at slidemoji.vercel.app."
+		/>
+		<!-- Served in place of the game on the retired slidemoji.com domain.
+		     Point search engines at the new address and keep this page out of results. -->
+		<link rel="canonical" href="https://slidemoji.vercel.app/" />
+		<meta name="robots" content="noindex" />
+		<!-- Always dark: the game's landing page is always light, so a dark
+		     screen signals right away that something has changed. -->
+		<meta name="color-scheme" content="dark" />
+		<meta name="theme-color" content="#181818" />
+		<link rel="icon" type="image/svg+xml" href="/app-icon.svg" />
+		<!-- Google Analytics (same property as the game). Visits here show up
+		     under hostname slidemoji.com. Two custom events:
+		     - moved_page_view, with visit_count: how many times this browser
+		       has seen this page, to spot people who keep coming back here
+		       instead of updating their bookmark.
+		     - moved_play_click, with visit_count: clicks on the button. -->
+		<script
+			async
+			src="https://www.googletagmanager.com/gtag/js?id=G-YS993J9TBR"
+		></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag("js", new Date());
+			gtag("config", "G-YS993J9TBR", { page_title: "Moved page" });
+
+			var visitCount = 1;
+			try {
+				visitCount =
+					parseInt(
+						localStorage.getItem("moved_visit_count") || "0",
+						10,
+					) + 1;
+				localStorage.setItem("moved_visit_count", String(visitCount));
+			} catch (e) {
+				/* storage unavailable: count stays 1 */
+			}
+			gtag("event", "moved_page_view", { visit_count: visitCount });
+
+			document.addEventListener("click", function (e) {
+				if (e.target.closest && e.target.closest(".play")) {
+					gtag("event", "moved_play_click", {
+						visit_count: visitCount,
+						transport_type: "beacon",
+					});
+				}
+			});
+		</script>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;700&display=swap"
+			rel="stylesheet"
+		/>
+		<style>
+			:root {
+				/* The game's dark-theme colours (src/App.css) */
+				--bg: #181818;
+				--text: #ffffff;
+				--text-dim: #999999;
+				--btn-bg: #ffffff;
+				--btn-text: #181818;
+			}
+			* {
+				box-sizing: border-box;
+			}
+			html,
+			body {
+				margin: 0;
+				height: 100%;
+				background: var(--bg);
+				color: var(--text);
+				font-family:
+					-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+					"Helvetica Neue", Arial, sans-serif;
+			}
+			main {
+				min-height: 100vh;
+				min-height: 100dvh;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				gap: 16px;
+				padding: 40px 24px;
+				text-align: center;
+			}
+			/* Same title treatment as the landing page, emoji in place of the "o" */
+			h1 {
+				margin: 0;
+				font-family: "Fredoka", sans-serif;
+				font-weight: 700;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				gap: 4px;
+			}
+			/* Landing page title and subtitle sizes (LandingPage.module.css) */
+			.title-name {
+				font-size: 3rem;
+				letter-spacing: -1px;
+				line-height: 1.1;
+			}
+			.title-sub {
+				font-size: 1.5rem;
+				font-weight: 400;
+				line-height: 1.5;
+			}
+			.title-emoji {
+				font-size: 0.65em;
+				vertical-align: 2px;
+			}
+			/* Screen readers hear "Slidemoji" rather than the emoji's name */
+			.visually-hidden {
+				position: absolute;
+				width: 1px;
+				height: 1px;
+				overflow: hidden;
+				clip-path: inset(50%);
+				white-space: nowrap;
+			}
+			p {
+				margin: 0;
+				max-width: 22rem;
+				font-size: 1.125rem;
+				line-height: 1.5;
+				text-wrap: pretty;
+			}
+			.play {
+				margin-top: 28px;
+				display: inline-flex;
+				align-items: center;
+				gap: 10px;
+				max-width: 100%;
+				min-height: 56px;
+				padding: 0 32px;
+				border-radius: 999px;
+				background: var(--btn-bg);
+				color: var(--btn-text);
+				font-weight: 600;
+				font-size: 1.1875rem;
+				text-decoration: none;
+				-webkit-tap-highlight-color: transparent;
+				transition: opacity 0.15s ease;
+			}
+			.play:hover {
+				opacity: 0.85;
+			}
+			.play:active {
+				opacity: 0.7;
+			}
+			.play:focus-visible {
+				outline: 3px solid var(--text-dim);
+				outline-offset: 3px;
+			}
+			/* Lighter shade of the app's --color-error (#ef4444) for contrast on #181818 */
+			.deadline {
+				margin-top: 8px;
+				max-width: 24rem;
+				text-wrap: balance;
+				font-size: 0.9375rem;
+				color: #f87171;
+			}
+			/* Keep the button on one line on narrow phones */
+			@media (max-width: 380px) {
+				.play {
+					padding: 0 22px;
+					font-size: 1.0625rem;
+				}
+			}
+			@media (min-width: 600px) {
+				.title-name {
+					font-size: 4.5rem;
+				}
+				.title-sub {
+					font-size: 1.875rem;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<main>
+			<h1>
+				<span class="title-name"
+					>Slidem<span class="title-emoji" aria-hidden="true">😊</span
+					><span class="visually-hidden">o</span>ji</span
+				>
+				<span class="title-sub">has a new home.</span>
+			</h1>
+			<a class="play" href="https://slidemoji.vercel.app/">
+				Play at slidemoji.vercel.app
+				<svg
+					width="18"
+					height="18"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2.4"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					aria-hidden="true"
+				>
+					<path d="M5 12h14" />
+					<path d="M13 6l6 6-6 6" />
+				</svg>
+			</a>
+			<p class="deadline">
+				The old link, slidemoji.com, stops working
+				<strong>Friday, Dec 11</strong>.
+			</p>
+		</main>
+	</body>
+</html>
