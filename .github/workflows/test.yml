@@ -27,3 +27,8 @@ jobs:
 
             - name: Run tests
               run: npm test
+
+            # Checks api/ against the Stripe and Firebase Admin type definitions,
+            # so a library upgrade that drops a parameter fails here, not at checkout.
+            - name: Type-check API functions
+              run: npm run typecheck:api

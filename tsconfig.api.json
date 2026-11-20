@@ -1,0 +1,20 @@
+{
+	// Type-checks the Vercel functions in api/ against the installed
+	// libraries' own type definitions (Stripe, Firebase Admin). This catches
+	// calls that a library upgrade no longer accepts, e.g. Stripe dropping
+	// `payment_method_types` from Checkout Session creation, which broke
+	// premium purchases without any error until someone tried to buy.
+	// Loose on our own code (no implicit-any errors), strict on library calls.
+	"compilerOptions": {
+		"target": "ES2022",
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
+		"allowJs": true,
+		"checkJs": true,
+		"noEmit": true,
+		"strict": false,
+		"skipLibCheck": true,
+		"types": ["node"]
+	},
+	"include": ["api/**/*.js"]
+}
