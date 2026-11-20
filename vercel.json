@@ -2,13 +2,34 @@
 	"redirects": [
 		{
 			"source": "/((?!moved\\.html$|app-icon\\.svg$).*)",
-			"has": [{ "type": "host", "value": "slidemoji.com" }],
+			"has": [
+				{
+					"type": "host",
+					"value": "slidemoji.com"
+				}
+			],
 			"destination": "/moved.html",
 			"permanent": false
 		},
 		{
 			"source": "/((?!moved\\.html$|app-icon\\.svg$).*)",
-			"has": [{ "type": "host", "value": "www.slidemoji.com" }],
+			"has": [
+				{
+					"type": "host",
+					"value": "www.slidemoji.com"
+				}
+			],
+			"destination": "/moved.html",
+			"permanent": false
+		},
+		{
+			"source": "/((?!moved\\.html$|app-icon\\.svg$).*)",
+			"has": [
+				{
+					"type": "host",
+					"value": "slidemoji-git-moved-page-nikhilnathwanis-projects.vercel.app"
+				}
+			],
 			"destination": "/moved.html",
 			"permanent": false
 		}
