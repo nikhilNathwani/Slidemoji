@@ -66,7 +66,8 @@ export default async function handler(req, res) {
 		const session = await stripe.checkout.sessions.create(
 			{
 				mode: "payment", // one-time purchase; change to "subscription" for recurring
-				payment_method_types: ["card"],
+				// No payment_method_types: newer Stripe API versions reject it.
+				// Payment methods come from the Stripe Dashboard settings instead.
 				line_items: [
 					{
 						price: process.env.STRIPE_PRICE_ID,
