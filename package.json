@@ -68,5 +68,9 @@
 	"prettier": {
 		"useTabs": true,
 		"tabWidth": 4
+	},
+	"allowScripts": {
+		"protobufjs": false,
+		"@firebase/util": false
 	}
 }
