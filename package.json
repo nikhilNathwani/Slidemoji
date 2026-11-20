@@ -71,6 +71,7 @@
 	},
 	"allowScripts": {
 		"protobufjs": false,
-		"@firebase/util": false
+		"@firebase/util": false,
+		"fsevents": false
 	}
 }
